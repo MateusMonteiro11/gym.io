@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Login</title>
+</head>
+
+<body class="bg-gray-200 min-h-screen flex items-center justify-center">
+
+    <!-- Container Principal -->
+    <div class="bg-white w-full max-w-6xl min-h-[80vh] mx-auto rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row items-stretch">
+
+    <!-- Blue Bar -->
+    <div class="bg-[#1457F7] text-white flex flex-col p-6 md:p-10 md:w-1/2">
+      <div class="w-full max-w-lg flex flex-col items-center justify-center text-center h-full">
+        <!-- Ícone/imagem -->
+        <img src="/src/public/images/Logo.png" alt="Logo" class="w-28 md:w-56 mb-8 mx-auto">
+
+        <h1 class="text-3xl md:text-4xl font-bold mb-3">GYM.IO</h1>
+        <p class="mb-6 text-base md:text-lg">
+          Gerencie seus treinos com eficiência
+        </p>
+
+        <ul class="text-sm md:text-base space-y-2">
+          <li>• Crie seções interativas</li>
+          <li>• Agende seus treinos</li>
+          <li>• Molde treinos personalizados</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- White Bar -->
+    <div class="flex flex-col p-6 md:p-10 md:w-1/2">
+      <div class="w-full max-w-md flex flex-col items-center justify-center text-center h-full mx-auto">
+        <div>
+          <h2 class="text-2xl md:text-4xl font-bold mb-4">
+            Bem-vindo de Volta !
+          </h2>
+
+          <p class="text-gray-600 mb-6">
+            Acesse sua conta para gerenciar seus treinos
+          </p>
+
+          <!-- FORM -->
+          <form class="space-y-4 w-full max-w-sm">
+
+            <input type="email" placeholder="Email"
+              class="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+            <input type="password" placeholder="Senha"
+              class="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+            <!-- Lembrar e Esqueci Senha -->
+            <div class="flex justify-between items-center text-sm">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300">
+                Lembrar-me
+              </label>
+
+              <a href="#" class="text-blue-600 hover:underline">
+                Esqueceu a senha?
+              </a>
+            </div>
+
+            <!-- Botão -->
+            <button
+              class="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-700 transition">
+              Entrar →
+            </button>
+
+            <!-- Link para criar conta -->
+            <p class="text-sm text-center mt-4">
+              Não tem uma conta?
+              <a href="#" class="text-blue-600 hover:underline">Criar uma</a>
+            </p>
+
+          </form>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
