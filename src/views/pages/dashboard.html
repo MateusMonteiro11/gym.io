@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Início</title>
+</head>
+
+<body class="bg-gray-100">
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="w-72 bg-white p-6 flex flex-col justify-between shadow-sm">
+
+      <!-- TOPO -->
+      <div>
+        <!-- Logo -->
+        <div class="flex items-center gap-3 mb-10">
+          <img src="/src/public/images/Logo.png" class="w-12 h-12 rounded-xl">
+          <div>
+            <h1 class="text-xl font-semibold">Gym.io</h1>
+            <p class="text-sm text-gray-400">Gestor de treinos</p>
+          </div>
+        </div>
+
+        <!-- MENU -->
+        <nav class="space-y-3">
+
+          <a class="flex items-center gap-3 bg-blue-100 text-blue-600 px-3 py-2 rounded-md font-semibold">
+            Painel
+          </a>
+
+          <a class="flex items-center gap-3 text-gray-400 px-3 py-2 rounded-md hover:bg-gray-100">
+            Exercícios
+          </a>
+
+          <a class="flex items-center gap-3 text-gray-400 px-3 py-2 rounded-md hover:bg-gray-100">
+            Treinar
+          </a>
+
+          <a class="flex items-center gap-3 text-gray-400 px-3 py-2 rounded-md hover:bg-gray-100">
+            Histórico
+          </a>
+
+        </nav>
+      </div>
+
+      <!-- USER -->
+      <div class="border-t pt-4">
+
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+          <div>
+            <p class="text-sm font-semibold">usuario</p>
+            <p class="text-xs text-gray-400">usuario@gmail.com</p>
+          </div>
+        </div>
+
+        <button class="text-sm flex items-center gap-2 hover:text-red-500">
+          Sair
+        </button>
+
+      </div>
+
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="flex-1 p-8">
+
+      <!-- HEADER -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold">Painel</h1>
+        <p class="text-gray-400">Sábado, 05 de março de 2026</p>
+      </div>
+
+      <!-- CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+        <!-- Card -->
+        <div class="bg-white border rounded-2xl p-5">
+          <p class="text-sm font-semibold">Total de treinos</p>
+          <h2 class="text-2xl mt-2">4</h2>
+          <p class="text-xs text-gray-400 mt-2">Desde o início</p>
+        </div>
+
+        <div class="bg-white border rounded-2xl p-5">
+          <p class="text-sm font-semibold">Esta semana</p>
+          <h2 class="text-2xl mt-2">2</h2>
+          <p class="text-xs text-gray-400 mt-2">Últimos 7 dias</p>
+        </div>
+
+        <div class="bg-white border rounded-2xl p-5">
+          <p class="text-sm font-semibold">Total de exercícios</p>
+          <h2 class="text-2xl mt-2">14</h2>
+          <p class="text-xs text-gray-400 mt-2">Concluídos</p>
+        </div>
+
+        <div class="bg-white border rounded-2xl p-5">
+          <p class="text-sm font-semibold">Duração média</p>
+          <h2 class="text-2xl mt-2">68 min</h2>
+          <p class="text-xs text-gray-400 mt-2">Por treino</p>
+        </div>
+
+      </div>
+
+      <!-- GRID PRINCIPAL -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- TREINO DE HOJE -->
+        <div class="lg:col-span-2 bg-white border rounded-2xl p-6 flex flex-col justify-between">
+
+          <div>
+            <h2 class="font-semibold mb-1">Treino de Hoje</h2>
+            <p class="text-sm text-gray-400">Nenhum treino agendado</p>
+          </div>
+
+          <div class="text-center mt-10">
+            <p class="text-gray-400 mb-4">Nenhum treino agendado por hoje</p>
+
+            <button class="border px-4 py-2 rounded-lg hover:bg-gray-100">
+              Ver exercícios
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ATIVIDADE RECENTE -->
+        <div class="bg-white border rounded-2xl p-6">
+
+          <h2 class="font-semibold mb-2">Atividade recente</h2>
+          <p class="text-sm text-gray-400 mb-4">
+            Seus últimos treinos concluídos
+          </p>
+
+          <div class="space-y-4 text-sm">
+
+            <div>
+              <p class="font-medium">Braço completo</p>
+              <p class="text-gray-400 text-xs">3 de Mar.</p>
+              <p class="text-gray-400 text-xs">4 exercícios • 65 min</p>
+            </div>
+
+            <hr>
+
+            <div>
+              <p class="font-medium">Treino de pernas</p>
+              <p class="text-gray-400 text-xs">1 de Mar.</p>
+              <p class="text-gray-400 text-xs">3 exercícios • 70 min</p>
+            </div>
+
+            <hr>
+
+            <div>
+              <p class="font-medium">Treino de costas</p>
+              <p class="text-gray-400 text-xs">27 de Fev.</p>
+              <p class="text-gray-400 text-xs">3 exercícios • 55 min</p>
+            </div>
+
+          </div>
+
+          <div class="mt-6 text-center">
+            <button class="text-sm hover:underline">
+              Ver todo histórico
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</body>
+</html>
