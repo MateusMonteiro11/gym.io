@@ -1,38 +1,15 @@
-/**
- * ========================================
- * TAILWIND CSS CONFIGURATION
- * ========================================
- * Arquivo de configuração do Tailwind CSS
- * Define temas, extensões e customizações
- */
-
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
   content: [
-    // Escaneia arquivos HTML, EJS e JS para gerar CSS
-    './src/views/**/*.{html,ejs,js}',
-    './src/public/**/*.{html,js}',
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  
   theme: {
     extend: {
-      // Aqui você pode adicionar cores customizadas
       colors: {
-        // primary: '#3B82F6', // Azul primário
-      },
-      
-      // Fontes customizadas
-      fontFamily: {
-        // sans: ['Inter', 'sans-serif'],
-      },
-      
-      // Espaçamentos customizados
-      spacing: {
-        // Adicione valores personalizados se necessário
+        brand: '#1457F7',
       },
     },
   },
-  
-  plugins: [
-    // Aqui você pode adicionar plugins do Tailwind
-  ],
+  plugins: [],
 }
