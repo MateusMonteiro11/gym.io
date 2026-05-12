@@ -1,27 +1,129 @@
 import { supabase } from '../../lib/supabase'
 
-export async function listarTreinos() {
-  return await supabase
+/*
+LISTAR TREINOS DO USUÁRIO
+*/
+
+export async function listarTreinos(usuarioId) {
+
+  const { data, error } = await supabase
     .from('treinos')
-    .select('*')
+    .select(`
+      *,
+      secoes_treino (
+        id_secao
+      )
+    `)
+    .eq('id_usuario', usuarioId)
+    .order('criado_em', { ascending: false })
+
+  if (error) {
+    console.error(error)
+    throw error
+  }
+
+  return data
 }
 
-export async function buscarTreinoPorId(id) {
-  return await supabase
+/*
+BUSCAR TREINO COMPLETO
+*/
+
+export async function buscarTreinoCompleto(idTreino) {
+
+  const { data, error } = await supabase
     .from('treinos')
-    .select('*')
-    .eq('id_treino', id)
+    .select(`
+      *,
+      secoes_treino (
+        *,
+        treinos_exercicios (
+          *,
+          exercicios (
+            *
+          )
+        )
+      )
+    `)
+    .eq('id_treino', idTreino)
     .single()
+
+  if (error) {
+    console.error(error)
+    throw error
+  }
+
+  return data
 }
 
-export async function criarTreino(payload) {
-  console.log('TODO: implementar criação treino', payload)
+/*
+CRIAR TREINO
+*/
+
+export async function criarTreino({
+
+  nome,
+  descricao,
+  publico,
+  id_usuario
+
+}) {
+
+  const { data, error } = await supabase
+    .from('treinos')
+    .insert({
+      nome,
+      descricao,
+      publico,
+      id_usuario
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error(error)
+    throw error
+  }
+
+  return data
 }
 
-export async function atualizarTreino(id, payload) {
-  console.log('TODO: implementar update treino', id, payload)
+/*
+EDITAR TREINO
+*/
+
+export async function editarTreino(idTreino, dados) {
+
+  const { data, error } = await supabase
+    .from('treinos')
+    .update(dados)
+    .eq('id_treino', idTreino)
+    .select()
+    .single()
+
+  if (error) {
+    console.error(error)
+    throw error
+  }
+
+  return data
 }
 
-export async function deletarTreino(id) {
-  console.log('TODO: implementar delete treino', id)
+/*
+DELETAR TREINO
+*/
+
+export async function deletarTreino(idTreino) {
+
+  const { error } = await supabase
+    .from('treinos')
+    .delete()
+    .eq('id_treino', idTreino)
+
+  if (error) {
+    console.error(error)
+    throw error
+  }
+
+  return true
 }

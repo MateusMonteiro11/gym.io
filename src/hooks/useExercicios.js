@@ -1,25 +1,59 @@
-// Não implementado ainda, apenas estrutura para futura integração com Supabase --- IGNORE ---
+import { useState } from 'react'
 
-import { useEffect, useState } from 'react'
-import exerciciosService from '../services/exerciciosService'
+import {
+  adicionarExercicioTreino,
+  atualizarExercicioTreino,
+  deletarExercicioTreino
+} from '../services/treinos/treinosExerciciosService'
 
-export const useExercicios = () => {
-  const [exercicios, setExercicios] = useState([])
-  const [loading, setLoading] = useState(false)
+export function useExercicios(initialState = []) {
 
-  const fetchExercicios = async () => {
-    setLoading(true)
-    await exerciciosService.getAll()
-    setLoading(false)
+  const [exercicios, setExercicios] =
+    useState(initialState)
+
+  async function adicionar(payload) {
+
+    const novo =
+      await adicionarExercicioTreino(payload)
+
+    setExercicios((prev) => [
+      ...prev,
+      novo
+    ])
   }
 
-  useEffect(() => {
-    fetchExercicios()
-  }, [])
+  async function editar(id, payload) {
+
+    const atualizado =
+      await atualizarExercicioTreino(
+        id,
+        payload
+      )
+
+    setExercicios((prev) =>
+      prev.map((exercicio) =>
+        exercicio.id_treino_exercicio === id
+          ? atualizado
+          : exercicio
+      )
+    )
+  }
+
+  async function remover(id) {
+
+    await deletarExercicioTreino(id)
+
+    setExercicios((prev) =>
+      prev.filter((e) =>
+        e.id_treino_exercicio !== id
+      )
+    )
+  }
 
   return {
     exercicios,
-    loading,
-    fetchExercicios,
+    adicionar,
+    editar,
+    remover
   }
 }

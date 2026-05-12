@@ -2,36 +2,34 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate
+  Navigate,
 } from 'react-router-dom'
 
 import Login from '../pages/Login'
 import Cadastro from '../pages/Cadastro'
-
 import Dashboard from '../pages/Dashboard'
 
 import Treinos from '../pages/Treinos'
+import TreinosEditar from '../pages/TreinosEditar'
+import TreinosVisualizar from '../pages/TreinosVisualizar'
 import Treinar from '../pages/Treinar'
-
-import { PrivateRoute } from './PrivateRoute'
 
 import RedefinirSenha from '../pages/RedefinirSenha'
 
+import { PrivateRoute } from './PrivateRoute'
+
 export default function AppRoutes() {
-
   return (
-
     <BrowserRouter>
-
       <Routes>
 
-        {/* inicial */}
+        {/* Redirect inicial */}
         <Route
           path="/"
           element={<Navigate to="/login" />}
         />
 
-        {/* públicas */}
+        {/* Rotas públicas */}
         <Route
           path="/login"
           element={<Login />}
@@ -42,8 +40,12 @@ export default function AppRoutes() {
           element={<Cadastro />}
         />
 
-        {/* privadas */}
+        <Route
+          path="/redefinir-senha"
+          element={<RedefinirSenha />}
+        />
 
+        {/* Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -53,6 +55,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* Página principal de treinos */}
         <Route
           path="/treinos"
           element={
@@ -62,6 +65,37 @@ export default function AppRoutes() {
           }
         />
 
+        {/* Visualizar treino */}
+        <Route
+          path="/treinos/visualizar/:id"
+          element={
+            <PrivateRoute>
+              <TreinosVisualizar />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Criar treino */}
+        <Route
+          path="/treinos/editar"
+          element={
+            <PrivateRoute>
+              <TreinosEditar />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Editar treino existente */}
+        <Route
+          path="/treinos/editar/:id"
+          element={
+            <PrivateRoute>
+              <TreinosEditar />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Tela de treino ativo */}
         <Route
           path="/treinar"
           element={
@@ -71,13 +105,7 @@ export default function AppRoutes() {
           }
         />
 
-        <Route
-          path="/redefinir-senha"
-          element={<RedefinirSenha />}
-        />
-
       </Routes>
-
     </BrowserRouter>
   )
 }

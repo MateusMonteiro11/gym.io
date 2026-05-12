@@ -1,11 +1,16 @@
 import { supabase } from '../../lib/supabase'
 
 export async function listarExercicios() {
-  return await supabase
+
+  const { data, error } = await supabase
     .from('exercicios')
     .select('*')
-}
+    .order('nome')
 
-export async function criarExercicio(payload) {
-  console.log('TODO: implementar criação exercício', payload)
+  if (error) {
+    console.error(error)
+    throw error
+  }
+
+  return data
 }
