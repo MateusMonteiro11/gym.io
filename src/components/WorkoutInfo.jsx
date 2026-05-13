@@ -1,0 +1,58 @@
+// ─────────────────────────────────────────────
+// WorkoutInfo.jsx
+// Painel de estatísticas da sessão
+// ─────────────────────────────────────────────
+//
+// Responsabilidade: exibir as métricas de apoio
+// ao treino (exercícios e séries restantes).
+// Somente leitura, zero interação.
+//
+// Props vindas de useTreinoAtivo:
+//   estado.exerciciosRestantes, estado.seriesRestantes
+
+/**
+ * Linha de informação individual
+ */
+function InfoRow({ label, valor, destaque = false }) {
+  return (
+    <div className="flex items-center justify-between py-2
+                    border-b border-gray-50 last:border-0">
+      <span className="text-sm text-gray-400">{label}</span>
+      <span className={`text-sm font-semibold ${destaque ? 'text-blue-600' : 'text-gray-800'}`}>
+        {valor}
+      </span>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+
+/**
+ * @param {Object}  props
+ * @param {number}  props.exerciciosRestantes
+ * @param {number}  props.seriesRestantes
+ */
+export default function WorkoutInfo({
+  exerciciosRestantes,
+  seriesRestantes,
+}) {
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl p-5">
+      <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+        Informações
+      </p>
+
+      <div>
+        <InfoRow
+          label="Exercícios restantes"
+          valor={exerciciosRestantes === 0 ? 'Último!' : exerciciosRestantes}
+          destaque={exerciciosRestantes === 0}
+        />
+        <InfoRow
+          label="Séries restantes"
+          valor={seriesRestantes}
+        />
+      </div>
+    </div>
+  )
+}

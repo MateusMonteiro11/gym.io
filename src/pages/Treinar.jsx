@@ -1,175 +1,362 @@
-import { useState, useEffect, useRef } from 'react'
+
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import Sidebar from '../components/Sidebar'
+import PreWorkoutModal from '../components/PreWorkoutModal'
+import AgendarTreinoModal from '../components/AgendarTreinoModal'
 
-const nextExercises = [
-  { num: 2, name: 'Rosca alternada',  sets: '3 séries • 12 reps' },
-  { num: 3, name: 'Tríceps pulley',   sets: '3 séries • 15 reps' },
-  { num: 4, name: 'Tríceps testa',    sets: '3 séries • 12 reps' },
-]
+import { listarTreinos } from '../services/treinos/treinosService'
+import { criarAgendamento } from '../services/agendamentos/agendamentosService'
 
-function formatTime(seconds) {
-  const m = String(Math.floor(seconds / 60)).padStart(2, '0')
-  const s = String(seconds % 60).padStart(2, '0')
-  return `${m}:${s}`
+import { useAuth } from '../hooks/useAuth'
+import { useAgendamentos } from '../hooks/useAgendamentos'
+
+function TreinoCard({ treino, onIniciar, onAgendar }) {
+
+  const totalSecoes = treino.secoes_treino?.length || 0
+
+  const totalExercicios = treino.secoes_treino?.reduce(
+    (acc, secao) => acc + (secao.treinos_exercicios?.length || 0),
+    0
+  )
+
+  return (
+    <div className="bg-white border rounded-2xl p-5 flex flex-col gap-4 hover:shadow-md transition-all">
+
+      <div className="flex items-start justify-between">
+
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800">
+            {treino.nome}
+          </h3>
+
+          <p className="text-sm text-gray-400 mt-1">
+            {treino.descricao || 'Sem descrição'}
+          </p>
+        </div>
+
+        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+          <i className="fa-solid fa-dumbbell text-blue-600 text-lg"></i>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 text-sm">
+
+        <div className="bg-gray-50 rounded-xl p-3 border">
+          <p className="text-gray-400">Exercícios</p>
+          <strong className="text-gray-700">
+            {totalExercicios}
+          </strong>
+        </div>
+
+        <div className="bg-gray-50 rounded-xl p-3 border">
+          <p className="text-gray-400">Seções</p>
+          <strong className="text-gray-700">
+            {totalSecoes}
+          </strong>
+        </div>
+
+      </div>
+
+      <div className="flex items-center gap-3 pt-2">
+
+        <button
+          onClick={() => onIniciar(treino)}
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-medium transition-all"
+        >
+          <i className="fa-solid fa-play mr-2"></i>
+          Iniciar treino
+        </button>
+
+        <button
+          onClick={() => onAgendar(treino)}
+          className="px-4 py-3 border rounded-xl hover:bg-gray-50 transition-all"
+        >
+          <i className="fa-regular fa-calendar"></i>
+        </button>
+
+      </div>
+
+    </div>
+  )
+}
+
+function EmptyScheduled() {
+
+  return (
+    <div className="bg-white border rounded-2xl p-10 text-center">
+
+      <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+        <i className="fa-regular fa-calendar text-2xl text-gray-400"></i>
+      </div>
+
+      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+        Sem treinos programados disponíveis
+      </h3>
+
+      <p className="text-gray-400 text-sm">
+        Você ainda não possui treinos programados.
+      </p>
+
+    </div>
+  )
 }
 
 export default function Treinar() {
-  const [elapsed, setElapsed]   = useState(0)
-  const [running, setRunning]   = useState(false)
-  const intervalRef             = useRef(null)
+
+  const navigate = useNavigate()
+
+  const { usuario, loading } = useAuth()
+  const { agendamentos, recarregar: recarregarAgendamentos } = useAgendamentos()
+  const [treinos, setTreinos] = useState([])
+  const [loadingTreinos, setLoadingTreinos] = useState(true)
+  const [treinoSelecionado, setTreinoSelecionado] = useState(null)
+  const [modalDescansoOpen, setModalDescansoOpen] = useState(false)
+  const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false)
+  const [descansoPadrao, setDescansoPadrao] = useState(60)
 
   useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => setElapsed((t) => t + 1), 1000)
-    } else {
-      clearInterval(intervalRef.current)
+
+  if (loading || !usuario) return
+
+    async function carregarTreinos() {
+
+      try {
+
+        const data = await listarTreinos(usuario.id)
+
+        setTreinos(data || [])
+
+      } catch (error) {
+
+        console.error(error)
+
+      } finally {
+
+        setLoadingTreinos(false)
+      }
     }
-    return () => clearInterval(intervalRef.current)
-  }, [running])
+
+    carregarTreinos()
+
+  }, [usuario, loading])
+
+  function handleIniciarTreino(treino) {
+
+    setTreinoSelecionado(treino)
+
+    setModalDescansoOpen(true)
+  }
+
+  function handleAgendarTreino(treino) {
+    setTreinoSelecionado(treino)
+    setModalAgendamentoOpen(true)
+  }
+
+  async function handleConfirmarAgendamento(dados) {
+    if (!usuario?.id_usuario || !treinoSelecionado?.id_treino) return
+
+    try {
+      await criarAgendamento({
+        idUsuario: usuario.id_usuario,
+        idTreino: treinoSelecionado.id_treino,
+        dataTreino: dados.dataTreino,
+        horario: dados.horario,
+        observacoes: dados.observacoes,
+      })
+
+      setModalAgendamentoOpen(false)
+      setTreinoSelecionado(null)
+      await recarregarAgendamentos()
+      alert('Treino agendado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao agendar treino:', error)
+      alert('Erro ao agendar treino. Tente novamente.')
+    }
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-100">
+
       <Sidebar />
 
-      <main className="flex-1 p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Treinar</h1>
-          <p className="text-gray-400">Sábado, 05 de março de 2026</p>
+      <main className="flex-1 p-8 overflow-y-auto">
+
+        {/* HEADER */}
+        <div className="mb-10">
+
+          <h1 className="text-3xl font-bold text-gray-800">
+            Treinar
+          </h1>
+
+          <p className="text-gray-400 mt-1">
+            Escolha um treino para iniciar.
+          </p>
+
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* TREINOS DISPONÍVEIS */}
+        <section className="mb-10">
 
-          {/* Esquerda */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between mb-5">
 
-            {/* Treino atual */}
-            <div className="bg-white border rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="font-semibold text-lg">Treino atual</h2>
-                  <p className="text-sm text-gray-400">Braço completo</p>
-                </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                  <i className="fa-solid fa-dumbbell text-orange-500 text-xl"></i>
-                </div>
-              </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Treinos disponíveis
+              </h2>
 
-              {/* Progresso */}
-              <div className="mb-4">
-                <div className="flex justify-between text-xs text-gray-400 mb-1">
-                  <span>Progresso</span>
-                  <span>1 de 4</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full w-1/4"></div>
-                </div>
-              </div>
-
-              {/* Exercício atual */}
-              <div className="exercise-card border rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold">Rosca direta</h3>
-                    <p className="text-sm text-gray-400">3 séries • 12 repetições</p>
-                  </div>
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i className="fa-solid fa-check text-blue-600"></i>
-                  </div>
-                </div>
-              </div>
+              <p className="text-sm text-gray-400 mt-1">
+                Seus treinos prontos para execução.
+              </p>
             </div>
 
-            {/* Próximos exercícios */}
-            <div className="bg-white border rounded-2xl p-6">
-              <h2 className="font-semibold mb-4">Próximos exercícios</h2>
-              <div className="space-y-3">
-                {nextExercises.map((ex) => (
-                  <div key={ex.num} className="exercise-card border rounded-xl p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
-                        {ex.num}
+          </div>
+
+          {/* Carregar treinos do usuário */}
+          {loadingTreinos ? (
+
+            <div className="text-gray-400">
+              Carregando treinos...
+            </div>
+
+          ) : treinos.length === 0 ? (
+
+            <div className="bg-white border rounded-2xl p-10 text-center">
+
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                Nenhum treino encontrado
+              </h3>
+
+              <p className="text-gray-400 text-sm">
+                Crie um treino em “Treinos” para começar.
+              </p>
+
+            </div>
+
+          ) : (
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+              {treinos.map((treino) => (
+                <TreinoCard
+                  key={treino.id_treino}
+                  treino={treino}
+                  onIniciar={handleIniciarTreino}
+                  onAgendar={handleAgendarTreino}
+                />
+              ))}
+
+            </div>
+
+          )}
+
+        </section>
+
+        {/* TREINOS AGENDADOS */}
+        <section>
+
+          <div className="mb-5">
+
+            <h2 className="text-xl font-semibold text-gray-800">
+              Treinos agendados
+            </h2>
+
+            <p className="text-sm text-gray-400 mt-1">
+              Seus próximos treinos programados.
+            </p>
+
+          </div>
+
+          {agendamentos.length === 0 ? (
+            <EmptyScheduled />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {agendamentos.map((agendamento) => {
+                const treino = agendamento.treino
+                const dataFormatada = new Date(agendamento.data_treino).toLocaleDateString('pt-BR')
+                return (
+                  <div key={agendamento.id_agendamento} className="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col gap-4 hover:shadow-md transition-all bg-gradient-to-br from-blue-50">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {treino?.nome}
+                        </h3>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {treino?.descricao || 'Sem descrição'}
+                        </p>
                       </div>
-                      <div>
-                        <h3 className="font-medium">{ex.name}</h3>
-                        <p className="text-xs text-gray-400">{ex.sets}</p>
+                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i className="fa-solid fa-dumbbell text-blue-600 text-lg"></i>
                       </div>
                     </div>
-                    <i className="fa-solid fa-chevron-right text-gray-300"></i>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="bg-white rounded-xl p-3 border border-blue-100">
+                        <p className="text-gray-400">Data</p>
+                        <strong className="text-gray-700">{dataFormatada}</strong>
+                      </div>
+                      <div className="bg-white rounded-xl p-3 border border-blue-100">
+                        <p className="text-gray-400">Horário</p>
+                        <strong className="text-gray-700">{agendamento.horario}</strong>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-2">
+                      <button
+                        onClick={() => {
+                          setDescansoPadrao(agendamento.tempo_descanso)
+                          navigate(`/treinar/${treino?.id_treino}`, {
+                            state: {
+                              descansoPadrao: agendamento.tempo_descanso,
+                            },
+                          })
+                        }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-medium transition-all"
+                      >
+                        <i className="fa-solid fa-play mr-2"></i>
+                        Iniciar treino
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
+                )
+              })}
             </div>
+          )}
 
-          </div>
+          <PreWorkoutModal
+            open={modalDescansoOpen}
+            treino={treinoSelecionado}
+            descansoPadrao={descansoPadrao}
+            onClose={() => setModalDescansoOpen(false)}
+            onStart={(descanso) => {
+              setDescansoPadrao(descanso)
+              setModalDescansoOpen(false)
 
-          {/* Direita */}
-          <div className="space-y-6">
+              if (treinoSelecionado) {
+                navigate(`/treinar/${treinoSelecionado.id_treino}`, {
+                  state: {
+                    descansoPadrao: descanso,
+                  },
+                })
+              }
+            }}
+          />
 
-            {/* Modo */}
-            <div className="bg-white border rounded-2xl p-5">
-              <div className="flex items-center gap-3 mb-2">
-                <i className="fa-solid fa-gear text-gray-400"></i>
-                <h3 className="font-semibold">Modo de treino</h3>
-              </div>
-              <p className="text-sm text-gray-400">Acompanhamento automático</p>
-            </div>
+          <AgendarTreinoModal
+            open={modalAgendamentoOpen}
+            treino={treinoSelecionado}
+            onClose={() => {
+              setModalAgendamentoOpen(false)
+              setTreinoSelecionado(null)
+            }}
+            onAgendar={handleConfirmarAgendamento}
+          />
 
-            {/* Timer */}
-            <div className="bg-blue-600 text-white rounded-2xl p-6 text-center">
-              <p className="text-sm mb-2 opacity-80">Tempo de treino</p>
-              <h2 className="text-4xl font-bold mb-4">{formatTime(elapsed)}</h2>
-              <div className="flex justify-center gap-3">
-                <button
-                  onClick={() => setRunning(true)}
-                  className="btn-action bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-semibold"
-                >
-                  <i className="fa-solid fa-play mr-1"></i>
-                  Iniciar
-                </button>
-                <button
-                  onClick={() => setRunning(false)}
-                  className="bg-blue-800 px-4 py-2 rounded-lg text-sm"
-                >
-                  <i className="fa-solid fa-pause"></i>
-                </button>
-              </div>
-            </div>
+        </section>
 
-            {/* Ações */}
-            <div className="space-y-3">
-              <button className="btn-action w-full bg-green-500 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-green-600">
-                <i className="fa-solid fa-forward-step"></i>
-                Próximo exercício
-              </button>
-              <button className="btn-action w-full bg-red-500 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-red-600">
-                <i className="fa-solid fa-flag-checkered"></i>
-                Finalizar treino
-              </button>
-            </div>
-
-            {/* Informações */}
-            <div className="bg-white border rounded-2xl p-5">
-              <h3 className="font-semibold mb-3">Informações</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Duração estimada</span>
-                  <span>65 min</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Exercícios restantes</span>
-                  <span>3</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Séries restantes</span>
-                  <span>9</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
       </main>
+
     </div>
   )
 }

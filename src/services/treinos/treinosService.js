@@ -7,15 +7,22 @@ LISTAR TREINOS DO USUÁRIO
 export async function listarTreinos(usuarioId) {
 
   const { data, error } = await supabase
-    .from('treinos')
-    .select(`
+  .from('treinos')
+  .select(`
+    *,
+
+    secoes_treino (
+
       *,
-      secoes_treino (
-        id_secao
+
+      treinos_exercicios (
+        id_treino_exercicio
       )
-    `)
-    .eq('id_usuario', usuarioId)
-    .order('criado_em', { ascending: false })
+
+    )
+  `)
+  .eq('id_usuario', usuarioId)
+  .order('criado_em', { ascending: false })
 
   if (error) {
     console.error(error)

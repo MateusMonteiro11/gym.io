@@ -13,6 +13,7 @@ import Treinos from '../pages/Treinos'
 import TreinosEditar from '../pages/TreinosEditar'
 import TreinosVisualizar from '../pages/TreinosVisualizar'
 import Treinar from '../pages/Treinar'
+import TreinoPlayer from '../pages/TreinoPlayer'
 
 import RedefinirSenha from '../pages/RedefinirSenha'
 
@@ -103,6 +104,13 @@ export default function AppRoutes() {
               <Treinar />
             </PrivateRoute>
           }
+        />
+
+
+        {/* Tela do player de treino */}
+        <Route
+          path="/treinar/:id"
+          element={<TreinoPlayer />}
         />
 
       </Routes>
