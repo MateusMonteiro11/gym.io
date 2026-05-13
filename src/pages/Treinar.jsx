@@ -4,15 +4,13 @@ import { useNavigate } from 'react-router-dom'
 
 import Sidebar from '../components/Sidebar'
 import PreWorkoutModal from '../components/PreWorkoutModal'
-import AgendarTreinoModal from '../components/AgendarTreinoModal'
 
 import { listarTreinos } from '../services/treinos/treinosService'
-import { criarAgendamento } from '../services/agendamentos/agendamentosService'
 
 import { useAuth } from '../hooks/useAuth'
 import { useAgendamentos } from '../hooks/useAgendamentos'
 
-function TreinoCard({ treino, onIniciar, onAgendar }) {
+function TreinoCard({ treino, onIniciar }) {
 
   const totalSecoes = treino.secoes_treino?.length || 0
 
@@ -69,13 +67,6 @@ function TreinoCard({ treino, onIniciar, onAgendar }) {
           Iniciar treino
         </button>
 
-        <button
-          onClick={() => onAgendar(treino)}
-          className="px-4 py-3 border rounded-xl hover:bg-gray-50 transition-all"
-        >
-          <i className="fa-regular fa-calendar"></i>
-        </button>
-
       </div>
 
     </div>
@@ -113,7 +104,6 @@ export default function Treinar() {
   const [loadingTreinos, setLoadingTreinos] = useState(true)
   const [treinoSelecionado, setTreinoSelecionado] = useState(null)
   const [modalDescansoOpen, setModalDescansoOpen] = useState(false)
-  const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false)
   const [descansoPadrao, setDescansoPadrao] = useState(60)
 
   useEffect(() => {
@@ -149,32 +139,6 @@ export default function Treinar() {
     setModalDescansoOpen(true)
   }
 
-  function handleAgendarTreino(treino) {
-    setTreinoSelecionado(treino)
-    setModalAgendamentoOpen(true)
-  }
-
-  async function handleConfirmarAgendamento(dados) {
-    if (!usuario?.id_usuario || !treinoSelecionado?.id_treino) return
-
-    try {
-      await criarAgendamento({
-        idUsuario: usuario.id_usuario,
-        idTreino: treinoSelecionado.id_treino,
-        dataTreino: dados.dataTreino,
-        horario: dados.horario,
-        observacoes: dados.observacoes,
-      })
-
-      setModalAgendamentoOpen(false)
-      setTreinoSelecionado(null)
-      await recarregarAgendamentos()
-      alert('Treino agendado com sucesso!')
-    } catch (error) {
-      console.error('Erro ao agendar treino:', error)
-      alert('Erro ao agendar treino. Tente novamente.')
-    }
-  }
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -243,7 +207,6 @@ export default function Treinar() {
                   key={treino.id_treino}
                   treino={treino}
                   onIniciar={handleIniciarTreino}
-                  onAgendar={handleAgendarTreino}
                 />
               ))}
 
@@ -274,7 +237,7 @@ export default function Treinar() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {agendamentos.map((agendamento) => {
                 const treino = agendamento.treino
-                const dataFormatada = new Date(agendamento.data_treino).toLocaleDateString('pt-BR')
+                const dataFormatada = new Date(agendamento.data_agendada).toLocaleDateString('pt-BR')
                 return (
                   <div key={agendamento.id_agendamento} className="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col gap-4 hover:shadow-md transition-all bg-gradient-to-br from-blue-50">
                     <div className="flex items-start justify-between">
@@ -291,15 +254,9 @@ export default function Treinar() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="bg-white rounded-xl p-3 border border-blue-100">
-                        <p className="text-gray-400">Data</p>
-                        <strong className="text-gray-700">{dataFormatada}</strong>
-                      </div>
-                      <div className="bg-white rounded-xl p-3 border border-blue-100">
-                        <p className="text-gray-400">Horário</p>
-                        <strong className="text-gray-700">{agendamento.horario}</strong>
-                      </div>
+                    <div className="bg-white rounded-xl p-3 border border-blue-100 text-sm">
+                      <p className="text-gray-400">Agendado para</p>
+                      <strong className="text-gray-700">{dataFormatada}</strong>
                     </div>
 
                     <div className="flex items-center gap-3 pt-2">
@@ -343,16 +300,7 @@ export default function Treinar() {
             }}
           />
 
-          <AgendarTreinoModal
-            open={modalAgendamentoOpen}
-            treino={treinoSelecionado}
-            onClose={() => {
-              setModalAgendamentoOpen(false)
-              setTreinoSelecionado(null)
-            }}
-            onAgendar={handleConfirmarAgendamento}
-          />
-
+  
         </section>
 
       </main>

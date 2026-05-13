@@ -10,9 +10,9 @@ export function useAgendamentos() {
   useEffect(() => {
     async function carregar() {
       try {
-        if (!usuario?.id_usuario) return
+        if (!usuario?.id) return
 
-        const dados = await listarAgendamentosUsuario(usuario.id_usuario)
+        const dados = await listarAgendamentosUsuario(usuario.id)
         setAgendamentos(dados)
       } catch (error) {
         console.error('Erro ao carregar agendamentos:', error)
@@ -22,12 +22,12 @@ export function useAgendamentos() {
     }
 
     carregar()
-  }, [usuario?.id_usuario])
+  }, [usuario?.id])
 
   const recarregar = async () => {
-    if (!usuario?.id_usuario) return
+    if (!usuario?.id) return
     try {
-      const dados = await listarAgendamentosUsuario(usuario.id_usuario)
+      const dados = await listarAgendamentosUsuario(usuario.id)
       setAgendamentos(dados)
     } catch (error) {
       console.error('Erro ao recarregar agendamentos:', error)

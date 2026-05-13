@@ -285,7 +285,7 @@ export default function TreinosEditar() {
 
             publico: false,
 
-            id_usuario: usuario.id_usuario
+            id_usuario: usuario.id
           })
 
         navigate(

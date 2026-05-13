@@ -1,12 +1,16 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import Sidebar from '../components/Sidebar'
+import AgendarTreinoModal from '../components/AgendarTreinoModal'
 
 import { useTreino } from '../hooks/useTreino'
 
 import {
   criarTreino
 } from '../services/treinos/treinosService'
+
+import { criarAgendamento } from '../services/agendamentos/agendamentosService'
 
 import { useAuth } from '../hooks/useAuth'
 
@@ -21,6 +25,9 @@ export default function Treinos() {
     meusTreinos,
     loading
   } = useTreino()
+
+  const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false)
+  const [treinoSelecionado, setTreinoSelecionado] = useState(null)
 
   async function handleCriarTreino() {
 
@@ -50,6 +57,30 @@ export default function Treinos() {
       alert(
         'Erro ao criar treino.'
       )
+    }
+  }
+
+  function handleAgendarTreino(treino) {
+    setTreinoSelecionado(treino)
+    setModalAgendamentoOpen(true)
+  }
+
+  async function handleConfirmarAgendamento(dados) {
+    if (!usuario?.id || !treinoSelecionado?.id_treino) return
+
+    try {
+      await criarAgendamento({
+        idUsuario: usuario.id,
+        idTreino: treinoSelecionado.id_treino,
+        dataAgendada: dados.dataAgendada,
+      })
+
+      setModalAgendamentoOpen(false)
+      setTreinoSelecionado(null)
+      alert('Treino agendado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao agendar treino:', error)
+      alert(`Erro ao agendar treino: ${error?.message || 'Tente novamente.'}`)
     }
   }
 
@@ -104,6 +135,7 @@ export default function Treinos() {
                   workout={treino}
                   viewPath={`/treinos/visualizar/${treino.id_treino}`}
                   showActions={false}
+                  onAgendar={handleAgendarTreino}
                 />
 
               ))
@@ -159,6 +191,7 @@ export default function Treinos() {
                   showActions
                   viewPath={`/treinos/visualizar/${treino.id_treino}`}
                   editPath={`/treinos/editar/${treino.id_treino}`}
+                  onAgendar={handleAgendarTreino}
                 />
 
               ))
@@ -167,6 +200,16 @@ export default function Treinos() {
           </div>
 
         </div>
+
+        <AgendarTreinoModal
+          open={modalAgendamentoOpen}
+          treino={treinoSelecionado}
+          onClose={() => {
+            setModalAgendamentoOpen(false)
+            setTreinoSelecionado(null)
+          }}
+          onAgendar={handleConfirmarAgendamento}
+        />
 
       </main>
 
@@ -178,7 +221,8 @@ function WorkoutCard({
   workout,
   showActions = false,
   viewPath,
-  editPath
+  editPath,
+  onAgendar
 }) {
 
   const isSystemWorkout =
@@ -196,21 +240,31 @@ function WorkoutCard({
         {workout.descricao}
       </p>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
 
         <Link
           to={viewPath}
-          className="flex-1 border rounded-lg py-2 text-sm text-center font-semibold text-gray-700 hover:bg-gray-100"
+          className="flex-1 min-w-[130px] border rounded-lg py-2 text-sm text-center font-semibold text-gray-700 hover:bg-gray-100 transition-all"
         >
           Visualizar
         </Link>
+
+        {onAgendar && (
+          <button
+            type="button"
+            onClick={() => onAgendar(workout)}
+            className="flex-1 min-w-[130px] border border-blue-500 text-blue-600 rounded-lg py-2 text-sm font-semibold hover:bg-blue-50 transition-all"
+          >
+            Agendar
+          </button>
+        )}
 
         {
           showActions && editPath && !isSystemWorkout && (
 
             <Link
               to={editPath}
-              className="flex-1 bg-black text-white rounded-lg py-2 text-sm text-center hover:bg-gray-800"
+              className="flex-1 min-w-[130px] bg-black text-white rounded-lg py-2 text-sm text-center hover:bg-gray-800 transition-all"
             >
               Editar
             </Link>

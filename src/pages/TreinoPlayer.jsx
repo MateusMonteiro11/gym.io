@@ -66,7 +66,7 @@ export default function TreinoPlayer() {
 
   const treinoAtivo = useTreinoAtivo({
     treino,
-    idUsuario: usuario?.id_usuario,
+    idUsuario: usuario?.id,
     descansoPadrao,
 
     onFinalizar: () => {

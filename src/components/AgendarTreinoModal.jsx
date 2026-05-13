@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function AgendarTreinoModal({
   open,
@@ -6,30 +6,31 @@ export default function AgendarTreinoModal({
   onClose,
   onAgendar,
 }) {
-  const [dataTreino, setDataTreino] = useState('')
-  const [horario, setHorario] = useState('18:00')
-  const [observacoes, setObservacoes] = useState('')
+  const [dataAgendada, setDataAgendada] = useState('')
   const [agendando, setAgendando] = useState(false)
+
+  useEffect(() => {
+    if (!open) {
+      setDataAgendada('')
+      setAgendando(false)
+    }
+  }, [open])
 
   if (!open) return null
 
   const handleAgendar = async () => {
-    if (!dataTreino || !horario) {
-      alert('Preencha data e horário')
+    if (!dataAgendada) {
+      alert('Preencha a data do agendamento')
       return
     }
 
     try {
       setAgendando(true)
       await onAgendar({
-        dataTreino,
-        horario,
-        observacoes,
+        dataAgendada,
       })
       // Reset
-      setDataTreino('')
-      setHorario('18:00')
-      setObservacoes('')
+      setDataAgendada('')
     } finally {
       setAgendando(false)
     }
@@ -67,44 +68,16 @@ export default function AgendarTreinoModal({
           </div>
         </div>
 
-        {/* Data do Treino */}
-        <div className="mb-4">
+        <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 mb-2">
-            <i className="fa-solid fa-calendar mr-2"></i>Data do Treino
+            <i className="fa-solid fa-calendar mr-2"></i>Data agendada
           </label>
           <input
             type="date"
-            value={dataTreino}
-            onChange={(e) => setDataTreino(e.target.value)}
+            value={dataAgendada}
+            onChange={(e) => setDataAgendada(e.target.value)}
             min={new Date().toISOString().split('T')[0]}
             className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* Horário */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-600 mb-2">
-            <i className="fa-solid fa-clock mr-2"></i>Horário
-          </label>
-          <input
-            type="time"
-            value={horario}
-            onChange={(e) => setHorario(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* Observações */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-600 mb-2">
-            Observações (opcional)
-          </label>
-          <textarea
-            value={observacoes}
-            onChange={(e) => setObservacoes(e.target.value)}
-            placeholder="Adicionar observação..."
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            rows={3}
           />
         </div>
 

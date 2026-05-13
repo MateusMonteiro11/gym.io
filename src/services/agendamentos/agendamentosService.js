@@ -5,38 +5,32 @@ import { supabase } from '../../lib/supabase'
  * @param {Object} params
  * @param {string} params.idUsuario
  * @param {number} params.idTreino
- * @param {string} params.dataTreino - "YYYY-MM-DD"
- * @param {string} params.horario - "HH:MM"
- * @param {string} [params.observacoes]
+ * @param {string} params.dataAgendada - "YYYY-MM-DD"
  * @returns {Promise<Object>}
  */
 export async function criarAgendamento({
   idUsuario,
   idTreino,
-  dataTreino,
-  horario,
-  observacoes = '',
+  dataAgendada,
 }) {
   const { data, error } = await supabase
-    .from('agendamentos_treino')
+    .from('agendamentos')
     .insert([
       {
         id_usuario: idUsuario,
         id_treino: idTreino,
-        data_treino: dataTreino,
-        horario,
-        observacoes,
-        ativo: true,
+        data_agendada: dataAgendada,
       },
     ])
     .select()
+    .single()
 
   if (error) throw error
   return data?.[0] || null
 }
 
 /**
- * Lista agendamentos do usuário (apenas futuras/hoje)
+ * Lista agendamentos do usuário (apenas não concluídos e futuros)
  * @param {string} idUsuario
  * @returns {Promise<Array>}
  */
@@ -44,7 +38,7 @@ export async function listarAgendamentosUsuario(idUsuario) {
   const hoje = new Date().toISOString().split('T')[0]
 
   const { data, error } = await supabase
-    .from('agendamentos_treino')
+    .from('agendamentos')
     .select(`
       *,
       treino:id_treino (
@@ -61,24 +55,23 @@ export async function listarAgendamentosUsuario(idUsuario) {
             series,
             repeticoes,
             carga,
-            descanso,
+            descanso_segundos,
             ordem,
             exercicios (
               id_exercicio,
               nome,
               descricao,
-              imagem,
-              video
+              url_imagem,
+              url_video
             )
           )
         )
       )
     `)
     .eq('id_usuario', idUsuario)
-    .eq('ativo', true)
-    .gte('data_treino', hoje)
-    .order('data_treino', { ascending: true })
-    .order('horario', { ascending: true })
+    .eq('concluido', false)
+    .gte('data_agendada', hoje)
+    .order('data_agendada', { ascending: true })
 
   if (error) throw error
   return data || []
@@ -91,8 +84,8 @@ export async function listarAgendamentosUsuario(idUsuario) {
  */
 export async function cancelarAgendamento(idAgendamento) {
   const { data, error } = await supabase
-    .from('agendamentos_treino')
-    .update({ ativo: false })
+    .from('agendamentos')
+    .update({ concluido: true })
     .eq('id_agendamento', idAgendamento)
     .select()
 
