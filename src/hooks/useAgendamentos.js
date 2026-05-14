@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import { listarAgendamentosUsuario } from '../services/agendamentos/agendamentosService'
+import {
+  listarAgendamentosUsuario,
+  excluirAgendamento,
+} from '../services/agendamentos/agendamentosService'
 import { useAuth } from './useAuth'
 
 export function useAgendamentos() {
@@ -34,9 +37,21 @@ export function useAgendamentos() {
     }
   }
 
+  const excluir = async (idAgendamento) => {
+    if (!usuario?.id) return
+    try {
+      await excluirAgendamento(idAgendamento)
+      await recarregar()
+    } catch (error) {
+      console.error('Erro ao excluir agendamento:', error)
+      throw error
+    }
+  }
+
   return {
     agendamentos,
     loading,
     recarregar,
+    excluirAgendamento: excluir,
   }
 }

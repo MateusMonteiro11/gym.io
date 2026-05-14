@@ -99,7 +99,11 @@ export default function Treinar() {
   const navigate = useNavigate()
 
   const { usuario, loading } = useAuth()
-  const { agendamentos, recarregar: recarregarAgendamentos } = useAgendamentos()
+  const {
+    agendamentos,
+    recarregar: recarregarAgendamentos,
+    excluirAgendamento,
+  } = useAgendamentos()
   const [treinos, setTreinos] = useState([])
   const [loadingTreinos, setLoadingTreinos] = useState(true)
   const [treinoSelecionado, setTreinoSelecionado] = useState(null)
@@ -273,6 +277,25 @@ export default function Treinar() {
                       >
                         <i className="fa-solid fa-play mr-2"></i>
                         Iniciar treino
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          const confirmDelete = window.confirm(
+                            'Deseja excluir este agendamento?'
+                          )
+                          if (!confirmDelete) return
+
+                          try {
+                            await excluirAgendamento(agendamento.id_agendamento)
+                          } catch (error) {
+                            alert('Não foi possível excluir o agendamento.')
+                          }
+                        }}
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl py-3 font-medium transition-all"
+                      >
+                        <i className="fa-solid fa-trash mr-2"></i>
+                        Excluir
                       </button>
                     </div>
                   </div>

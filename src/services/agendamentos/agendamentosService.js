@@ -92,3 +92,20 @@ export async function cancelarAgendamento(idAgendamento) {
   if (error) throw error
   return data?.[0] || null
 }
+
+/**
+ * Exclui permanentemente um agendamento
+ * @param {number} idAgendamento
+ * @returns {Promise<Object>}
+ */
+export async function excluirAgendamento(idAgendamento) {
+  const { data, error } = await supabase
+    .from('agendamentos')
+    .delete()
+    .eq('id_agendamento', idAgendamento)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data || null
+}

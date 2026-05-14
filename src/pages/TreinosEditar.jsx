@@ -191,6 +191,9 @@ export default function TreinosEditar() {
   const [workoutName, setWorkoutName] =
     useState('')
 
+  const [workoutDescription, setWorkoutDescription] =
+    useState('')
+
   const [sections, setSections] = useState([])
 
   const [exercicios, setExercicios] =
@@ -227,6 +230,7 @@ export default function TreinosEditar() {
         }
 
         setWorkoutName(treino.nome)
+        setWorkoutDescription(treino.descricao || '')
 
         setSections(
           treino.secoes_treino || []
@@ -266,10 +270,18 @@ export default function TreinosEditar() {
 
       setSaving(true)
 
+      // Validação: verificar se há pelo menos uma seção com pelo menos um exercício
+      const hasValidSections = sections.some(section => section.treinos_exercicios && section.treinos_exercicios.length > 0)
+      if (!hasValidSections) {
+        alert('O treino deve ter pelo menos uma seção com pelo menos um exercício.')
+        return
+      }
+
       if (id) {
 
         await editarTreino(id, {
-          nome: workoutName
+          nome: workoutName,
+          descricao: workoutDescription,
         })
 
         alert('Treino atualizado!')
@@ -281,7 +293,7 @@ export default function TreinosEditar() {
 
             nome: workoutName,
 
-            descricao: '',
+            descricao: workoutDescription,
 
             publico: false,
 
@@ -539,6 +551,20 @@ export default function TreinosEditar() {
                 setWorkoutName(e.target.value)
               }
               className="mt-3 w-full rounded-3xl border border-gray-300 bg-gray-50 px-5 py-4 text-lg font-semibold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+
+            <label className="text-sm font-semibold text-gray-700 mt-6 block">
+              Descrição do treino (opcional)
+            </label>
+
+            <textarea
+              rows={4}
+              value={workoutDescription}
+              onChange={(e) =>
+                setWorkoutDescription(e.target.value)
+              }
+              placeholder="Adicione uma descrição breve para seu treino"
+              className="mt-3 w-full rounded-3xl border border-gray-300 bg-gray-50 px-5 py-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none"
             />
 
             <button
