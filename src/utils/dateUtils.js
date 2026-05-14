@@ -14,6 +14,12 @@ export function parseDateTime(value) {
   const texto = value.trim()
   if (!texto) return null
 
+  const dateOnlyMatch = /^\d{4}-\d{2}-\d{2}$/.test(texto)
+  if (dateOnlyMatch) {
+    const [year, month, day] = texto.split('-').map(Number)
+    return new Date(year, month - 1, day)
+  }
+
   const hasTimezoneOffset = /[+-]\d{2}:?\d{2}$/.test(texto)
   const hasZulu = texto.endsWith('Z')
 
@@ -21,8 +27,26 @@ export function parseDateTime(value) {
     return new Date(texto)
   }
 
+  const dateTimeMatch = texto.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}(?:\.\d+)?))?)?$/
+  )
+
+  if (dateTimeMatch) {
+    const [, year, month, day, hour = '0', minute = '0', secondPart = '0'] = dateTimeMatch
+    const [second, millisecond = '0'] = secondPart.split('.')
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hour),
+      Number(minute),
+      Number(second),
+      Number(millisecond.padEnd(3, '0').slice(0, 3))
+    )
+  }
+
   const normalized = texto.replace(' ', 'T')
-  return new Date(`${normalized}Z`)
+  return new Date(normalized)
 }
 
 export function formatDatePtBr(value) {

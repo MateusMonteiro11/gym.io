@@ -47,12 +47,12 @@ function TreinoDeHojeCard({ agendamentos, onVerExercicios }) {
     0
   ) || 0
 
-  const dataTreino = new Date(treinoParaMostrar.data_agendada)
-  const dataFormatada = dataTreino.toLocaleDateString('pt-BR', {
+  const dataTreino = parseDateTime(treinoParaMostrar.data_agendada)
+  const dataFormatada = dataTreino?.toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'short',
     year: '2-digit'
-  })
+  }) || ''
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-8 flex flex-col justify-between min-h-80">
