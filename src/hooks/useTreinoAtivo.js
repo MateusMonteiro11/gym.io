@@ -186,11 +186,15 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
 
     if (status !== 'idle') return
 
+    console.log('[useTreinoAtivo] Iniciando treino, status anterior:', status)
+
     setTempoDescanso(tempo)
 
     setStatus('ativo')
 
     workoutTimer.start()
+
+    console.log('[useTreinoAtivo] Timer iniciado, elapsed:', workoutTimer.elapsed)
 
   }, [status, workoutTimer])
 
@@ -211,7 +215,7 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
       id_exercicio        : exercicioAtual.id_exercicio,
       serie               : serieAtual,
       cargaUtilizada      : ajustes.carga      ?? exercicioAtual.carga,
-      repeticosFeitas     : ajustes.repeticoes ?? exercicioAtual.repeticoes,
+      repeticoesFeitas    : ajustes.repeticoes ?? exercicioAtual.repeticoes,
       timestamp           : Date.now(),
     }
 
@@ -257,12 +261,16 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
   const finalizarTreino = useCallback(async () => {
     if (status === 'finalizado') return
 
+    console.log('[useTreinoAtivo] Finalizando treino, elapsed:', workoutTimer.elapsed, 'status:', status)
+
     workoutTimer.pause()
     descansoTimer.reset() // garante que não há descanso pendente
     setStatus('finalizado')
 
+    console.log(workoutTimer.elapsed)
+
     await _salvarHistorico()
-  }, [status, workoutTimer, descansoTimer, logSeries])
+  }, [status, workoutTimer, descansoTimer, logSeries] )
 
   // ─── Internos ──────────────────────────────
 
@@ -303,6 +311,8 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
     setSalvando(true)
     setErro(null)
 
+    console.log('[_salvarHistorico] Iniciando salvamento, elapsed atual:', workoutTimer.elapsed)
+
     try {
       const { salvarHistoricoTreino } = await import(
         '../services/treino_ativo/treinoAtivoService'
@@ -314,6 +324,8 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
         duracaoSegundos  : workoutTimer.elapsed,
         logSeries,
       })
+
+      console.log('[_salvarHistorico] Treino salvo com sucesso')
 
       onFinalizar?.()
     } catch (err) {

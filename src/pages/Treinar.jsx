@@ -241,7 +241,8 @@ export default function Treinar() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {agendamentos.map((agendamento) => {
                 const treino = agendamento.treino
-                const dataFormatada = new Date(agendamento.data_agendada).toLocaleDateString('pt-BR')
+                const [ano, mes, dia] = agendamento.data_agendada.split('-')
+                const dataFormatada = `${dia}/${mes}/${ano}`
                 return (
                   <div key={agendamento.id_agendamento} className="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col gap-4 hover:shadow-md transition-all bg-gradient-to-br from-blue-50">
                     <div className="flex items-start justify-between">
