@@ -16,9 +16,9 @@ export default function Historico() {
 
   if (loadingAuth || loading) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
         <Sidebar />
-        <main className="flex-1 flex items-center justify-center">
+        <main className="flex-1 flex items-center justify-center p-6 md:p-8">
           <div className="text-center">
             <i className="fa-solid fa-spinner animate-spin text-blue-600 text-3xl mb-3"></i>
             <p className="text-gray-600">Carregando histórico...</p>
@@ -30,9 +30,9 @@ export default function Historico() {
 
   if (erro) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
         <Sidebar />
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-6 md:p-8">
           <div className="bg-white border border-red-200 rounded-2xl p-6 text-center">
             <i className="fa-solid fa-exclamation-circle text-red-600 text-3xl mb-3"></i>
             <h2 className="text-lg font-semibold text-red-700 mb-2">Erro ao carregar histórico</h2>
@@ -50,10 +50,10 @@ export default function Historico() {
   console.log(estatisticas)
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       <Sidebar />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-6 md:p-8 overflow-y-auto">
         <HistoricoHeader stats={stats} />
 
         {temHistorico && (

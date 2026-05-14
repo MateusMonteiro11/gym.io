@@ -133,11 +133,11 @@ export default function TreinosVisualizar() {
 
   return (
 
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
 
       <Sidebar />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-6 md:p-8">
 
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 

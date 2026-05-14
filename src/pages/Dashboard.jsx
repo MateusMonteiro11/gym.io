@@ -182,9 +182,9 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
         <Sidebar />
-        <main className="flex-1 p-8 flex items-center justify-center">
+        <main className="flex-1 p-6 md:p-8 flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-400">Carregando...</p>
           </div>
@@ -194,10 +194,10 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       <Sidebar />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-6 md:p-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Painel</h1>
@@ -205,7 +205,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Cards Grid */}
-        <div className="grid grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
           <StatCard
             label="Total de treinos"
             value={estatisticas.totalTreinos}
@@ -240,7 +240,7 @@ export default function Dashboard() {
         </div>
 
         {/* Main Cards Grid */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Treino de Hoje */}
           <TreinoDeHojeCard
             agendamentos={agendamentos}

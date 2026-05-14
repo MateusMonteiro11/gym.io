@@ -136,7 +136,7 @@ export default function Cadastro() {
 
               <input
                 type="password"
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Mínimo 6 caracteres"
                 value={senha}
                 onChange={(e) =>
                   setSenha(e.target.value)

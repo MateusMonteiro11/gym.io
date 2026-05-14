@@ -12,7 +12,7 @@ export default function Sidebar() {
   const { pathname } = useLocation()
 
   return (
-    <aside className="w-72 bg-white p-6 flex flex-col justify-between shadow-sm shrink-0">
+    <aside className="w-full md:w-72 bg-white p-6 flex flex-col justify-between shadow-sm shrink-0">
       {/* Topo */}
       <div>
         {/* Logo */}
