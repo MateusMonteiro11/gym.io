@@ -1,17 +1,4 @@
-# 🏋️ Gym.io
-
 > Aplicativo de gestão e acompanhamento de treinos para todos os ambientes — academia, casa ou calistenia.
-
-## 👥 Integrantes
-
-| Nome 
-|------|--------|
-| Matheus Fleming Rossi|
-| Pedro Henrique Ferraresi de Oliveira |
-| Mateus Monteiro |
-| Danilo Chiarelli |
-
----
 
 ## 📖 Sobre o Projeto
 
