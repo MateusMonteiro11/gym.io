@@ -1,40 +1,21 @@
-// ─────────────────────────────────────────────
-// useDescansoTimer.js
-// Timer de descanso entre séries
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: fazer a contagem regressiva
-// do intervalo entre séries e notificar quando
-// acabar. Não conhece o treino, só conta.
-//
-// Ciclo de vida esperado:
-//   1. usuário conclui uma série
-//   2. useTreinoAtivo chama `iniciarDescanso(segundos)`
-//   3. DescansoModal renderiza com os dados deste hook
-//   4. ao zerar → `onFim` é chamado → modal fecha
-//
-// Uso:
-//   const { ativo, restante, percentual, progresso,
-//           iniciarDescanso, pularDescanso } = useDescansoTimer({ onFim })
-
 import { useState, useEffect, useRef, useCallback } from 'react'
 
 /**
  * @typedef {Object} DescansoTimerReturn
- * @property {boolean}  ativo          - Se há descanso em andamento
- * @property {number}   restante       - Segundos restantes
- * @property {number}   total          - Duração total configurada (segundos)
- * @property {number}   percentual     - Percentual restante (100 → 0)
- * @property {string}   formatted      - Tempo formatado "MM:SS"
+ * @property {boolean}  ativo - Se há descanso em andamento
+ * @property {number}   restante - Segundos restantes
+ * @property {number}   total - Duração total configurada (segundos)
+ * @property {number}   percentual - Percentual restante (100 → 0)
+ * @property {string}   formatted - Tempo formatado "MM:SS"
  * @property {Function} iniciarDescanso - (segundos?: number) => void
- * @property {Function} pularDescanso   - Encerra imediatamente e chama onFim
- * @property {Function} adicionarTempo  - (segundos: number) => void — adiciona tempo ao restante
+ * @property {Function} pularDescanso - Encerra imediatamente e chama onFim
+ * @property {Function} adicionarTempo - (segundos: number) => void — adiciona tempo ao restante
  */
 
 /**
  * @param {Object}    [options]
- * @param {Function}  [options.onFim]              - Callback ao zerar o timer
- * @param {number}    [options.duracaoPadrao=60]   - Segundos padrão se nenhum for passado
+ * @param {Function}  [options.onFim] - Callback ao zerar o timer
+ * @param {number}    [options.duracaoPadrao=60] - Segundos padrão se nenhum for passado
  * @returns {DescansoTimerReturn}
  */
 export function useDescansoTimer({ onFim, duracaoPadrao = 60 } = {}) {

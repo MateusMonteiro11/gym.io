@@ -1,24 +1,12 @@
-// ─────────────────────────────────────────────
-// WorkoutTimer.jsx
-// Cronômetro da sessão (tempo total decorrido)
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: exibir o tempo de treino e
-// os controles de play/pause. Não conhece
-// exercícios nem séries.
-//
-// Props vindas de useTreinoAtivo:
-//   workoutTimer.{ formatted, isRunning, toggle },
-//   status, iniciarTreino
-
 /**
  * @param {Object}   props
- * @param {string}   props.formatted    - Tempo formatado "MM:SS"
+ * @param {string}   props.formatted - Tempo formatado "MM:SS"
  * @param {boolean}  props.isRunning
- * @param {Function} props.onToggle     - play/pause
+ * @param {Function} props.onToggle 
  * @param {'idle'|'ativo'|'descansando'|'finalizado'} props.status
- * @param {Function} props.onIniciar    - Só usado no estado idle
+ * @param {Function} props.onIniciar - Só será usado no estado idle
  */
+
 export default function WorkoutTimer({ formatted, isRunning, onToggle, status, onIniciar }) {
   const finalizado = status === 'finalizado'
   const idle       = status === 'idle'

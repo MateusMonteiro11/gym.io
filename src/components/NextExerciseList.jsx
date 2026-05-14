@@ -1,20 +1,9 @@
-// ─────────────────────────────────────────────
-// NextExercisesList.jsx
-// Fila dos próximos exercícios
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: renderizar os próximos N
-// exercícios de forma escaneável. Somente leitura.
-// Indica visualmente quando há troca de seção.
-//
-// Props vindas de useTreinoAtivo:
-//   proximoExercicios, exercicioAtual.id_secao
-
 /**
  * @param {Object} props
  * @param {import('../utils/treinoUtils').ExercicioFlat[]} props.proximos
  * @param {number} props.idSecaoAtual   - Para detectar troca de seção
  */
+
 export default function NextExercisesList({ proximos = [], idSecaoAtual }) {
   if (!proximos.length) {
     return (

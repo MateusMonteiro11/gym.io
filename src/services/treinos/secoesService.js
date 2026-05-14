@@ -1,8 +1,6 @@
 import { supabase } from '../../lib/supabase'
 
-/*
-CRIAR SEÇÃO
-*/
+/* Cria a seção */
 
 export async function criarSecao({
 
@@ -29,9 +27,7 @@ export async function criarSecao({
   return data
 }
 
-/*
-EDITAR SEÇÃO
-*/
+/* Edita a seção */
 
 export async function editarSecao(idSecao, dados) {
 
@@ -47,9 +43,7 @@ export async function editarSecao(idSecao, dados) {
   return data
 }
 
-/*
-DELETAR SEÇÃO
-*/
+/* Deleta a seção */
 
 export async function deletarSecao(idSecao) {
 

@@ -4,6 +4,8 @@ import { useHistorico } from '../hooks/useHistorico'
 import { useAgendamentos } from '../hooks/useAgendamentos'
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { parseDateTime } from '../utils/dateUtils'
+
 
 function StatCard({ label, value, sub, icon }) {
   return (
@@ -94,7 +96,7 @@ function AtividadeRecenteCard({ historico, onVerTodoHistorico }) {
           <p className="text-gray-400 text-sm text-center py-8">Nenhum treino concluído ainda</p>
         ) : (
           historico.slice(0, 3).map((treino, idx) => {
-            const dataExecucao = new Date(treino.data_execucao)
+            const dataExecucao = parseDateTime(treino.data_execucao)
             const hoje = new Date()
             const diferenca = Math.floor(
               (hoje - dataExecucao) / (1000 * 60 * 60 * 24)
@@ -216,7 +218,7 @@ export default function Dashboard() {
               const umaSemana = 7 * 24 * 60 * 60 * 1000
               const agora = Date.now()
               return historico.filter(t => {
-                const dataExecucao = new Date(t.data_execucao).getTime()
+                const dataExecucao = parseDateTime(t.data_execucao)?.getTime() ?? 0
                 return (agora - dataExecucao) <= umaSemana
               }).length
             })()}

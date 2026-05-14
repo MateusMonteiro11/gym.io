@@ -1,17 +1,3 @@
-// ─────────────────────────────────────────────
-// WorkoutActions.jsx
-// Ações da sessão de treino
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: expor os controles de fluxo
-// do treino (próximo exercício, voltar, finalizar).
-// Gerencia o estado de confirmação de finalização
-// localmente para não poluir o hook.
-//
-// Props vindas de useTreinoAtivo:
-//   status, indexAtual, finalizado,
-//   avancarExercicio, voltarExercicio, finalizarTreino
-
 import { useState } from 'react'
 
 /**
@@ -24,6 +10,7 @@ import { useState } from 'react'
  * @param {Function} props.onAvancar
  * @param {Function} props.onFinalizar
  */
+
 export default function WorkoutActions({
   status,
   indexAtual,

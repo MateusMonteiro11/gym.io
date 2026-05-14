@@ -1,27 +1,3 @@
-// ─────────────────────────────────────────────
-// useTreinoAtivo.js
-// Orquestrador do sistema de treino ativo
-// ─────────────────────────────────────────────
-//
-// É o único hook que os componentes de treino
-// precisam consumir. Coordena:
-//   • navegação entre exercícios e séries
-//   • disparo do descanso após cada série
-//   • progresso e estado derivado
-//   • salvamento do histórico ao finalizar
-//
-// Fluxo de uma série:
-//   concluirSerie()
-//     ├─ registra a série no log interno
-//     ├─ se ainda há séries → iniciarDescanso(ex.descanso)
-//     │     └─ ao fim do descanso → serieAtual++
-//     └─ se era a última série → avançarExercicio()
-//           └─ se era o último exercício → finalizarTreino()
-//
-// Uso:
-//   const treino = useTreinoAtivo({ treino: dadosDoBanco, idUsuario })
-//   // → desestruturar o que cada componente precisa
-
 import { useState, useCallback, useMemo } from 'react'
 import { useWorkoutTimer }  from './useWorkoutTimer'
 import { useDescansoTimer } from './useDescansoTimer'
@@ -34,28 +10,25 @@ import {
   treinoFinalizado,
 } from '../utils/treinoUtils'
 
-// ─── Tipos (JSDoc) ───────────────────────────
-
 /**
  * @typedef {Object} RegistroSerie
  * @property {number} id_treino_exercicio
  * @property {number} id_exercicio
- * @property {number} serie          - Número da série (1-based)
+ * @property {number} serie
  * @property {number} cargaUtilizada
- * @property {number} repeticoesFeit as
- * @property {number} timestamp      - Date.now()
+ * @property {number} repeticoesFeit
+ * @property {number} timestamp - Data atual, timestamp do banco
  */
 
 /**
  * @typedef {'idle'|'ativo'|'descansando'|'finalizado'} StatusTreino
  */
 
-// ─── Hook ────────────────────────────────────
 
 /**
  * @param {Object}  options
- * @param {Object}  options.treino      - Objeto completo do treino vindo do Supabase
- * @param {string}  options.idUsuario   - UUID do usuário autenticado
+ * @param {Object}  options.treino - Objeto completo do treino vindo do Supabase
+ * @param {string}  options.idUsuario - UUID do usuário autenticado
  * @param {number}  [options.descansoPadrao=60] - Tempo padrão de descanso em segundos
  * @param {Function} [options.onFinalizar] - Callback após salvar o histórico
  */
@@ -179,9 +152,7 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
     proximoExercicios
   ])
 
-  // ─── Ações ─────────────────────────────────
-
-  /** Inicia o treino (idle → ativo) */
+  /** Inicia o treino (estado indle para ativar) */
   const iniciarTreino = useCallback((tempo = 60) => {
 
     if (status !== 'idle') return
@@ -203,7 +174,7 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
    * Aceita ajustes de carga/reps caso o usuário tenha editado no momento.
    *
    * @param {Object} [ajustes]
-   * @param {number} [ajustes.carga]      - Carga efetivamente usada
+   * @param {number} [ajustes.carga] - Carga efetivamente usada
    * @param {number} [ajustes.repeticoes] - Reps efetivamente feitas
    */
   const concluirSerie = useCallback((ajustes = {}) => {
@@ -272,8 +243,6 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
     await _salvarHistorico()
   }, [status, workoutTimer, descansoTimer, logSeries] )
 
-  // ─── Internos ──────────────────────────────
-
   /** Avança para o próximo exercício ou finaliza o treino */
   function _avancarExercicio() {
 
@@ -337,14 +306,15 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
   }
 
 
-  // ─── Retorno público ───────────────────────
+  // Retorno publico
+
   return {
-    // ── Estado geral ──
+    // Estado geral
     status,
     salvando,
     erro,
 
-    // ── Lista e navegação ──
+    // Lista e navegação
     exercicios,
     indexAtual,
     serieAtual,
@@ -353,13 +323,13 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
     proximaSecao,
     finalizado,
 
-    // ── Progresso e estatísticas ──
-    estado,    // { percentual, exerciciosFeitos, exerciciosRestantes, seriesRestantes, ... }
-    sumario,   // { totalExercicios, totalSeries, totalSecoes, tempoEstimadoMin, secoes }
+    // Progresso e estatísticas
+    estado,    // { percentual, exerciciosFeitos, exerciciosRestantes, seriesRestantes, ... } possiveis
+    sumario,   // { totalExercicios, totalSeries, totalSecoes, tempoEstimadoMin, secoes } possiveis
 
     // ── Timers ──
-    workoutTimer,   // { elapsed, isRunning, formatted, start, pause, toggle, reset }
-    descansoTimer,  // { ativo, restante, total, percentual, formatted, iniciarDescanso, pularDescanso, adicionarTempo }
+    workoutTimer,   // { elapsed, isRunning, formatted, start, pause, toggle, reset } possiveis
+    descansoTimer,  // { ativo, restante, total, percentual, formatted, iniciarDescanso, pularDescanso, adicionarTempo } possiveis
     tempoDescanso,
 
     // ── Ações ──

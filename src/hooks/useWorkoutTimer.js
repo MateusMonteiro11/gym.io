@@ -1,15 +1,3 @@
-// ─────────────────────────────────────────────
-// useWorkoutTimer.js
-// Cronômetro do treino (tempo total decorrido)
-// ─────────────────────────────────────────────
-//
-// Responsabilidade única: medir o tempo total
-// da sessão de treino. Não conhece exercícios,
-// séries nem descanso — apenas conta segundos.
-//
-// Uso:
-//   const { elapsed, isRunning, start, pause, reset, formatted } = useWorkoutTimer()
-
 import { useState, useEffect, useRef, useCallback } from 'react'
 
 /**
@@ -17,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
  * @param {number} totalSeconds
  * @returns {string}
  */
+
 function formatElapsed(totalSeconds) {
   const h = Math.floor(totalSeconds / 3600)
   const m = Math.floor((totalSeconds % 3600) / 60)
@@ -48,6 +37,7 @@ function formatElapsed(totalSeconds) {
  * @param {number}  [options.initialElapsed=0] - Segundos iniciais (retomada de sessão)
  * @returns {WorkoutTimerReturn}
  */
+
 export function useWorkoutTimer({ autoStart = false, initialElapsed = 0 } = {}) {
   const [elapsed,   setElapsed]   = useState(initialElapsed)
   const [isRunning, setIsRunning] = useState(autoStart)

@@ -1,15 +1,3 @@
-// ─────────────────────────────────────────────
-// WorkoutHeader.jsx
-// Cabeçalho da sessão de treino
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: exibir identidade do treino
-// (nome, data, status da sessão) e o botão de
-// saída/abandono. Não conhece exercícios.
-//
-// Props vindas de useTreinoAtivo:
-//   status, treino.nome, finalizarTreino
-
 import { useState } from 'react'
 
 const STATUS_LABEL = {
@@ -23,7 +11,7 @@ const STATUS_LABEL = {
  * @param {Object}   props
  * @param {string}   props.nomeTreino
  * @param {'idle'|'ativo'|'descansando'|'finalizado'} props.status
- * @param {Function} props.onSair          - Abre confirmação e chama finalizarTreino
+ * @param {Function} props.onSair - Abre confirmação e chama finalizarTreino
  * @param {boolean}  [props.salvando]
  */
 export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = false }) {

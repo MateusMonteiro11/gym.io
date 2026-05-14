@@ -1,8 +1,6 @@
 import { supabase } from '../../lib/supabase'
 
-/*
-ADICIONAR EXERCÍCIO AO HISTÓRICO
-*/
+/* Adicionar exercicio ao historico */
 
 export async function adicionarHistoricoExercicio({
 
@@ -46,9 +44,7 @@ export async function adicionarHistoricoExercicio({
   return data
 }
 
-/*
-ADICIONAR MÚLTIPLOS EXERCÍCIOS
-*/
+/* Adicionar multiplos exercicios */
 
 export async function adicionarHistoricoLote(
 
@@ -71,9 +67,7 @@ export async function adicionarHistoricoLote(
   return data
 }
 
-/*
-LISTAR EXERCÍCIOS DO HISTÓRICO
-*/
+/* Listar exercicios do historico */
 
 export async function listarHistoricoExercicios(
 

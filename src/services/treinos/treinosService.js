@@ -1,8 +1,6 @@
 import { supabase } from '../../lib/supabase'
 
-/*
-LISTAR TREINOS DO USUÁRIO
-*/
+/* Lista treinos de usuarios */
 
 export async function listarTreinos(usuarioId) {
 
@@ -32,9 +30,7 @@ export async function listarTreinos(usuarioId) {
   return data
 }
 
-/*
-BUSCAR TREINO COMPLETO
-*/
+/* Busca o treino completo */
 
 export async function buscarTreinoCompleto(idTreino) {
 
@@ -63,9 +59,7 @@ export async function buscarTreinoCompleto(idTreino) {
   return data
 }
 
-/*
-CRIAR TREINO
-*/
+/* Cria o treino */
 
 export async function criarTreino({
 
@@ -95,9 +89,7 @@ export async function criarTreino({
   return data
 }
 
-/*
-EDITAR TREINO
-*/
+/* Editar treino */
 
 export async function editarTreino(idTreino, dados) {
 
@@ -116,9 +108,7 @@ export async function editarTreino(idTreino, dados) {
   return data
 }
 
-/*
-DELETAR TREINO
-*/
+/* Deleta treino */
 
 export async function deletarTreino(idTreino) {
 

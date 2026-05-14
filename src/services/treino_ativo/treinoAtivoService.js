@@ -12,6 +12,7 @@ import { marcarAgendamentoConcluido } from '../agendamentos/agendamentosService'
  * @param {Array}  params.logSeries
  * @param {Object} [params.estatisticas]
  */
+
 export async function salvarHistoricoTreino({
   idUsuario,
   idTreino,
@@ -25,7 +26,7 @@ export async function salvarHistoricoTreino({
 
   console.log('[salvarHistoricoTreino] Duração recebida:', duracaoSegundos, 'segundos')
 
-  // 1. cria o registro principal do treino
+  // Cria o registro principal do treino
   const historico = await criarHistoricoTreino({
     id_usuario: idUsuario,
     id_treino: idTreino,
@@ -39,12 +40,12 @@ export async function salvarHistoricoTreino({
 
   console.log('[salvarHistoricoTreino] Histórico criado:', historico.id_historico, 'Duração:', historico.duracao_segundos)
 
-  // 2. se não houver séries, encerra aqui
+  // Se não houver séries, encerra aqui
   if (!logSeries.length) {
     return historico
   }
 
-  // 3. transforma logSeries no formato do banco
+  // Transforma logSeries no formato do banco
   const payload = logSeries.map((item) => ({
     id_historico: historico.id_historico,
     id_exercicio: item.id_exercicio,
@@ -55,10 +56,10 @@ export async function salvarHistoricoTreino({
     repeticoes_feitas: item.repeticoesFeitas ?? 0,
   }))
 
-  // 4. salva em lote
+  // Salva em lote
   await adicionarHistoricoLote(payload)
 
-  // 5. atualiza os totais no registro principal de histórico
+  // Atualiza os totais no registro principal de histórico
   const totalSeries = payload.length
   const totalExercicios = new Set(payload.map((item) => item.id_exercicio)).size
 
@@ -70,7 +71,7 @@ export async function salvarHistoricoTreino({
     total_exercicios: totalExercicios,
   })
 
-  // 6. marca agendamento como concluído (se existir para hoje)
+  // Marca agendamento como concluído (se existir para hoje)
   try {
     await marcarAgendamentoConcluido(idUsuario, idTreino)
   } catch (err) {

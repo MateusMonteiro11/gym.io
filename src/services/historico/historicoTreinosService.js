@@ -1,8 +1,6 @@
 import { supabase } from '../../lib/supabase'
 
-/*
-CRIAR HISTÓRICO DE TREINO
-*/
+/* Criar historico de treino */
 
 export async function criarHistoricoTreino({
 
@@ -43,9 +41,7 @@ export async function criarHistoricoTreino({
   return data
 }
 
-/*
-LISTAR HISTÓRICOS DO USUÁRIO
-*/
+/* Listar historicos do usuario */
 
 export async function listarHistoricos(
 

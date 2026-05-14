@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { listarHistoricos } from '../services/historico/historicoTreinosService'
+import { parseDateTime } from '../utils/dateUtils'
 
 export function useHistorico(idUsuario) {
 
@@ -106,9 +107,7 @@ export function useHistorico(idUsuario) {
         .filter((treino) => {
 
           const dataExecucao =
-            new Date(
-              treino.data_execucao
-            ).getTime()
+            parseDateTime(treino.data_execucao)?.getTime() ?? 0
 
           return (
             agora - dataExecucao
@@ -147,7 +146,7 @@ export function useHistorico(idUsuario) {
 
     historico.forEach((treino) => {
 
-      const data = new Date(
+      const data = parseDateTime(
         treino.data_execucao
       )
 

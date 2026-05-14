@@ -1,8 +1,6 @@
 import { supabase } from '../../lib/supabase'
 
-/*
-ADICIONAR EXERCÍCIO NO TREINO
-*/
+/* Adiciona exercicio ao treino especificado */
 
 export async function adicionarExercicio({
 
@@ -44,9 +42,7 @@ export async function adicionarExercicio({
   return data
 }
 
-/*
-EDITAR EXERCÍCIO DO TREINO
-*/
+/* Editar o exercicio no treino */
 
 export async function editarExercicioTreino(
 
@@ -70,9 +66,7 @@ export async function editarExercicioTreino(
   return data
 }
 
-/*
-REMOVER EXERCÍCIO
-*/
+/* Remove o exercicio */
 
 export async function removerExercicio(
 

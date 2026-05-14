@@ -1,25 +1,14 @@
 import { useState } from 'react'
 import { buscarHistoricoCompleto } from '../services/historico/historicoTreinosService'
+import { formatDatePtBr, formatTimePtBr } from '../utils/dateUtils'
 
 export default function HistoricoCard({ historico, onExpanded }) {
   const [expandido, setExpandido] = useState(false)
   const [detalhes, setDetalhes] = useState(null)
   const [carregando, setCarregando] = useState(false)
 
-  const formatarData = (data) => {
-    return new Date(data).toLocaleDateString('pt-BR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    })
-  }
-
-  const formatarHora = (data) => {
-    return new Date(data).toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+  const formatarData = (data) => formatDatePtBr(data)
+  const formatarHora = (data) => formatTimePtBr(data)
 
   const formatarDuracao = (segundos) => {
     if (!segundos) return '0 min'

@@ -1,26 +1,14 @@
-// ─────────────────────────────────────────────
-// WorkoutProgress.jsx
-// Barra de progresso global + mapa de seções
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: visualizar onde o usuário
-// está no treino. Recebe dados puros, sem lógica.
-//
-// Props vindas de useTreinoAtivo:
-//   estado.percentual, estado.exerciciosFeitos,
-//   estado.totalExercicios, sumario.secoes,
-//   exercicioAtual.id_secao
-
 /**
  * @param {Object}  props
- * @param {number}  props.percentual          - 0–100
+ * @param {number}  props.percentual - 0–100
  * @param {number}  props.exerciciosFeitos
  * @param {number}  props.totalExercicios
- * @param {number}  props.serieAtual          - 1-based
- * @param {number}  props.totalSeries         - Séries do exercício atual
+ * @param {number}  props.serieAtual
+ * @param {number}  props.totalSeries - Séries do exercício atual
  * @param {{ id_secao: number, nome: string, qtdExercicios: number }[]} props.secoes
  * @param {number}  props.idSecaoAtual
  */
+
 export default function WorkoutProgress({
   percentual,
   exerciciosFeitos,

@@ -1,21 +1,7 @@
-// ─────────────────────────────────────────────
-// CurrentExerciseCard.jsx
-// Card principal: exercício em execução
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: exibir todos os detalhes do
-// exercício atual e expor ajuste inline de carga
-// e repetições antes de concluir a série.
-//
-// Props vindas de useTreinoAtivo:
-//   exercicioAtual, serieAtual, status,
-//   concluirSerie
-
 import { useState, useEffect } from 'react'
 
-/**
- * Badge de série (ex.: "Série 2 / 3")
- */
+
+ /* Badge de série (ex.: "Série 2 / 3") */
 function SerieBadge({ serieAtual, totalSeries }) {
   return (
     <div className="flex gap-1.5 items-center">
@@ -40,10 +26,11 @@ function SerieBadge({ serieAtual, totalSeries }) {
   )
 }
 
-/**
- * Campo de ajuste numérico (carga ou reps)
- */
+
+ /* Campo de ajuste numérico (carga ou reps)*/
 function AjusteNumerico({ label, valor, onChange, sufixo }) {
+  const valorNumerico = Number(valor) || 0
+
   return (
     <div className="flex flex-col items-center gap-1">
       <span className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">
@@ -51,16 +38,16 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
       </span>
       <div className="flex items-center gap-1">
         <button
-          onClick={() => onChange(Math.max(0, valor - 1))}
+          onClick={() => onChange(Math.max(0, valorNumerico - 1))}
           className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600
                      flex items-center justify-center text-sm font-bold transition-colors"
         >−</button>
         <span className="w-12 text-center font-bold text-gray-900 text-base tabular-nums">
-          {valor}
+          {valorNumerico}
           <span className="text-xs font-normal text-gray-400 ml-0.5">{sufixo}</span>
         </span>
         <button
-          onClick={() => onChange(valor + 1)}
+          onClick={() => onChange(valorNumerico + 1)}
           className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600
                      flex items-center justify-center text-sm font-bold transition-colors"
         >+</button>
@@ -69,8 +56,6 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
   )
 }
 
-// ─────────────────────────────────────────────
-
 /**
  * @param {Object}   props
  * @param {import('../utils/treinoUtils').ExercicioFlat | null} props.exercicio
@@ -78,6 +63,7 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
  * @param {'idle'|'ativo'|'descansando'|'finalizado'} props.status
  * @param {Function} props.onConcluirSerie   - (ajustes: { carga, repeticoes }) => void
  */
+
 export default function CurrentExerciseCard({ exercicio, serieAtual, status, onConcluirSerie }) {
   const [carga,      setCarga]      = useState(0)
   const [repeticoes, setRepeticoes] = useState(0)
@@ -85,8 +71,8 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
 
   // Sincroniza com os valores do exercício ao mudar de exercício
   useEffect(() => {
-    setCarga(exercicio?.carga ?? 0)
-    setRepeticoes(exercicio?.repeticoes ?? 0)
+    setCarga(Number(exercicio?.carga ?? 0))
+    setRepeticoes(Number(exercicio?.repeticoes ?? 0))
     setAjusteAberto(false)
   }, [exercicio?.id_treino_exercicio])
 
@@ -95,7 +81,7 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
   const podeInteragir = status === 'ativo'
 
   function handleConcluir() {
-    onConcluirSerie({ carga, repeticoes })
+    onConcluirSerie({ carga: Number(carga), repeticoes: Number(repeticoes) })
   }
 
   return (
@@ -141,9 +127,9 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
         {/* Métricas principais (carga / reps / descanso) */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Carga',    valor: `${exercicio.carga} kg`,              icon: 'fa-weight-hanging' },
-            { label: 'Reps',     valor: exercicio.repeticoes,                 icon: 'fa-rotate-right'   },
-            { label: 'Descanso', valor: `${exercicio.descanso}s`,             icon: 'fa-clock'          },
+            { label: 'Carga',    valor: `${carga} kg`,                        icon: 'fa-weight-hanging' },
+            { label: 'Reps',     valor: repeticoes,                         icon: 'fa-rotate-right'   },
+            { label: 'Descanso', valor: `${exercicio.descanso}s`,            icon: 'fa-clock'          },
           ].map(({ label, valor, icon }) => (
             <div key={label} className="bg-gray-50 rounded-xl p-3 text-center">
               <i className={`fa-solid ${icon} text-gray-300 text-sm mb-1 block`} />

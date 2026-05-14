@@ -1,18 +1,6 @@
-// ─────────────────────────────────────────────
-// WorkoutInfo.jsx
-// Painel de estatísticas da sessão
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: exibir as métricas de apoio
-// ao treino (exercícios e séries restantes).
-// Somente leitura, zero interação.
-//
-// Props vindas de useTreinoAtivo:
-//   estado.exerciciosRestantes, estado.seriesRestantes
 
-/**
- * Linha de informação individual
- */
+/* Linha de informação individual */
+
 function InfoRow({ label, valor, destaque = false }) {
   return (
     <div className="flex items-center justify-between py-2
@@ -25,13 +13,12 @@ function InfoRow({ label, valor, destaque = false }) {
   )
 }
 
-// ─────────────────────────────────────────────
-
 /**
  * @param {Object}  props
  * @param {number}  props.exerciciosRestantes
  * @param {number}  props.seriesRestantes
  */
+
 export default function WorkoutInfo({
   exerciciosRestantes,
   seriesRestantes,

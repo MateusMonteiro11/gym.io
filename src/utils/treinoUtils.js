@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────
-// treinoUtils.js
-// Utilitários para o sistema de treino ativo
-// ─────────────────────────────────────────────
-
 /**
  * @typedef {Object} ExercicioFlat
  * @property {number}      id_treino_exercicio
@@ -11,18 +6,18 @@
  * @property {string}      descricao
  * @property {string|null} imagem
  * @property {string|null} video
- * @property {string}      secao           - Nome da seção
+ * @property {string}      secao
  * @property {number}      id_secao
- * @property {number}      ordemSecao      - Ordem da seção dentro do treino
+ * @property {number}      ordemSecao
  * @property {number}      series
  * @property {number}      repeticoes
  * @property {number}      carga
- * @property {number}      descanso        - Em segundos
- * @property {number}      ordem           - Ordem dentro da seção
- * @property {number}      ordemGlobal     - Posição real na lista final
+ * @property {number}      descanso
+ * @property {number}      ordem
+ * @property {number}      ordemGlobal
  */
 
-// ─── Flatten ────────────────────────────────
+// Metodo flatten sugerido
 
 /**
  * Transforma a estrutura aninhada do treino (secoes → exercicios)
@@ -35,6 +30,7 @@
  * @param {Object} treino - Objeto completo do treino vindo do Supabase
  * @returns {ExercicioFlat[]}
  */
+
 export function flattenTreino(treino) {
   if (!treino?.secoes_treino?.length) return []
 
@@ -63,11 +59,11 @@ export function flattenTreino(treino) {
         descricaoSecao      : secao.descricao || '',
         id_secao            : secao.id_secao,
         ordemSecao          : secao.ordem ?? 0,
-        series              : item.series             ?? 1,
-        repeticoes          : item.repeticoes         ?? 0,
-        carga               : item.carga              ?? 0,
-        descanso            : item.descanso_segundos  ?? 60,
-        ordem               : Number(item.ordem)      || 0,
+        series              : Number(item.series)            || 1,
+        repeticoes          : Number(item.repeticoes)        || 0,
+        carga               : Number(item.carga)             || 0,
+        descanso            : Number(item.descanso_segundos) || 60,
+        ordem               : Number(item.ordem)             || 0,
       })
     })
   })
@@ -75,8 +71,6 @@ export function flattenTreino(treino) {
   // Injeta a posição global após a ordenação definitiva
   return exercicios.map((ex, i) => ({ ...ex, ordemGlobal: i }))
 }
-
-// Navegação
 
 /**
  * Retorna o exercício no índice informado, ou `null` se fora dos limites.
@@ -98,6 +92,7 @@ export function obterExercicioAtual(exercicios, index) {
  * @param {number} [quantidade=3]
  * @returns {ExercicioFlat[]}
  */
+
 export function obterProximosExercicios(exercicios, index, quantidade = 3) {
   if (!Array.isArray(exercicios)) return []
   return exercicios.slice(index + 1, index + 1 + quantidade)
@@ -109,20 +104,19 @@ export function obterProximosExercicios(exercicios, index, quantidade = 3) {
  * @param {number} index
  * @returns {boolean}
  */
+
 export function treinoFinalizado(exercicios, index) {
   if (!Array.isArray(exercicios) || exercicios.length === 0) return true
   return index >= exercicios.length
 }
 
-// ─── Progresso ──────────────────────────────
-
 /**
  * Progresso percentual do treino (0–100).
  * Considera o exercício atual como "em andamento", não concluído.
  *
- * @param {number} index  - Índice do exercício atual (0-based)
- * @param {number} total  - Total de exercícios
- * @returns {number} Valor inteiro entre 0 e 100
+ * @param {number} index - Índice do exercício atual (0-based)
+ * @param {number} total - Total de exercícios
+ * @returns {number} - Valor inteiro entre 0 e 100
  */
 export function calcularProgresso(index, total) {
   if (!total || total <= 0) return 0
@@ -137,6 +131,7 @@ export function calcularProgresso(index, total) {
  * @param {number} index
  * @returns {number}
  */
+
 export function calcularExerciciosRestantes(exercicios, index) {
   if (!Array.isArray(exercicios)) return 0
   return Math.max(exercicios.length - (index + 1), 0)
@@ -150,6 +145,7 @@ export function calcularExerciciosRestantes(exercicios, index) {
  * @param {number} index
  * @returns {number}
  */
+
 export function calcularSeriesRestantes(exercicios, index) {
   if (!Array.isArray(exercicios) || index >= exercicios.length) return 0
   return exercicios
@@ -166,6 +162,7 @@ export function calcularSeriesRestantes(exercicios, index) {
  * @param {number} serieAtual - Série atual dentro do exercício (1-based)
  * @returns {number}
  */
+
 export function calcularSeriesRestantesDetalhado(exercicios, index, serieAtual = 1) {
   if (!Array.isArray(exercicios) || index >= exercicios.length) return 0
 
@@ -179,8 +176,6 @@ export function calcularSeriesRestantesDetalhado(exercicios, index, serieAtual =
   return seriesDoAtual + seriesProximos
 }
 
-// ─── Seções ─────────────────────────────────
-
 /**
  * Retorna o primeiro exercício que pertence a uma seção diferente da atual,
  * ou `null` se não houver próxima seção.
@@ -189,6 +184,7 @@ export function calcularSeriesRestantesDetalhado(exercicios, index, serieAtual =
  * @param {number} index
  * @returns {ExercicioFlat|null}
  */
+
 export function obterProximaSecao(exercicios, index) {
   if (!Array.isArray(exercicios)) return null
   const atual = exercicios[index]
@@ -206,6 +202,7 @@ export function obterProximaSecao(exercicios, index) {
  * @param {ExercicioFlat[]} exercicios
  * @returns {{ id_secao: number, nome: string, descricao: string, ordemSecao: number }[]}
  */
+
 export function obterSecoes(exercicios) {
   if (!Array.isArray(exercicios)) return []
 
@@ -230,6 +227,7 @@ export function obterSecoes(exercicios) {
  * @param {number} id_secao
  * @returns {ExercicioFlat[]}
  */
+
 export function obterExerciciosDaSecao(exercicios, id_secao) {
   if (!Array.isArray(exercicios)) return []
   return exercicios.filter((ex) => ex.id_secao === id_secao)
@@ -241,14 +239,13 @@ export function obterExerciciosDaSecao(exercicios, id_secao) {
  *
  * @param {ExercicioFlat[]} exercicios
  * @param {number} id_secao
- * @returns {number} -1 se não encontrado
+ * @returns {number} - 1 se não encontrado
  */
+
 export function obterIndiceInicioSecao(exercicios, id_secao) {
   if (!Array.isArray(exercicios)) return -1
   return exercicios.findIndex((ex) => ex.id_secao === id_secao)
 }
-
-// ─── Sumário / Estatísticas ─────────────────
 
 /**
  * Retorna um sumário geral do treino antes de iniciá-lo.
@@ -309,8 +306,8 @@ export function calcularSumarioTreino(exercicios) {
  * Retorna estatísticas de progresso no meio do treino.
  *
  * @param {ExercicioFlat[]} exercicios
- * @param {number} index        - Índice atual
- * @param {number} serieAtual   - Série atual dentro do exercício (1-based)
+ * @param {number} index - Índice atual
+ * @param {number} serieAtual - Série atual dentro do exercício (1-based)
  * @returns {{
  *   percentual           : number,
  *   exerciciosFeitos     : number,
@@ -323,6 +320,7 @@ export function calcularSumarioTreino(exercicios) {
  *   finalizado           : boolean,
  * }}
  */
+
 export function calcularEstadoTreino(exercicios, index, serieAtual = 1) {
   if (!Array.isArray(exercicios)) {
     return {

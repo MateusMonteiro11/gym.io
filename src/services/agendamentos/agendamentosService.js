@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase'
  * @param {string} dateString
  * @returns {string}
  */
+
 function normalizarData(dateString) {
   if (!dateString) return dateString
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -28,9 +29,10 @@ function normalizarData(dateString) {
  * @param {Object} params
  * @param {string} params.idUsuario
  * @param {number} params.idTreino
- * @param {string} params.dataAgendada - "YYYY-MM-DD"
+ * @param {string} params.dataAgendada - "YYYY-MM-DD" Padrao americano
  * @returns {Promise<Object>}
  */
+
 export async function criarAgendamento({
   idUsuario,
   idTreino,
@@ -57,6 +59,7 @@ export async function criarAgendamento({
  * @param {string} idUsuario
  * @returns {Promise<Array>}
  */
+
 export async function listarAgendamentosUsuario(idUsuario) {
   const hoje = new Date().toLocaleDateString('sv-SE') // YYYY-MM-DD no fuso horário local
 

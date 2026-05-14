@@ -1,26 +1,8 @@
-// ─────────────────────────────────────────────
-// WorkoutSectionInfo.jsx
-// Banner de transição de seção
-// ─────────────────────────────────────────────
-//
-// Responsabilidade: aparecer SOMENTE quando o
-// usuário avança para um exercício que pertence
-// a uma seção diferente da anterior. Informativo,
-// não interativo.
-//
-// Controle de visibilidade: o pai (Treinar.jsx)
-// passa `visivel`, que é true quando
-// exercicioAtual.id_secao !== secaoAnterior.id_secao
-// por um breve período (ex.: 4 segundos).
-//
-// Props vindas de useTreinoAtivo:
-//   exercicioAtual.secao, exercicioAtual.descricaoSecao
-
 /**
  * @param {Object}  props
  * @param {string}  props.nomeSecao
  * @param {string}  [props.descricaoSecao]
- * @param {number}  props.ordemSecao       - ex.: 2 → "Bloco 2"
+ * @param {number}  props.ordemSecao
  * @param {boolean} props.visivel
  */
 export default function WorkoutSectionInfo({ nomeSecao, descricaoSecao, ordemSecao, visivel }) {
