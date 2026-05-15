@@ -3,7 +3,7 @@ import logoImg from '../assets/images/Logo.png'
 
 const navItems = [
   { to: '/dashboard', icon: 'fa-solid fa-grip', label: 'Painel' },
-  { to: '/treinos',   icon: 'fa-solid fa-dumbbell', label: 'Exercícios' },
+  { to: '/treinos',   icon: 'fa-solid fa-dumbbell', label: 'Treinos' },
   { to: '/treinar',   icon: 'fa-solid fa-play', label: 'Treinar' },
   { to: '/historico', icon: 'fa-solid fa-clock-rotate-left', label: 'Histórico' },
 ]
