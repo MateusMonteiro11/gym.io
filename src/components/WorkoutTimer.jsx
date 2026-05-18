@@ -12,7 +12,7 @@ export default function WorkoutTimer({ formatted, isRunning, onToggle, status, o
   const idle       = status === 'idle'
 
   return (
-    <div className="bg-blue-600 text-white rounded-2xl p-6 text-center">
+    <div className="bg-primary text-white rounded-2xl p-6 text-center">
 
       <p className="text-xs font-semibold uppercase tracking-widest opacity-70 mb-2">
         Tempo de treino
@@ -31,7 +31,7 @@ export default function WorkoutTimer({ formatted, isRunning, onToggle, status, o
       {idle ? (
         <button
           onClick={onIniciar}
-          className="w-full bg-white text-blue-600 py-2.5 rounded-xl text-sm font-bold
+          className="w-full bg-white text-primary py-2.5 rounded-xl text-sm font-bold
                      hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
         >
           <i className="fa-solid fa-play" />
@@ -47,7 +47,7 @@ export default function WorkoutTimer({ formatted, isRunning, onToggle, status, o
         <div className="flex gap-2">
           <button
             onClick={onToggle}
-            className="flex-1 bg-white text-blue-600 py-2.5 rounded-xl text-sm font-bold
+            className="flex-1 bg-white text-primary py-2.5 rounded-xl text-sm font-bold
                        hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
           >
             <i className={`fa-solid ${isRunning ? 'fa-pause' : 'fa-play'}`} />

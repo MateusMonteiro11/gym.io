@@ -23,28 +23,28 @@ export default function WorkoutProgress({
 
       {/* Linha superior: label + contadores */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+        <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">
           Progresso
         </span>
-        <div className="flex items-center gap-3 text-xs text-gray-500">
+        <div className="flex items-center gap-3 text-xs text-slate-600">
           <span>
             Exercício{' '}
-            <strong className="text-gray-800">{Math.min(exerciciosFeitos + 1, totalExercicios)}</strong>
+            <strong className="text-slate-900">{Math.min(exerciciosFeitos + 1, totalExercicios)}</strong>
             {' '}de{' '}
-            <strong className="text-gray-800">{totalExercicios}</strong>
+            <strong className="text-slate-900">{totalExercicios}</strong>
           </span>
           <span className="text-gray-200">|</span>
           <span>
             Série{' '}
-            <strong className="text-gray-800">{serieAtual}</strong>
+            <strong className="text-slate-900">{serieAtual}</strong>
             {' '}de{' '}
-            <strong className="text-gray-800">{totalSeries}</strong>
+            <strong className="text-slate-900">{totalSeries}</strong>
           </span>
         </div>
       </div>
 
       {/* Barra principal */}
-      <div className="relative w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="relative w-full h-2 bg-slate-50 rounded-full overflow-hidden">
         <div
           className="absolute inset-y-0 left-0 bg-blue-500 rounded-full transition-all duration-500 ease-out"
           style={{ width: `${percentual}%` }}
@@ -64,7 +64,7 @@ export default function WorkoutProgress({
                   border transition-colors duration-200
                   ${ativa
                     ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-gray-50 border-gray-100 text-gray-400'
+                    : 'bg-slate-50 border-gray-100 text-slate-600'
                   }
                 `}
               >

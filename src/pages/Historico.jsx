@@ -1,109 +1,72 @@
 import { useState } from 'react'
-
-import Sidebar from '../components/Sidebar'
 import HistoricoHeader from '../components/HistoricoHeader'
 import HistoricoCard from '../components/HistoricoCard'
 import HistoricoMonth from '../components/HistoricoMonth'
 import HistoricoEmpty from '../components/HistoricoEmpty'
-
+import DashboardLayout from '../layouts/DashboardLayout'
+import Card from '../components/ui/Card'
 import { useAuth } from '../hooks/useAuth'
 import { useHistorico } from '../hooks/useHistorico'
+import { ui } from '../styles/theme'
 
 export default function Historico() {
   const { usuario, loading: loadingAuth } = useAuth()
   const { historico, loading, erro, estatisticas, agruparPorMes } = useHistorico(usuario?.id)
-  const [modo, setModo] = useState('geral') // 'geral' ou 'mes'
-
-  if (loadingAuth || loading) {
-    return (
-      <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-        <Sidebar />
-        <main className="flex-1 flex items-center justify-center p-6 md:p-8">
-          <div className="text-center">
-            <i className="fa-solid fa-spinner animate-spin text-blue-600 text-3xl mb-3"></i>
-            <p className="text-gray-600">Carregando histórico...</p>
-          </div>
-        </main>
-      </div>
-    )
-  }
+  const [modo, setModo] = useState('geral')
 
   if (erro) {
     return (
-      <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-        <Sidebar />
-        <main className="flex-1 p-6 md:p-8">
-          <div className="bg-white border border-red-200 rounded-2xl p-6 text-center">
-            <i className="fa-solid fa-exclamation-circle text-red-600 text-3xl mb-3"></i>
-            <h2 className="text-lg font-semibold text-red-700 mb-2">Erro ao carregar histórico</h2>
-            <p className="text-red-600">{erro}</p>
-          </div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <Card className={`${ui.cardPadding} border-danger/30 bg-danger-muted text-center`}>
+          <i className="fa-solid fa-circle-exclamation mb-3 text-3xl text-danger" />
+          <h2 className="mb-2 text-lg font-semibold text-danger">Erro ao carregar histórico</h2>
+          <p className="text-slate-600">{erro}</p>
+        </Card>
+      </DashboardLayout>
     )
   }
 
-  const stats = estatisticas
   const agrupado = agruparPorMes()
   const temHistorico = historico.length > 0
 
-  console.log(estatisticas)
-
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      <Sidebar />
+    <DashboardLayout loading={loadingAuth || loading} loadingMessage="Carregando histórico...">
+      <HistoricoHeader stats={estatisticas} />
 
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-        <HistoricoHeader stats={stats} />
-
-        {temHistorico && (
-          <div className="mb-6 flex gap-2">
+      {temHistorico && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          {['geral', 'mes'].map((m) => (
             <button
-              onClick={() => setModo('geral')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                modo === 'geral'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white border text-gray-700 hover:bg-gray-50'
+              key={m}
+              type="button"
+              onClick={() => setModo(m)}
+              className={`cursor-pointer rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                modo === m
+                  ? 'bg-primary text-white'
+                  : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
               }`}
             >
-              Histórico Geral
+              {m === 'geral' ? 'Histórico geral' : 'Por mês'}
             </button>
-            <button
-              onClick={() => setModo('mes')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                modo === 'mes'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white border text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Por Mês
-            </button>
-          </div>
-        )}
+          ))}
+        </div>
+      )}
 
-        {!temHistorico ? (
-          <HistoricoEmpty />
-        ) : modo === 'geral' ? (
-          <div className="space-y-3">
-            {historico.map((treino) => (
-              <HistoricoCard
-                key={treino.id_historico}
-                historico={treino}
-              />
-            ))}
-          </div>
-        ) : (
-          <div>
-            {Object.entries(agrupado).map(([chave, { mes, treinos }]) => (
-              <HistoricoMonth
-                key={chave}
-                mes={mes}
-                treinos={treinos}
-              />
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
+      {!temHistorico ? (
+        <HistoricoEmpty />
+      ) : modo === 'geral' ? (
+        <div className="space-y-3">
+          {historico.map((treino) => (
+            <HistoricoCard key={treino.id_historico} historico={treino} />
+          ))}
+        </div>
+      ) : (
+        <div>
+          {Object.entries(agrupado).map(([chave, { mes, treinos }]) => (
+            <HistoricoMonth key={chave} mes={mes} treinos={treinos} />
+          ))}
+        </div>
+      )}
+    </DashboardLayout>
   )
 }

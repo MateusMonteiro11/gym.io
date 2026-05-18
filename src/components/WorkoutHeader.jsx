@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const STATUS_LABEL = {
-  idle        : { label: 'Pronto para iniciar', color: 'text-gray-400' },
+  idle        : { label: 'Pronto para iniciar', color: 'text-slate-600' },
   ativo       : { label: 'Em andamento',         color: 'text-emerald-400' },
   descansando : { label: 'Descansando',           color: 'text-amber-400'  },
   finalizado  : { label: 'Concluído',             color: 'text-blue-400'   },
@@ -49,18 +49,18 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
           </span>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+        <h1 className="text-2xl font-bold text-slate-900 leading-tight">
           {nomeTreino || 'Treino'}
         </h1>
 
-        <p className="text-sm text-gray-400 mt-0.5 capitalize">{dataHoje}</p>
+        <p className="text-sm text-slate-600 mt-0.5 capitalize">{dataHoje}</p>
       </div>
 
       {/* Botão sair / confirmar */}
       <div className="flex items-center gap-2">
         {confirmando ? (
           <>
-            <span className="text-xs text-gray-500 mr-1">Finalizar treino?</span>
+            <span className="text-xs text-slate-600 mr-1">Finalizar treino?</span>
             <button
               onClick={() => { setConfirmando(false); onSair() }}
               disabled={salvando}
@@ -71,7 +71,7 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
             </button>
             <button
               onClick={() => setConfirmando(false)}
-              className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg font-medium
+              className="text-xs px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg font-medium
                          hover:bg-gray-200 transition-colors"
             >
               Cancelar
@@ -80,8 +80,8 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
         ) : (
           <button
             onClick={handleSair}
-            className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700
-                       px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-700
+                       px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
           >
             <i className="fa-solid fa-xmark" />
             <span>Sair</span>

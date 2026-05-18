@@ -19,7 +19,7 @@ function SerieBadge({ serieAtual, totalSeries }) {
           `}
         />
       ))}
-      <span className="ml-1 text-xs text-gray-400 font-medium">
+      <span className="ml-1 text-xs text-slate-600 font-medium">
         {serieAtual} / {totalSeries}
       </span>
     </div>
@@ -33,22 +33,22 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">
+      <span className="text-[10px] uppercase tracking-widest text-slate-600 font-semibold">
         {label}
       </span>
       <div className="flex items-center gap-1">
         <button
           onClick={() => onChange(Math.max(0, valorNumerico - 1))}
-          className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600
+          className="w-7 h-7 rounded-lg bg-slate-50 hover:bg-gray-200 text-slate-600
                      flex items-center justify-center text-sm font-bold transition-colors"
         >−</button>
-        <span className="w-12 text-center font-bold text-gray-900 text-base tabular-nums">
+        <span className="w-12 text-center font-bold text-slate-900 text-base tabular-nums">
           {valorNumerico}
-          <span className="text-xs font-normal text-gray-400 ml-0.5">{sufixo}</span>
+          <span className="text-xs font-normal text-slate-600 ml-0.5">{sufixo}</span>
         </span>
         <button
           onClick={() => onChange(valorNumerico + 1)}
-          className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600
+          className="w-7 h-7 rounded-lg bg-slate-50 hover:bg-gray-200 text-slate-600
                      flex items-center justify-center text-sm font-bold transition-colors"
         >+</button>
       </div>
@@ -89,8 +89,8 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
 
       {/* Imagem do exercício */}
       {exercicio.imagem ? (
-        <div className="h-40 bg-gray-100 overflow-hidden">
-          <i className="fa-solid fa-dumbbell text-blue-600 text-xl"></i>
+        <div className="h-40 bg-slate-50 overflow-hidden">
+          <i className="fa-solid fa-dumbbell text-primary text-xl"></i>
         </div>
       ) : (
         <div className="h-28 bg-gradient-to-br from-blue-50 to-indigo-100
@@ -104,7 +104,7 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
         {/* Nome + série badges */}
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="text-xl font-bold text-gray-900 leading-tight">
+            <h2 className="text-xl font-bold text-slate-900 leading-tight">
               {exercicio.nome}
             </h2>
             {exercicio.video && (
@@ -131,17 +131,17 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
             { label: 'Reps',     valor: repeticoes,                         icon: 'fa-rotate-right'   },
             { label: 'Descanso', valor: `${exercicio.descanso}s`,            icon: 'fa-clock'          },
           ].map(({ label, valor, icon }) => (
-            <div key={label} className="bg-gray-50 rounded-xl p-3 text-center">
+            <div key={label} className="bg-slate-50 rounded-xl p-3 text-center">
               <i className={`fa-solid ${icon} text-gray-300 text-sm mb-1 block`} />
-              <p className="text-base font-bold text-gray-900">{valor}</p>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</p>
+              <p className="text-base font-bold text-slate-900">{valor}</p>
+              <p className="text-[10px] text-slate-600 uppercase tracking-wide">{label}</p>
             </div>
           ))}
         </div>
 
         {/* Descrição */}
         {exercicio.descricao && (
-          <p className="text-sm text-gray-500 leading-relaxed">{exercicio.descricao}</p>
+          <p className="text-sm text-slate-600 leading-relaxed">{exercicio.descricao}</p>
         )}
 
         {/* Ajuste inline de carga/reps */}
@@ -156,7 +156,7 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
           </button>
 
           {ajusteAberto && (
-            <div className="mt-3 flex justify-around py-3 bg-gray-50 rounded-xl">
+            <div className="mt-3 flex justify-around py-3 bg-slate-50 rounded-xl">
               <AjusteNumerico
                 label="Carga"
                 valor={carga}
@@ -183,8 +183,8 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
             flex items-center justify-center gap-2
             transition-all duration-200
             ${podeInteragir
-              ? 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] shadow-sm shadow-blue-200'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-primary text-white hover:bg-primary-hover active:scale-[0.98] shadow-sm shadow-blue-200'
+              : 'bg-slate-50 text-slate-600 cursor-not-allowed'
             }
           `}
         >

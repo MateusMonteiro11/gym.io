@@ -50,23 +50,23 @@ export default function DescansoModal({
           <div className="
             w-20 h-20 mx-auto mb-4
             rounded-full
-            bg-blue-100
+            bg-primary-muted
             flex items-center justify-center
           ">
             <i className="
               fa-solid fa-moon
-              text-3xl text-blue-600
+              text-3xl text-primary
             " />
           </div>
 
           <h2 className="
-            text-2xl font-bold text-gray-800
+            text-2xl font-bold text-slate-900
           ">
             Descanso
           </h2>
 
           <p className="
-            text-sm text-gray-400 mt-1
+            text-sm text-slate-600 mt-1
           ">
             {descansoFinalizado
               ? 'Descanso concluído'
@@ -80,7 +80,7 @@ export default function DescansoModal({
 
           <div className="
             text-center text-6xl
-            font-bold text-gray-800
+            font-bold text-slate-900
             tracking-tight
           ">
             {formatted}
@@ -89,7 +89,7 @@ export default function DescansoModal({
           {/* BARRA */}
           <div className="
             w-full h-3 rounded-full
-            bg-gray-100 mt-5 overflow-hidden
+            bg-slate-50 mt-5 overflow-hidden
           ">
 
             <div
@@ -108,12 +108,12 @@ export default function DescansoModal({
 
         {/* INFO */}
         <div className="
-          bg-gray-50 rounded-2xl
+          bg-slate-50 rounded-2xl
           p-4 mb-6 border
         ">
 
           <p className="
-            text-sm text-gray-400 mb-1
+            text-sm text-slate-600 mb-1
           ">
             Próxima série
           </p>
@@ -125,13 +125,13 @@ export default function DescansoModal({
             <div>
 
               <h3 className="
-                font-semibold text-gray-700
+                font-semibold text-slate-700
               ">
                 {exercicio?.nome}
               </h3>
 
               <p className="
-                text-sm text-gray-500
+                text-sm text-slate-600
               ">
                 Série {serieAtual} de {totalSeries}
               </p>
@@ -145,7 +145,7 @@ export default function DescansoModal({
             ">
               <i className="
                 fa-solid fa-dumbbell
-                text-gray-600
+                text-slate-600
               " />
             </div>
 
@@ -165,7 +165,7 @@ export default function DescansoModal({
                 onClick={() => onAdicionarTempo(15)}
                 className="
                   py-3 rounded-xl
-                  bg-gray-100 hover:bg-gray-200
+                  bg-slate-50 hover:bg-gray-200
                   font-medium transition-all
                 "
               >
@@ -176,7 +176,7 @@ export default function DescansoModal({
                 onClick={() => onRemoverTempo(15)}
                 className="
                   py-3 rounded-xl
-                  bg-gray-100 hover:bg-gray-200
+                  bg-slate-50 hover:bg-gray-200
                   font-medium transition-all
                 "
               >
@@ -201,7 +201,7 @@ export default function DescansoModal({
               onClick={onContinuar}
               className="
                 w-full py-4 rounded-2xl
-                bg-blue-600 hover:bg-blue-700
+                bg-primary hover:bg-primary-hover
                 text-white font-semibold
                 transition-all
               "

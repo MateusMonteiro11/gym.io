@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
-import Sidebar from '../components/Sidebar'
+import DashboardLayout from '../layouts/DashboardLayout'
 
 import {
   buscarTreinoCompleto
@@ -11,13 +11,13 @@ function SectionCard({ section }) {
 
   return (
 
-    <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
 
       <div className="flex items-start justify-between gap-4 mb-4">
 
         <div>
 
-          <p className="text-sm text-gray-400 uppercase tracking-[0.18em]">
+          <p className="text-sm text-slate-600 uppercase tracking-[0.18em]">
             Seção
           </p>
 
@@ -27,7 +27,7 @@ function SectionCard({ section }) {
 
         </div>
 
-        <span className="text-xs text-gray-500 bg-gray-100 rounded-full px-3 py-1">
+        <span className="text-xs text-slate-600 bg-slate-50 rounded-full px-3 py-1">
 
           {section.treinos_exercicios?.length || 0}
           {' '}
@@ -44,7 +44,7 @@ function SectionCard({ section }) {
 
             <div
               key={item.id_treino_exercicio}
-              className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 p-3"
+              className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 p-3"
             >
 
               <div>
@@ -53,7 +53,7 @@ function SectionCard({ section }) {
                   {item.exercicios?.nome}
                 </p>
 
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-slate-600">
 
                   {item.series || 4} séries •{' '}
                   {item.repeticoes || 12} reps
@@ -130,20 +130,14 @@ export default function TreinosVisualizar() {
 
     )
   }
-
   return (
-
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-
-      <Sidebar />
-
-      <main className="flex-1 p-6 md:p-8">
+    <DashboardLayout loading={loading} loadingMessage="Carregando treino...">
 
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
           <div>
 
-            <p className="text-sm text-blue-600 font-semibold">
+            <p className="text-sm text-primary font-semibold">
               Visualizar treino
             </p>
 
@@ -151,7 +145,7 @@ export default function TreinosVisualizar() {
               {treino.nome}
             </h1>
 
-            <p className="text-gray-400 mt-2">
+            <p className="text-slate-600 mt-2">
               Estrutura completa do treino.
             </p>
 
@@ -161,7 +155,7 @@ export default function TreinosVisualizar() {
 
             <Link
               to="/treinos"
-              className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               Voltar
             </Link>
@@ -181,13 +175,13 @@ export default function TreinosVisualizar() {
 
         <section className="mb-10 grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-gray-200">
+          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
             <div className="flex items-start justify-between gap-4">
 
               <div>
 
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-slate-600">
                   Plano ativo
                 </p>
 
@@ -195,7 +189,7 @@ export default function TreinosVisualizar() {
                   {treino.nome}
                 </h2>
 
-                <p className="text-gray-500 mt-2">
+                <p className="text-slate-600 mt-2">
                   {treino.descricao ||
                     'Treino personalizado'}
                 </p>
@@ -206,9 +200,9 @@ export default function TreinosVisualizar() {
 
           </div>
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-gray-200">
+          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
-            <p className="text-sm text-gray-500 uppercase tracking-[0.18em]">
+            <p className="text-sm text-slate-600 uppercase tracking-[0.18em]">
               Resumo
             </p>
 
@@ -238,10 +232,6 @@ export default function TreinosVisualizar() {
           )}
 
         </section>
-
-      </main>
-
-    </div>
-
+    </DashboardLayout>
   )
 }

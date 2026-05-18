@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import Sidebar from '../components/Sidebar'
 import AgendarTreinoModal from '../components/AgendarTreinoModal'
+import DashboardLayout from '../layouts/DashboardLayout'
+import PageHeader from '../components/ui/PageHeader'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
+import { useUi } from '../contexts/UiContext'
+import { ui } from '../styles/theme'
 
 import { useTreino } from '../hooks/useTreino'
 
@@ -27,9 +32,8 @@ import { criarAgendamento } from '../services/agendamentos/agendamentosService'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Treinos() {
-
   const navigate = useNavigate()
-
+  const { alert, notify } = useUi()
   const { usuario } = useAuth()
 
   const {
@@ -63,149 +67,73 @@ export default function Treinos() {
 
       setModalAgendamentoOpen(false)
       setTreinoSelecionado(null)
-      alert('Treino agendado com sucesso!')
+      notify({ title: 'Agendado', message: 'Treino agendado com sucesso!', type: 'success' })
     } catch (error) {
       console.error('Erro ao agendar treino:', error)
-      alert(`Erro ao agendar treino: ${error?.message || 'Tente novamente.'}`)
+      alert({ title: 'Erro ao agendar', message: error?.message || 'Tente novamente.', type: 'error' })
     }
   }
 
-  if (loading) {
-    return (
-      <div className="p-10">
-        Carregando treinos...
-      </div>
-    )
-  }
-
   return (
+    <DashboardLayout loading={loading} loadingMessage="Carregando treinos...">
+      <PageHeader title="Treinos" subtitle="Gerencie seus treinos personalizados" />
 
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-
-      <Sidebar />
-
-      <main className="flex-1 p-6 md:p-8">
-
-        {/* Header */}
-        <div className="mb-8">
-
-          <h1 className="text-3xl font-bold">
-            Treinos
-          </h1>
-
-          <p className="text-gray-400">
-            Gerencie seus treinos personalizados
-          </p>
-
+      <section className="mb-12">
+        <h2 className={ui.sectionTitle}>Treinos do sistema</h2>
+        <p className={`${ui.sectionSubtitle} mb-6`}>Templates prontos</p>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {treinosSistema.map((treino) => (
+            <WorkoutCard
+              key={treino.id_treino}
+              workout={treino}
+              viewPath={`/treinos/visualizar/${treino.id_treino}`}
+              showActions={false}
+              onAgendar={handleAgendarTreino}
+            />
+          ))}
         </div>
+      </section>
 
-        {/* SISTEMA */}
-
-        <div className="mb-12">
-
-          <h2 className="text-xl font-semibold">
-            Treinos do sistema
-          </h2>
-
-          <p className="text-gray-400 text-sm mb-6">
-            Templates prontos
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-            {
-              treinosSistema.map((treino) => (
-
-                <WorkoutCard
-                  key={treino.id_treino}
-                  workout={treino}
-                  viewPath={`/treinos/visualizar/${treino.id_treino}`}
-                  showActions={false}
-                  onAgendar={handleAgendarTreino}
-                />
-
-              ))
-            }
-
+      <section>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className={ui.sectionTitle}>Meus treinos</h2>
+            <p className={ui.sectionSubtitle}>Treinos criados por você</p>
           </div>
-
+          <Button onClick={handleCriarTreino}>
+            <i className="fa-solid fa-plus" /> Criar novo treino
+          </Button>
         </div>
-
-        {/* USUARIO */}
-
-        <div>
-
-          <div className="flex justify-between items-center mb-6">
-
-            <div>
-
-              <h2 className="text-xl font-semibold">
-                Meus treinos
-              </h2>
-
-              <p className="text-gray-400 text-sm">
-                Treinos criados por você
-              </p>
-
-            </div>
-
-            <button
-                onClick={handleCriarTreino}
-                className="
-                  btn-action
-                  bg-black
-                  text-white
-                  px-5
-                  py-2
-                  rounded-lg
-                  hover:bg-gray-800
-                "
-              >
-              + Criar Novo Treino
-            </button>
-
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-            {
-              meusTreinos.map((treino) => (
-
-                <WorkoutCard
-                  key={treino.id_treino}
-                  workout={treino}
-                  showActions
-                  viewPath={`/treinos/visualizar/${treino.id_treino}`}
-                  editPath={`/treinos/editar/${treino.id_treino}`}
-                  onAgendar={handleAgendarTreino}
-                />
-
-              ))
-            }
-
-          </div>
-
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {meusTreinos.map((treino) => (
+            <WorkoutCard
+              key={treino.id_treino}
+              workout={treino}
+              showActions
+              viewPath={`/treinos/visualizar/${treino.id_treino}`}
+              editPath={`/treinos/editar/${treino.id_treino}`}
+              onAgendar={handleAgendarTreino}
+            />
+          ))}
         </div>
+      </section>
 
-        <AgendarTreinoModal
-          open={modalAgendamentoOpen}
-          treino={treinoSelecionado}
-          onClose={() => {
-            setModalAgendamentoOpen(false)
-            setTreinoSelecionado(null)
-          }}
-          onAgendar={handleConfirmarAgendamento}
-        />
+      <AgendarTreinoModal
+        open={modalAgendamentoOpen}
+        treino={treinoSelecionado}
+        onClose={() => {
+          setModalAgendamentoOpen(false)
+          setTreinoSelecionado(null)
+        }}
+        onAgendar={handleConfirmarAgendamento}
+      />
 
-        <ModalCriarTreino
-          open={modalCriarTreinoOpen}
-          onClose={() => setModalCriarTreinoOpen(false)}
-          usuario={usuario}
-        />
-
-      </main>
-
-    </div>
+      <ModalCriarTreino
+        open={modalCriarTreinoOpen}
+        onClose={() => setModalCriarTreinoOpen(false)}
+        usuario={usuario}
+      />
+    </DashboardLayout>
   )
 }
 
@@ -222,13 +150,13 @@ function WorkoutCard({
 
   return (
 
-    <div className="card bg-white border rounded-2xl p-5 relative">
+    <Card className="p-5">
 
       <h3 className={`font-semibold ${showActions ? 'mt-4' : ''}`}>
         {workout.nome}
       </h3>
 
-      <p className="text-sm text-gray-400 mb-4">
+      <p className="text-sm text-slate-600 mb-4">
         {workout.descricao}
       </p>
 
@@ -236,7 +164,7 @@ function WorkoutCard({
 
         <Link
           to={viewPath}
-          className="flex-1 min-w-[130px] border rounded-lg py-2 text-sm text-center font-semibold text-gray-700 hover:bg-gray-100 transition-all"
+          className="flex-1 min-w-[130px] border rounded-lg py-2 text-sm text-center font-semibold text-slate-700 hover:bg-slate-50 transition-all"
         >
           Visualizar
         </Link>
@@ -245,7 +173,7 @@ function WorkoutCard({
           <button
             type="button"
             onClick={() => onAgendar(workout)}
-            className="flex-1 min-w-[130px] border border-blue-500 text-blue-600 rounded-lg py-2 text-sm font-semibold hover:bg-blue-50 transition-all"
+            className="flex-1 min-w-[130px] border border-primary text-primary rounded-lg py-2 text-sm font-semibold hover:bg-blue-50 transition-all"
           >
             Agendar
           </button>
@@ -266,11 +194,12 @@ function WorkoutCard({
 
       </div>
 
-    </div>
+    </Card>
   )
 }
 
 function ModalCriarTreino({ open, onClose, usuario }) {
+  const { alert, notify } = useUi()
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [workoutName, setWorkoutName] = useState('Novo treino')
@@ -294,13 +223,13 @@ function ModalCriarTreino({ open, onClose, usuario }) {
       setExercicios(Array.isArray(exerciciosData) ? exerciciosData : [])
     } catch (error) {
       console.error(error)
-      alert('Erro ao carregar exercícios.')
+      alert({ title: 'Erro', message: 'Erro ao carregar exercícios.', type: 'error' })
     }
   }
 
   async function handleSaveSection() {
     if (!newSectionName.trim()) {
-      alert('Informe um nome para a seção.')
+      alert({ title: 'Nome obrigatório', message: 'Informe um nome para a seção.', type: 'warning' })
       return
     }
 
@@ -365,7 +294,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
       // Validação
       const hasValidSections = sections.some(section => section.treinos_exercicios && section.treinos_exercicios.length > 0)
       if (!hasValidSections) {
-        alert('O treino deve ter pelo menos uma seção com pelo menos um exercício.')
+        alert({ title: 'Treino incompleto', message: 'O treino deve ter pelo menos uma seção com pelo menos um exercício.', type: 'warning' })
         return
       }
 
@@ -400,14 +329,14 @@ function ModalCriarTreino({ open, onClose, usuario }) {
         }
       }
 
-      alert('Treino criado com sucesso!')
+      notify({ title: 'Sucesso', message: 'Treino criado com sucesso!', type: 'success' })
       onClose()
       // Recarregar a página ou atualizar estado
       window.location.reload()
 
     } catch (error) {
       console.error(error)
-      alert('Erro ao criar treino.')
+      alert({ title: 'Erro', message: 'Erro ao criar treino.', type: 'error' })
     } finally {
       setSaving(false)
     }
@@ -416,40 +345,40 @@ function ModalCriarTreino({ open, onClose, usuario }) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
       <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-8 shadow-2xl">
         <h2 className="text-2xl font-bold mb-6">Criar Novo Treino</h2>
 
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[2rem] bg-gray-50 p-8">
-            <label className="text-sm font-semibold text-gray-700">Nome do treino</label>
+          <div className="rounded-[2rem] bg-slate-50 p-8">
+            <label className="text-sm font-semibold text-slate-700">Nome do treino</label>
             <input
               type="text"
               value={workoutName}
               onChange={(e) => setWorkoutName(e.target.value)}
-              className="mt-3 w-full rounded-3xl border border-gray-300 bg-white px-5 py-4 text-lg font-semibold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="mt-3 w-full rounded-3xl border border-slate-200 bg-white px-5 py-4 text-lg font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-blue-100"
             />
 
-            <label className="text-sm font-semibold text-gray-700 mt-6 block">Descrição do treino (opcional)</label>
+            <label className="text-sm font-semibold text-slate-700 mt-6 block">Descrição do treino (opcional)</label>
             <textarea
               rows={4}
               value={workoutDescription}
               onChange={(e) => setWorkoutDescription(e.target.value)}
               placeholder="Adicione uma descrição breve para seu treino"
-              className="mt-3 w-full rounded-3xl border border-gray-300 bg-white px-5 py-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none"
+              className="mt-3 w-full rounded-3xl border border-slate-200 bg-white px-5 py-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-blue-100 resize-none"
             />
 
             <button
               onClick={handleSalvarTreino}
               disabled={saving}
-              className="mt-6 rounded-2xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 disabled:opacity-50"
+              className="mt-6 rounded-2xl bg-primary px-5 py-3 text-white font-semibold hover:bg-primary-hover disabled:opacity-50"
             >
               {saving ? 'Salvando...' : 'Criar treino'}
             </button>
           </div>
 
-          <div className="rounded-[2rem] bg-gray-50 p-8">
-            <p className="text-sm text-gray-500 uppercase tracking-[0.18em]">Resumo</p>
+          <div className="rounded-[2rem] bg-slate-50 p-8">
+            <p className="text-sm text-slate-600 uppercase tracking-[0.18em]">Resumo</p>
             <p className="mt-4 text-3xl font-semibold">{sections.length} seções</p>
             <button
               type="button"
@@ -459,7 +388,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                 setNewSectionDescription('')
                 setShowSectionModal(true)
               }}
-              className="mt-6 inline-flex items-center justify-center rounded-3xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+              className="mt-6 inline-flex items-center justify-center rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover"
             >
               + Adicionar nova seção
             </button>
@@ -468,17 +397,17 @@ function ModalCriarTreino({ open, onClose, usuario }) {
 
         <div className="space-y-6 mt-6">
           {sections.map((section) => (
-            <div key={section.id_secao} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div key={section.id_secao} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
                 <div>
                   <h3 className="text-xl font-semibold">{section.nome}</h3>
-                  <p className="text-sm text-gray-500 mt-2">{section.descricao || 'Sem descrição'}</p>
+                  <p className="text-sm text-slate-600 mt-2">{section.descricao || 'Sem descrição'}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => handleEditSection(section)}
-                    className="rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                    className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                   >
                     Editar
                   </button>
@@ -500,7 +429,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                       e.target.value = ''
                     }
                   }}
-                  className="flex-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
+                  className="flex-1 border border-slate-200 rounded-xl px-4 py-3 bg-white"
                 >
                   <option value="">Selecionar exercício</option>
                   {exercicios.map((exercise) => (
@@ -513,13 +442,13 @@ function ModalCriarTreino({ open, onClose, usuario }) {
 
               <div className="space-y-3">
                 {section.treinos_exercicios?.map((item, index) => (
-                  <div key={item.id_treino_exercicio} className="flex flex-col gap-3 rounded-2xl bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div key={item.id_treino_exercicio} className="flex flex-col gap-3 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-medium">{item.exercicios?.nome}</p>
-                      <p className="text-xs text-gray-400">{item.series || 4} séries • {item.repeticoes || 12} reps</p>
+                      <p className="text-xs text-slate-600">{item.series || 4} séries • {item.repeticoes || 12} reps</p>
                     </div>
                     <div className="flex items-center justify-between gap-3 sm:justify-end">
-                      <span className="text-xs text-gray-500">#{index + 1}</span>
+                      <span className="text-xs text-slate-600">#{index + 1}</span>
                       <button
                         type="button"
                         onClick={() => handleRemoveExercise(item.id_treino_exercicio)}
@@ -536,27 +465,27 @@ function ModalCriarTreino({ open, onClose, usuario }) {
         </div>
 
         {showSectionModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
             <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl">
               <h2 className="text-2xl font-bold">{editingSection ? 'Editar seção' : 'Nova seção'}</h2>
-              <p className="text-gray-500 mt-2">Configure o nome e descrição da seção.</p>
+              <p className="text-slate-600 mt-2">Configure o nome e descrição da seção.</p>
               <div className="mt-6">
-                <label className="text-sm font-semibold text-gray-700">Nome da seção</label>
+                <label className="text-sm font-semibold text-slate-700">Nome da seção</label>
                 <input
                   type="text"
                   value={newSectionName}
                   onChange={(e) => setNewSectionName(e.target.value)}
-                  className="mt-2 w-full rounded-2xl border border-gray-300 bg-gray-50 px-4 py-3 outline-none focus:border-blue-500"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary"
                 />
               </div>
               <div className="mt-5">
-                <label className="text-sm font-semibold text-gray-700">Descrição</label>
+                <label className="text-sm font-semibold text-slate-700">Descrição</label>
                 <textarea
                   value={newSectionDescription}
                   onChange={(e) => setNewSectionDescription(e.target.value)}
                   rows={4}
                   placeholder="Descrição opcional..."
-                  className="mt-2 w-full rounded-2xl border border-gray-300 bg-gray-50 px-4 py-3 outline-none focus:border-blue-500 resize-none"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary resize-none"
                 />
               </div>
               <div className="mt-8 flex justify-end gap-3">
@@ -565,13 +494,13 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                     setShowSectionModal(false)
                     setEditingSection(null)
                   }}
-                  className="rounded-2xl border border-gray-300 px-5 py-3 font-semibold text-gray-700 hover:bg-gray-100"
+                  className="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleSaveSection}
-                  className="rounded-2xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+                  className="rounded-2xl bg-primary px-5 py-3 font-semibold text-white hover:bg-primary-hover"
                 >
                   {editingSection ? 'Atualizar seção' : 'Criar seção'}
                 </button>
@@ -583,7 +512,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
         <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
-            className="rounded-2xl border border-gray-300 px-5 py-3 font-semibold text-gray-700 hover:bg-gray-100"
+            className="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50"
           >
             Fechar
           </button>

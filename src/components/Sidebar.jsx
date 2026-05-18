@@ -1,44 +1,46 @@
 import { Link, useLocation } from 'react-router-dom'
 import logoImg from '../assets/images/Logo.png'
+import { useAuth } from '../hooks/useAuth'
 
 const navItems = [
   { to: '/dashboard', icon: 'fa-solid fa-grip', label: 'Painel' },
-  { to: '/treinos',   icon: 'fa-solid fa-dumbbell', label: 'Treinos' },
-  { to: '/treinar',   icon: 'fa-solid fa-play', label: 'Treinar' },
+  { to: '/treinos', icon: 'fa-solid fa-dumbbell', label: 'Treinos' },
+  { to: '/treinar', icon: 'fa-solid fa-play', label: 'Treinar' },
   { to: '/historico', icon: 'fa-solid fa-clock-rotate-left', label: 'Histórico' },
 ]
 
 export default function Sidebar() {
   const { pathname } = useLocation()
+  const { usuario } = useAuth()
 
   return (
-    <aside className="w-full md:w-72 bg-white p-6 flex flex-col justify-between shadow-sm shrink-0">
-      {/* Topo */}
+    <aside className="flex w-full shrink-0 flex-col justify-between border-b border-slate-200/80 bg-white p-5 md:w-72 md:border-b-0 md:border-r md:p-6">
       <div>
-        {/* Logo */}
-        <div className="flex items-center gap-3 mb-10">
-          <img src={logoImg} className="w-12 h-12 rounded-xl" alt="Logo Gym.io" />
-          <div>
-            <h1 className="text-xl font-semibold">Gym.io</h1>
-            <p className="text-sm text-gray-400">Gestor de treinos</p>
-          </div>
+        <div className="mb-8 flex items-center gap-3">
+          <img
+            src={logoImg}
+            className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-slate-200/80"
+            alt="Logo Gym.io"
+          />
+          <>
+            <h1 className="text-lg font-semibold tracking-tight text-slate-900">Gym.io</h1>
+          </>
         </div>
 
-        {/* Menu */}
-        <nav className="space-y-3">
+        <nav className="space-y-1">
           {navItems.map(({ to, icon, label }) => {
             const isActive = pathname === to
             return (
               <Link
                 key={to}
                 to={to}
-                className={`menu-item flex items-center gap-3 px-3 py-2 rounded-md font-semibold ${
+                className={`menu-item flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
                   isActive
-                    ? 'bg-blue-100 text-blue-600'
-                    : 'text-gray-400 hover:bg-gray-100 font-normal'
+                    ? 'bg-primary-muted text-primary'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
-                <i className={`${icon} w-5`}></i>
+                <i className={`${icon} w-5 text-center`} />
                 {label}
               </Link>
             )
@@ -46,20 +48,23 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Usuário */}
-      <div className="border-t pt-4">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-          <div>
-            <p className="text-sm font-semibold">usuario</p>
-            <p className="text-xs text-gray-400">usuario@gmail.com</p>
+      <div className="mt-8 border-t border-slate-100 pt-5">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary">
+            {(usuario?.nome || usuario?.email || 'U').charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-slate-900">
+              {usuario?.nome || 'Usuário'}
+            </p>
+            <p className="truncate text-xs text-slate-600">{usuario?.email || ''}</p>
           </div>
         </div>
         <Link
           to="/login"
-          className="text-sm flex items-center gap-2 hover:text-red-500 text-gray-500"
+          className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 transition-colors duration-200 hover:text-danger"
         >
-          <i className="fa-solid fa-right-from-bracket"></i>
+          <i className="fa-solid fa-right-from-bracket w-4" />
           Sair
         </Link>
       </div>

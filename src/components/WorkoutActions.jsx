@@ -34,7 +34,7 @@ export default function WorkoutActions({
         onClick={onIniciar}
         className="
           w-full py-4 rounded-2xl
-          bg-blue-600 hover:bg-blue-700
+          bg-primary hover:bg-primary-hover
           text-white font-semibold
           flex items-center justify-center gap-3
           transition-all duration-200
@@ -52,17 +52,17 @@ export default function WorkoutActions({
     return (
       
       <div className="bg-white border border-red-100 rounded-2xl p-4 space-y-3">
-        <p className="text-sm text-gray-600 text-center font-medium">
+        <p className="text-sm text-slate-600 text-center font-medium">
           Finalizar o treino agora?
         </p>
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-slate-600 text-center">
           O progresso até aqui será salvo.
         </p>
         <div className="flex gap-2">
           <button
             onClick={() => setConfirmando(false)}
-            className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm
-                       font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm
+                       font-medium text-slate-600 hover:bg-slate-50 transition-colors"
           >
             Cancelar
           </button>
@@ -96,7 +96,7 @@ export default function WorkoutActions({
           transition-all duration-200
           ${podeAvancar
             ? 'bg-emerald-500 text-white hover:bg-emerald-600 active:scale-[0.98]'
-            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            : 'bg-slate-50 text-slate-600 cursor-not-allowed'
           }
         `}
       >
@@ -115,7 +115,7 @@ export default function WorkoutActions({
             transition-all duration-200
             ${!inativo || finalizado
               ? 'bg-red-500 text-white hover:bg-red-600 active:scale-[0.98]'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-slate-50 text-slate-600 cursor-not-allowed'
             }
           `}
         >

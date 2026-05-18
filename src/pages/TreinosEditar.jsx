@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import Sidebar from '../components/Sidebar'
+import DashboardLayout from '../layouts/DashboardLayout'
 
 import {
   buscarTreinoCompleto,
@@ -26,6 +26,7 @@ import {
 } from '../services/exercicios/exerciciosService'
 
 import { useAuth } from '../hooks/useAuth'
+import { useUi } from '../contexts/UiContext'
 
 function SectionEditor({
   section,
@@ -41,7 +42,7 @@ function SectionEditor({
 
   return (
 
-    <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
 
@@ -51,7 +52,7 @@ function SectionEditor({
             {section.nome}
           </h3>
 
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-slate-600 mt-2">
             {section.descricao || 'Sem descrição'}
           </p>
 
@@ -61,7 +62,7 @@ function SectionEditor({
           <button
             type="button"
             onClick={() => onEditSection(section)}
-            className="rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
             Editar
           </button>
@@ -84,7 +85,7 @@ function SectionEditor({
           onChange={(e) =>
             setSelectedExercise(e.target.value)
           }
-          className="flex-1 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50"
+          className="flex-1 border border-slate-200 rounded-xl px-4 py-3 bg-slate-50"
         >
 
           <option value="">
@@ -118,7 +119,7 @@ function SectionEditor({
 
             setSelectedExercise('')
           }}
-          className="rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700"
+          className="rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-primary-hover"
         >
           + Adicionar
         </button>
@@ -132,7 +133,7 @@ function SectionEditor({
 
             <div
               key={item.id_treino_exercicio}
-              className="flex flex-col gap-3 rounded-2xl bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between"
             >
 
               <div>
@@ -141,7 +142,7 @@ function SectionEditor({
                   {item.exercicios?.nome}
                 </p>
 
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-slate-600">
                   {item.series || 4} séries •{' '}
                   {item.repeticoes || 12} reps
                 </p>
@@ -149,7 +150,7 @@ function SectionEditor({
               </div>
 
               <div className="flex items-center justify-between gap-3 sm:justify-end">
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-slate-600">
                   #{index + 1}
                 </span>
 
@@ -175,11 +176,9 @@ function SectionEditor({
 }
 
 export default function TreinosEditar() {
-
   const { id } = useParams()
-
   const navigate = useNavigate()
-
+  const { alert, notify } = useUi()
   const { usuario } = useAuth()
 
   const [loading, setLoading] = useState(true)
@@ -248,7 +247,7 @@ export default function TreinosEditar() {
 
       console.error(error)
 
-      alert('Erro ao carregar treino.')
+      alert({ title: 'Erro', message: 'Erro ao carregar treino.', type: 'error' })
 
     } finally {
 
@@ -271,7 +270,7 @@ export default function TreinosEditar() {
       // Validação: verificar se há pelo menos uma seção com pelo menos um exercício
       const hasValidSections = sections.some(section => section.treinos_exercicios && section.treinos_exercicios.length > 0)
       if (!hasValidSections) {
-        alert('O treino deve ter pelo menos uma seção com pelo menos um exercício.')
+        alert({ title: 'Treino incompleto', message: 'O treino deve ter pelo menos uma seção com pelo menos um exercício.', type: 'warning' })
         return
       }
 
@@ -282,7 +281,7 @@ export default function TreinosEditar() {
           descricao: workoutDescription,
         })
 
-        alert('Treino atualizado!')
+        notify({ title: 'Sucesso', message: 'Treino atualizado!', type: 'success' })
 
       } else {
 
@@ -309,7 +308,7 @@ export default function TreinosEditar() {
 
       console.error(error)
 
-      alert('Erro ao salvar treino.')
+      alert({ title: 'Erro', message: 'Erro ao salvar treino.', type: 'error' })
 
     } finally {
 
@@ -332,7 +331,7 @@ export default function TreinosEditar() {
 
       if (!newSectionName.trim()) {
 
-        alert('Informe um nome para a seção.')
+        alert({ title: 'Nome obrigatório', message: 'Informe um nome para a seção.', type: 'warning' })
 
         return
       }
@@ -409,9 +408,13 @@ export default function TreinosEditar() {
   async function handleRemoveExercise(
     idTreinoExercicio
   ) {
-    const confirmed = window.confirm(
-      'Tem certeza que deseja excluir este exercício?'
-    )
+    const confirmed = await confirm({
+      title: 'Remover exercício',
+      message: 'Tem certeza que deseja excluir este exercício? Esta ação não pode ser desfeita.',
+      confirmText: 'Excluir',
+      cancelText: 'Cancelar',
+      type: 'warning'
+    })
 
     if (!confirmed) return
 
@@ -420,7 +423,7 @@ export default function TreinosEditar() {
       await carregarTreino()
     } catch (error) {
       console.error(error)
-      alert('Erro ao remover exercício.')
+      alert({ title: 'Erro', message: 'Erro ao remover exercício.', type: 'error' })
     }
   }
 
@@ -432,9 +435,13 @@ export default function TreinosEditar() {
   }
 
   async function handleDeleteSection(idSecao) {
-    const confirmed = window.confirm(
-      'Tem certeza que deseja excluir esta seção?'
-    )
+    const confirmed = await confirm({
+      title: 'Remover seção',
+      message: 'Tem certeza que deseja excluir esta seção e todos os seus exercícios? Esta ação não pode ser desfeita.',
+      confirmText: 'Excluir',
+      cancelText: 'Cancelar',
+      type: 'warning'
+    })
 
     if (!confirmed) return
 
@@ -443,14 +450,18 @@ export default function TreinosEditar() {
       await carregarTreino()
     } catch (error) {
       console.error(error)
-      alert('Erro ao excluir seção.')
+      alert({ title: 'Erro', message: 'Erro ao excluir seção.', type: 'error' })
     }
   }
 
   async function handleDeleteTreino() {
-    const confirmed = window.confirm(
-      'Tem certeza que deseja excluir este treino permanentemente?'
-    )
+    const confirmed = await confirm({
+      title: 'Excluir treino',
+      message: 'Tem certeza que deseja excluir este treino permanentemente? Esta ação não pode ser desfeita e afetará todos os agendamentos associados.',
+      confirmText: 'Excluir permanentemente',
+      cancelText: 'Cancelar',
+      type: 'warning'
+    })
 
     if (!confirmed || !id) return
 
@@ -459,7 +470,7 @@ export default function TreinosEditar() {
       navigate('/treinos')
     } catch (error) {
       console.error(error)
-      alert('Erro ao excluir treino.')
+      alert({ title: 'Erro', message: 'Erro ao excluir treino.', type: 'error' })
     }
   }
 
@@ -473,20 +484,14 @@ export default function TreinosEditar() {
 
     )
   }
-
   return (
-
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-
-      <Sidebar />
-
-      <main className="flex-1 p-6 md:p-8">
+    <DashboardLayout loading={loading} loadingMessage="Carregando treino...">
 
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
           <div>
 
-            <p className="text-sm text-blue-600 font-semibold">
+            <p className="text-sm text-primary font-semibold">
               Editar treinos
             </p>
 
@@ -494,7 +499,7 @@ export default function TreinosEditar() {
               Personalize seu treino
             </h1>
 
-            <p className="text-gray-400 mt-2">
+            <p className="text-slate-600 mt-2">
               Ajuste seções e exercícios.
             </p>
 
@@ -504,7 +509,7 @@ export default function TreinosEditar() {
 
             <Link
               to="/treinos"
-              className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               Voltar
             </Link>
@@ -536,9 +541,9 @@ export default function TreinosEditar() {
 
         <section className="mb-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-gray-200">
+          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-slate-700">
               Nome do treino
             </label>
 
@@ -548,10 +553,10 @@ export default function TreinosEditar() {
               onChange={(e) =>
                 setWorkoutName(e.target.value)
               }
-              className="mt-3 w-full rounded-3xl border border-gray-300 bg-gray-50 px-5 py-4 text-lg font-semibold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-blue-100"
             />
 
-            <label className="text-sm font-semibold text-gray-700 mt-6 block">
+            <label className="text-sm font-semibold text-slate-700 mt-6 block">
               Descrição do treino (opcional)
             </label>
 
@@ -562,13 +567,13 @@ export default function TreinosEditar() {
                 setWorkoutDescription(e.target.value)
               }
               placeholder="Adicione uma descrição breve para seu treino"
-              className="mt-3 w-full rounded-3xl border border-gray-300 bg-gray-50 px-5 py-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none"
+              className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-blue-100 resize-none"
             />
 
             <button
               onClick={handleSalvarTreino}
               disabled={saving}
-              className="mt-6 rounded-2xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 disabled:opacity-50"
+              className="mt-6 rounded-2xl bg-primary px-5 py-3 text-white font-semibold hover:bg-primary-hover disabled:opacity-50"
             >
 
               {saving
@@ -579,9 +584,9 @@ export default function TreinosEditar() {
 
           </div>
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-gray-200">
+          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
-            <p className="text-sm text-gray-500 uppercase tracking-[0.18em]">
+            <p className="text-sm text-slate-600 uppercase tracking-[0.18em]">
               Resumo
             </p>
 
@@ -599,7 +604,7 @@ export default function TreinosEditar() {
                 setNewSectionDescription('')
                 setShowSectionModal(true)
               }}
-              className="mt-6 inline-flex items-center justify-center rounded-3xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+              className="mt-6 inline-flex items-center justify-center rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover"
             >
               + Adicionar nova seção
             </button>
@@ -626,11 +631,9 @@ export default function TreinosEditar() {
 
         </section>
 
-      </main>
-
       {showSectionModal && (
 
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
 
       <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl">
 
@@ -638,13 +641,13 @@ export default function TreinosEditar() {
           {editingSection ? 'Editar seção' : 'Nova seção'}
         </h2>
 
-        <p className="text-gray-500 mt-2">
+        <p className="text-slate-600 mt-2">
           Configure o nome e descrição da seção.
         </p>
 
         <div className="mt-6">
 
-          <label className="text-sm font-semibold text-gray-700">
+          <label className="text-sm font-semibold text-slate-700">
             Nome da seção
           </label>
 
@@ -654,14 +657,14 @@ export default function TreinosEditar() {
             onChange={(e) =>
               setNewSectionName(e.target.value)
             }
-            className="mt-2 w-full rounded-2xl border border-gray-300 bg-gray-50 px-4 py-3 outline-none focus:border-blue-500"
+            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary"
           />
 
         </div>
 
         <div className="mt-5">
 
-          <label className="text-sm font-semibold text-gray-700">
+          <label className="text-sm font-semibold text-slate-700">
             Descrição
           </label>
 
@@ -672,7 +675,7 @@ export default function TreinosEditar() {
             }
             rows={4}
             placeholder="Descrição opcional..."
-            className="mt-2 w-full rounded-2xl border border-gray-300 bg-gray-50 px-4 py-3 outline-none focus:border-blue-500 resize-none"
+            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary resize-none"
           />
 
         </div>
@@ -684,14 +687,14 @@ export default function TreinosEditar() {
               setShowSectionModal(false)
               setEditingSection(null)
             }}
-            className="rounded-2xl border border-gray-300 px-5 py-3 font-semibold text-gray-700 hover:bg-gray-100"
+            className="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50"
           >
             Cancelar
           </button>
 
           <button
             onClick={handleSaveSection}
-            className="rounded-2xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-white hover:bg-primary-hover"
           >
             {editingSection ? 'Atualizar seção' : 'Criar seção'}
           </button>
@@ -704,7 +707,7 @@ export default function TreinosEditar() {
 
   )}
 
-    </div>
+    </DashboardLayout>
 
   )
 }

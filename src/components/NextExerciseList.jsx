@@ -8,10 +8,10 @@ export default function NextExercisesList({ proximos = [], idSecaoAtual }) {
   if (!proximos.length) {
     return (
       <div className="bg-white border border-gray-100 rounded-2xl p-5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 mb-3">
           Próximos exercícios
         </p>
-        <p className="text-sm text-gray-400 text-center py-4">
+        <p className="text-sm text-slate-600 text-center py-4">
           Este é o último exercício 🎉
         </p>
       </div>
@@ -20,7 +20,7 @@ export default function NextExercisesList({ proximos = [], idSecaoAtual }) {
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">
-      <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+      <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 mb-3">
         Próximos exercícios
       </p>
 
@@ -41,10 +41,10 @@ export default function NextExercisesList({ proximos = [], idSecaoAtual }) {
                 </div>
               )}
 
-              <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+              <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
                 {/* Número na fila */}
-                <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center
-                                text-xs font-semibold text-gray-400 flex-shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-slate-50 flex items-center justify-center
+                                text-xs font-semibold text-slate-600 flex-shrink-0">
                   {i + 2}
                 </div>
 
@@ -64,8 +64,8 @@ export default function NextExercisesList({ proximos = [], idSecaoAtual }) {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">{ex.nome}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm font-medium text-slate-900 truncate">{ex.nome}</p>
+                  <p className="text-xs text-slate-600">
                     {ex.series} séries · {ex.repeticoes} reps
                     {ex.carga > 0 && ` · ${ex.carga} kg`}
                   </p>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react' 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import Sidebar from '../components/Sidebar'
+import DashboardLayout from '../layouts/DashboardLayout'
 
 import WorkoutHeader from '../components/WorkoutHeader'
 import CurrentExerciseCard from '../components/CurrentExerciseCard'
@@ -77,8 +77,8 @@ export default function TreinoPlayer() {
   if (loading) {
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-gray-400">Carregando treino...</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-600">Carregando treino...</p>
       </div>
     )
   }
@@ -86,21 +86,21 @@ export default function TreinoPlayer() {
   if (!treino) {
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
 
         <div className="bg-white border rounded-2xl p-8 text-center max-w-md">
 
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-xl font-semibold text-slate-900 mb-2">
             Treino não encontrado
           </h2>
 
-          <p className="text-gray-400 mb-5">
+          <p className="text-slate-600 mb-5">
             O treino solicitado não existe ou foi removido.
           </p>
 
           <button
             onClick={() => navigate('/treinar')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl"
+            className="bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-xl"
           >
             Voltar
           </button>
@@ -110,13 +110,8 @@ export default function TreinoPlayer() {
       </div>
     )
   }
-
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-
-      <Sidebar />
-
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto">
+    <DashboardLayout loading={loading} loadingMessage="Carregando...">
 
         {/* HEADER */}
         <WorkoutHeader
@@ -243,9 +238,6 @@ export default function TreinoPlayer() {
           />
 
         )}
-
-      </main>
-
-    </div>
+    </DashboardLayout>
   )
 }

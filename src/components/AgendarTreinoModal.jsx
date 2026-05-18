@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useUi } from '../contexts/UiContext'
+import Modal from './ui/Modal'
+import ModalHeader from './ui/ModalHeader'
+import Input, { Label } from './ui/Input'
+import Button from './ui/Button'
+import Card from './ui/Card'
+import { ui } from '../styles/theme'
 
-export default function AgendarTreinoModal({
-  open,
-  treino,
-  onClose,
-  onAgendar,
-}) {
+export default function AgendarTreinoModal({ open, treino, onClose, onAgendar }) {
+  const { alert } = useUi()
   const [dataAgendada, setDataAgendada] = useState('')
   const [agendando, setAgendando] = useState(false)
 
@@ -16,20 +19,14 @@ export default function AgendarTreinoModal({
     }
   }, [open])
 
-  if (!open) return null
-
   const handleAgendar = async () => {
     if (!dataAgendada) {
-      alert('Preencha a data do agendamento')
+      alert({ title: 'Data obrigatória', message: 'Preencha a data do agendamento.', type: 'warning' })
       return
     }
-
     try {
       setAgendando(true)
-      await onAgendar({
-        dataAgendada,
-      })
-      // Reset
+      await onAgendar({ dataAgendada })
       setDataAgendada('')
     } finally {
       setAgendando(false)
@@ -37,78 +34,52 @@ export default function AgendarTreinoModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Agendar Treino</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
-          >
-            ✕
-          </button>
-        </div>
-
-        <p className="text-gray-400 text-sm mb-4">
-          Escolha quando deseja realizar este treino
-        </p>
-
-        {/* Treino Selecionado */}
-        <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100">
-          <div className="flex items-start justify-between">
+    <Modal open={open} onClose={onClose} size="md">
+      <ModalHeader title="Agendar treino" subtitle="Escolha quando deseja realizar este treino" onClose={onClose} />
+      <div className="space-y-6 p-6 pt-0">
+        <Card className="border-slate-100 bg-slate-50 p-4 shadow-none">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="font-semibold text-gray-800">{treino?.nome}</h3>
-              <p className="text-sm text-gray-400 mt-1">
-                {treino?.descricao || 'Sem descrição'}
-              </p>
+              <h3 className="font-semibold text-slate-900">{treino?.nome}</h3>
+              <p className="mt-1 text-sm text-slate-600">{treino?.descricao || 'Sem descrição'}</p>
             </div>
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              <i className="fa-solid fa-dumbbell text-blue-600"></i>
-            </div>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-muted text-primary">
+              <i className="fa-solid fa-dumbbell" />
+            </span>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-600 mb-2">
-            <i className="fa-solid fa-calendar mr-2"></i>Data agendada
-          </label>
-          <input
+        </Card>
+        <div>
+          <Label>
+            <i className="fa-solid fa-calendar mr-2" />
+            Data agendada
+          </Label>
+          <Input
             type="date"
             value={dataAgendada}
             onChange={(e) => setDataAgendada(e.target.value)}
             min={new Date().toLocaleDateString('sv-SE')}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-2"
           />
         </div>
-
-        {/* Botões */}
         <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            disabled={agendando}
-            className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold transition-all disabled:opacity-50"
-          >
+          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={agendando}>
             Cancelar
-          </button>
-          <button
-            onClick={handleAgendar}
-            disabled={agendando}
-            className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-          >
+          </Button>
+          <Button className="flex-1" onClick={handleAgendar} disabled={agendando}>
             {agendando ? (
               <>
-                <i className="fa-solid fa-spinner animate-spin"></i>
+                <i className="fa-solid fa-spinner animate-spin" />
                 Agendando...
               </>
             ) : (
               <>
-                <i className="fa-solid fa-calendar-check"></i>
-                Agendar Treino
+                <i className="fa-solid fa-calendar-check" />
+                Agendar
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }

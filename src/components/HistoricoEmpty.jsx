@@ -1,16 +1,14 @@
+import { ui } from '../styles/theme'
+
 export default function HistoricoEmpty() {
   return (
-    <div className="bg-white border rounded-2xl p-10 text-center">
-      <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-        <i className="fa-regular fa-clock text-2xl text-gray-400"></i>
+    <div className="rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center">
+      <div className={ui.emptyIcon}>
+        <i className="fa-solid fa-clock-rotate-left" />
       </div>
-
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">
-        Nenhum treino realizado ainda
-      </h3>
-
-      <p className="text-gray-400 text-sm">
-        Comece a treinar para ver o seu histórico aqui!
+      <h3 className="text-lg font-semibold text-slate-900">Nenhum treino registrado</h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-slate-600">
+        Complete seu primeiro treino para ver o histórico aqui.
       </p>
     </div>
   )
