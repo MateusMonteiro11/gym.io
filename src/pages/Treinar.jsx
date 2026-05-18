@@ -95,30 +95,8 @@ function EmptyScheduled() {
 }
 
 export default function Treinar() {
-  // #region agent log
-  let _dbgLayoutType = 'unknown'
-  try {
-    _dbgLayoutType = typeof DashboardLayout
-  } catch (e) {
-    _dbgLayoutType = 'ReferenceError'
-  }
-  fetch('http://127.0.0.1:7310/ingest/28a086ac-c2f6-41fc-83a0-c4a03140c0a8', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'd9b3b0' },
-    body: JSON.stringify({
-      sessionId: 'd9b3b0',
-      runId: 'post-fix',
-      hypothesisId: 'A',
-      location: 'Treinar.jsx:mount',
-      message: 'DashboardLayout binding check',
-      data: { layoutType: _dbgLayoutType },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {})
-  // #endregion
-
   const navigate = useNavigate()
-
+  const { alert, confirm, notify } = useUi()
   const { usuario, loading } = useAuth()
   const {
     agendamentos,
@@ -164,7 +142,7 @@ export default function Treinar() {
     setModalDescansoOpen(true)
   }
   return (
-    <DashboardLayout loading={loading || loadingTreinos} loadingMessage="Carregando...">
+    <DashboardLayout loading={loading || loadingTreinos} loadingMessage="Carregando treinos...">
 
         {/* HEADER */}
         <div className="mb-10">
@@ -297,15 +275,27 @@ export default function Treinar() {
 
                       <button
                         onClick={async () => {
-                          const confirmDelete = window.confirm(
-                            'Deseja excluir este agendamento?'
-                          )
-                          if (!confirmDelete) return
+                          const ok = await confirm({
+                            title: 'Excluir agendamento',
+                            message: 'Deseja remover este treino da sua agenda?',
+                            confirmLabel: 'Excluir',
+                            variant: 'danger',
+                          })
+                          if (!ok) return
 
                           try {
                             await excluirAgendamento(agendamento.id_agendamento)
+                            notify({
+                              title: 'Agendamento removido',
+                              message: 'O treino foi retirado da sua agenda.',
+                              type: 'success',
+                            })
                           } catch (error) {
-                            alert({ title: 'Erro', message: 'Não foi possível excluir o agendamento.', type: 'error' })
+                            alert({
+                              title: 'Erro',
+                              message: 'Não foi possível excluir o agendamento.',
+                              type: 'error',
+                            })
                           }
                         }}
                         className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl py-3 font-medium transition-all"

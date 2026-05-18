@@ -178,7 +178,7 @@ function SectionEditor({
 export default function TreinosEditar() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { alert, notify } = useUi()
+  const { alert, notify, confirm } = useUi()
   const { usuario } = useAuth()
 
   const [loading, setLoading] = useState(true)
@@ -219,9 +219,11 @@ export default function TreinosEditar() {
           await buscarTreinoCompleto(id)
 
         if (treino.tipo?.toLowerCase() === 'sistema') {
-          alert(
-            'Treinos do sistema são fixos e não podem ser editados.'
-          )
+          alert({
+            title: 'Treino do sistema',
+            message: 'Treinos do sistema são fixos e não podem ser editados.',
+            type: 'info',
+          })
           navigate(`/treinos/visualizar/${id}`)
           return
         }
@@ -321,11 +323,11 @@ export default function TreinosEditar() {
     try {
 
       if (!id) {
-
-        alert(
-          'Salve o treino antes de adicionar seções.'
-        )
-
+        alert({
+          title: 'Salve o treino primeiro',
+          message: 'Salve o treino antes de adicionar seções.',
+          type: 'warning',
+        })
         return
       }
 
@@ -359,11 +361,11 @@ export default function TreinosEditar() {
 
       console.error(error)
 
-      alert(
-        editingSection
-          ? 'Erro ao atualizar seção.'
-          : 'Erro ao criar seção.'
-      )
+      alert({
+        title: 'Erro na seção',
+        message: editingSection ? 'Erro ao atualizar seção.' : 'Erro ao criar seção.',
+        type: 'error',
+      })
     }
   }
 
@@ -399,18 +401,21 @@ export default function TreinosEditar() {
 
       console.error(error)
 
-      alert(
-        'Erro ao adicionar exercício.'
-      )
+      alert({
+        title: 'Erro',
+        message: 'Erro ao adicionar exercício.',
+        type: 'error',
+      })
     }
   }
 
-  async function handleRemoveExercise(
-    idTreinoExercicio
-  ) {
-    const confirmed = window.confirm(
-      'Tem certeza que deseja excluir este exercício?'
-    )
+  async function handleRemoveExercise(idTreinoExercicio) {
+    const confirmed = await confirm({
+      title: 'Excluir exercício',
+      message: 'Tem certeza que deseja remover este exercício da seção?',
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
 
     if (!confirmed) return
 
@@ -431,9 +436,12 @@ export default function TreinosEditar() {
   }
 
   async function handleDeleteSection(idSecao) {
-    const confirmed = window.confirm(
-      'Tem certeza que deseja excluir esta seção?'
-    )
+    const confirmed = await confirm({
+      title: 'Excluir seção',
+      message: 'Todos os exercícios desta seção serão removidos. Deseja continuar?',
+      confirmLabel: 'Excluir seção',
+      variant: 'danger',
+    })
 
     if (!confirmed) return
 
@@ -447,14 +455,18 @@ export default function TreinosEditar() {
   }
 
   async function handleDeleteTreino() {
-    const confirmed = window.confirm(
-      'Tem certeza que deseja excluir este treino permanentemente?'
-    )
+    const confirmed = await confirm({
+      title: 'Excluir treino',
+      message: 'Esta ação é permanente. Tem certeza que deseja excluir este treino?',
+      confirmLabel: 'Excluir treino',
+      variant: 'danger',
+    })
 
     if (!confirmed || !id) return
 
     try {
       await deletarTreino(id)
+      notify({ title: 'Treino excluído', message: 'O treino foi removido com sucesso.', type: 'success' })
       navigate('/treinos')
     } catch (error) {
       console.error(error)
