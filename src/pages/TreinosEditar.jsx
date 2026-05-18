@@ -219,9 +219,7 @@ export default function TreinosEditar() {
           await buscarTreinoCompleto(id)
 
         if (treino.tipo?.toLowerCase() === 'sistema') {
-          alert(
-            'Treinos do sistema são fixos e não podem ser editados.'
-          )
+          alert({ title: 'Treino do sistema', message: 'Treinos do sistema são fixos e não podem ser editados.', type: 'info' })
           navigate(`/treinos/visualizar/${id}`)
           return
         }
@@ -322,9 +320,7 @@ export default function TreinosEditar() {
 
       if (!id) {
 
-        alert(
-          'Salve o treino antes de adicionar seções.'
-        )
+        alert({ title: 'Treino não salvo', message: 'Salve o treino antes de adicionar seções.', type: 'warning' })
 
         return
       }
@@ -359,11 +355,7 @@ export default function TreinosEditar() {
 
       console.error(error)
 
-      alert(
-        editingSection
-          ? 'Erro ao atualizar seção.'
-          : 'Erro ao criar seção.'
-      )
+      alert({ title: 'Erro', message: editingSection ? 'Erro ao atualizar seção.' : 'Erro ao criar seção.', type: 'error' })
     }
   }
 
@@ -399,9 +391,7 @@ export default function TreinosEditar() {
 
       console.error(error)
 
-      alert(
-        'Erro ao adicionar exercício.'
-      )
+      alert({ title: 'Erro', message: 'Erro ao adicionar exercício.', type: 'error' })
     }
   }
 
