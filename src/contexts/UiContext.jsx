@@ -14,7 +14,6 @@ const ICONS = {
 export function UiProvider({ children }) {
   const [feedback, setFeedback] = useState(null)
   const [toast, setToast] = useState(null)
-  const [confirmation, setConfirmation] = useState(null)
 
   const closeFeedback = useCallback(() => setFeedback(null), [])
 
@@ -37,44 +36,13 @@ export function UiProvider({ children }) {
     []
   )
 
-  const confirm = useCallback(
-    ({ title = 'Confirmação', message, confirmText = 'Confirmar', cancelText = 'Cancelar', type = 'warning' }) => {
-      return new Promise((resolve) => {
-        setConfirmation({
-          title,
-          message,
-          confirmText,
-          cancelText,
-          type,
-          onConfirm: () => {
-            setConfirmation(null)
-            resolve(true)
-          },
-          onCancel: () => {
-            setConfirmation(null)
-            resolve(false)
-          },
-        })
-      })
-    },
-    []
-  )
-
   const handleFeedbackClose = () => {
     feedback?.onClose?.()
     closeFeedback()
   }
 
-  const handleConfirmationCancel = () => {
-    confirmation?.onCancel?.()
-  }
-
-  const handleConfirmationConfirm = () => {
-    confirmation?.onConfirm?.()
-  }
-
   return (
-    <UiContext.Provider value={{ alert, notify, confirm }}>
+    <UiContext.Provider value={{ alert, notify }}>
       {children}
 
       <Modal open={!!feedback} onClose={handleFeedbackClose} size="sm">
@@ -91,28 +59,6 @@ export function UiProvider({ children }) {
           <Button className="mt-6 w-full" onClick={handleFeedbackClose}>
             OK
           </Button>
-        </div>
-      </Modal>
-
-      <Modal open={!!confirmation} onClose={handleConfirmationCancel} size="sm">
-        <div className="p-6 text-center">
-          <div
-            className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100`}
-          >
-            <i className={`fa-solid text-2xl ${ICONS[confirmation?.type] || ICONS.warning}`} />
-          </div>
-          <h3 className="text-lg font-semibold text-slate-900">{confirmation?.title}</h3>
-          {confirmation?.message && (
-            <p className="mt-2 text-sm text-slate-600">{confirmation.message}</p>
-          )}
-          <div className="mt-6 flex gap-3 justify-center sm:justify-end">
-            <Button variant="secondary" onClick={handleConfirmationCancel}>
-              {confirmation?.cancelText}
-            </Button>
-            <Button variant="danger" onClick={handleConfirmationConfirm}>
-              {confirmation?.confirmText}
-            </Button>
-          </div>
         </div>
       </Modal>
 

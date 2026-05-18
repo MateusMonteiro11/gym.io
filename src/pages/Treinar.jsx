@@ -297,13 +297,9 @@ export default function Treinar() {
 
                       <button
                         onClick={async () => {
-                          const confirmDelete = await confirm({
-                            title: 'Excluir agendamento',
-                            message: 'Tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita.',
-                            confirmText: 'Excluir',
-                            cancelText: 'Cancelar',
-                            type: 'warning'
-                          })
+                          const confirmDelete = window.confirm(
+                            'Deseja excluir este agendamento?'
+                          )
                           if (!confirmDelete) return
 
                           try {
