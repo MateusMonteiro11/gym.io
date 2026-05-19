@@ -58,17 +58,6 @@ export default function Login() {
             <img src={logoImg} alt="GYM.IO" className="mx-auto mb-8 w-28 md:w-48" />
             <h1 className="mb-3 text-3xl font-extrabold tracking-tight md:text-4xl">GYM.IO</h1>
             <p className="mb-6 text-base font-semibold md:text-lg">Gerencie seus treinos com eficiência</p>
-            <ul className="space-y-2 text-sm text-white/90 md:text-base">
-              <li className="flex items-center justify-center gap-2">
-                <i className="fa-solid fa-check text-white/80" /> Crie seções interativas
-              </li>
-              <li className="flex items-center justify-center gap-2">
-                <i className="fa-solid fa-check text-white/80" /> Agende seus treinos
-              </li>
-              <li className="flex items-center justify-center gap-2">
-                <i className="fa-solid fa-check text-white/80" /> Molde treinos personalizados
-              </li>
-            </ul>
           </>
         }
         form={
