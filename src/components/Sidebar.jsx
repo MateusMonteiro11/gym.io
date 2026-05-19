@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import logoImg from '../assets/images/Logo.png'
 import { useAuth } from '../hooks/useAuth'
+import { obterUsuario } from '../services/usuarios/usuariosService'
+import UserProfileModal from './UserProfileModal'
 
 const navItems = [
   { to: '/dashboard', icon: 'fa-solid fa-grip', label: 'Painel' },
@@ -12,6 +15,42 @@ const navItems = [
 export default function Sidebar() {
   const { pathname } = useLocation()
   const { usuario } = useAuth()
+  const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const [userData, setUserData] = useState(null)
+  const [loadingUserData, setLoadingUserData] = useState(false)
+
+  useEffect(() => {
+    if (!usuario?.id) return
+
+    const carregarDadosUsuario = async () => {
+      try {
+        setLoadingUserData(true)
+        const dados = await obterUsuario(usuario.id)
+        setUserData(dados)
+      } catch (err) {
+        console.error('Erro ao carregar dados do usuário:', err)
+      } finally {
+        setLoadingUserData(false)
+      }
+    }
+
+    carregarDadosUsuario()
+  }, [usuario?.id])
+
+  const handleModalClose = () => {
+    setProfileModalOpen(false)
+  }
+
+  const handleProfileUpdate = async () => {
+    if (!usuario?.id) return
+    try {
+      const dados = await obterUsuario(usuario.id)
+      setUserData(dados)
+    } catch (err) {
+      console.error('Erro ao atualizar dados do usuário:', err)
+    }
+    setProfileModalOpen(false)
+  }
 
   return (
     <aside className="flex w-full shrink-0 flex-col justify-between border-b border-slate-200/80 bg-white p-5 md:w-72 md:border-b-0 md:border-r md:p-6">
@@ -49,17 +88,29 @@ export default function Sidebar() {
       </div>
 
       <div className="mt-8 border-t border-slate-100 pt-5">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary">
-            {(usuario?.nome || usuario?.email || 'U').charAt(0).toUpperCase()}
+        <button
+          onClick={() => setProfileModalOpen(true)}
+          className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-slate-50 p-2 -ml-2"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary flex-shrink-0 overflow-hidden">
+            {userData?.foto_perfil ? (
+              <img src={userData.foto_perfil} alt="Foto" className="h-full w-full object-cover" />
+            ) : (
+              (userData?.nome?.[0] || usuario?.email?.[0] || 'U').toUpperCase()
+            )}
           </div>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 text-left">
             <p className="truncate text-sm font-semibold text-slate-900">
-              {usuario?.nome || 'Usuário'}
+              {loadingUserData ? (
+                <i className="fa-solid fa-spinner animate-spin text-xs" />
+              ) : (
+                userData?.nome || usuario?.email?.split('@')[0] || 'Usuário'
+              )}
             </p>
             <p className="truncate text-xs text-slate-600">{usuario?.email || ''}</p>
           </div>
-        </div>
+          <i className="fa-solid fa-chevron-right text-slate-400 text-xs flex-shrink-0" />
+        </button>
         <Link
           to="/login"
           className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 transition-colors duration-200 hover:text-danger"
@@ -68,6 +119,12 @@ export default function Sidebar() {
           Sair
         </Link>
       </div>
+
+      <UserProfileModal
+        open={profileModalOpen}
+        onClose={handleModalClose}
+        onUpdate={handleProfileUpdate}
+      />
     </aside>
   )
 }
