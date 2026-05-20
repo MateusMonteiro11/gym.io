@@ -157,9 +157,7 @@ export async function atualizarHistoricoTreinoStats({
   }
 }
 
-/*
-BUSCAR HISTÓRICO COMPLETO
-*/
+/* Busca historico completo, incluindo detalhes dos exercícios feitos naquele treino */
 
 export async function buscarHistoricoCompleto(
 

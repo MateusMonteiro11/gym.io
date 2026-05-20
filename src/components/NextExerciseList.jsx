@@ -1,7 +1,7 @@
 /**
  * @param {Object} props
  * @param {import('../utils/treinoUtils').ExercicioFlat[]} props.proximos
- * @param {number} props.idSecaoAtual   - Para detectar troca de seção
+ * @param {number} props.idSecaoAtual - Para detectar troca de seção
  */
 
 export default function NextExercisesList({ proximos = [], idSecaoAtual }) {

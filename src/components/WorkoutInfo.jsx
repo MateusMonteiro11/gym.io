@@ -1,4 +1,3 @@
-
 /* Linha de informação individual */
 
 function InfoRow({ label, valor, destaque = false }) {

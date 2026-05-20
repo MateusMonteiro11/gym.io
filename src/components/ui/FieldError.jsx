@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 export default function FieldError({ message, variant = 'error' }) {
 
+  // Possiveis variantes de estilo para diferentes tipos de mensagens (erro, aviso, info/sucesso)
+
   const variants = {
     error: {
       icon: '⚠',
@@ -10,7 +12,7 @@ export default function FieldError({ message, variant = 'error' }) {
       borderColor: 'border-red-200',
       badge: 'bg-red-100 text-red-600',
     },
-    warning: {
+    warning: { // Ainda não utilizado, mas pode ser útil para avisos que não bloqueiam a ação (ex.: "sua sessão vai expirar em breve")
       icon: '⚡',
       color: 'text-amber-500',
       bgColor: 'bg-amber-50',
@@ -18,7 +20,7 @@ export default function FieldError({ message, variant = 'error' }) {
       badge: 'bg-amber-100 text-amber-600',
     },
     info: {
-      icon: 'ℹ',
+      icon: 'ℹ', // Também pode ser usado para mensagens de sucesso (ex.: "Treino salvo com sucesso!")
       color: 'text-blue-500',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',

@@ -18,15 +18,10 @@
  */
 
 // Metodo flatten sugerido
+// Implementar lógica de ordenação por 'ordem' e 'ordemSecao' para garantir a sequência correta dos exercícios no treino.
+// A ordenação deve considerar primeiro a 'ordemSecao' para agrupar os exercícios por seção, e depois a 'ordem' para ordenar os exercícios dentro de cada seção.
 
 /**
- * Transforma a estrutura aninhada do treino (secoes → exercicios)
- * em uma lista plana e ordenada, pronta para ser executada.
- *
- * Ordem de ordenação:
- *  1. `secoes_treino.ordem`  (ordem da seção)
- *  2. `treinos_exercicios.ordem` (ordem dentro da seção)
- *
  * @param {Object} treino - Objeto completo do treino vindo do Supabase
  * @returns {ExercicioFlat[]}
  */
@@ -73,7 +68,6 @@ export function flattenTreino(treino) {
 }
 
 /**
- * Retorna o exercício no índice informado, ou `null` se fora dos limites.
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
  * @returns {ExercicioFlat|null}
@@ -86,7 +80,6 @@ export function obterExercicioAtual(exercicios, index) {
 }
 
 /**
- * Retorna os próximos `quantidade` exercícios após o índice atual.
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
  * @param {number} [quantidade=3]
@@ -99,7 +92,6 @@ export function obterProximosExercicios(exercicios, index, quantidade = 3) {
 }
 
 /**
- * Verifica se o treino está finalizado (index ultrapassou o último exercício).
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
  * @returns {boolean}
@@ -111,9 +103,6 @@ export function treinoFinalizado(exercicios, index) {
 }
 
 /**
- * Progresso percentual do treino (0–100).
- * Considera o exercício atual como "em andamento", não concluído.
- *
  * @param {number} index - Índice do exercício atual (0-based)
  * @param {number} total - Total de exercícios
  * @returns {number} - Valor inteiro entre 0 e 100
@@ -138,9 +127,6 @@ export function calcularExerciciosRestantes(exercicios, index) {
 }
 
 /**
- * Soma de séries restantes a partir do exercício atual (inclusive).
- * Útil para mostrar "X séries restantes no treino".
- *
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
  * @returns {number}
@@ -154,9 +140,6 @@ export function calcularSeriesRestantes(exercicios, index) {
 }
 
 /**
- * Soma de séries restantes APÓS o exercício atual.
- * Útil para mostrar progresso de série (ex.: "faltam X séries").
- *
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
  * @param {number} serieAtual - Série atual dentro do exercício (1-based)
@@ -177,9 +160,6 @@ export function calcularSeriesRestantesDetalhado(exercicios, index, serieAtual =
 }
 
 /**
- * Retorna o primeiro exercício que pertence a uma seção diferente da atual,
- * ou `null` se não houver próxima seção.
- *
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
  * @returns {ExercicioFlat|null}
@@ -196,9 +176,6 @@ export function obterProximaSecao(exercicios, index) {
 }
 
 /**
- * Retorna todas as seções únicas presentes na lista de exercícios,
- * na ordem em que aparecem.
- *
  * @param {ExercicioFlat[]} exercicios
  * @returns {{ id_secao: number, nome: string, descricao: string, ordemSecao: number }[]}
  */
@@ -234,9 +211,6 @@ export function obterExerciciosDaSecao(exercicios, id_secao) {
 }
 
 /**
- * Retorna o índice do primeiro exercício de uma seção.
- * Útil para "pular para a seção X".
- *
  * @param {ExercicioFlat[]} exercicios
  * @param {number} id_secao
  * @returns {number} - 1 se não encontrado
@@ -249,7 +223,6 @@ export function obterIndiceInicioSecao(exercicios, id_secao) {
 
 /**
  * Retorna um sumário geral do treino antes de iniciá-lo.
- *
  * @param {ExercicioFlat[]} exercicios
  * @returns {{
  *   totalExercicios : number,
@@ -272,7 +245,6 @@ export function calcularSumarioTreino(exercicios) {
 
   const totalSeries = exercicios.reduce((acc, ex) => acc + (ex.series ?? 0), 0)
 
-  // Estimativa: (séries × 45s de execução) + (séries × descanso médio) → em minutos
   const tempoExecucaoSeg  = totalSeries * 45
   const tempoDescansoSeg  = exercicios.reduce(
     (acc, ex) => acc + (ex.series ?? 0) * (ex.descanso ?? 60),
@@ -303,8 +275,6 @@ export function calcularSumarioTreino(exercicios) {
 }
 
 /**
- * Retorna estatísticas de progresso no meio do treino.
- *
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index - Índice atual
  * @param {number} serieAtual - Série atual dentro do exercício (1-based)
