@@ -20,52 +20,56 @@ function TreinoCard({ treino, onIniciar }) {
   )
 
   return (
-    <div className="bg-white border rounded-2xl p-5 flex flex-col gap-4 hover:shadow-md transition-all">
+    <div className="bg-white border rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition-all">
 
-      <div className="flex items-start justify-between">
-
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900">
-            {treino.nome}
-          </h3>
-
-          <p className="text-sm text-slate-600 mt-1">
-            {treino.descricao || 'Sem descrição'}
-          </p>
-        </div>
-
-        <div className="w-12 h-12 bg-primary-muted rounded-xl flex items-center justify-center">
-          <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 text-sm">
-
-        <div className="bg-slate-50 rounded-xl p-3 border">
-          <p className="text-slate-600">Exercícios</p>
-          <strong className="text-slate-700">
-            {totalExercicios}
-          </strong>
-        </div>
-
-        <div className="bg-slate-50 rounded-xl p-3 border">
-          <p className="text-slate-600">Seções</p>
-          <strong className="text-slate-700">
-            {totalSecoes}
-          </strong>
-        </div>
-
-      </div>
-
-      <div className="flex items-center gap-3 pt-2">
-
+      {/* Action Icon Header */}
+      <div className="flex items-center justify-end gap-2 border-b border-slate-100 bg-slate-50 px-4 py-2">
         <button
           onClick={() => onIniciar(treino)}
-          className="flex-1 bg-primary hover:bg-primary-hover text-white rounded-xl py-3 font-medium transition-all"
+          title="Iniciar treino"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover transition-all duration-200 text-xs font-medium"
         >
-          <i className="fa-solid fa-play mr-2"></i>
-          Iniciar treino
+          <i className="fa-solid fa-play text-xs"></i>
+          <span className="hidden sm:inline">Iniciar</span>
         </button>
+      </div>
+
+      <div className="p-5 flex flex-col gap-4">
+
+        <div className="flex items-start justify-between">
+
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">
+              {treino.nome}
+            </h3>
+
+            <p className="text-sm text-slate-600 mt-1">
+              {treino.descricao || 'Sem descrição'}
+            </p>
+          </div>
+
+          <div className="w-12 h-12 bg-primary-muted rounded-xl flex items-center justify-center flex-shrink-0">
+            <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-sm">
+
+          <div className="bg-slate-50 rounded-xl p-3 border">
+            <p className="text-slate-600">Exercícios</p>
+            <strong className="text-slate-700">
+              {totalExercicios}
+            </strong>
+          </div>
+
+          <div className="bg-slate-50 rounded-xl p-3 border">
+            <p className="text-slate-600">Seções</p>
+            <strong className="text-slate-700">
+              {totalSecoes}
+            </strong>
+          </div>
+
+        </div>
 
       </div>
 
@@ -237,42 +241,10 @@ export default function Treinar() {
                 const [ano, mes, dia] = agendamento.data_agendada.split('-')
                 const dataFormatada = `${dia}/${mes}/${ano}`
                 return (
-                  <div key={agendamento.id_agendamento} className="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col gap-4 hover:shadow-md transition-all bg-gradient-to-br from-blue-50">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-slate-900">
-                          {treino?.nome}
-                        </h3>
-                        <p className="text-sm text-slate-600 mt-1">
-                          {treino?.descricao || 'Sem descrição'}
-                        </p>
-                      </div>
-                      <div className="w-12 h-12 bg-primary-muted rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
-                      </div>
-                    </div>
+                  <div key={agendamento.id_agendamento} className="bg-white border border-blue-200 rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition-all bg-gradient-to-br from-blue-50">
 
-                    <div className="bg-white rounded-xl p-3 border border-blue-100 text-sm">
-                      <p className="text-slate-600">Agendado para</p>
-                      <strong className="text-slate-700">{dataFormatada}</strong>
-                    </div>
-
-                    <div className="flex items-center gap-3 pt-2">
-                      <button
-                        onClick={() => {
-                          setDescansoPadrao(agendamento.tempo_descanso)
-                          navigate(`/treinar/${treino?.id_treino}`, {
-                            state: {
-                              descansoPadrao: agendamento.tempo_descanso,
-                            },
-                          })
-                        }}
-                        className="flex-1 bg-primary hover:bg-primary-hover text-white rounded-xl py-3 font-medium transition-all"
-                      >
-                        <i className="fa-solid fa-play mr-2"></i>
-                        Iniciar treino
-                      </button>
-
+                    {/* Action Icons Header */}
+                    <div className="flex items-center justify-end gap-2 border-b border-blue-100 bg-blue-50 px-4 py-2">
                       <button
                         onClick={async () => {
                           const ok = await confirm({
@@ -298,11 +270,48 @@ export default function Treinar() {
                             })
                           }
                         }}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl py-3 font-medium transition-all"
+                        title="Excluir agendamento"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all duration-200 text-xs font-medium"
                       >
-                        <i className="fa-solid fa-trash mr-2"></i>
-                        Excluir
+                        <i className="fa-solid fa-trash text-xs"></i>
+                        <span className="hidden sm:inline">Excluir</span>
                       </button>
+                      <button
+                        onClick={() => {
+                          setDescansoPadrao(agendamento.tempo_descanso)
+                          navigate(`/treinar/${treino?.id_treino}`, {
+                            state: {
+                              descansoPadrao: agendamento.tempo_descanso,
+                            },
+                          })
+                        }}
+                        title="Iniciar treino"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover transition-all duration-200 text-xs font-medium"
+                      >
+                        <i className="fa-solid fa-play text-xs"></i>
+                        <span className="hidden sm:inline">Iniciar</span>
+                      </button>
+                    </div>
+
+                    <div className="p-5 flex flex-col gap-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-slate-900">
+                            {treino?.nome}
+                          </h3>
+                          <p className="text-sm text-slate-600 mt-1">
+                            {treino?.descricao || 'Sem descrição'}
+                          </p>
+                        </div>
+                        <div className="w-12 h-12 bg-primary-muted rounded-xl flex items-center justify-center flex-shrink-0">
+                          <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
+                        </div>
+                      </div>
+
+                      <div className="bg-white rounded-xl p-3 border border-blue-100 text-sm">
+                        <p className="text-slate-600">Agendado para</p>
+                        <strong className="text-slate-700">{dataFormatada}</strong>
+                      </div>
                     </div>
                   </div>
                 )

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import logoImg from '../assets/images/Logo.png'
+import logoImg from '../assets/images/logo_blue.png'
 import { useAuth } from '../hooks/useAuth'
 import { obterUsuario } from '../services/usuarios/usuariosService'
 import { logout } from '../services/auth/authService'
@@ -26,6 +26,7 @@ export default function Sidebar() {
   const [loggingOut, setLoggingOut] = useState(false)
   const [userData, setUserData] = useState(null)
   const [loadingUserData, setLoadingUserData] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const isOnTrainingPage = pathname.startsWith('/treinar/')
   const hasActiveTraining = isOnTrainingPage
@@ -89,6 +90,7 @@ export default function Sidebar() {
       })
     } else {
       navigate(to)
+      setSidebarOpen(false)
     }
   }
 
@@ -104,75 +106,124 @@ export default function Sidebar() {
     }
   }
 
+  const handleLogoClick = () => {
+    if (hasActiveTraining) {
+      alert({
+        title: 'Treino em andamento',
+        message: 'Você não pode navegar enquanto um treino está ativo. Finalize o treino primeiro clicando em "Finalizar" ou cancele o treino em "Cancelar".',
+        type: 'warning',
+      })
+    } else {
+      navigate('/dashboard')
+      setSidebarOpen(false)
+    }
+  }
+
   return (
-    <aside className="flex w-full shrink-0 flex-col justify-between border-b border-slate-200/80 bg-white p-5 md:w-72 md:border-b-0 md:border-r md:p-6">
-      <div>
-        <div className="mb-8 flex items-center gap-3">
+    <>
+      {/* Mobile Header with Hamburger Button */}
+      <div className="flex md:hidden w-full items-center justify-between border-b border-slate-200/80 bg-white p-5">
+        <button
+          onClick={handleLogoClick}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+          title="Voltar ao dashboard"
+        >
           <img
             src={logoImg}
             className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-slate-200/80"
             alt="Logo Gym.io"
           />
-          <>
+          <h1 className="text-lg font-semibold tracking-tight text-slate-900">Gym.io</h1>
+        </button>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="text-slate-600 hover:text-slate-900 transition-colors"
+          aria-label="Toggle sidebar"
+        >
+          <i className={`fa-solid fa-${sidebarOpen ? 'times' : 'bars'} text-xl`} />
+        </button>
+      </div>
+
+      {/* Mobile Backdrop Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed md:static inset-y-0 left-0 z-40 flex w-72 flex-col justify-between border-b border-slate-200/80 bg-white p-5 md:border-b-0 md:border-r md:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      } md:w-72 md:border-b-0 md:border-r md:p-6 md:relative`}>
+        <div>
+          {/* Logo - Hidden on mobile since it's in the header */}
+          <div className="mb-8 flex items-center gap-3 hidden md:flex">
+            <img
+              src={logoImg}
+              className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-slate-200/80"
+              alt="Logo Gym.io"
+            />
             <h1 className="text-lg font-semibold tracking-tight text-slate-900">Gym.io</h1>
-          </>
+          </div>
+
+          <nav className="space-y-1">
+            {navItems.map(({ to, icon, label }) => {
+              const isActive = pathname === to
+              return (
+                <button
+                  key={to}
+                  onClick={() => handleNavigation(to)}
+                  className={`w-full menu-item flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
+                    isActive
+                      ? 'bg-primary-muted text-primary'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
+                >
+                  <i className={`${icon} w-5 text-center`} />
+                  {label}
+                </button>
+              )
+            })}
+          </nav>
         </div>
 
-        <nav className="space-y-1">
-          {navItems.map(({ to, icon, label }) => {
-            const isActive = pathname === to
-            return (
-              <button
-                key={to}
-                onClick={() => handleNavigation(to)}
-                className={`w-full menu-item flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
-                  isActive
-                    ? 'bg-primary-muted text-primary'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-              >
-                <i className={`${icon} w-5 text-center`} />
-                {label}
-              </button>
-            )
-          })}
-        </nav>
-      </div>
-
-      <div className="mt-8 border-t border-slate-100 pt-5">
-        <button
-          onClick={() => setProfileModalOpen(true)}
-          className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-slate-50 p-2 -ml-2"
-        >
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary flex-shrink-0 overflow-hidden">
-            {userData?.foto_perfil ? (
-              <img src={userData.foto_perfil} alt="Foto" className="h-full w-full object-cover" />
-            ) : (
-              (userData?.nome?.[0] || usuario?.email?.[0] || 'U').toUpperCase()
-            )}
-          </div>
-          <div className="min-w-0 flex-1 text-left">
-            <p className="truncate text-sm font-semibold text-slate-900">
-              {loadingUserData ? (
-                <i className="fa-solid fa-spinner animate-spin text-xs" />
+        <div className="mt-8 border-t border-slate-100 pt-5">
+          <button
+            onClick={() => setProfileModalOpen(true)}
+            className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-slate-50 p-2 -ml-2"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary flex-shrink-0 overflow-hidden">
+              {userData?.foto_perfil ? (
+                <img src={userData.foto_perfil} alt="Foto" className="h-full w-full object-cover" />
               ) : (
-                userData?.nome || usuario?.email?.split('@')[0] || 'Usuário'
+                (userData?.nome?.[0] || usuario?.email?.[0] || 'U').toUpperCase()
               )}
-            </p>
-            <p className="truncate text-xs text-slate-600">{usuario?.email || ''}</p>
-          </div>
-          <i className="fa-solid fa-chevron-right text-slate-400 text-xs flex-shrink-0" />
-        </button>
-        <button
-          type="button"
-          onClick={handleLogoutClick}
-          className="flex w-full items-center gap-2 text-sm text-slate-600 transition-colors duration-200 hover:text-danger"
-        >
-          <i className="fa-solid fa-right-from-bracket w-4" />
-          Sair
-        </button>
-      </div>
+            </div>
+            <div className="min-w-0 flex-1 text-left">
+              <p className="truncate text-sm font-semibold text-slate-900">
+                {loadingUserData ? (
+                  <i className="fa-solid fa-spinner animate-spin text-xs" />
+                ) : (
+                  userData?.nome || usuario?.email?.split('@')[0] || 'Usuário'
+                )}
+              </p>
+              <p className="truncate text-xs text-slate-600">{usuario?.email || ''}</p>
+            </div>
+            <i className="fa-solid fa-chevron-right text-slate-400 text-xs flex-shrink-0" />
+          </button>
+          <button
+            type="button"
+            onClick={handleLogoutClick}
+            className="flex w-full items-center gap-2 text-sm text-slate-600 transition-colors duration-200 hover:text-danger"
+          >
+            <i className="fa-solid fa-right-from-bracket w-4" />
+            Sair
+          </button>
+        </div>
+      </aside>
 
+      {/* Modals rendered outside sidebar to prevent stacking context issues */}
       <UserProfileModal
         open={profileModalOpen}
         onClose={handleModalClose}
@@ -212,6 +263,6 @@ export default function Sidebar() {
           </div>
         </div>
       </Modal>
-    </aside>
+    </>
   )
 }

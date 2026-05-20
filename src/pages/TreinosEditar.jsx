@@ -27,6 +27,71 @@ import {
 
 import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
+import { ui } from '../styles/theme'
+
+function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSelectExercise }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const filteredExercises = exercises.filter((exercise) =>
+    exercise.nome.toLowerCase().includes(searchState.toLowerCase())
+  )
+
+  return (
+    <div className="relative flex-1">
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Buscar exercício por nome..."
+          value={searchState}
+          onChange={(e) => {
+            onSearchChange(e.target.value)
+            setIsOpen(true)
+          }}
+          onFocus={() => setIsOpen(true)}
+          className="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        {searchState && (
+          <button
+            type="button"
+            onClick={() => onSearchChange('')}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          >
+            <i className="fa-solid fa-times text-sm" />
+          </button>
+        )}
+      </div>
+
+      {isOpen && searchState && (
+        <div className="absolute top-full left-0 right-0 z-10 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-72 overflow-y-auto">
+          {filteredExercises.length > 0 ? (
+            <div className="p-2">
+              {filteredExercises.map((exercise) => (
+                <button
+                  key={exercise.id_exercicio}
+                  type="button"
+                  onClick={() => {
+                    onSelectExercise(exercise.id_exercicio)
+                    setIsOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-blue-50 text-slate-900 transition-colors duration-150 mb-1 last:mb-0"
+                >
+                  <p className="font-medium text-sm">{exercise.nome}</p>
+                  {exercise.grupo_muscular && (
+                    <p className="text-xs text-slate-500">{exercise.grupo_muscular}</p>
+                  )}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 text-center">
+              <p className="text-sm text-slate-500">Nenhum exercício encontrado</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function SectionEditor({
   section,
@@ -37,8 +102,7 @@ function SectionEditor({
   onDeleteSection
 }) {
 
-  const [selectedExercise, setSelectedExercise] =
-    useState('')
+  const [searchState, setSearchState] = useState('')
 
   return (
 
@@ -80,49 +144,15 @@ function SectionEditor({
 
       <div className="flex gap-3 mb-6">
 
-        <select
-          value={selectedExercise}
-          onChange={(e) =>
-            setSelectedExercise(e.target.value)
-          }
-          className="flex-1 border border-slate-200 rounded-xl px-4 py-3 bg-slate-50"
-        >
-
-          <option value="">
-            Selecionar exercício
-          </option>
-
-          {Array.isArray(exerciciosDisponiveis) &&
-            exerciciosDisponiveis.map((exercise) => (
-
-            <option
-              key={exercise.id_exercicio}
-              value={exercise.id_exercicio}
-            >
-              {exercise.nome}
-            </option>
-
-          ))}
-
-        </select>
-
-        <button
-          type="button"
-          onClick={() => {
-
-            if (!selectedExercise) return
-
-            onAddExercise(
-              section.id_secao,
-              Number(selectedExercise)
-            )
-
-            setSelectedExercise('')
+        <ExerciseSearchSelector
+          exercises={exerciciosDisponiveis}
+          searchState={searchState}
+          onSearchChange={setSearchState}
+          onSelectExercise={(exerciseId) => {
+            onAddExercise(section.id_secao, exerciseId)
+            setSearchState('')
           }}
-          className="rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-primary-hover"
-        >
-          + Adicionar
-        </button>
+        />
 
       </div>
 
@@ -410,6 +440,24 @@ export default function TreinosEditar() {
   }
 
   async function handleRemoveExercise(idTreinoExercicio) {
+    const section = sections.find((sec) =>
+      sec.treinos_exercicios?.some((item) => item.id_treino_exercicio === idTreinoExercicio)
+    )
+
+    const currentSectionExerciseCount = section?.treinos_exercicios?.length ?? 0
+    const otherSectionsHaveExercises = sections.some((sec) =>
+      sec.id_secao !== section?.id_secao && sec.treinos_exercicios?.length > 0
+    )
+
+    if (currentSectionExerciseCount === 1 && !otherSectionsHaveExercises) {
+      alert({
+        title: 'Remoção inválida',
+        message: 'O treino deve ter pelo menos um exercício. Adicione outro exercício antes de remover este.',
+        type: 'warning',
+      })
+      return
+    }
+
     const confirmed = await confirm({
       title: 'Excluir exercício',
       message: 'Tem certeza que deseja remover este exercício da seção?',
@@ -436,6 +484,20 @@ export default function TreinosEditar() {
   }
 
   async function handleDeleteSection(idSecao) {
+    const nextSections = sections.filter((section) => section.id_secao !== idSecao)
+    const hasRemainingValidSection = nextSections.some(
+      (section) => section.treinos_exercicios?.length > 0
+    )
+
+    if (!hasRemainingValidSection) {
+      alert({
+        title: 'Exclusão inválida',
+        message: 'O treino deve ter pelo menos uma seção com um exercício. Adicione outra seção ou exercício antes de excluir esta seção.',
+        type: 'warning',
+      })
+      return
+    }
+
     const confirmed = await confirm({
       title: 'Excluir seção',
       message: 'Todos os exercícios desta seção serão removidos. Deseja continuar?',

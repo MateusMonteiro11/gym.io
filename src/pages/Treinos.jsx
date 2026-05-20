@@ -180,6 +180,70 @@ export default function Treinos() {
   )
 }
 
+function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSelectExercise }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const filteredExercises = exercises.filter((exercise) =>
+    exercise.nome.toLowerCase().includes(searchState.toLowerCase())
+  )
+
+  return (
+    <div className="relative flex-1">
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Buscar exercício por nome..."
+          value={searchState}
+          onChange={(e) => {
+            onSearchChange(e.target.value)
+            setIsOpen(true)
+          }}
+          onFocus={() => setIsOpen(true)}
+          className="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        {searchState && (
+          <button
+            type="button"
+            onClick={() => onSearchChange('')}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          >
+            <i className="fa-solid fa-times text-sm" />
+          </button>
+        )}
+      </div>
+
+      {isOpen && searchState && (
+        <div className="absolute top-full left-0 right-0 z-10 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-72 overflow-y-auto">
+          {filteredExercises.length > 0 ? (
+            <div className="p-2">
+              {filteredExercises.map((exercise) => (
+                <button
+                  key={exercise.id_exercicio}
+                  type="button"
+                  onClick={() => {
+                    onSelectExercise(exercise.id_exercicio)
+                    setIsOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-blue-50 text-slate-900 transition-colors duration-150 mb-1 last:mb-0"
+                >
+                  <p className="font-medium text-sm">{exercise.nome}</p>
+                  {exercise.grupo_muscular && (
+                    <p className="text-xs text-slate-500">{exercise.grupo_muscular}</p>
+                  )}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 text-center">
+              <p className="text-sm text-slate-500">Nenhum exercício encontrado</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function WorkoutCard({
   workout,
   showActions = false,
@@ -192,10 +256,44 @@ function WorkoutCard({
   const sectionCount = workout?.secoes_treino?.length ?? 0
 
   return (
-    <Card className="group overflow-hidden p-0">
+    <Card className="overflow-hidden p-0">
       <div
         className={`h-2 ${isSystem ? 'bg-gradient-to-r from-primary to-blue-400' : 'bg-gradient-to-r from-slate-700 to-slate-500'}`}
       />
+
+      {/* Action Icons Header */}
+      <div className="flex items-center justify-end gap-1.5 border-b border-slate-100 bg-slate-50 px-3 py-2">
+        <Link
+          to={viewPath}
+          title="Visualizar treino"
+          className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 transition-all duration-200 text-xs font-medium"
+        >
+          <i className="fa-solid fa-eye text-xs" />
+          <span className="hidden sm:inline">Visualizar</span>
+        </Link>
+        {onAgendar && (
+          <button
+            type="button"
+            onClick={() => onAgendar(workout)}
+            title="Agendar treino"
+            className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-primary text-white hover:bg-primary-hover transition-all duration-200 text-xs font-medium"
+          >
+            <i className="fa-solid fa-calendar-plus text-xs" />
+            <span className="hidden sm:inline">Agendar</span>
+          </button>
+        )}
+        {showActions && editPath && !isSystem && (
+          <Link
+            to={editPath}
+            title="Editar treino"
+            className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all duration-200 text-xs font-medium"
+          >
+            <i className="fa-solid fa-pen text-xs" />
+            <span className="hidden sm:inline">Editar</span>
+          </Link>
+        )}
+      </div>
+
       <div className="p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <span
@@ -228,32 +326,6 @@ function WorkoutCard({
             <p className="font-semibold text-slate-900">{exerciseCount}</p>
             <p className="text-slate-500">exercícios</p>
           </div>
-        </div>
-
-        <div className="mt-4 flex flex-col gap-2">
-          <Link
-            to={viewPath}
-            className={`${ui.btnSecondary} w-full text-sm py-2.5`}
-          >
-            <i className="fa-solid fa-eye" /> Visualizar
-          </Link>
-          {onAgendar && (
-            <button
-              type="button"
-              onClick={() => onAgendar(workout)}
-              className={`${ui.btnPrimary} w-full text-sm py-2.5`}
-            >
-              <i className="fa-solid fa-calendar-plus" /> Agendar
-            </button>
-          )}
-          {showActions && editPath && !isSystem && (
-            <Link
-              to={editPath}
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-slate-800"
-            >
-              <i className="fa-solid fa-pen" /> Editar
-            </Link>
-          )}
         </div>
       </div>
     </Card>
@@ -537,22 +609,29 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                   </button>
                 </div>
               </div>
-              <select
-                onChange={(e) => {
-                  if (e.target.value) {
-                    handleAddExercise(section.id_secao, Number(e.target.value))
-                    e.target.value = ''
-                  }
+              <ExerciseSearchSelector
+                exercises={exercicios}
+                searchState={section.searchState ?? ''}
+                onSearchChange={(value) => {
+                  setSections((current) =>
+                    current.map((s) =>
+                      s.id_secao === section.id_secao
+                        ? { ...s, searchState: value }
+                        : s
+                    )
+                  )
                 }}
-                className={`${ui.input} mb-4`}
-              >
-                <option value="">Adicionar exercício...</option>
-                {exercicios.map((exercise) => (
-                  <option key={exercise.id_exercicio} value={exercise.id_exercicio}>
-                    {exercise.nome}
-                  </option>
-                ))}
-              </select>
+                onSelectExercise={(exerciseId) => {
+                  handleAddExercise(section.id_secao, exerciseId)
+                  setSections((current) =>
+                    current.map((s) =>
+                      s.id_secao === section.id_secao
+                        ? { ...s, searchState: '' }
+                        : s
+                    )
+                  )
+                }}
+              />
               <div className="space-y-2">
                 {section.treinos_exercicios?.map((item, index) => (
                   <div
@@ -610,7 +689,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
               value={newSectionDescription}
               onChange={(e) => setNewSectionDescription(e.target.value)}
               rows={3}
-              placeholder="Opcional — ex: Peito e tríceps"
+              placeholder="Opcional"
               className={`${ui.input} mt-2 resize-none`}
             />
           </div>

@@ -25,13 +25,13 @@ export const ui = {
   modalPanel:
     'w-full bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto animate-modal-in',
   btnPrimary:
-    'inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+    'inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
   btnSecondary:
-    'inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:bg-slate-50 cursor-pointer disabled:opacity-50',
+    'inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:bg-slate-50 cursor-pointer disabled:opacity-50',
   btnGhost:
-    'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-100 cursor-pointer',
+    'inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-100 cursor-pointer',
   btnDanger:
-    'inline-flex items-center justify-center gap-2 rounded-xl bg-danger px-5 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-700 cursor-pointer disabled:opacity-50',
+    'inline-flex items-center justify-center gap-2 rounded-xl bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-700 cursor-pointer disabled:opacity-50',
   iconBtn:
     'flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-700 cursor-pointer',
   badge:

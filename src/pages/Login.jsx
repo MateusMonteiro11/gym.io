@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import logoImg from '../assets/images/Logo.png'
+import logoImg from '../assets/images/logo.png'
 import { login, resetPassword } from '../services/auth/authService'
 import { useUi } from '../contexts/UiContext'
 import AuthShell from '../components/ui/AuthShell'
