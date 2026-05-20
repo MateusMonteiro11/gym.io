@@ -24,6 +24,8 @@ export default function Cadastro() {
   const [confirmarSenha, setConfirmarSenha] = useState('')
 
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [termos, setTermos] = useState(false)
 
   function validarForcaSenha(senhaTemp) {
 
@@ -41,50 +43,47 @@ export default function Cadastro() {
     }
   }
 
+  function validarFormulario() {
+    const novoErros = {}
+
+    if (!nome.trim()) novoErros.nome = 'Seu nome é obrigatório'
+    if (!email.trim()) novoErros.email = 'Seu email é obrigatório'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) novoErros.email = 'Email inválido'
+
+    if (!senha) {
+      novoErros.senha = 'Senha é obrigatória'
+    } else {
+      const validacao = validarForcaSenha(senha)
+      if (!validacao.valida) {
+        const requisitos = []
+        if (!validacao.temComprimento) requisitos.push('mínimo 6 caracteres')
+        if (!validacao.temLetra) requisitos.push('uma letra')
+        if (!validacao.temNumero) requisitos.push('um número')
+        if (!validacao.temCaractereEspecial) requisitos.push(' uma caractere especial')
+        novoErros.senha = `Faltam: ${requisitos.join(', ')}`
+      }
+    }
+
+    if (!confirmarSenha) novoErros.confirmarSenha = 'Confirmação de senha é obrigatória'
+    else if (senha !== confirmarSenha) novoErros.confirmarSenha = 'As senhas não coincidem'
+
+    if (!termos) novoErros.termos = 'Você deve concordar com os termos'
+
+    setErrors(novoErros)
+    return Object.keys(novoErros).length === 0
+  }
+
   async function handleCadastro(e) {
 
     e.preventDefault()
 
-    if (senha !== confirmarSenha) {
-
-      alert({
-        title   : 'Senhas diferentes',
-        message : 'As senhas não coincidem.',
-        type    : 'warning',
-      })
-
-      return
-    }
-
-    const validacao = validarForcaSenha(senha)
-
-    if (!validacao.valida) {
-
-      const requisitos = []
-      
-      if (!validacao.temComprimento) requisitos.push(' A senha precisa ter no mínimo 6 caracteres')
-      if (!validacao.temLetra) requisitos.push(' A senha precisa ter pelo menos uma letra')
-      if (!validacao.temNumero) requisitos.push(' A senha precisa ter pelo menos um número')
-      if (!validacao.temCaractereEspecial) requisitos.push(' A senha precisa ter pelo menos um caractere especial')
-
-      alert({
-        title   : 'Senha fraca',
-        message : `Sua senha não atende aos requisitos de segurança:\n${requisitos.join('\n')}`,
-        type    : 'warning',
-      })
-
-      return
-    }
+    if (!validarFormulario()) return
 
     try {
 
       setLoading(true)
 
-      /*
-      ─────────────────────────────────────────
-      1. Cria usuário
-      ─────────────────────────────────────────
-      */
+      // Cria usuario
 
       await cadastrar({
 
@@ -94,11 +93,7 @@ export default function Cadastro() {
 
       })
 
-      /*
-      ─────────────────────────────────────────
-      2. Feedback
-      ─────────────────────────────────────────
-      */
+      // Feedback
 
       notify({
 
@@ -171,16 +166,24 @@ export default function Cadastro() {
               type="text"
               placeholder="Seu nome completo"
               value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              required
+              onChange={(e) => {
+                setNome(e.target.value)
+                if (errors.nome) setErrors({ ...errors, nome: '' })
+              }}
+              error={errors.nome}
+              containerClassName="space-y-0"
             />
 
             <Input
               type="email"
               placeholder="seu@email.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              onChange={(e) => {
+                setEmail(e.target.value)
+                if (errors.email) setErrors({ ...errors, email: '' })
+              }}
+              error={errors.email}
+              containerClassName="space-y-0"
             />
 
             <div className="relative">
@@ -188,8 +191,12 @@ export default function Cadastro() {
                 type="password"
                 placeholder="Mínimo 6 caracteres"
                 value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                required
+                onChange={(e) => {
+                  setSenha(e.target.value)
+                  if (errors.senha) setErrors({ ...errors, senha: '' })
+                }}
+                error={errors.senha}
+                containerClassName="space-y-0"
               />
               
               <motion.div
@@ -266,21 +273,66 @@ export default function Cadastro() {
               type="password"
               placeholder="Repita sua senha"
               value={confirmarSenha}
-              onChange={(e) => setConfirmarSenha(e.target.value)}
-              required
+              onChange={(e) => {
+                setConfirmarSenha(e.target.value)
+                if (errors.confirmarSenha) setErrors({ ...errors, confirmarSenha: '' })
+              }}
+              error={errors.confirmarSenha}
+              containerClassName="space-y-0"
             />
 
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+            <motion.div
+              animate={errors.termos ? { x: [-2, 2, -2, 2, 0] } : {}}
+              transition={{ duration: 0.3 }}
+            >
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
 
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-slate-300 text-primary"
-                required
-              />
+                <input
+                  type="checkbox"
+                  className={`h-4 w-4 rounded border transition-colors duration-200 ${
+                    errors.termos
+                      ? 'border-red-300 bg-red-50'
+                      : 'border-slate-300'
+                  } text-primary`}
+                  checked={termos}
+                  onChange={(e) => {
+                    setTermos(e.target.checked)
+                    if (errors.termos) setErrors({ ...errors, termos: '' })
+                  }}
+                />
 
-              Concordo com os termos
+                Concordo com os termos
 
-            </label>
+              </label>
+
+              {errors.termos && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="mt-2 flex items-start gap-2.5 rounded-lg bg-red-50 border border-red-200 p-3"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.3, type: 'spring', stiffness: 200, damping: 15 }}
+                    className="flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 text-xs font-bold"
+                  >
+                    ⚠
+                  </motion.div>
+
+                  <motion.p
+                    initial={{ opacity: 0, x: -4 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2, delay: 0.1 }}
+                    className="text-sm font-medium text-red-500"
+                  >
+                    {errors.termos}
+                  </motion.p>
+                </motion.div>
+              )}
+            </motion.div>
 
             <Button
               type="submit"
