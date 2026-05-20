@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react' 
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 
 import DashboardLayout from '../layouts/DashboardLayout'
 
 import WorkoutHeader from '../components/WorkoutHeader'
 import CurrentExerciseCard from '../components/CurrentExerciseCard'
-import NextExercisesList from '../components/NextExerciseList'
 import WorkoutProgress from '../components/WorkoutProgress'
 import WorkoutTimer from '../components/WorkoutTimer'
 import WorkoutActions from '../components/WorkoutActions'
@@ -19,8 +18,6 @@ import { useAuth } from '../hooks/useAuth'
 import { buscarTreinoCompleto } from '../services/treinos/treinosService'
 
 import { useTreinoAtivo } from '../hooks/useTreinoAtivo'
-
-import { useLocation } from 'react-router-dom'
 
 export default function TreinoPlayer() {
 
@@ -70,9 +67,27 @@ export default function TreinoPlayer() {
 
     onFinalizar: () => {
       navigate('/treinar')
-    }
+    },
+
+    onCancelar: () => {
+      navigate('/treinar')
+    },
 
   })
+
+  const shouldBlockNavigation = treinoAtivo.status === 'ativo' || treinoAtivo.status === 'descansando'
+
+  useEffect(() => {
+    function handleBeforeUnload(event) {
+      if (!shouldBlockNavigation) return
+      event.preventDefault()
+      event.returnValue = 'Seu treino será perdido se você sair.'
+      return 'Seu treino será perdido se você sair.'
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [shouldBlockNavigation])
 
   if (loading) {
 
@@ -117,6 +132,7 @@ export default function TreinoPlayer() {
         <WorkoutHeader
           nomeTreino={treino.nome}
           status={treinoAtivo.status}
+          onSair={treinoAtivo.cancelarTreino}
           secaoAtual={treinoAtivo.estado.secaoAtual}
           proximaSecao={treinoAtivo.estado.proximaSecao}
         />

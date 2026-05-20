@@ -11,7 +11,7 @@ const STATUS_LABEL = {
  * @param {Object}   props
  * @param {string}   props.nomeTreino
  * @param {'idle'|'ativo'|'descansando'|'finalizado'} props.status
- * @param {Function} props.onSair - Abre confirmação e chama finalizarTreino
+ * @param {Function} props.onSair - Cancela o treino, descarta histórico e volta para a tela de treinos
  * @param {boolean}  [props.salvando]
  */
 export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = false }) {
@@ -27,7 +27,10 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
   })
 
   function handleSair() {
-    if (status === 'finalizado') { onSair(); return }
+    if (status === 'finalizado' || status === 'idle') {
+      onSair()
+      return
+    }
     setConfirmando(true)
   }
 
@@ -60,21 +63,21 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
       <div className="flex items-center gap-2">
         {confirmando ? (
           <>
-            <span className="text-xs text-slate-600 mr-1">Finalizar treino?</span>
+            <span className="text-xs text-slate-600 mr-1">Cancelar treino?</span>
             <button
               onClick={() => { setConfirmando(false); onSair() }}
               disabled={salvando}
               className="text-xs px-3 py-1.5 bg-red-500 text-white rounded-lg font-medium
                          hover:bg-red-600 disabled:opacity-50 transition-colors"
             >
-              {salvando ? 'Salvando…' : 'Confirmar'}
+              {salvando ? 'Salvando…' : 'Cancelar treino'}
             </button>
             <button
               onClick={() => setConfirmando(false)}
               className="text-xs px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg font-medium
                          hover:bg-gray-200 transition-colors"
             >
-              Cancelar
+              Voltar
             </button>
           </>
         ) : (
@@ -84,7 +87,7 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
                        px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
           >
             <i className="fa-solid fa-xmark" />
-            <span>Sair</span>
+            <span>Cancelar</span>
           </button>
         )}
       </div>

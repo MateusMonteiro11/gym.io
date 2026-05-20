@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import logoImg from '../assets/images/Logo.png'
 import { useAuth } from '../hooks/useAuth'
 import { obterUsuario } from '../services/usuarios/usuariosService'
+import { logout } from '../services/auth/authService'
+import { useUi } from '../contexts/UiContext'
+import Modal from './ui/Modal'
+import ModalHeader from './ui/ModalHeader'
 import UserProfileModal from './UserProfileModal'
 
 const navItems = [
@@ -14,10 +18,17 @@ const navItems = [
 
 export default function Sidebar() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const { usuario } = useAuth()
+  const { alert } = useUi()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
   const [userData, setUserData] = useState(null)
   const [loadingUserData, setLoadingUserData] = useState(false)
+
+  const isOnTrainingPage = pathname.startsWith('/treinar/')
+  const hasActiveTraining = isOnTrainingPage
 
   useEffect(() => {
     if (!usuario?.id) return
@@ -52,6 +63,47 @@ export default function Sidebar() {
     setProfileModalOpen(false)
   }
 
+  const handleLogoutConfirm = async () => {
+    try {
+      setLoggingOut(true)
+      await logout()
+      navigate('/login')
+    } catch (err) {
+      console.error('Erro ao sair:', err)
+    } finally {
+      setLoggingOut(false)
+      setLogoutModalOpen(false)
+    }
+  }
+
+  const handleCancelLogout = () => {
+    setLogoutModalOpen(false)
+  }
+
+  const handleNavigation = (to) => {
+    if (hasActiveTraining) {
+      alert({
+        title: 'Treino em andamento',
+        message: 'Você não pode navegar enquanto um treino está ativo. Finalize o treino primeiro clicando em "Finalizar" ou cancele o treino em "Cancelar".',
+        type: 'warning',
+      })
+    } else {
+      navigate(to)
+    }
+  }
+
+  const handleLogoutClick = () => {
+    if (hasActiveTraining) {
+      alert({
+        title: 'Treino em andamento',
+        message: 'Você não pode sair enquanto um treino está ativo. Finalize o treino primeiro clicando em "Finalizar" ou cancele o treino em "Cancelar".',
+        type: 'warning',
+      })
+    } else {
+      setLogoutModalOpen(true)
+    }
+  }
+
   return (
     <aside className="flex w-full shrink-0 flex-col justify-between border-b border-slate-200/80 bg-white p-5 md:w-72 md:border-b-0 md:border-r md:p-6">
       <div>
@@ -70,10 +122,10 @@ export default function Sidebar() {
           {navItems.map(({ to, icon, label }) => {
             const isActive = pathname === to
             return (
-              <Link
+              <button
                 key={to}
-                to={to}
-                className={`menu-item flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
+                onClick={() => handleNavigation(to)}
+                className={`w-full menu-item flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
                   isActive
                     ? 'bg-primary-muted text-primary'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -81,7 +133,7 @@ export default function Sidebar() {
               >
                 <i className={`${icon} w-5 text-center`} />
                 {label}
-              </Link>
+              </button>
             )
           })}
         </nav>
@@ -111,13 +163,14 @@ export default function Sidebar() {
           </div>
           <i className="fa-solid fa-chevron-right text-slate-400 text-xs flex-shrink-0" />
         </button>
-        <Link
-          to="/login"
-          className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 transition-colors duration-200 hover:text-danger"
+        <button
+          type="button"
+          onClick={handleLogoutClick}
+          className="flex w-full items-center gap-2 text-sm text-slate-600 transition-colors duration-200 hover:text-danger"
         >
           <i className="fa-solid fa-right-from-bracket w-4" />
           Sair
-        </Link>
+        </button>
       </div>
 
       <UserProfileModal
@@ -125,6 +178,40 @@ export default function Sidebar() {
         onClose={handleModalClose}
         onUpdate={handleProfileUpdate}
       />
+
+      <Modal
+        open={logoutModalOpen}
+        onClose={handleCancelLogout}
+        size="sm"
+      >
+        <ModalHeader
+          title="Confirmar saída"
+          subtitle="Tem certeza de que deseja sair do Gym.io?"
+          onClose={handleCancelLogout}
+        />
+        <div className="px-6 py-5">
+          <p className="text-sm text-slate-600">
+            Ao confirmar, você será desconectado do sistema e retornará para a tela de login.
+          </p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={handleCancelLogout}
+              className="inline-flex justify-center rounded-lg border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-200"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={handleLogoutConfirm}
+              disabled={loggingOut}
+              className="inline-flex justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loggingOut ? 'Saindo...' : 'Confirmar saída'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </aside>
   )
 }

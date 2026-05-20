@@ -31,9 +31,10 @@ import {
  * @param {string}  options.idUsuario - UUID do usuário autenticado
  * @param {number}  [options.descansoPadrao=60] - Tempo padrão de descanso em segundos
  * @param {Function} [options.onFinalizar] - Callback após salvar o histórico
+ * @param {Function} [options.onCancelar] - Callback após cancelar o treino
  */
 
-export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinalizar }) {
+export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinalizar, onCancelar }) {
 
   // ── Lista plana de exercícios (memoizada) ──
   const exercicios = useMemo(
@@ -243,6 +244,26 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
     await _salvarHistorico()
   }, [status, workoutTimer, descansoTimer, logSeries] )
 
+  const cancelarTreino = useCallback(() => {
+    if (status === 'idle') {
+      onCancelar?.()
+      return
+    }
+
+    console.log('[useTreinoAtivo] Cancelando treino, descartando histórico e logs')
+
+    workoutTimer.reset()
+    descansoTimer.reset()
+    setStatus('idle')
+    setIndexAtual(0)
+    setSerieAtual(1)
+    setLogSeries([])
+    setSalvando(false)
+    setErro(null)
+
+    onCancelar?.()
+  }, [status, workoutTimer, descansoTimer, onCancelar])
+
   /** Avança para o próximo exercício ou finaliza o treino */
   function _avancarExercicio() {
 
@@ -338,6 +359,7 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
     pularDescanso,
     avancarExercicio,
     finalizarTreino,
+    cancelarTreino,
     continuarSerie,
     setTempoDescanso,
   }

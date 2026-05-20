@@ -1,7 +1,6 @@
 import {
-  BrowserRouter,
-  Routes,
-  Route,
+  createBrowserRouter,
+  RouterProvider,
   Navigate,
 } from 'react-router-dom'
 
@@ -20,111 +19,85 @@ import RedefinirSenha from '../pages/RedefinirSenha'
 
 import { PrivateRoute } from './PrivateRoute'
 
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Navigate to="/login" />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
+  },
+  {
+    path: '/cadastro',
+    element: <Cadastro />,
+  },
+  {
+    path: '/redefinir-senha',
+    element: <RedefinirSenha />,
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/treinos',
+    element: (
+      <PrivateRoute>
+        <Treinos />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/treinos/visualizar/:id',
+    element: (
+      <PrivateRoute>
+        <TreinosVisualizar />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/treinos/editar',
+    element: (
+      <PrivateRoute>
+        <TreinosEditar />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/treinos/editar/:id',
+    element: (
+      <PrivateRoute>
+        <TreinosEditar />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/treinar',
+    element: (
+      <PrivateRoute>
+        <Treinar />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/treinar/:id',
+    element: <TreinoPlayer />,
+  },
+  {
+    path: '/historico',
+    element: (
+      <PrivateRoute>
+        <Historico />
+      </PrivateRoute>
+    ),
+  },
+])
+
 export default function AppRoutes() {
-  return (
-    <BrowserRouter>
-      <Routes>
-
-        {/* Redirect inicial */}
-        <Route
-          path="/"
-          element={<Navigate to="/login" />}
-        />
-
-        {/* Rotas públicas */}
-        <Route
-          path="/login"
-          element={<Login />}
-        />
-
-        <Route
-          path="/cadastro"
-          element={<Cadastro />}
-        />
-
-        <Route
-          path="/redefinir-senha"
-          element={<RedefinirSenha />}
-        />
-
-        {/* Dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Página principal de treinos */}
-        <Route
-          path="/treinos"
-          element={
-            <PrivateRoute>
-              <Treinos />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Visualizar treino */}
-        <Route
-          path="/treinos/visualizar/:id"
-          element={
-            <PrivateRoute>
-              <TreinosVisualizar />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Criar treino */}
-        <Route
-          path="/treinos/editar"
-          element={
-            <PrivateRoute>
-              <TreinosEditar />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Editar treino existente */}
-        <Route
-          path="/treinos/editar/:id"
-          element={
-            <PrivateRoute>
-              <TreinosEditar />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Tela de treino ativo */}
-        <Route
-          path="/treinar"
-          element={
-            <PrivateRoute>
-              <Treinar />
-            </PrivateRoute>
-          }
-        />
-
-
-        {/* Tela do player de treino */}
-        <Route
-          path="/treinar/:id"
-          element={<TreinoPlayer />}
-        />
-
-        {/* Histórico de treinos */}
-        <Route
-          path="/historico"
-          element={
-            <PrivateRoute>
-              <Historico />
-            </PrivateRoute>
-          }
-        />
-
-      </Routes>
-    </BrowserRouter>
-  )
+  return <RouterProvider router={router} />
 }
