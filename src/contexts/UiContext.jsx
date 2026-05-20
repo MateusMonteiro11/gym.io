@@ -90,7 +90,9 @@ export function UiProvider({ children }) {
           <DialogIcon type={feedback?.type} />
           <h3 className="text-center text-lg font-semibold text-slate-900">{feedback?.title}</h3>
           {feedback?.message && (
-            <p className="mt-2 text-center text-sm leading-relaxed text-slate-600">{feedback.message}</p>
+            <p className="mt-2 whitespace-pre-line text-center text-sm leading-relaxed text-slate-600">
+              {feedback.message}
+            </p>
           )}
           <Button className="mt-6 w-full" onClick={handleFeedbackClose}>
             Entendi

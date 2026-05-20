@@ -85,7 +85,7 @@ export default function Sidebar() {
     if (hasActiveTraining) {
       alert({
         title: 'Treino em andamento',
-        message: 'Você não pode navegar enquanto um treino está ativo. Finalize o treino primeiro clicando em "Finalizar" ou cancele o treino em "Cancelar".',
+        message: 'Você não pode navegar enquanto um treino está ativo. Finalize o treino primeiro ou cancele seu treino.',
         type: 'warning',
       })
     } else {
@@ -98,7 +98,7 @@ export default function Sidebar() {
     if (hasActiveTraining) {
       alert({
         title: 'Treino em andamento',
-        message: 'Você não pode sair enquanto um treino está ativo. Finalize o treino primeiro clicando em "Finalizar" ou cancele o treino em "Cancelar".',
+        message: 'Você não pode sair enquanto um treino está ativo. Finalize o treino primeiro ou cancele seu treino.',
         type: 'warning',
       })
     } else {
@@ -110,7 +110,7 @@ export default function Sidebar() {
     if (hasActiveTraining) {
       alert({
         title: 'Treino em andamento',
-        message: 'Você não pode navegar enquanto um treino está ativo. Finalize o treino primeiro clicando em "Finalizar" ou cancele o treino em "Cancelar".',
+        message: 'Você não pode navegar enquanto um treino está ativo. Finalize o treino primeiro ou cancele seu treino.',
         type: 'warning',
       })
     } else {
@@ -121,7 +121,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Header with Hamburger Button */}
+      {/* Mobile Header com Hamburger Button */}
       <div className="flex md:hidden w-full items-center justify-between border-b border-slate-200/80 bg-white p-5">
         <button
           onClick={handleLogoClick}
@@ -157,7 +157,7 @@ export default function Sidebar() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       } md:w-72 md:border-b-0 md:border-r md:p-6 md:relative`}>
         <div>
-          {/* Logo - Hidden on mobile since it's in the header */}
+          {/* Logo*/}
           <div className="mb-8 flex items-center gap-3 hidden md:flex">
             <img
               src={logoImg}
@@ -223,7 +223,7 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Modals rendered outside sidebar to prevent stacking context issues */}
+      {/* Modals render */}
       <UserProfileModal
         open={profileModalOpen}
         onClose={handleModalClose}

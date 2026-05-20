@@ -35,20 +35,30 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
       <span className="text-[10px] uppercase tracking-widest text-slate-600 font-semibold">
         {label}
       </span>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         <button
           onClick={() => onChange(Math.max(0, valorNumerico - 1))}
-          className="w-7 h-7 rounded-lg bg-slate-50 hover:bg-gray-200 text-slate-600
+          className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-gray-200 text-slate-600
                      flex items-center justify-center text-sm font-bold transition-colors"
+          type="button"
         >−</button>
-        <span className="w-12 text-center font-bold text-slate-900 text-base tabular-nums">
-          {valorNumerico}
-          <span className="text-xs font-normal text-slate-600 ml-0.5">{sufixo}</span>
-        </span>
+        <div className="relative w-20">
+          <input
+            type="number"
+            min="0"
+            value={valorNumerico}
+            onChange={(e) => onChange(Number(e.target.value) || 0)}
+            className="w-full text-center rounded-lg border border-slate-200 bg-white px-2 py-1 text-base font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20"
+          />
+          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs font-normal text-slate-600">
+            {sufixo}
+          </span>
+        </div>
         <button
           onClick={() => onChange(valorNumerico + 1)}
-          className="w-7 h-7 rounded-lg bg-slate-50 hover:bg-gray-200 text-slate-600
+          className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-gray-200 text-slate-600
                      flex items-center justify-center text-sm font-bold transition-colors"
+          type="button"
         >+</button>
       </div>
     </div>
@@ -132,7 +142,7 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
           <p className="text-sm text-slate-600 leading-relaxed">{exercicio.descricao}</p>
         )}
 
-        {/* Ajuste inline de carga/reps */}
+        {/* Ajuste de carga/reps */}
         <div>
           <button
             onClick={() => setAjusteAberto((v) => !v)}
@@ -149,14 +159,14 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
                 label="Carga"
                 valor={carga}
                 onChange={setCarga}
-                sufixo="kg"
+                sufixo="" /* Melhor vazio neste caso */
               />
               <div className="w-px bg-gray-200" />
               <AjusteNumerico
                 label="Reps"
                 valor={repeticoes}
                 onChange={setRepeticoes}
-                sufixo="×"
+                sufixo="" /* Melhor vazio neste caso */
               />
             </div>
           )}

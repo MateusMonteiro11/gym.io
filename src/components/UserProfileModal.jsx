@@ -133,7 +133,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
       </div>
 
       <div className="p-6">
-        {/* PROFILE TAB */}
+        {/* Profile */}
         {activeTab === 'profile' && (
           <div className="space-y-6">
             <div className="flex flex-col items-center">
@@ -212,7 +212,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
           </div>
         )}
 
-        {/* HISTORY TAB */}
+        {/* Historico */}
         {activeTab === 'history' && (
           <div className="space-y-4">
             {loadingHistorico ? (
@@ -260,7 +260,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
           </div>
         )}
 
-        {/* STATISTICS TAB */}
+        {/* Estatisticas */}
         {activeTab === 'stats' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">

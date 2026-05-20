@@ -5,7 +5,6 @@ import ModalHeader from './ui/ModalHeader'
 import Input, { Label } from './ui/Input'
 import Button from './ui/Button'
 import Card from './ui/Card'
-import { ui } from '../styles/theme'
 
 export default function AgendarTreinoModal({ open, treino, onClose, onAgendar }) {
   const { alert } = useUi()

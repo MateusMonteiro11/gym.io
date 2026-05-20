@@ -3,7 +3,6 @@ import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import Input, { Label } from './ui/Input'
 import Button from './ui/Button'
-import { ui } from '../styles/theme'
 
 export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onClose, onStart }) {
   const [descanso, setDescanso] = useState(descansoPadrao)

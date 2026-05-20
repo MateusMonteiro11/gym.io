@@ -1,8 +1,24 @@
 import { supabase } from '../../lib/supabase'
 
-/* =========================================================
-   LOGIN
-========================================================= */
+// Validação de force password
+
+function validarForcaSenha(senha) {
+
+  const temLetra = /[a-zA-Z]/.test(senha)
+  const temNumero = /[0-9]/.test(senha)
+  const temCaractereEspecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha)
+  const temComprimento = senha.length >= 6
+
+  return {
+    valida: temLetra && temNumero && temCaractereEspecial && temComprimento,
+    temLetra,
+    temNumero,
+    temCaractereEspecial,
+    temComprimento,
+  }
+}
+
+// Login
 
 export async function login(email, senha) {
 
@@ -21,9 +37,7 @@ export async function login(email, senha) {
   return data
 }
 
-/* =========================================================
-   CADASTRO
-========================================================= */
+// Cadastro
 
 export async function cadastrar({
   nome,
@@ -31,11 +45,25 @@ export async function cadastrar({
   senha
 }) {
 
-  /*
-  ─────────────────────────────────────────
-  1. Criar autenticação no Supabase Auth
-  ─────────────────────────────────────────
-  */
+  // Validar o force password
+
+  const validacao = validarForcaSenha(senha)
+
+  if (!validacao.valida) {
+
+    const requisitos = []
+    
+    if (!validacao.temComprimento) requisitos.push('Mínimo 6 caracteres')
+    if (!validacao.temLetra) requisitos.push('Pelo menos uma letra')
+    if (!validacao.temNumero) requisitos.push('Pelo menos um número')
+    if (!validacao.temCaractereEspecial) requisitos.push('Pelo menos um caractere especial')
+
+    throw new Error(
+      `Senha fraca. Requisitos: ${requisitos.join(', ')}`
+    )
+  }
+
+  // Autenticação supabase auth
 
   const { data, error } =
     await supabase.auth.signUp({
@@ -57,15 +85,7 @@ export async function cadastrar({
     )
   }
 
-  /*
-  ─────────────────────────────────────────
-  2. Inserir perfil na tabela usuarios
-  ─────────────────────────────────────────
-  Esta INSERT dispara automaticamente:
-  - trigger PostgreSQL
-  - clonagem dos treinos padrão
-  ─────────────────────────────────────────
-  */
+  // Insere perfil no banco
 
   const { error: dbError } =
     await supabase
@@ -80,19 +100,11 @@ export async function cadastrar({
 
       })
 
-  /*
-  ─────────────────────────────────────────
-  3. Tratamento de erro do banco
-  ─────────────────────────────────────────
-  */
+  // Trata erros no banco
 
   if (dbError) {
 
-    /*
-    Tentativa opcional:
-    remover usuário auth criado
-    caso a tabela usuarios falhe
-    */
+    // Remove usuário criado no auth para evitar inconsistências
 
     console.error(
       '[AuthService] Erro ao criar perfil:',
@@ -105,9 +117,7 @@ export async function cadastrar({
   return data
 }
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+// Logout
 
 export async function logout() {
 
@@ -119,9 +129,7 @@ export async function logout() {
   }
 }
 
-/* =========================================================
-   RESET DE SENHA
-========================================================= */
+// Resetar senha
 
 export async function resetPassword(email) {
 
@@ -139,9 +147,7 @@ export async function resetPassword(email) {
   }
 }
 
-/* =========================================================
-   USUÁRIO ATUAL
-========================================================= */
+// Usuario logado atualmente
 
 export async function getUsuarioAtual() {
 

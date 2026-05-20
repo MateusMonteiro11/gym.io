@@ -1,4 +1,4 @@
-/** Design tokens — single source for Tailwind + UI kit */
+/** Design tokens */
 export const theme = {
   colors: {
     primary: { DEFAULT: '#1457F7', hover: '#0F4AD4', muted: '#E8EFFE' },

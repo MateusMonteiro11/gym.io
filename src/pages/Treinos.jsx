@@ -14,7 +14,7 @@ import { useUi } from '../contexts/UiContext'
 import { ui } from '../styles/theme'
 
 import { useTreino } from '../hooks/useTreino'
-import { criarTreino } from '../services/treinos/treinosService'
+import { criarTreino, deletarTreino } from '../services/treinos/treinosService'
 import { criarSecao } from '../services/treinos/secoesService'
 import { adicionarExercicio } from '../services/treinos/treinosExerciciosService'
 import { listarExercicios } from '../services/exercicios/exerciciosService'
@@ -32,9 +32,10 @@ function countExercises(workout) {
 
 export default function Treinos() {
   const navigate = useNavigate()
-  const { alert, notify } = useUi()
+  const { alert, notify, confirm } = useUi()
   const { usuario } = useAuth()
   const { treinosSistema, meusTreinos, loading } = useTreino()
+  const [meusTreinosLocal, setMeusTreinosLocal] = useState([])
 
   const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false)
   const [treinoSelecionado, setTreinoSelecionado] = useState(null)
@@ -47,6 +48,36 @@ export default function Treinos() {
   function handleAgendarTreino(treino) {
     setTreinoSelecionado(treino)
     setModalAgendamentoOpen(true)
+  }
+
+  async function handleDeletarTreino(treino) {
+    if (!treino?.id_treino) return
+
+    const confirmed = await confirm({
+      title: 'Excluir treino',
+      message: 'Esta ação é permanente. Tem certeza que deseja excluir este treino?',
+      confirmLabel: 'Excluir treino',
+      variant: 'danger',
+    })
+
+    if (!confirmed) return
+
+    try {
+      await deletarTreino(treino.id_treino)
+      setMeusTreinosLocal((current) => current.filter((item) => item.id_treino !== treino.id_treino))
+      notify({
+        title: 'Treino excluído',
+        message: 'O treino foi removido com sucesso.',
+        type: 'success',
+      })
+    } catch (error) {
+      console.error('Erro ao excluir treino:', error)
+      alert({
+        title: 'Erro ao excluir treino',
+        message: error?.message || 'Tente novamente em instantes.',
+        type: 'error',
+      })
+    }
   }
 
   async function handleConfirmarAgendamento(dados) {
@@ -74,6 +105,10 @@ export default function Treinos() {
       })
     }
   }
+
+  useEffect(() => {
+    setMeusTreinosLocal(meusTreinos)
+  }, [meusTreinos])
 
   return (
     <DashboardLayout loading={loading} loadingMessage="Carregando treinos...">
@@ -123,7 +158,7 @@ export default function Treinos() {
             <div>
               <h2 className={ui.sectionTitle}>Meus treinos</h2>
               <p className={ui.sectionSubtitle}>
-                {meusTreinos.length} treino(s) personalizado(s)
+                {meusTreinosLocal.length} treino(s) personalizado(s)
               </p>
             </div>
           </div>
@@ -132,7 +167,7 @@ export default function Treinos() {
           </Button>
         </div>
 
-        {meusTreinos.length === 0 ? (
+        {meusTreinosLocal.length === 0 ? (
           <Card className={`${ui.cardPadding} text-center`}>
             <div className={ui.emptyIcon}>
               <i className="fa-solid fa-folder-open" />
@@ -147,7 +182,7 @@ export default function Treinos() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {meusTreinos.map((treino) => (
+            {meusTreinosLocal.map((treino) => (
               <WorkoutCard
                 key={treino.id_treino}
                 workout={treino}
@@ -155,6 +190,7 @@ export default function Treinos() {
                 viewPath={`/treinos/visualizar/${treino.id_treino}`}
                 editPath={`/treinos/editar/${treino.id_treino}`}
                 onAgendar={handleAgendarTreino}
+                onDelete={handleDeletarTreino}
               />
             ))}
           </div>
@@ -251,7 +287,9 @@ function WorkoutCard({
   viewPath,
   editPath,
   onAgendar,
+  onDelete,
 }) {
+  const navigate = useNavigate()
   const exerciseCount = countExercises(workout)
   const sectionCount = workout?.secoes_treino?.length ?? 0
 
@@ -282,16 +320,6 @@ function WorkoutCard({
             <span className="hidden sm:inline">Agendar</span>
           </button>
         )}
-        {showActions && editPath && !isSystem && (
-          <Link
-            to={editPath}
-            title="Editar treino"
-            className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all duration-200 text-xs font-medium"
-          >
-            <i className="fa-solid fa-pen text-xs" />
-            <span className="hidden sm:inline">Editar</span>
-          </Link>
-        )}
       </div>
 
       <div className="p-5">
@@ -303,13 +331,35 @@ function WorkoutCard({
           >
             <i className={`fa-solid ${isSystem ? 'fa-bookmark' : 'fa-dumbbell'}`} />
           </span>
-          <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              isSystem ? 'bg-primary-muted text-primary' : 'bg-slate-100 text-slate-600'
-            }`}
-          >
-            {isSystem ? 'Sistema' : 'Personalizado'}
-          </span>
+          <div className="flex flex-col items-end gap-1.5">
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                isSystem ? 'bg-primary-muted text-primary' : 'bg-slate-100 text-slate-600'
+              }`}
+            >
+              {isSystem ? 'Sistema' : 'Personalizado'}
+            </span>
+            {showActions && editPath && !isSystem && (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onDelete?.(workout)}
+                  title="Excluir treino"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all duration-200"
+                >
+                  <i className="fa-solid fa-trash text-xs" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(editPath)}
+                  title="Editar treino"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-200"
+                >
+                  <i className="fa-solid fa-pen text-xs" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <h3 className="font-semibold text-slate-900 line-clamp-1">{workout.nome}</h3>

@@ -1,11 +1,8 @@
-import { useMemo } from 'react'
-
 export default function DescansoModal({
 
   aberto,
 
   restante,
-  total,
   percentual,
   formatted,
 
