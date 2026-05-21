@@ -17,9 +17,36 @@ export default function Login() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [resetEmail, setResetEmail] = useState('')
   const [resetLoading, setResetLoading] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [resetErrors, setResetErrors] = useState({})
+
+  function validarFormulario() {
+    const novoErros = {}
+
+    if (!email.trim()) novoErros.email = 'Digite seu email'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) novoErros.email = 'Email inválido'
+
+    if (!senha) novoErros.senha = 'Digite sua senha'
+
+    setErrors(novoErros)
+    return Object.keys(novoErros).length === 0
+  }
+
+  function validarResetEmail() {
+    const novoErros = {}
+
+    if (!resetEmail.trim()) novoErros.resetEmail = 'Digite seu email'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) novoErros.resetEmail = 'Email inválido'
+
+    setResetErrors(novoErros)
+    return Object.keys(novoErros).length === 0
+  }
 
   async function handleLogin(e) {
     e.preventDefault()
+
+    if (!validarFormulario()) return
+
     try {
       setLoading(true)
       await login(email, senha)
@@ -33,6 +60,9 @@ export default function Login() {
 
   async function handleResetPassword(e) {
     e.preventDefault()
+
+    if (!validarResetEmail()) return
+
     try {
       setResetLoading(true)
       await resetPassword(resetEmail)
@@ -43,6 +73,7 @@ export default function Login() {
       })
       setIsModalOpen(false)
       setResetEmail('')
+      setResetErrors({})
     } catch (error) {
       alert({ title: 'Erro', message: error.message, type: 'error' })
     } finally {
@@ -73,15 +104,23 @@ export default function Login() {
                 type="email"
                 placeholder="Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (errors.email) setErrors({ ...errors, email: '' })
+                }}
+                error={errors.email}
+                containerClassName="space-y-0"
               />
               <Input
                 type="password"
                 placeholder="Senha"
                 value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                required
+                onChange={(e) => {
+                  setSenha(e.target.value)
+                  if (errors.senha) setErrors({ ...errors, senha: '' })
+                }}
+                error={errors.senha}
+                containerClassName="space-y-0"
               />
               <div className="flex justify-end">
                 <button
@@ -114,8 +153,12 @@ export default function Login() {
             type="email"
             placeholder="Digite seu email"
             value={resetEmail}
-            onChange={(e) => setResetEmail(e.target.value)}
-            required
+            onChange={(e) => {
+              setResetEmail(e.target.value)
+              if (resetErrors.resetEmail) setResetErrors({ ...resetErrors, resetEmail: '' })
+            }}
+            error={resetErrors.resetEmail}
+            containerClassName="space-y-0"
           />
           <div className="flex gap-3">
             <Button type="button" variant="secondary" className="flex-1" onClick={() => setIsModalOpen(false)}>
