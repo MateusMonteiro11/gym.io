@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { ui } from '../../styles/theme'
 
 const variants = {
@@ -15,12 +16,13 @@ export default function Button({
   ...props
 }) {
   return (
-    <button
+    <motion.button
       type={type}
-      className={`${variants[variant] || variants.primary} ${className}`}
+      className={`${variants[variant] || variants.primary} shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:hover:translate-y-0 disabled:hover:shadow-sm ${className}`}
+      whileTap={{ scale: props.disabled ? 1 : 0.98 }}
       {...props}
     >
       {children}
-    </button>
+    </motion.button>
   )
 }

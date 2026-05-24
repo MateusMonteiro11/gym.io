@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import logoImg from '../assets/images/logo.png'
 import { login, resetPassword } from '../services/auth/authService'
 import { useUi } from '../contexts/UiContext'
@@ -8,6 +9,21 @@ import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
 import Modal from '../components/ui/Modal'
 import ModalHeader from '../components/ui/ModalHeader'
+
+const formMotion = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: 'easeOut', staggerChildren: 0.06 },
+  },
+}
+
+const itemMotion = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0 },
+}
+
 export default function Login() {
   const navigate = useNavigate()
   const { alert, notify } = useUi()
@@ -24,7 +40,7 @@ export default function Login() {
     const novoErros = {}
 
     if (!email.trim()) novoErros.email = 'Digite seu email'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) novoErros.email = 'Email inválido'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) novoErros.email = 'Email invalido'
 
     if (!senha) novoErros.senha = 'Digite sua senha'
 
@@ -36,7 +52,7 @@ export default function Login() {
     const novoErros = {}
 
     if (!resetEmail.trim()) novoErros.resetEmail = 'Digite seu email'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) novoErros.resetEmail = 'Email inválido'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) novoErros.resetEmail = 'Email invalido'
 
     setResetErrors(novoErros)
     return Object.keys(novoErros).length === 0
@@ -86,63 +102,94 @@ export default function Login() {
       <AuthShell
         brand={
           <>
-            <img src={logoImg} alt="GYM.IO" className="mx-auto mb-8 w-28 md:w-48" />
-            <h1 className="mb-3 text-3xl font-extrabold tracking-tight md:text-4xl">GYM.IO</h1>
-            <p className="mb-6 text-base font-semibold md:text-lg">Gerencie seus treinos com eficiência</p>
+            <motion.img
+              src={logoImg}
+              alt="GYM.IO"
+              className="mx-auto mb-6 w-20 drop-shadow-xl sm:w-28 md:mb-8 md:w-48"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl md:text-4xl">Bem-vindo de volta</h1>
+            <p className="mx-auto mb-5 max-w-sm text-base font-medium leading-7 text-white/80 md:mb-6 md:text-lg">
+              Continue organizando treinos, sessoes e progresso em um workspace simples.
+            </p>
+            <div className="mx-auto grid max-w-sm grid-cols-3 gap-2">
+              {['Treinos', 'Historico', 'Sessao'].map((item) => (
+                <div key={item} className="rounded-2xl border border-white/30 bg-white/10 px-3 py-2 text-center text-xs font-semibold text-white shadow-sm">
+                  {item}
+                </div>
+              ))}
+            </div>
           </>
         }
         form={
-          <div className="mx-auto w-full max-w-md">
-            <h2 className="mb-2 text-center text-2xl font-bold text-slate-900 md:text-3xl">
-              Bem-vindo de volta
-            </h2>
-            <p className="mb-8 text-center text-slate-600">
-              Acesse sua conta para gerenciar seus treinos
-            </p>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  if (errors.email) setErrors({ ...errors, email: '' })
-                }}
-                error={errors.email}
-                containerClassName="space-y-0"
-              />
-              <Input
-                type="password"
-                placeholder="Senha"
-                value={senha}
-                onChange={(e) => {
-                  setSenha(e.target.value)
-                  if (errors.senha) setErrors({ ...errors, senha: '' })
-                }}
-                error={errors.senha}
-                containerClassName="space-y-0"
-              />
-              <div className="flex justify-end">
+          <motion.div className="mx-auto w-full max-w-md" initial="hidden" animate="visible" variants={formMotion}>
+            <motion.div variants={itemMotion} className="mb-8 text-center">
+              <span className="mb-4 inline-flex rounded-full border border-blue-100 bg-primary-muted px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                Login
+              </span>
+              <h2 className="mb-2 text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
+                Acesse sua conta
+              </h2>
+              <p className="text-slate-600">
+                Acesse sua conta para gerenciar seus treinos
+              </p>
+            </motion.div>
+
+            <motion.form onSubmit={handleLogin} className="space-y-4" variants={formMotion}>
+              <motion.div variants={itemMotion}>
+                <Input
+                  type="text"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (errors.email) setErrors({ ...errors, email: '' })
+                  }}
+                  error={errors.email}
+                  containerClassName="space-y-0"
+                />
+              </motion.div>
+
+              <motion.div variants={itemMotion}>
+                <Input
+                  type="password"
+                  placeholder="Senha"
+                  value={senha}
+                  onChange={(e) => {
+                    setSenha(e.target.value)
+                    if (errors.senha) setErrors({ ...errors, senha: '' })
+                  }}
+                  error={errors.senha}
+                  containerClassName="space-y-0"
+                />
+              </motion.div>
+
+              <motion.div variants={itemMotion} className="flex justify-end">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="cursor-pointer text-sm font-medium text-primary transition-colors duration-200 hover:text-primary-hover"
+                  className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-muted hover:text-primary-hover"
                 >
                   Esqueceu a senha?
                 </button>
-              </div>
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading ? 'Entrando...' : 'Entrar'}
-                {!loading && <i className="fa-solid fa-arrow-right" />}
-              </Button>
-              <p className="text-center text-sm text-slate-600">
-                Não tem uma conta?{' '}
+              </motion.div>
+
+              <motion.div variants={itemMotion}>
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading ? 'Entrando...' : 'Entrar'}
+                  {!loading && <i className="fa-solid fa-arrow-right" />}
+                </Button>
+              </motion.div>
+
+              <motion.p variants={itemMotion} className="text-center text-sm text-slate-600">
+                Nao tem uma conta?{' '}
                 <Link to="/cadastro" className="font-medium text-primary hover:text-primary-hover">
                   Criar uma
                 </Link>
-              </p>
-            </form>
-          </div>
+              </motion.p>
+            </motion.form>
+          </motion.div>
         }
       />
 
@@ -150,7 +197,7 @@ export default function Login() {
         <ModalHeader title="Redefinir senha" subtitle="Enviaremos um link para seu email." onClose={() => setIsModalOpen(false)} />
         <form onSubmit={handleResetPassword} className="space-y-4 p-6 pt-0">
           <Input
-            type="email"
+            type="text"
             placeholder="Digite seu email"
             value={resetEmail}
             onChange={(e) => {

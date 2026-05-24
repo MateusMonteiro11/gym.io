@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ui } from '../../styles/theme'
 
 export default function Modal({
@@ -21,8 +22,6 @@ export default function Modal({
     }
   }, [open, onClose])
 
-  if (!open) return null
-
   const sizes = {
     sm: 'max-w-md',
     md: 'max-w-lg',
@@ -32,21 +31,33 @@ export default function Modal({
   }
 
   return (
-    <div
-      className={ui.overlay}
-      role="presentation"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose?.()
-      }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        className={`${ui.modalPanel} ${sizes[size] || sizes.md} ${className}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </div>
-    </div>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className={`${ui.overlay} bg-slate-950/45`}
+          role="presentation"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onClose?.()
+          }}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            className={`${ui.modalPanel} ${sizes[size] || sizes.md} ${className}`}
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 14, scale: 0.97 }}
+            transition={{ duration: 0.24, ease: 'easeOut' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {children}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

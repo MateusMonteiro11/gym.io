@@ -38,7 +38,7 @@ export default function FieldError({ message, variant = 'error' }) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -8, scale: 0.95 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          className={`mt-2 flex items-start gap-2.5 rounded-lg ${config.bgColor} border ${config.borderColor} p-3`}
+          className={`mt-2 flex items-start gap-2.5 rounded-xl ${config.bgColor} border ${config.borderColor} p-3 shadow-sm`}
         >
           <motion.div
             initial={{ scale: 0, rotate: -180 }}

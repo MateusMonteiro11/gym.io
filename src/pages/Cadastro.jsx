@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-import cadastroImg from '../assets/images/Cadastro.png'
+import cadastroImg from '../assets/images/logo.png'
 
 import { cadastrar } from '../services/auth/authService'
 
@@ -11,6 +11,20 @@ import { useUi } from '../contexts/UiContext'
 import AuthShell from '../components/ui/AuthShell'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
+
+const formMotion = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: 'easeOut', staggerChildren: 0.055 },
+  },
+}
+
+const itemMotion = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0 },
+}
 
 export default function Cadastro() {
 
@@ -129,21 +143,23 @@ export default function Cadastro() {
       brand={
         <>
 
-          <img
+          <motion.img
             src={cadastroImg}
             alt="Cadastro"
-            className="mx-auto mb-10 w-40 md:w-64"
+            className="mx-auto mb-6 w-20 drop-shadow-xl sm:w-28 md:mb-8 md:w-48"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
           />
 
-          <h1 className="mb-4 text-3xl font-extrabold md:text-4xl">
+          <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
             Comece agora
           </h1>
 
-          <p className="mb-4 text-lg font-semibold">
+          <p className="mx-auto mb-4 max-w-sm text-lg font-medium leading-7 text-white/80">
             Inicie sua jornada de treinos conosco
           </p>
 
-          <p className="text-white/90">
+          <p className="mx-auto rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm">
             É prático, rápido e seguro
           </p>
 
@@ -151,15 +167,24 @@ export default function Cadastro() {
       }
 
       form={
-        <div className="mx-auto w-full max-w-md">
+        <motion.div className="mx-auto w-full max-w-md" initial="hidden" animate="visible" variants={formMotion}>
 
-          <h2 className="mb-6 text-center text-2xl font-bold text-slate-900 md:text-3xl">
-            Cadastro
-          </h2>
+          <motion.div variants={itemMotion} className="mb-8 text-center">
+            <span className="mb-4 inline-flex rounded-full border border-blue-100 bg-primary-muted px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              Cadastro
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
+              Crie sua conta
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Configure seu acesso e comece a organizar seus treinos.
+            </p>
+          </motion.div>
 
-          <form
+          <motion.form
             onSubmit={handleCadastro}
             className="space-y-4"
+            variants={formMotion}
           >
 
             <Input
@@ -175,7 +200,7 @@ export default function Cadastro() {
             />
 
             <Input
-              type="email"
+              type="text"
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => {
@@ -285,7 +310,7 @@ export default function Cadastro() {
               animate={errors.termos ? { x: [-2, 2, -2, 2, 0] } : {}}
               transition={{ duration: 0.3 }}
             >
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5">
 
                 <input
                   type="checkbox"
@@ -334,6 +359,7 @@ export default function Cadastro() {
               )}
             </motion.div>
 
+            <motion.div variants={itemMotion}>
             <Button
               type="submit"
               disabled={loading}
@@ -345,8 +371,9 @@ export default function Cadastro() {
                 : 'Criar a conta'}
 
             </Button>
+            </motion.div>
 
-            <p className="text-center text-sm text-slate-600">
+            <motion.p variants={itemMotion} className="text-center text-sm text-slate-600">
 
               Já possui uma conta?{' '}
 
@@ -357,11 +384,11 @@ export default function Cadastro() {
                 Entrar
               </Link>
 
-            </p>
+            </motion.p>
 
-          </form>
+          </motion.form>
 
-        </div>
+        </motion.div>
       }
     />
   )

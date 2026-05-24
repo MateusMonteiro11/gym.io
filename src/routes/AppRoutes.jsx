@@ -1,11 +1,11 @@
 import {
   createBrowserRouter,
   RouterProvider,
-  Navigate,
 } from 'react-router-dom'
 
 import Login from '../pages/Login'
 import Cadastro from '../pages/Cadastro'
+import LandingPage from '../pages/LandingPage'
 import Dashboard from '../pages/Dashboard'
 
 import Treinos from '../pages/Treinos'
@@ -22,7 +22,7 @@ import { PrivateRoute } from './PrivateRoute'
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/login" />,
+    element: <LandingPage />,
   },
   {
     path: '/login',

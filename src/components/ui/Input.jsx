@@ -20,9 +20,10 @@ export default function Input({
   return (
     <div className={containerClassName}>
       <motion.input
-        className={`${ui.input} ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500/10' : ''} ${className}`}
+        className={`${ui.input} shadow-sm shadow-slate-900/5 hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5 focus:bg-white focus:shadow-lg focus:shadow-blue-900/10 ${error ? 'border-red-300 bg-red-50/40 focus:border-red-500 focus:ring-red-500/10' : ''} ${className}`}
         animate={error ? { x: [-2, 2, -2, 2, 0] } : {}}
-        transition={{ duration: 0.3 }}
+        whileFocus={{ y: -1, scale: 1.005 }}
+        transition={{ duration: 0.25 }}
         {...props}
       />
       <FieldError message={error} variant={errorVariant} />
