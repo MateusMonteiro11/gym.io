@@ -5,6 +5,7 @@ import {
 } from 'react'
 
 import { supabase } from '../lib/supabase'
+import { getRememberMe } from '../utils/sessionStorage'
 
 export const AuthContext =
   createContext()
@@ -19,17 +20,43 @@ export function AuthProvider({
   const [loading, setLoading] =
     useState(true)
 
+  const [rememberMe, setRememberMeState] =
+    useState(false)
+
+  const [sessionRestored, setSessionRestored] =
+    useState(false)
+
   useEffect(() => {
 
     async function carregarUsuario() {
+      try {
+        // First, check if there's a stored session
+        const {
+          data: { session }
+        } = await supabase.auth.getSession()
 
-      const {
-        data: { user }
-      } = await supabase.auth.getUser()
+        if (session?.user) {
+          // Session was restored from localStorage
+          setUsuario(session.user)
+          const shouldRemember = getRememberMe()
+          setRememberMeState(shouldRemember)
+        } else {
+          // No stored session
+          const {
+            data: { user }
+          } = await supabase.auth.getUser()
 
-      setUsuario(user)
-
-      setLoading(false)
+          setUsuario(user)
+          const shouldRemember = getRememberMe()
+          setRememberMeState(shouldRemember)
+        }
+      } catch (error) {
+        console.error('Error loading user:', error)
+        setUsuario(null)
+      } finally {
+        setSessionRestored(true)
+        setLoading(false)
+      }
     }
 
     carregarUsuario()
@@ -46,7 +73,7 @@ export function AuthProvider({
     )
 
     return () => {
-      listener.subscription.unsubscribe()
+      listener?.subscription?.unsubscribe()
     }
 
   }, [])
@@ -56,7 +83,9 @@ export function AuthProvider({
     <AuthContext.Provider
       value={{
         usuario,
-        loading
+        loading,
+        rememberMe,
+        sessionRestored
       }}
     >
 

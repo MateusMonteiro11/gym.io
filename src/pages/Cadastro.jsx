@@ -11,6 +11,7 @@ import { useUi } from '../contexts/UiContext'
 import AuthShell from '../components/ui/AuthShell'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
+import TermsAndPrivacyModal from '../components/TermsAndPrivacyModal'
 
 const formMotion = {
   hidden: { opacity: 0, y: 18 },
@@ -40,6 +41,7 @@ export default function Cadastro() {
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const [termos, setTermos] = useState(false)
+  const [termsModalOpen, setTermsModalOpen] = useState(false)
 
   function validarForcaSenha(senhaTemp) {
 
@@ -137,37 +139,37 @@ export default function Cadastro() {
   }
 
   return (
+    <>
+      <AuthShell
 
-    <AuthShell
+        brand={
+          <>
 
-      brand={
-        <>
+            <motion.img
+              src={cadastroImg}
+              alt="Cadastro"
+              className="mx-auto mb-6 w-20 drop-shadow-xl sm:w-28 md:mb-8 md:w-48"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
 
-          <motion.img
-            src={cadastroImg}
-            alt="Cadastro"
-            className="mx-auto mb-6 w-20 drop-shadow-xl sm:w-28 md:mb-8 md:w-48"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
-          />
+            <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
+              Comece agora
+            </h1>
 
-          <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
-            Comece agora
-          </h1>
+            <p className="mx-auto mb-4 max-w-sm text-lg font-medium leading-7 text-white/80">
+              Inicie sua jornada de treinos conosco
+            </p>
 
-          <p className="mx-auto mb-4 max-w-sm text-lg font-medium leading-7 text-white/80">
-            Inicie sua jornada de treinos conosco
-          </p>
+            <p className="mx-auto rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+              É prático, rápido e seguro
+            </p>
 
-          <p className="mx-auto rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm">
-            É prático, rápido e seguro
-          </p>
+          </>
+        }
 
-        </>
-      }
-
-      form={
-        <motion.div className="mx-auto w-full max-w-md" initial="hidden" animate="visible" variants={formMotion}>
+        form={
+          <motion.div className="mx-auto w-full max-w-md" initial="hidden" animate="visible" variants={formMotion}>
 
           <motion.div variants={itemMotion} className="mb-8 text-center">
             <span className="mb-4 inline-flex rounded-full border border-blue-100 bg-primary-muted px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -326,7 +328,19 @@ export default function Cadastro() {
                   }}
                 />
 
-                Concordo com os termos
+                <span>
+                  Concordo com os{' '}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setTermsModalOpen(true)
+                    }}
+                    className="font-semibold text-primary hover:text-primary-hover transition-colors duration-200"
+                  >
+                    termos de privacidade
+                  </button>
+                </span>
 
               </label>
 
@@ -391,5 +405,11 @@ export default function Cadastro() {
         </motion.div>
       }
     />
+
+      <TermsAndPrivacyModal
+        open={termsModalOpen}
+        onClose={() => setTermsModalOpen(false)}
+      />
+    </>
   )
 }

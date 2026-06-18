@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import logoImg from '../assets/images/logo.png'
 import { login, resetPassword } from '../services/auth/authService'
+import { getLastEmail } from '../utils/sessionStorage'
 import { useUi } from '../contexts/UiContext'
+import { useAuth } from '../hooks/useAuth'
 import AuthShell from '../components/ui/AuthShell'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
@@ -27,14 +29,21 @@ const itemMotion = {
 export default function Login() {
   const navigate = useNavigate()
   const { alert, notify } = useUi()
-  const [email, setEmail] = useState('')
+  const { usuario, loading } = useAuth()
+  const [email, setEmail] = useState(getLastEmail() || '')
   const [senha, setSenha] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [resetEmail, setResetEmail] = useState('')
   const [resetLoading, setResetLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const [resetErrors, setResetErrors] = useState({})
+
+  // If user is already authenticated, redirect to dashboard
+  if (!loading && usuario) {
+    navigate('/dashboard')
+  }
 
   function validarFormulario() {
     const novoErros = {}
@@ -64,13 +73,13 @@ export default function Login() {
     if (!validarFormulario()) return
 
     try {
-      setLoading(true)
-      await login(email, senha)
+      setIsLoading(true)
+      await login(email, senha, rememberMe)
       navigate('/dashboard')
     } catch (error) {
       alert({ title: 'Erro ao entrar', message: error.message, type: 'error' })
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -111,10 +120,10 @@ export default function Login() {
             />
             <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl md:text-4xl">Bem-vindo de volta</h1>
             <p className="mx-auto mb-5 max-w-sm text-base font-medium leading-7 text-white/80 md:mb-6 md:text-lg">
-              Continue organizando treinos, sessões e progresso em um workspace simples.
+              Continue organizando treinos, sessões e progresso em um workspace simples com:
             </p>
             <div className="mx-auto grid max-w-sm grid-cols-3 gap-2">
-              {['Treinos', 'Historico', 'Sessao'].map((item) => (
+              {['Treinos', 'Histórico', 'Agendamentos'].map((item) => (
                 <div key={item} className="rounded-2xl border border-white/30 bg-white/10 px-3 py-2 text-center text-xs font-semibold text-white shadow-sm">
                   {item}
                 </div>
@@ -165,6 +174,19 @@ export default function Login() {
                 />
               </motion.div>
 
+              <motion.div variants={itemMotion}>
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border border-slate-300 transition-colors duration-200 text-primary cursor-pointer"
+                  />
+                  <span>Manter-me conectado</span>
+                </label>
+              </motion.div>
+
               <motion.div variants={itemMotion} className="flex justify-end">
                 <button
                   type="button"
@@ -176,9 +198,9 @@ export default function Login() {
               </motion.div>
 
               <motion.div variants={itemMotion}>
-                <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? 'Entrando...' : 'Entrar'}
-                  {!loading && <i className="fa-solid fa-arrow-right" />}
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? 'Entrando...' : 'Entrar'}
+                  {!isLoading && <i className="fa-solid fa-arrow-right" />}
                 </Button>
               </motion.div>
 

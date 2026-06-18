@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase'
+import { setRememberMe, setLastEmail, clearSessionPreferences } from '../../utils/sessionStorage'
 
 // Validação de force password
 
@@ -20,7 +21,7 @@ function validarForcaSenha(senha) {
 
 // Login
 
-export async function login(email, senha) {
+export async function login(email, senha, rememberMe = false) {
 
   const { data, error } =
     await supabase.auth.signInWithPassword({
@@ -32,6 +33,12 @@ export async function login(email, senha) {
 
   if (error) {
     throw new Error(error.message)
+  }
+
+  // Store remember me preference and last email
+  if (rememberMe) {
+    setRememberMe(true)
+    setLastEmail(email)
   }
 
   return data
@@ -114,6 +121,9 @@ export async function cadastrar({
     throw new Error(dbError.message)
   }
 
+  // Sign out the user after registration so they must log in explicitly
+  await supabase.auth.signOut()
+
   return data
 }
 
@@ -127,6 +137,9 @@ export async function logout() {
   if (error) {
     throw new Error(error.message)
   }
+
+  // Clear session preferences on logout
+  clearSessionPreferences()
 }
 
 // Resetar senha

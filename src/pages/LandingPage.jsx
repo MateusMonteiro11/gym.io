@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useEffect } from 'react'
 import {
   Activity,
   ArrowRight,
@@ -22,6 +23,7 @@ import {
   Timer,
   Zap,
 } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
 import logoBlueImg from '../assets/images/logo_blue.png'
 import mateusProfileImg from '../assets/images/mateus_profile.jpeg'
 
@@ -625,6 +627,33 @@ function Footer() {
 }
 
 export default function LandingPage() {
+  const navigate = useNavigate()
+  const { usuario, loading } = useAuth()
+
+  // If user is already authenticated, redirect to dashboard
+  useEffect(() => {
+    if (!loading && usuario) {
+      navigate('/dashboard')
+    }
+  }, [usuario, loading, navigate])
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-primary" />
+          <p className="text-slate-600">Carregando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If user is authenticated, don't render the landing page
+  if (usuario) {
+    return null
+  }
+
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-950">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(20,87,247,0.12),transparent_32%),linear-gradient(180deg,rgba(248,250,252,0.9),rgba(255,255,255,0.96)_30%,rgba(241,245,249,0.7))]" aria-hidden />
