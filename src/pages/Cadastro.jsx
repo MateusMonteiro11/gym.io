@@ -7,6 +7,7 @@ import cadastroImg from '../assets/images/logo.png'
 import { cadastrar } from '../services/auth/authService'
 
 import { useUi } from '../contexts/UiContext'
+import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 
 import AuthShell from '../components/ui/AuthShell'
 import Input from '../components/ui/Input'
@@ -123,10 +124,13 @@ export default function Cadastro() {
 
     } catch (error) {
 
+      const message = getUserFriendlyErrorMessage(error, 'Não foi possível criar sua conta.')
+      logError(error, '[Cadastro] Failed to sign up')
+
       alert({
 
         title   : 'Erro no cadastro',
-        message : error.message,
+        message,
         type    : 'error',
 
       })
@@ -193,6 +197,7 @@ export default function Cadastro() {
               type="text"
               placeholder="Seu nome completo"
               value={nome}
+              maxLength={80}
               onChange={(e) => {
                 setNome(e.target.value)
                 if (errors.nome) setErrors({ ...errors, nome: '' })
@@ -205,6 +210,9 @@ export default function Cadastro() {
               type="text"
               placeholder="seu@email.com"
               value={email}
+              maxLength={254}
+              autoCapitalize="none"
+              autoCorrect="off"
               onChange={(e) => {
                 setEmail(e.target.value)
                 if (errors.email) setErrors({ ...errors, email: '' })
@@ -218,6 +226,7 @@ export default function Cadastro() {
                 type="password"
                 placeholder="Mínimo 6 caracteres"
                 value={senha}
+                maxLength={72}
                 onChange={(e) => {
                   setSenha(e.target.value)
                   if (errors.senha) setErrors({ ...errors, senha: '' })
@@ -300,6 +309,7 @@ export default function Cadastro() {
               type="password"
               placeholder="Repita sua senha"
               value={confirmarSenha}
+              maxLength={72}
               onChange={(e) => {
                 setConfirmarSenha(e.target.value)
                 if (errors.confirmarSenha) setErrors({ ...errors, confirmarSenha: '' })

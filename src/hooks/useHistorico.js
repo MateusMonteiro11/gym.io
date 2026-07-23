@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { listarHistoricos } from '../services/historico/historicoTreinosService'
 import { parseDateTime } from '../utils/dateUtils'
+import { logError } from '../utils/errorMessages'
 
 export function useHistorico(idUsuario) {
 
@@ -18,20 +19,14 @@ export function useHistorico(idUsuario) {
     try {
 
       const dados = await listarHistoricos(idUsuario)
-
-      console.log('[useHistorico] Dados recebidos:', dados)
-
       setHistorico(dados || [])
 
     } catch (err) {
 
-      console.error(
-        '[useHistorico] Erro ao carregar histórico:',
-        err
-      )
+      logError(err, '[useHistorico] Failed to load history')
 
       setErro(
-        err?.message ?? 'Erro ao carregar histórico'
+        'Erro ao carregar histórico'
       )
 
     } finally {
@@ -79,16 +74,9 @@ export function useHistorico(idUsuario) {
 
     const duracaoTotal =
       historico.reduce((acc, treino) => {
-
-        console.log(
-          '[duracao_segundos]',
-          treino.duracao_segundos
-        )
-
         return acc + Number(
           treino.duracao_segundos || 0
         )
-
       }, 0)
 
     const mediaSegundos =

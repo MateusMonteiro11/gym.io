@@ -9,6 +9,8 @@ import Button from './ui/Button'
 import Input, { Label } from './ui/Input'
 import { formatDatePtBr, formatTimePtBr } from '../utils/dateUtils'
 import { ui } from '../styles/theme'
+import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
+import { validateProfileImageFile } from '../utils/imageUtils'
 
 export default function UserProfileModal({ open, onClose, onUpdate }) {
   const { usuario } = useAuth()
@@ -35,7 +37,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
         setFotoPreview(usuarioDB?.foto_perfil || null)
         setFotoFile(null)
       } catch (err) {
-        console.error('Erro ao carregar dados do usuário:', err)
+        logError(err, '[UserProfileModal] Failed to load user data')
         setNome(usuario.email?.split('@')[0] || '')
         setStatus('')
         setFotoPreview(null)
@@ -49,14 +51,26 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
 
   const handleFotoChange = (e) => {
     const file = e.target.files?.[0]
-    if (file) {
-      setFotoFile(file)
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setFotoPreview(event.target?.result)
-      }
-      reader.readAsDataURL(file)
+    if (!file) return
+
+    const validation = validateProfileImageFile(file)
+
+    if (!validation.valid) {
+      alert({
+        title: 'Imagem inválida',
+        message: validation.message,
+        type: 'error',
+      })
+      e.target.value = ''
+      return
     }
+
+    setFotoFile(file)
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setFotoPreview(event.target?.result)
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleSalvar = async () => {
@@ -86,9 +100,11 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
       onUpdate?.()
       onClose?.()
     } catch (err) {
+      const message = getUserFriendlyErrorMessage(err, 'Não foi possível salvar o perfil.')
+      logError(err, '[UserProfileModal] Failed to save profile')
       alert({
         title: 'Erro ao salvar',
-        message: err?.message || 'Ocorreu um erro ao atualizar o perfil',
+        message,
         type: 'error',
       })
     } finally {
@@ -140,7 +156,15 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
               <div className="mb-4">
                 <div className="h-24 w-24 rounded-full bg-primary-muted flex items-center justify-center text-4xl text-primary overflow-hidden">
                   {fotoPreview ? (
-                    <img src={fotoPreview} alt="Foto" className="h-full w-full object-cover" />
+                    <img
+                      src={fotoPreview}
+                      alt="Foto"
+                      className="h-full w-full object-cover"
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none'
+                        event.currentTarget.parentElement?.classList?.add('bg-slate-200')
+                      }}
+                    />
                   ) : (
                     usuario?.email?.charAt(0).toUpperCase() || 'U'
                   )}

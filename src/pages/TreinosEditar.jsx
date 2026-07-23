@@ -28,6 +28,19 @@ import {
 import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
 import { ui } from '../styles/theme'
+import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
+
+const MAX_WORKOUT_NAME_LENGTH = 120
+const MAX_WORKOUT_DESCRIPTION_LENGTH = 500
+const MAX_SECTION_NAME_LENGTH = 100
+const MAX_SECTION_DESCRIPTION_LENGTH = 500
+
+function normalizeTextInput(value, maxLength) {
+  return (value ?? '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength)
+}
 
 function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSelectExercise }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -258,8 +271,8 @@ export default function TreinosEditar() {
           return
         }
 
-        setWorkoutName(treino.nome)
-        setWorkoutDescription(treino.descricao || '')
+        setWorkoutName(normalizeTextInput(treino.nome, MAX_WORKOUT_NAME_LENGTH))
+        setWorkoutDescription(normalizeTextInput(treino.descricao || '', MAX_WORKOUT_DESCRIPTION_LENGTH))
 
         setSections(
           treino.secoes_treino || []
@@ -277,9 +290,9 @@ export default function TreinosEditar() {
 
     } catch (error) {
 
-      console.error(error)
+      logError(error, '[TreinosEditar] Failed to load workout')
 
-      alert({ title: 'Erro', message: 'Erro ao carregar treino.', type: 'error' })
+      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível carregar o treino.'), type: 'error' })
 
     } finally {
 
@@ -299,6 +312,14 @@ export default function TreinosEditar() {
 
       setSaving(true)
 
+      const normalizedWorkoutName = normalizeTextInput(workoutName, MAX_WORKOUT_NAME_LENGTH)
+      const normalizedWorkoutDescription = normalizeTextInput(workoutDescription, MAX_WORKOUT_DESCRIPTION_LENGTH)
+
+      if (!normalizedWorkoutName) {
+        alert({ title: 'Nome obrigatório', message: 'Informe um nome para o treino.', type: 'warning' })
+        return
+      }
+
       // Validação: verificar se há pelo menos uma seção com pelo menos um exercício
       const hasValidSections = sections.some(section => section.treinos_exercicios && section.treinos_exercicios.length > 0)
       if (!hasValidSections) {
@@ -309,8 +330,8 @@ export default function TreinosEditar() {
       if (id) {
 
         await editarTreino(id, {
-          nome: workoutName,
-          descricao: workoutDescription,
+          nome: normalizedWorkoutName,
+          descricao: normalizedWorkoutDescription,
         })
 
         notify({ title: 'Sucesso', message: 'Treino atualizado!', type: 'success' })
@@ -320,9 +341,9 @@ export default function TreinosEditar() {
         const treinoCriado =
           await criarTreino({
 
-            nome: workoutName,
+            nome: normalizedWorkoutName,
 
-            descricao: workoutDescription,
+            descricao: normalizedWorkoutDescription,
 
             publico: false,
 
@@ -338,9 +359,9 @@ export default function TreinosEditar() {
 
     } catch (error) {
 
-      console.error(error)
+      logError(error, '[TreinosEditar] Failed to save workout')
 
-      alert({ title: 'Erro', message: 'Erro ao salvar treino.', type: 'error' })
+      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível salvar o treino.'), type: 'error' })
 
     } finally {
 
@@ -361,7 +382,10 @@ export default function TreinosEditar() {
         return
       }
 
-      if (!newSectionName.trim()) {
+      const normalizedSectionName = normalizeTextInput(newSectionName, MAX_SECTION_NAME_LENGTH)
+      const normalizedSectionDescription = normalizeTextInput(newSectionDescription, MAX_SECTION_DESCRIPTION_LENGTH)
+
+      if (!normalizedSectionName) {
 
         alert({ title: 'Nome obrigatório', message: 'Informe um nome para a seção.', type: 'warning' })
 
@@ -370,14 +394,14 @@ export default function TreinosEditar() {
 
       if (editingSection) {
         await editarSecao(editingSection.id_secao, {
-          nome: newSectionName,
-          descricao: newSectionDescription
+          nome: normalizedSectionName,
+          descricao: normalizedSectionDescription
         })
       } else {
         await criarSecao({
           id_treino: id,
-          nome: newSectionName,
-          descricao: newSectionDescription,
+          nome: normalizedSectionName,
+          descricao: normalizedSectionDescription,
           ordem: sections.length + 1
         })
       }
@@ -389,11 +413,11 @@ export default function TreinosEditar() {
 
     } catch (error) {
 
-      console.error(error)
+      logError(error, '[TreinosEditar] Failed to save section')
 
       alert({
         title: 'Erro na seção',
-        message: editingSection ? 'Erro ao atualizar seção.' : 'Erro ao criar seção.',
+        message: getUserFriendlyErrorMessage(error, editingSection ? 'Não foi possível atualizar a seção.' : 'Não foi possível criar a seção.'),
         type: 'error',
       })
     }
@@ -429,11 +453,11 @@ export default function TreinosEditar() {
 
     } catch (error) {
 
-      console.error(error)
+      logError(error, '[TreinosEditar] Failed to add exercise')
 
       alert({
         title: 'Erro',
-        message: 'Erro ao adicionar exercício.',
+        message: getUserFriendlyErrorMessage(error, 'Não foi possível adicionar o exercício.'),
         type: 'error',
       })
     }
@@ -471,8 +495,8 @@ export default function TreinosEditar() {
       await removerExercicio(idTreinoExercicio)
       await carregarTreino()
     } catch (error) {
-      console.error(error)
-      alert({ title: 'Erro', message: 'Erro ao remover exercício.', type: 'error' })
+      logError(error, '[TreinosEditar] Failed to remove exercise')
+      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível remover o exercício.'), type: 'error' })
     }
   }
 
@@ -511,8 +535,8 @@ export default function TreinosEditar() {
       await deletarSecao(idSecao)
       await carregarTreino()
     } catch (error) {
-      console.error(error)
-      alert({ title: 'Erro', message: 'Erro ao excluir seção.', type: 'error' })
+      logError(error, '[TreinosEditar] Failed to delete section')
+      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir a seção.'), type: 'error' })
     }
   }
 
@@ -531,8 +555,8 @@ export default function TreinosEditar() {
       notify({ title: 'Treino excluído', message: 'O treino foi removido com sucesso.', type: 'success' })
       navigate('/treinos')
     } catch (error) {
-      console.error(error)
-      alert({ title: 'Erro', message: 'Erro ao excluir treino.', type: 'error' })
+      logError(error, '[TreinosEditar] Failed to delete workout')
+      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir o treino.'), type: 'error' })
     }
   }
 
@@ -612,8 +636,9 @@ export default function TreinosEditar() {
             <input
               type="text"
               value={workoutName}
+              maxLength={MAX_WORKOUT_NAME_LENGTH}
               onChange={(e) =>
-                setWorkoutName(e.target.value)
+                setWorkoutName(normalizeTextInput(e.target.value, MAX_WORKOUT_NAME_LENGTH))
               }
               className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-blue-100"
             />
@@ -625,8 +650,9 @@ export default function TreinosEditar() {
             <textarea
               rows={4}
               value={workoutDescription}
+              maxLength={MAX_WORKOUT_DESCRIPTION_LENGTH}
               onChange={(e) =>
-                setWorkoutDescription(e.target.value)
+                setWorkoutDescription(normalizeTextInput(e.target.value, MAX_WORKOUT_DESCRIPTION_LENGTH))
               }
               placeholder="Adicione uma descrição breve para seu treino"
               className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-blue-100 resize-none"
@@ -716,8 +742,9 @@ export default function TreinosEditar() {
           <input
             type="text"
             value={newSectionName}
+            maxLength={MAX_SECTION_NAME_LENGTH}
             onChange={(e) =>
-              setNewSectionName(e.target.value)
+              setNewSectionName(normalizeTextInput(e.target.value, MAX_SECTION_NAME_LENGTH))
             }
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary"
           />
@@ -732,8 +759,9 @@ export default function TreinosEditar() {
 
           <textarea
             value={newSectionDescription}
+            maxLength={MAX_SECTION_DESCRIPTION_LENGTH}
             onChange={(e) =>
-              setNewSectionDescription(e.target.value)
+              setNewSectionDescription(normalizeTextInput(e.target.value, MAX_SECTION_DESCRIPTION_LENGTH))
             }
             rows={4}
             placeholder="Descrição opcional..."

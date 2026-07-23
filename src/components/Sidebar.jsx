@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { obterUsuario } from '../services/usuarios/usuariosService'
 import { logout } from '../services/auth/authService'
 import { useUi } from '../contexts/UiContext'
+import { isSafeRenderableImageUrl } from '../utils/imageUtils'
 import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import UserProfileModal from './UserProfileModal'
@@ -194,7 +195,7 @@ export default function Sidebar() {
             className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-slate-50 p-2 -ml-2"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary flex-shrink-0 overflow-hidden">
-              {userData?.foto_perfil ? (
+              {userData?.foto_perfil && isSafeRenderableImageUrl(userData.foto_perfil) ? (
                 <img src={userData.foto_perfil} alt="Foto" className="h-full w-full object-cover" />
               ) : (
                 (userData?.nome?.[0] || usuario?.email?.[0] || 'U').toUpperCase()

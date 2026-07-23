@@ -5,7 +5,8 @@ import {
 } from 'react'
 
 import { supabase } from '../lib/supabase'
-import { getRememberMe } from '../utils/sessionStorage'
+import { getRememberMe, subscribeToAuthStorageChanges } from '../utils/sessionStorage'
+import { logError } from '../utils/errorMessages'
 
 export const AuthContext =
   createContext()
@@ -28,52 +29,54 @@ export function AuthProvider({
 
   useEffect(() => {
 
+    const syncRememberMePreference = () => {
+      setRememberMeState(getRememberMe())
+    }
+
     async function carregarUsuario() {
       try {
-        // First, check if there's a stored session
         const {
           data: { session }
         } = await supabase.auth.getSession()
 
         if (session?.user) {
-          // Session was restored from localStorage
           setUsuario(session.user)
-          const shouldRemember = getRememberMe()
-          setRememberMeState(shouldRemember)
         } else {
-          // No stored session
           const {
             data: { user }
           } = await supabase.auth.getUser()
 
           setUsuario(user)
-          const shouldRemember = getRememberMe()
-          setRememberMeState(shouldRemember)
         }
       } catch (error) {
-        console.error('Error loading user:', error)
+        logError(error, '[AuthContext] Failed to load user')
         setUsuario(null)
       } finally {
+        syncRememberMePreference()
         setSessionRestored(true)
         setLoading(false)
       }
     }
 
+    syncRememberMePreference()
     carregarUsuario()
 
     const {
       data: listener
     } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-
-        setUsuario(
-          session?.user ?? null
-        )
+        setUsuario(session?.user ?? null)
+        syncRememberMePreference()
       }
     )
 
+    const unsubscribeStorage = subscribeToAuthStorageChanges(() => {
+      syncRememberMePreference()
+    })
+
     return () => {
       listener?.subscription?.unsubscribe()
+      unsubscribeStorage?.()
     }
 
   }, [])

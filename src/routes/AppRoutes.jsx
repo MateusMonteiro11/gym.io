@@ -86,7 +86,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/treinar/:id',
-    element: <TreinoPlayer />,
+    element: (
+      <PrivateRoute>
+        <TreinoPlayer />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/historico',

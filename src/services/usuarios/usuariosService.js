@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase'
+import { getUserFriendlyErrorMessage, logError } from '../../utils/errorMessages'
 
 export async function atualizarUsuario(idUsuario, { nome, status, fotoPerfil }) {
   const updateData = {}
@@ -31,7 +32,8 @@ export async function obterUsuario(idUsuario) {
     .eq('id_usuario', idUsuario)
 
   if (error) {
-    throw new Error(error.message)
+    logError(error, '[UsuariosService] Failed to load user')
+    throw new Error(getUserFriendlyErrorMessage(error, 'Não foi possível carregar os dados do usuário.'))
   }
 
   return data?.[0] || null
@@ -50,10 +52,11 @@ export async function uploadFotoPerfil(idUsuario, file) {
         await atualizarUsuario(idUsuario, { fotoPerfil })
         resolve(fotoPerfil)
       } catch (err) {
-        reject(err)
+        logError(err, '[UsuariosService] Failed to upload profile image')
+        reject(new Error(getUserFriendlyErrorMessage(err, 'Não foi possível enviar a foto de perfil.')))
       }
     }
-    reader.onerror = () => reject(new Error('Erro ao ler arquivo'))
+    reader.onerror = () => reject(new Error(getUserFriendlyErrorMessage(new Error('Erro ao ler arquivo'), 'Não foi possível ler a imagem.')))
     reader.readAsDataURL(file)
   })
 }

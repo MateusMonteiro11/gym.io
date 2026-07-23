@@ -4,6 +4,13 @@
 
 const REMEMBER_ME_KEY = 'gym_io_remember_me'
 const LAST_EMAIL_KEY = 'gym_io_last_email'
+const AUTH_STORAGE_EVENT = 'gym_io_auth_storage_changed'
+
+function notifyAuthStorageChange() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(AUTH_STORAGE_EVENT))
+  }
+}
 
 /**
  * Store the remember me preference
@@ -15,6 +22,8 @@ export function setRememberMe(rememberMe) {
   } else {
     localStorage.removeItem(REMEMBER_ME_KEY)
   }
+
+  notifyAuthStorageChange()
 }
 
 /**
@@ -23,6 +32,18 @@ export function setRememberMe(rememberMe) {
  */
 export function getRememberMe() {
   return localStorage.getItem(REMEMBER_ME_KEY) === 'true'
+}
+
+/**
+ * Get the storage target for auth persistence based on the remember me preference
+ * @returns {Storage} The storage implementation to use
+ */
+export function getSessionStorageTarget() {
+  try {
+    return getRememberMe() ? localStorage : sessionStorage
+  } catch {
+    return sessionStorage
+  }
 }
 
 /**
@@ -49,4 +70,22 @@ export function getLastEmail() {
 export function clearSessionPreferences() {
   localStorage.removeItem(REMEMBER_ME_KEY)
   localStorage.removeItem(LAST_EMAIL_KEY)
+  notifyAuthStorageChange()
+}
+
+/**
+ * Subscribe to remember-me and auth storage changes across tabs.
+ */
+export function subscribeToAuthStorageChanges(listener) {
+  if (typeof window === 'undefined') {
+    return () => {}
+  }
+
+  window.addEventListener(AUTH_STORAGE_EVENT, listener)
+  window.addEventListener('storage', listener)
+
+  return () => {
+    window.removeEventListener(AUTH_STORAGE_EVENT, listener)
+    window.removeEventListener('storage', listener)
+  }
 }

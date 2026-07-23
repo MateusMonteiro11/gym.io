@@ -1,3 +1,5 @@
+import { isSafeRenderableImageUrl } from '../utils/imageUtils'
+
 /**
  * @param {Object} props
  * @param {import('../utils/treinoUtils').ExercicioFlat[]} props.proximos
@@ -49,11 +51,14 @@ export default function NextExercisesList({ proximos = [], idSecaoAtual }) {
                 </div>
 
                 {/* Thumb */}
-                {ex.imagem ? (
+                {ex.imagem && isSafeRenderableImageUrl(ex.imagem) ? (
                   <img
                     src={ex.imagem}
                     alt={ex.nome}
                     className="w-9 h-9 rounded-lg object-cover flex-shrink-0"
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none'
+                    }}
                   />
                 ) : (
                   <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center

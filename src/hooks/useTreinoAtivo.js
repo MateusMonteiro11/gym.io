@@ -9,6 +9,7 @@ import {
   calcularSumarioTreino,
   treinoFinalizado,
 } from '../utils/treinoUtils'
+import { logError } from '../utils/errorMessages'
 
 /**
  * @typedef {Object} RegistroSerie
@@ -158,15 +159,11 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
 
     if (status !== 'idle') return
 
-    console.log('[useTreinoAtivo] Iniciando treino, status anterior:', status)
-
     setTempoDescanso(tempo)
 
     setStatus('ativo')
 
     workoutTimer.start()
-
-    console.log('[useTreinoAtivo] Timer iniciado, elapsed:', workoutTimer.elapsed)
 
   }, [status, workoutTimer])
 
@@ -233,13 +230,9 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
   const finalizarTreino = useCallback(async () => {
     if (status === 'finalizado') return
 
-    console.log('[useTreinoAtivo] Finalizando treino, elapsed:', workoutTimer.elapsed, 'status:', status)
-
     workoutTimer.pause()
     descansoTimer.reset() // garante que não há descanso pendente
     setStatus('finalizado')
-
-    console.log(workoutTimer.elapsed)
 
     await _salvarHistorico()
   }, [status, workoutTimer, descansoTimer, logSeries] )
@@ -249,8 +242,6 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
       onCancelar?.()
       return
     }
-
-    console.log('[useTreinoAtivo] Cancelando treino, descartando histórico e logs')
 
     workoutTimer.reset()
     descansoTimer.reset()
@@ -301,8 +292,6 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
     setSalvando(true)
     setErro(null)
 
-    console.log('[_salvarHistorico] Iniciando salvamento, elapsed atual:', workoutTimer.elapsed)
-
     try {
       const { salvarHistoricoTreino } = await import(
         '../services/treino_ativo/treinoAtivoService'
@@ -315,12 +304,10 @@ export function useTreinoAtivo({ treino, idUsuario, descansoPadrao = 60, onFinal
         logSeries,
       })
 
-      console.log('[_salvarHistorico] Treino salvo com sucesso')
-
       onFinalizar?.()
     } catch (err) {
-      console.error('[useTreinoAtivo] Erro ao salvar histórico:', err)
-      setErro(err?.message ?? 'Erro ao salvar treino.')
+      logError(err, '[useTreinoAtivo] Failed to save workout history')
+      setErro('Erro ao salvar treino.')
     } finally {
       setSalvando(false)
     }

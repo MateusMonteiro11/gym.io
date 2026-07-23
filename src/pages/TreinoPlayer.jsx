@@ -18,6 +18,7 @@ import { useAuth } from '../hooks/useAuth'
 import { buscarTreinoCompleto } from '../services/treinos/treinosService'
 
 import { useTreinoAtivo } from '../hooks/useTreinoAtivo'
+import { logError } from '../utils/errorMessages'
 
 export default function TreinoPlayer() {
 
@@ -25,18 +26,25 @@ export default function TreinoPlayer() {
 
   const { id } = useParams()
 
-  const { usuario } = useAuth()
+  const { usuario, loading: authLoading } = useAuth()
 
   const [treino, setTreino] = useState(null)
   const [loading, setLoading] = useState(true)
 
   const location = useLocation()
+  const from = `${location.pathname}${location.search}`
   const descansoPadrao = location.state?.descansoPadrao ?? 60
   const [modalInicialOpen, setModalInicialOpen] = useState(
     location.state?.descansoPadrao == null
   )
 
   useEffect(() => {
+    if (authLoading) return
+
+    if (!usuario?.id) {
+      navigate('/login', { state: { from }, replace: true })
+      return
+    }
 
     async function carregarTreino() {
 
@@ -48,7 +56,7 @@ export default function TreinoPlayer() {
 
       } catch (error) {
 
-        console.error(error)
+        logError(error, '[TreinoPlayer] Failed to load workout')
 
       } finally {
 
@@ -58,7 +66,7 @@ export default function TreinoPlayer() {
 
     carregarTreino()
 
-  }, [id])
+  }, [authLoading, from, id, navigate, usuario?.id])
 
   const treinoAtivo = useTreinoAtivo({
     treino,
@@ -89,7 +97,7 @@ export default function TreinoPlayer() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [shouldBlockNavigation])
 
-  if (loading) {
+  if (authLoading || loading || !usuario?.id) {
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">

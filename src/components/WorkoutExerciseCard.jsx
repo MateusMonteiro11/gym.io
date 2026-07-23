@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-
+import { isSafeRenderableImageUrl } from '../utils/imageUtils'
 
  /* Badge de série (ex.: "Série 2 / 3") */
 function SerieBadge({ serieAtual, totalSeries }) {
@@ -88,9 +88,17 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, onC
     <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
 
       {/* Imagem do exercício */}
-      {exercicio.imagem ? (
+      {exercicio.imagem && isSafeRenderableImageUrl(exercicio.imagem) ? (
         <div className="h-40 bg-slate-50 overflow-hidden">
-          <i className="fa-solid fa-dumbbell text-primary text-xl"></i>
+          <img
+            src={exercicio.imagem}
+            alt={exercicio.nome}
+            className="h-full w-full object-cover"
+            onError={(event) => {
+              event.currentTarget.style.display = 'none'
+              event.currentTarget.parentElement?.classList?.add('bg-slate-100')
+            }}
+          />
         </div>
       ) : (
         <div className="h-28 bg-gradient-to-br from-blue-50 to-indigo-100

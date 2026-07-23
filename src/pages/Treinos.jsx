@@ -15,11 +15,24 @@ import { ui } from '../styles/theme'
 
 import { useTreino } from '../hooks/useTreino'
 import { criarTreino, deletarTreino } from '../services/treinos/treinosService'
+import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 import { criarSecao } from '../services/treinos/secoesService'
 import { adicionarExercicio } from '../services/treinos/treinosExerciciosService'
 import { listarExercicios } from '../services/exercicios/exerciciosService'
 import { criarAgendamento } from '../services/agendamentos/agendamentosService'
 import { useAuth } from '../hooks/useAuth'
+
+const MAX_WORKOUT_NAME_LENGTH = 120
+const MAX_WORKOUT_DESCRIPTION_LENGTH = 500
+const MAX_SECTION_NAME_LENGTH = 100
+const MAX_SECTION_DESCRIPTION_LENGTH = 500
+
+function normalizeTextInput(value, maxLength) {
+  return (value ?? '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength)
+}
 
 function countExercises(workout) {
   return (
@@ -71,10 +84,10 @@ export default function Treinos() {
         type: 'success',
       })
     } catch (error) {
-      console.error('Erro ao excluir treino:', error)
+      logError(error, '[Treinos] Failed to delete workout')
       alert({
         title: 'Erro ao excluir treino',
-        message: error?.message || 'Tente novamente em instantes.',
+        message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir este treino.'),
         type: 'error',
       })
     }
@@ -97,10 +110,10 @@ export default function Treinos() {
         type: 'success',
       })
     } catch (error) {
-      console.error('Erro ao agendar treino:', error)
+      logError(error, '[Treinos] Failed to schedule workout')
       alert({
         title: 'Não foi possível agendar',
-        message: error?.message || 'Tente novamente em instantes.',
+        message: getUserFriendlyErrorMessage(error, 'Não foi possível agendar o treino.'),
         type: 'error',
       })
     }
@@ -413,7 +426,13 @@ function ModalCriarTreino({ open, onClose, usuario }) {
   }
 
   async function handleSaveSection() {
-    if (!newSectionName.trim()) {
+    const normalizedSectionName = normalizeTextInput(newSectionName, MAX_SECTION_NAME_LENGTH)
+    const normalizedSectionDescription = normalizeTextInput(
+      newSectionDescription,
+      MAX_SECTION_DESCRIPTION_LENGTH
+    )
+
+    if (!normalizedSectionName) {
       alert({
         title: 'Nome obrigatório',
         message: 'Informe um nome para identificar esta seção.',
@@ -426,7 +445,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
       setSections(
         sections.map((s) =>
           s.id_secao === editingSection.id_secao
-            ? { ...s, nome: newSectionName, descricao: newSectionDescription }
+            ? { ...s, nome: normalizedSectionName, descricao: normalizedSectionDescription }
             : s
         )
       )
@@ -435,8 +454,8 @@ function ModalCriarTreino({ open, onClose, usuario }) {
         ...sections,
         {
           id_secao: Date.now(),
-          nome: newSectionName,
-          descricao: newSectionDescription,
+          nome: normalizedSectionName,
+          descricao: normalizedSectionDescription,
           treinos_exercicios: [],
         },
       ])
@@ -513,6 +532,21 @@ function ModalCriarTreino({ open, onClose, usuario }) {
   async function handleSalvarTreino() {
     try {
       setSaving(true)
+      const normalizedWorkoutName = normalizeTextInput(workoutName, MAX_WORKOUT_NAME_LENGTH)
+      const normalizedWorkoutDescription = normalizeTextInput(
+        workoutDescription,
+        MAX_WORKOUT_DESCRIPTION_LENGTH
+      )
+
+      if (!normalizedWorkoutName) {
+        alert({
+          title: 'Nome obrigatório',
+          message: 'Informe um nome para o treino antes de salvar.',
+          type: 'warning',
+        })
+        return
+      }
+
       const hasValidSections = sections.some(
         (section) => section.treinos_exercicios?.length > 0
       )
@@ -526,8 +560,8 @@ function ModalCriarTreino({ open, onClose, usuario }) {
       }
 
       const treino = await criarTreino({
-        nome: workoutName,
-        descricao: workoutDescription,
+        nome: normalizedWorkoutName,
+        descricao: normalizedWorkoutDescription,
         publico: false,
         id_usuario: usuario.id,
       })
@@ -556,16 +590,16 @@ function ModalCriarTreino({ open, onClose, usuario }) {
 
       notify({
         title: 'Treino criado',
-        message: `"${workoutName}" foi salvo com sucesso.`,
+        message: `"${normalizedWorkoutName}" foi salvo com sucesso.`,
         type: 'success',
       })
       onClose()
       window.location.reload()
     } catch (error) {
-      console.error(error)
+      logError(error, '[Treinos] Failed to save workout')
       alert({
         title: 'Erro ao salvar',
-        message: 'Não foi possível criar o treino. Tente novamente.',
+        message: getUserFriendlyErrorMessage(error, 'Não foi possível criar o treino.'),
         type: 'error',
       })
     } finally {
@@ -588,14 +622,16 @@ function ModalCriarTreino({ open, onClose, usuario }) {
               <Input
                 type="text"
                 value={workoutName}
-                onChange={(e) => setWorkoutName(e.target.value)}
+                maxLength={MAX_WORKOUT_NAME_LENGTH}
+                onChange={(e) => setWorkoutName(normalizeTextInput(e.target.value, MAX_WORKOUT_NAME_LENGTH))}
                 className="mt-2 text-lg font-semibold"
               />
               <Label className="mt-4 block">Descrição (opcional)</Label>
               <textarea
                 rows={3}
                 value={workoutDescription}
-                onChange={(e) => setWorkoutDescription(e.target.value)}
+                maxLength={MAX_WORKOUT_DESCRIPTION_LENGTH}
+                onChange={(e) => setWorkoutDescription(normalizeTextInput(e.target.value, MAX_WORKOUT_DESCRIPTION_LENGTH))}
                 placeholder="Objetivo ou foco do treino..."
                 className={`${ui.input} mt-2 resize-none`}
               />
@@ -729,7 +765,8 @@ function ModalCriarTreino({ open, onClose, usuario }) {
             <Label>Nome da seção</Label>
             <Input
               value={newSectionName}
-              onChange={(e) => setNewSectionName(e.target.value)}
+              maxLength={MAX_SECTION_NAME_LENGTH}
+              onChange={(e) => setNewSectionName(normalizeTextInput(e.target.value, MAX_SECTION_NAME_LENGTH))}
               className="mt-2"
             />
           </div>
@@ -737,7 +774,8 @@ function ModalCriarTreino({ open, onClose, usuario }) {
             <Label>Descrição</Label>
             <textarea
               value={newSectionDescription}
-              onChange={(e) => setNewSectionDescription(e.target.value)}
+              maxLength={MAX_SECTION_DESCRIPTION_LENGTH}
+              onChange={(e) => setNewSectionDescription(normalizeTextInput(e.target.value, MAX_SECTION_DESCRIPTION_LENGTH))}
               rows={3}
               placeholder="Opcional"
               className={`${ui.input} mt-2 resize-none`}

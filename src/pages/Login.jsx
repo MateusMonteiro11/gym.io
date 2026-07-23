@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import logoImg from '../assets/images/logo.png'
 import { login, resetPassword } from '../services/auth/authService'
 import { getLastEmail } from '../utils/sessionStorage'
 import { useUi } from '../contexts/UiContext'
 import { useAuth } from '../hooks/useAuth'
+import { getUserFriendlyErrorMessage } from '../utils/errorMessages'
 import AuthShell from '../components/ui/AuthShell'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
@@ -28,6 +29,7 @@ const itemMotion = {
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { alert, notify } = useUi()
   const { usuario, loading } = useAuth()
   const [email, setEmail] = useState(getLastEmail() || '')
@@ -40,10 +42,15 @@ export default function Login() {
   const [errors, setErrors] = useState({})
   const [resetErrors, setResetErrors] = useState({})
 
-  // If user is already authenticated, redirect to dashboard
-  if (!loading && usuario) {
-    navigate('/dashboard')
-  }
+  const redirectTarget = location.state?.from
+    ? `${location.state.from.pathname}${location.state.from.search}${location.state.from.hash || ''}`
+    : '/dashboard'
+
+  useEffect(() => {
+    if (!loading && usuario) {
+      navigate(redirectTarget, { replace: true })
+    }
+  }, [loading, navigate, redirectTarget, usuario])
 
   function validarFormulario() {
     const novoErros = {}
@@ -75,9 +82,10 @@ export default function Login() {
     try {
       setIsLoading(true)
       await login(email, senha, rememberMe)
-      navigate('/dashboard')
+      navigate(redirectTarget)
     } catch (error) {
-      alert({ title: 'Erro ao entrar', message: error.message, type: 'error' })
+      const message = error?.message || getUserFriendlyErrorMessage(error, 'Não foi possível entrar.')
+      alert({ title: 'Erro ao entrar', message, type: 'error' })
     } finally {
       setIsLoading(false)
     }
@@ -100,7 +108,8 @@ export default function Login() {
       setResetEmail('')
       setResetErrors({})
     } catch (error) {
-      alert({ title: 'Erro', message: error.message, type: 'error' })
+      const message = error?.message || getUserFriendlyErrorMessage(error, 'Não foi possível enviar o email de recuperação.')
+      alert({ title: 'Erro', message, type: 'error' })
     } finally {
       setResetLoading(false)
     }
@@ -151,6 +160,9 @@ export default function Login() {
                   type="text"
                   placeholder="Email"
                   value={email}
+                  maxLength={254}
+                  autoCapitalize="none"
+                  autoCorrect="off"
                   onChange={(e) => {
                     setEmail(e.target.value)
                     if (errors.email) setErrors({ ...errors, email: '' })
@@ -165,6 +177,7 @@ export default function Login() {
                   type="password"
                   placeholder="Senha"
                   value={senha}
+                  maxLength={72}
                   onChange={(e) => {
                     setSenha(e.target.value)
                     if (errors.senha) setErrors({ ...errors, senha: '' })
@@ -222,6 +235,9 @@ export default function Login() {
             type="text"
             placeholder="Digite seu email"
             value={resetEmail}
+            maxLength={254}
+            autoCapitalize="none"
+            autoCorrect="off"
             onChange={(e) => {
               setResetEmail(e.target.value)
               if (resetErrors.resetEmail) setResetErrors({ ...resetErrors, resetEmail: '' })
