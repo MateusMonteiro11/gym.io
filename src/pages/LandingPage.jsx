@@ -93,10 +93,9 @@ const philosophy = [
 ]
 
 const creatorPillars = [
-    'Design concebido utilizando Figma',
-    'Arquitetura Modular através de Javascript integrado ao React',
-    'Persistência assegurada em uma database própria',
-    'Frameworks de desenvolvimento para consistência visual',
+    'Arquitetou o design utilizando Figma',
+    'Construiu toda a arquitetura modular',
+    'Conduziu e assegurou a persitência',
 ]
 
 function SectionHeader({ eyebrow, title, description, align = 'center' }) {
@@ -556,10 +555,9 @@ function CreatorSection() {
               </div>
             </div>
             <p className="text-base leading-8 text-slate-700 w-full block break-words">
-              Mateus Monteiro é estudante de Ciência da Computação <br>
-              </br> dedicado à criação de soluções eficientes com base em conhecimentos técnicos adquiridos ao longo da graduação<br>
-              </br> e de experiências profissionais. Durante o desenvolvimento Mateus foi responsável por toda a arquitetura da aplicação desde a concepção lógica da interface até a implementação <br>
-              </br>da arquitetura modular, autenticação, segurança e demais componentes que sustentam a plataforma.
+              Mateus Monteiro é estudante de Ciência da Computação
+              dedicado à criação de soluções eficientes com base em conhecimentos técnicos adquiridos ao longo da graduação. Durante o desenvolvimento Mateus foi responsável por toda a arquitetura da aplicação desde a concepção da interface até a implementação
+              da arquitetura modular, autenticação, segurança e demais componentes que sustentam a plataforma.
             </p>
             <div className="mt-8 grid gap-3">
               {creatorPillars.map((pillar) => (
