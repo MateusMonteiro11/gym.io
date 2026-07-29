@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import logoBlueImg from '../assets/images/logo_blue.png'
-import mateusProfileImg from '../assets/images/mateus_profile.jpeg'
+import mateusProfileImg from '../assets/images/mateus_profile.png'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 22 },
@@ -50,19 +50,19 @@ const metrics = [
 const features = [
   {
     title: 'Treinos personalizados',
-    description: 'Crie rotinas com seções, exercicios e organização clara para cada objetivo.',
+    description: 'Crie rotinas com seções, exercícios e organização clara para cada objetivo.',
     icon: Target,
     accent: 'from-blue-100 via-cyan-50 to-white',
   },
   {
-    title: 'Organização de workouts',
-    description: 'Centralize treinos, dias e próximos passos em uma interface rápida de escanear.',
+    title: 'Organização de treinos',
+    description: 'Centralize treinos, dias e próximos passos em uma interface fácil de escanear.',
     icon: CalendarClock,
     accent: 'from-cyan-100 via-blue-50 to-white',
   },
   {
-    title: 'Visualização de exercicios',
-    description: 'Veja series, cargas e detalhes do treino sem perder contexto durante a sessão.',
+    title: 'Visualização de exercícios',
+    description: 'Veja séries, cargas e detalhes do treino sem perder contexto durante a sessão.',
     icon: Dumbbell,
     accent: 'from-sky-100 via-white to-blue-50',
   },
@@ -73,7 +73,7 @@ const features = [
     accent: 'from-blue-50 via-emerald-50 to-white',
   },
   {
-    title: 'Historico inteligente',
+    title: 'Histórico inteligente',
     description: 'Recupere treinos concluídos e mantenha uma linha do tempo confiável da prática.',
     icon: History,
     accent: 'from-slate-50 via-blue-50 to-white',
@@ -93,10 +93,10 @@ const philosophy = [
 ]
 
 const creatorPillars = [
-  'UX/UI limpo e funcional',
-  'Arquitetura Modular',
-  'Dados de autenticação seguros',
-  'Frameworks para consistência visual',
+    'Design concebido utilizando Figma',
+    'Arquitetura Modular através de Javascript integrado ao React',
+    'Persistência assegurada em uma database própria',
+    'Frameworks de desenvolvimento para consistência visual',
 ]
 
 function SectionHeader({ eyebrow, title, description, align = 'center' }) {
@@ -148,7 +148,7 @@ function DashboardPreview({ compact = false }) {
                   <p className="text-xs text-slate-500">Training workspace</p>
                 </div>
               </div>
-              {['Painel', 'Treinos', 'Treinar', 'Historico'].map((item, index) => (
+              {['Painel', 'Treinos', 'Treinar', 'Histórico'].map((item, index) => (
                 <div
                   key={item}
                   className={`mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium ${
@@ -193,13 +193,13 @@ function DashboardPreview({ compact = false }) {
                 <div className="mb-5 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-slate-950">Push strength</p>
-                    <p className="text-xs text-slate-500">Peito, ombros e triceps</p>
+                    <p className="text-xs text-slate-500">Peito, ombros e tríceps</p>
                   </div>
                   <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                     ativo
                   </span>
                 </div>
-                {['Supino reto', 'Desenvolvimento', 'Triceps corda'].map((item, index) => (
+                {['Supino reto', 'Desenvolvimento', 'Tríceps corda'].map((item, index) => (
                   <div key={item} className="mb-3 flex items-center justify-between rounded-xl bg-slate-50 p-3 last:mb-0">
                     <div className="flex items-center gap-3">
                       <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-muted text-xs font-semibold text-primary">
@@ -207,7 +207,7 @@ function DashboardPreview({ compact = false }) {
                       </span>
                       <p className="text-sm font-medium text-slate-700">{item}</p>
                     </div>
-                    <p className="text-xs text-slate-400">4 series</p>
+                    <p className="text-xs text-slate-400">4 séries</p>
                   </div>
                 ))}
               </div>
@@ -248,11 +248,11 @@ function Hero() {
           <img src={logoBlueImg} alt="" className="h-10 w-10 rounded-xl shadow-sm ring-1 ring-slate-200/80" />
           <span className="text-base font-semibold tracking-tight text-slate-950">Gym.io</span>
         </Link>
-        <div className="hidden items-center gap-12 text-sm font-medium text-slate-600 md:flex md:flex-1 md:justify-center md:translate-x-10">
+        <div className="hidden items-center gap-10 text-sm font-medium text-slate-800 md:flex md:flex-1 md:justify-center md:translate-x-12">
           <a href="#features" className="transition hover:text-primary">Recursos</a>
           <a href="#showcase" className="transition hover:text-primary">Produto</a>
           <a href="#experience" className="transition hover:text-primary">Experiência</a>
-          <a href="#creator" className="transition hover:text-primary">Criador</a>
+          <a href="#creator" className="transition hover:text-primary">Criadores</a>
         </div>
         <div className="flex items-center gap-2">
           <Link to="/login" className="hidden rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 transition hover:text-primary sm:inline-flex">
@@ -262,7 +262,7 @@ function Hero() {
             to="/cadastro"
             className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:bg-primary-hover"
           >
-            Comecar
+            Começar
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -287,7 +287,7 @@ function Hero() {
           Treinos organizados com a clareza de um produto moderno.
         </motion.h1>
         <motion.p variants={fadeUp} className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-          Gym.io transforma planejamento, execução e histórico de workouts em uma experiência limpa, rapida e profissional.
+          Gym.io transforma planejamento, execução e histórico de treinos em uma experiência limpa, rápida e profissional.
         </motion.p>
         <motion.div variants={fadeUp} className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
@@ -352,8 +352,8 @@ function FeaturesSection() {
     <section id="features" className="px-5 py-24 sm:px-6 lg:px-8">
       <SectionHeader
         eyebrow="Recursos"
-        title="Tudo que um treino precisa, sem transformar a rotina em planilha."
-        description="As ferramentas principais ficam próximas, visuais e prontas para o proximo movimento."
+        title="Tudo o que um treino precisa, sem transformar a rotina em planilha."
+        description="As ferramentas principais ficam próximas, visuais e prontas para o próximo movimento."
       />
       <motion.div
         className="mx-auto mt-14 grid max-w-7xl grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
@@ -393,8 +393,8 @@ function ShowcaseSection() {
         <SectionHeader
           align="left"
           eyebrow="Dashboard"
-          title="Uma visao operacional para treinos reais."
-          description="A plataforma prioriza leitura rapida, ações claras e progresso visivel. O resultado é uma interface leve, mesmo quando o treino tem detalhes."
+          title="Uma visão operacional para treinos reais."
+          description="A plataforma prioriza leitura rápida, ações claras e progresso visível. O resultado é uma interface leve, mesmo quando o treino tem detalhes."
         />
         <motion.div
           initial={{ opacity: 0, x: 24 }}
@@ -418,7 +418,7 @@ function ShowcaseSection() {
             transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
           >
             <p className="text-xs text-slate-500">Sessão atual</p>
-            <p className="mt-1 text-sm font-semibold text-primary">12 series concluidas</p>
+            <p className="mt-1 text-sm font-semibold text-primary">12 séries concluídas</p>
           </motion.div>
         </motion.div>
       </div>
@@ -434,7 +434,7 @@ function ExperienceSection() {
           align="left"
           eyebrow="Experiência"
           title="Produtividade aplicada ao treino."
-          description="Gym.io trata o treino como um fluxo de trabalho pessoal: preparar, executar, registrar e aprender com o que aconteceu."
+          description="Gym.io trata o treino como um fluxo de trabalho pessoal para preparar, executar, registrar e aprender com o que aconteceu."
         />
         <motion.div
           className="space-y-4"
@@ -494,7 +494,7 @@ function ResponsiveSection() {
                     <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-primary to-cyan-400" />
                   </div>
                 </div>
-                {['Desenvolvimento', 'Elevação lateral', 'Triceps testa'].map((item) => (
+                {['Desenvolvimento', 'Elevação lateral', 'Tríceps testa'].map((item) => (
                   <div key={item} className="mt-3 flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/80">
                     <span className="text-sm font-medium text-slate-700">{item}</span>
                     <ChevronRight size={16} className="text-slate-400" />
@@ -508,14 +508,14 @@ function ResponsiveSection() {
           <SectionHeader
             align="left"
             eyebrow="Responsivo"
-            title="Do planejamento no desktop a execução no celular."
-            description="A experiência mantém o mesmo padrão visual em telas grandes e pequenas, com controles previsiveis e foco no que precisa acontecer agora."
+            title="Do planejamento no desktop à execução no celular."
+            description="A experiência mantém o mesmo padrão visual em telas grandes e pequenas, com controles previsíveis e foco no que precisa acontecer agora."
           />
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             {[
               [MonitorSmartphone, 'Layout adaptável'],
               [ShieldCheck, 'Fluxos protegidos'],
-              [Activity, 'Leitura rapida'],
+              [Activity, 'Leitura rápida'],
               [Zap, 'Interações suaves'],
             ].map(([Icon, label]) => (
               <div key={label} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-700 shadow-sm shadow-blue-900/5">
@@ -555,8 +555,11 @@ function CreatorSection() {
                 <p className="text-sm text-slate-500">Desenvolvedor e universitário</p>
               </div>
             </div>
-            <p className="text-base leading-8 text-slate-700">
-              Gym.io nasceu como um projeto para unir treino, organização e tecnologia em uma experiência simples de usar. A ideia foi construir uma plataforma com cara de produto real: fluxos claros, visual consistente e uma base pronta para evoluir.
+            <p className="text-base leading-8 text-slate-700 w-full block break-words">
+              Mateus Monteiro é estudante de Ciência da Computação <br>
+              </br> dedicado à criação de soluções eficientes com base em conhecimentos técnicos adquiridos ao longo da graduação<br>
+              </br> e de experiências profissionais. Durante o desenvolvimento Mateus foi responsável por toda a arquitetura da aplicação desde a concepção lógica da interface até a implementação <br>
+              </br>da arquitetura modular, autenticação, segurança e demais componentes que sustentam a plataforma.
             </p>
             <div className="mt-8 grid gap-3">
               {creatorPillars.map((pillar) => (
@@ -573,8 +576,8 @@ function CreatorSection() {
           <SectionHeader
             align="left"
             eyebrow="Sobre o projeto"
-            title="Um projeto pensado como produto, nao apenas como tela."
-            description="A construção prioriza UX, composição visual, componentização e consistência técnica. Cada área existe para reduzir fricção e tornar a gestão de treinos mais clara."
+            title="Um projeto pensado como produto, não apenas como experiência de tela."
+            description="O Gym.io nasceu para unir treino, organização e tecnologia em uma plataforma intuitiva, com foco na experiência do usuário, fluxos claros e uma base para evolução."
           />
           <motion.div
             className="mt-8 grid gap-4 sm:grid-cols-2"
@@ -584,7 +587,7 @@ function CreatorSection() {
             variants={stagger}
           >
             {[
-              ['React + Vite', 'Interface rapida e modular.'],
+              ['React + Vite', 'Interface rápida e modular.'],
               ['TailwindCSS', 'Sistema visual leve e consistente.'],
               ['Supabase', 'Autenticação e dados integrados.'],
               ['Framer Motion', 'Movimento sútil e premium.'],
