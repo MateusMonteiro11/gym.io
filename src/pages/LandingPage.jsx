@@ -248,7 +248,7 @@ function Hero() {
           <img src={logoBlueImg} alt="" className="h-10 w-10 rounded-xl shadow-sm ring-1 ring-slate-200/80" />
           <span className="text-base font-semibold tracking-tight text-slate-950">Gym.io</span>
         </Link>
-        <div className="hidden items-center gap-10 text-sm font-medium text-slate-800 md:flex md:flex-1 md:justify-center md:translate-x-12">
+        <div className="hidden items-center gap-10 text-sm font-medium text-slate-800 md:flex md:flex-1 md:justify-center md:translate-x-16">
           <a href="#features" className="transition hover:text-primary">Recursos</a>
           <a href="#showcase" className="transition hover:text-primary">Produto</a>
           <a href="#experience" className="transition hover:text-primary">Experiência</a>
