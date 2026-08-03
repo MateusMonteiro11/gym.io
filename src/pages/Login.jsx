@@ -129,10 +129,10 @@ export default function Login() {
             />
             <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl md:text-4xl">Bem-vindo de volta</h1>
             <p className="mx-auto mb-5 max-w-sm text-base font-medium leading-7 text-white/80 md:mb-6 md:text-lg">
-              Continue organizando treinos, sessões e progresso em um workspace simples com:
+              Continue organizando treinos, sessões e progresso em um workspace simples.
             </p>
             <div className="mx-auto grid max-w-sm grid-cols-3 gap-2">
-              {['Treinos', 'Histórico', 'Agendamentos'].map((item) => (
+              {[].map((item) => (
                 <div key={item} className="rounded-2xl border border-white/30 bg-white/10 px-3 py-2 text-center text-xs font-semibold text-white shadow-sm dark:border-slate-600/70 dark:bg-slate-800/60 dark:text-white">
                   {item}
                 </div>
