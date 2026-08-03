@@ -165,7 +165,7 @@ export default function Cadastro() {
               Inicie sua jornada de treinos conosco
             </p>
 
-            <p className="mx-auto rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+            <p className="mx-auto rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm dark:border-slate-600/70 dark:bg-slate-800/60 dark:text-white">
               É prático, rápido e seguro
             </p>
 
@@ -182,7 +182,7 @@ export default function Cadastro() {
             <h2 className="text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
               Crie sua conta
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
               Configure seu acesso e comece a organizar seus treinos.
             </p>
           </motion.div>
@@ -322,7 +322,7 @@ export default function Cadastro() {
               animate={errors.termos ? { x: [-2, 2, -2, 2, 0] } : {}}
               transition={{ duration: 0.3 }}
             >
-              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5">
+              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:shadow-black/20">
 
                 <input
                   type="checkbox"
@@ -397,7 +397,7 @@ export default function Cadastro() {
             </Button>
             </motion.div>
 
-            <motion.p variants={itemMotion} className="text-center text-sm text-slate-600">
+              <motion.p variants={itemMotion} className="text-center text-sm text-slate-600 dark:text-slate-300">
 
               Já possui uma conta?{' '}
 

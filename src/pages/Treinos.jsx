@@ -141,7 +141,7 @@ export default function Treinos() {
 
       <section className="mb-12">
         <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-muted text-primary">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-muted text-primary dark:bg-slate-800 dark:text-white">
             <i className="fa-solid fa-layer-group" />
           </span>
           <div>
@@ -165,7 +165,7 @@ export default function Treinos() {
       <section>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-white">
               <i className="fa-solid fa-user-pen" />
             </span>
             <div>
@@ -182,7 +182,7 @@ export default function Treinos() {
 
         {meusTreinosLocal.length === 0 ? (
           <Card className={`${ui.cardPadding} text-center`}>
-            <div className={ui.emptyIcon}>
+            <div className={`${ui.emptyIcon} dark:bg-slate-800 dark:text-white`}>
               <i className="fa-solid fa-folder-open" />
             </div>
             <p className="font-semibold text-slate-900">Nenhum treino personalizado ainda</p>
@@ -248,21 +248,21 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
             setIsOpen(true)
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
         {searchState && (
           <button
             type="button"
             onClick={() => onSearchChange('')}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-white"
           >
-            <i className="fa-solid fa-times text-sm" />
+            <i className="fa-solid fa-times text-sm dark:text-white" />
           </button>
         )}
       </div>
 
       {isOpen && searchState && (
-        <div className="absolute top-full left-0 right-0 z-10 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-72 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 z-10 mt-2 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
           {filteredExercises.length > 0 ? (
             <div className="p-2">
               {filteredExercises.map((exercise) => (
@@ -273,7 +273,7 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
                     onSelectExercise(exercise.id_exercicio)
                     setIsOpen(false)
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-blue-50 text-slate-900 transition-colors duration-150 mb-1 last:mb-0"
+                  className="mb-1 w-full rounded-lg px-3 py-2.5 text-left text-slate-900 transition-colors duration-150 hover:bg-blue-50 dark:text-slate-100 dark:hover:bg-slate-800 last:mb-0"
                 >
                   <p className="font-medium text-sm">{exercise.nome}</p>
                   {exercise.grupo_muscular && (
@@ -313,13 +313,13 @@ function WorkoutCard({
       />
 
       {/* Action Icons Header */}
-      <div className="flex items-center justify-end gap-1.5 border-b border-slate-100 bg-slate-50 px-3 py-2">
+      <div className="flex items-center justify-end gap-1.5 border-b border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
         <Link
           to={viewPath}
           title="Visualizar treino"
-          className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 transition-all duration-200 text-xs font-medium"
+          className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-slate-200 text-slate-700 transition-all duration-200 text-xs font-medium hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
         >
-          <i className="fa-solid fa-eye text-xs" />
+          <i className="fa-solid fa-eye text-xs dark:text-white" />
           <span className="hidden sm:inline">Visualizar</span>
         </Link>
         {onAgendar && (
@@ -327,9 +327,9 @@ function WorkoutCard({
             type="button"
             onClick={() => onAgendar(workout)}
             title="Agendar treino"
-            className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-primary text-white hover:bg-primary-hover transition-all duration-200 text-xs font-medium"
+            className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-primary text-white transition-all duration-200 text-xs font-medium hover:bg-primary-hover dark:bg-primary dark:text-white"
           >
-            <i className="fa-solid fa-calendar-plus text-xs" />
+            <i className="fa-solid fa-calendar-plus text-xs text-white" />
             <span className="hidden sm:inline">Agendar</span>
           </button>
         )}
@@ -339,15 +339,19 @@ function WorkoutCard({
         <div className="mb-4 flex items-start justify-between gap-3">
           <span
             className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-lg ${
-              isSystem ? 'bg-primary-muted text-primary' : 'bg-slate-100 text-slate-700'
+              isSystem
+                ? 'bg-primary-muted text-primary dark:bg-slate-800 dark:text-white'
+                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-white'
             }`}
           >
-            <i className={`fa-solid ${isSystem ? 'fa-bookmark' : 'fa-dumbbell'}`} />
+            <i className={`fa-solid ${isSystem ? 'fa-bookmark' : 'fa-dumbbell'} dark:text-white`} />
           </span>
           <div className="flex flex-col items-end gap-1.5">
             <span
               className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                isSystem ? 'bg-primary-muted text-primary' : 'bg-slate-100 text-slate-600'
+                isSystem
+                  ? 'bg-primary-muted text-primary dark:bg-slate-800 dark:text-white'
+                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-100'
               }`}
             >
               {isSystem ? 'Sistema' : 'Personalizado'}
@@ -358,36 +362,36 @@ function WorkoutCard({
                   type="button"
                   onClick={() => onDelete?.(workout)}
                   title="Excluir treino"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all duration-200"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition-all duration-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-white dark:hover:bg-rose-900/70"
                 >
-                  <i className="fa-solid fa-trash text-xs" />
+                  <i className="fa-solid fa-trash text-xs dark:text-white" />
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate(editPath)}
                   title="Editar treino"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-200"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-all duration-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
                 >
-                  <i className="fa-solid fa-pen text-xs" />
+                  <i className="fa-solid fa-pen text-xs dark:text-white" />
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        <h3 className="font-semibold text-slate-900 line-clamp-1">{workout.nome}</h3>
-        <p className="mt-1 line-clamp-2 text-sm text-slate-600">
+        <h3 className="line-clamp-1 font-semibold text-slate-900 dark:text-slate-50">{workout.nome}</h3>
+        <p className="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
           {workout.descricao || 'Sem descrição'}
         </p>
 
         <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
-          <div className="rounded-lg border border-slate-100 bg-slate-50 py-2">
-            <p className="font-semibold text-slate-900">{sectionCount}</p>
-            <p className="text-slate-500">seções</p>
+          <div className="rounded-lg border border-slate-100 bg-slate-50 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
+            <p className="font-semibold text-slate-900 dark:text-slate-100">{sectionCount}</p>
+            <p className="text-slate-500 dark:text-slate-400">seções</p>
           </div>
-          <div className="rounded-lg border border-slate-100 bg-slate-50 py-2">
-            <p className="font-semibold text-slate-900">{exerciseCount}</p>
-            <p className="text-slate-500">exercícios</p>
+          <div className="rounded-lg border border-slate-100 bg-slate-50 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
+            <p className="font-semibold text-slate-900 dark:text-slate-100">{exerciseCount}</p>
+            <p className="text-slate-500 dark:text-slate-400">exercícios</p>
           </div>
         </div>
       </div>
@@ -648,12 +652,12 @@ function ModalCriarTreino({ open, onClose, usuario }) {
               </Button>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Resumo</p>
-              <p className="mt-3 text-3xl font-bold text-slate-900">{sections.length}</p>
-              <p className="text-sm text-slate-600">seções adicionadas</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Resumo</p>
+              <p className="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-50">{sections.length}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300">seções adicionadas</p>
               <Button
                 variant="secondary"
-                className="mt-6 w-full"
+                className="mt-6 w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                 onClick={() => {
                   setEditingSection(null)
                   setNewSectionName(`Seção ${sections.length + 1}`)
@@ -669,12 +673,12 @@ function ModalCriarTreino({ open, onClose, usuario }) {
           {sections.map((section) => (
             <div
               key={section.id_secao}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20"
             >
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">{section.nome}</h3>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">{section.nome}</h3>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                     {section.descricao || 'Sem descrição'}
                   </p>
                 </div>
@@ -682,16 +686,16 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                   <button
                     type="button"
                     onClick={() => handleEditSection(section)}
-                    className={`${ui.btnGhost} text-sm`}
+                    className={`${ui.btnGhost} text-sm dark:text-slate-100 dark:hover:bg-slate-800`}
                   >
-                    <i className="fa-solid fa-pen" /> Editar
+                    <i className="fa-solid fa-pen dark:text-white" /> Editar
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDeleteSection(section.id_secao)}
                     className={`${ui.btnDanger} text-sm py-2 px-4`}
                   >
-                    <i className="fa-solid fa-trash" /> Excluir
+                    <i className="fa-solid fa-trash text-white" /> Excluir
                   </button>
                 </div>
               </div>
@@ -722,21 +726,21 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                 {section.treinos_exercicios?.map((item, index) => (
                   <div
                     key={item.id_treino_exercicio}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-3"
+                    className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-3 dark:bg-slate-950/70"
                   >
                     <div>
-                      <p className="font-medium text-slate-900">{item.exercicios?.nome}</p>
-                      <p className="text-xs text-slate-600">
+                      <p className="font-medium text-slate-900 dark:text-slate-50">{item.exercicios?.nome}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
                         {item.series || 4} séries • {item.repeticoes || 12} reps
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveExercise(item.id_treino_exercicio)}
-                      className={`${ui.iconBtn} text-danger hover:bg-danger-muted`}
+                      className={`${ui.iconBtn} text-danger hover:bg-danger-muted dark:text-white dark:hover:bg-slate-800`}
                       aria-label="Remover exercício"
                     >
-                      <i className="fa-solid fa-trash" />
+                      <i className="fa-solid fa-trash text-white" />
                     </button>
                   </div>
                 ))}
@@ -744,8 +748,8 @@ function ModalCriarTreino({ open, onClose, usuario }) {
             </div>
           ))}
         </div>
-        <div className="border-t border-slate-100 p-4 flex justify-end">
-          <Button variant="secondary" onClick={onClose}>
+        <div className="border-t border-slate-100 p-4 flex justify-end dark:border-slate-700/70">
+          <Button variant="secondary" onClick={onClose} className="dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800">
             Fechar
           </Button>
         </div>

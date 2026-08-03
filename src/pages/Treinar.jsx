@@ -20,10 +20,10 @@ function TreinoCard({ treino, onIniciar }) {
   )
 
   return (
-    <div className="bg-white border rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition-all">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
 
       {/* Action Icon Header */}
-      <div className="flex items-center justify-end gap-2 border-b border-slate-100 bg-slate-50 px-4 py-2">
+      <div className="flex items-center justify-end gap-2 border-b border-slate-100 bg-slate-50 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
         <button
           onClick={() => onIniciar(treino)}
           title="Iniciar treino"
@@ -39,32 +39,32 @@ function TreinoCard({ treino, onIniciar }) {
         <div className="flex items-start justify-between">
 
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
               {treino.nome}
             </h3>
 
-            <p className="text-sm text-slate-600 mt-1">
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
               {treino.descricao || 'Sem descrição'}
             </p>
           </div>
 
-          <div className="w-12 h-12 bg-primary-muted rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-muted dark:bg-slate-800">
             <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
 
-          <div className="bg-slate-50 rounded-xl p-3 border">
-            <p className="text-slate-600">Exercícios</p>
-            <strong className="text-slate-700">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700/70 dark:bg-slate-950/70">
+            <p className="text-slate-600 dark:text-slate-400">Exercícios</p>
+            <strong className="text-slate-700 dark:text-slate-100">
               {totalExercicios}
             </strong>
           </div>
 
-          <div className="bg-slate-50 rounded-xl p-3 border">
-            <p className="text-slate-600">Seções</p>
-            <strong className="text-slate-700">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700/70 dark:bg-slate-950/70">
+            <p className="text-slate-600 dark:text-slate-400">Seções</p>
+            <strong className="text-slate-700 dark:text-slate-100">
               {totalSecoes}
             </strong>
           </div>
@@ -80,17 +80,17 @@ function TreinoCard({ treino, onIniciar }) {
 function EmptyScheduled() {
 
   return (
-    <div className="bg-white border rounded-2xl p-10 text-center">
+    <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
 
-      <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-50 flex items-center justify-center mb-4">
-        <i className="fa-regular fa-calendar text-2xl text-slate-600"></i>
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800">
+        <i className="fa-regular fa-calendar text-2xl text-slate-600 dark:text-slate-300"></i>
       </div>
 
-      <h3 className="text-lg font-semibold text-slate-700 mb-2">
+      <h3 className="mb-2 text-lg font-semibold text-slate-700 dark:text-slate-100">
         Sem treinos programados disponíveis
       </h3>
 
-      <p className="text-slate-600 text-sm">
+      <p className="text-sm text-slate-600 dark:text-slate-300">
         Você ainda não possui treinos programados.
       </p>
 
@@ -187,13 +187,13 @@ export default function Treinar() {
 
           ) : treinos.length === 0 ? (
 
-            <div className="bg-white border rounded-2xl p-10 text-center">
+            <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
 
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-slate-700 dark:text-slate-100">
                 Nenhum treino encontrado
               </h3>
 
-              <p className="text-slate-600 text-sm">
+              <p className="text-sm text-slate-600 dark:text-slate-300">
                 Crie um treino em “Treinos” para começar.
               </p>
 
@@ -241,10 +241,10 @@ export default function Treinar() {
                 const [ano, mes, dia] = agendamento.data_agendada.split('-')
                 const dataFormatada = `${dia}/${mes}/${ano}`
                 return (
-                  <div key={agendamento.id_agendamento} className="bg-white border border-blue-200 rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition-all bg-gradient-to-br from-blue-50">
+                  <div key={agendamento.id_agendamento} className="flex flex-col overflow-hidden rounded-2xl border border-blue-200 bg-white bg-gradient-to-br from-blue-50 transition-all hover:shadow-md dark:border-slate-700/70 dark:from-slate-900 dark:to-slate-950 dark:shadow-black/20">
 
                     {/* Action Icons Header */}
-                    <div className="flex items-center justify-end gap-2 border-b border-blue-100 bg-blue-50 px-4 py-2">
+                    <div className="flex items-center justify-end gap-2 border-b border-blue-100 bg-blue-50 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
                       <button
                         onClick={async () => {
                           const ok = await confirm({
@@ -296,21 +296,21 @@ export default function Treinar() {
                     <div className="p-5 flex flex-col gap-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-slate-900">
+                          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
                             {treino?.nome}
                           </h3>
-                          <p className="text-sm text-slate-600 mt-1">
+                          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                             {treino?.descricao || 'Sem descrição'}
                           </p>
                         </div>
-                        <div className="w-12 h-12 bg-primary-muted rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-muted dark:bg-slate-800">
                           <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
                         </div>
                       </div>
 
-                      <div className="bg-white rounded-xl p-3 border border-blue-100 text-sm">
-                        <p className="text-slate-600">Agendado para</p>
-                        <strong className="text-slate-700">{dataFormatada}</strong>
+                      <div className="rounded-xl border border-blue-100 bg-white p-3 text-sm dark:border-slate-700/70 dark:bg-slate-950/70">
+                        <p className="text-slate-600 dark:text-slate-400">Agendado para</p>
+                        <strong className="text-slate-700 dark:text-slate-100">{dataFormatada}</strong>
                       </div>
                     </div>
                   </div>

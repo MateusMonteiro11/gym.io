@@ -100,8 +100,8 @@ export default function TreinoPlayer() {
   if (authLoading || loading || !usuario?.id) {
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-slate-600">Carregando treino...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <p className="text-slate-600 dark:text-slate-300">Carregando treino...</p>
       </div>
     )
   }
@@ -109,21 +109,21 @@ export default function TreinoPlayer() {
   if (!treino) {
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
 
-        <div className="bg-white border rounded-2xl p-8 text-center max-w-md">
+        <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
 
-          <h2 className="text-xl font-semibold text-slate-900 mb-2">
+          <h2 className="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-50">
             Treino não encontrado
           </h2>
 
-          <p className="text-slate-600 mb-5">
+          <p className="mb-5 text-slate-600 dark:text-slate-300">
             O treino solicitado não existe ou foi removido.
           </p>
 
           <button
             onClick={() => navigate('/treinar')}
-            className="bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-xl"
+            className="rounded-xl bg-primary px-5 py-3 text-white hover:bg-primary-hover"
           >
             Voltar
           </button>

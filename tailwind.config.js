@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
@@ -13,10 +14,10 @@ export default {
           hover: '#0F4AD4',
           muted: '#E8EFFE',
         },
-        canvas: '#F1F5F9',
+        canvas: 'rgb(var(--color-canvas) / <alpha-value>)',
         surface: {
-          DEFAULT: '#FFFFFF',
-          muted: '#F8FAFC',
+          DEFAULT: 'rgb(var(--color-surface) / <alpha-value>)',
+          muted: 'rgb(var(--color-surface-muted) / <alpha-value>)',
         },
         danger: {
           DEFAULT: '#DC2626',

@@ -19,32 +19,32 @@ export default function WorkoutProgress({
   idSecaoAtual,
 }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-5 space-y-4">
+    <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
 
       {/* Linha superior: label + contadores */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">
+        <span className="text-xs font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-300">
           Progresso
         </span>
-        <div className="flex items-center gap-3 text-xs text-slate-600">
+        <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300">
           <span>
             Exercício{' '}
-            <strong className="text-slate-900">{Math.min(exerciciosFeitos + 1, totalExercicios)}</strong>
+            <strong className="text-slate-900 dark:text-slate-50">{Math.min(exerciciosFeitos + 1, totalExercicios)}</strong>
             {' '}de{' '}
-            <strong className="text-slate-900">{totalExercicios}</strong>
+            <strong className="text-slate-900 dark:text-slate-50">{totalExercicios}</strong>
           </span>
-          <span className="text-gray-200">|</span>
+          <span className="text-gray-200 dark:text-slate-600">|</span>
           <span>
             Série{' '}
-            <strong className="text-slate-900">{serieAtual}</strong>
+            <strong className="text-slate-900 dark:text-slate-50">{serieAtual}</strong>
             {' '}de{' '}
-            <strong className="text-slate-900">{totalSeries}</strong>
+            <strong className="text-slate-900 dark:text-slate-50">{totalSeries}</strong>
           </span>
         </div>
       </div>
 
       {/* Barra principal */}
-      <div className="relative w-full h-2 bg-slate-50 rounded-full overflow-hidden">
+      <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-50 dark:bg-slate-800">
         <div
           className="absolute inset-y-0 left-0 bg-blue-500 rounded-full transition-all duration-500 ease-out"
           style={{ width: `${percentual}%` }}
@@ -63,15 +63,15 @@ export default function WorkoutProgress({
                   flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
                   border transition-colors duration-200
                   ${ativa
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-slate-50 border-gray-100 text-slate-600'
+                    ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950/50 dark:border-blue-800 dark:text-blue-200'
+                    : 'bg-slate-50 border-gray-100 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'
                   }
                 `}
               >
                 {/* Dot */}
-                <span className={`w-1.5 h-1.5 rounded-full ${ativa ? 'bg-blue-500' : 'bg-gray-300'}`} />
+                <span className={`h-1.5 w-1.5 rounded-full ${ativa ? 'bg-blue-500' : 'bg-gray-300 dark:bg-slate-500'}`} />
                 {secao.nome}
-                <span className={ativa ? 'text-blue-400' : 'text-gray-300'}>
+                <span className={ativa ? 'text-blue-400' : 'text-gray-300 dark:text-slate-500'}>
                   · {secao.qtdExercicios}
                 </span>
               </div>

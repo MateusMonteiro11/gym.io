@@ -133,7 +133,7 @@ export default function Login() {
             </p>
             <div className="mx-auto grid max-w-sm grid-cols-3 gap-2">
               {['Treinos', 'Histórico', 'Agendamentos'].map((item) => (
-                <div key={item} className="rounded-2xl border border-white/30 bg-white/10 px-3 py-2 text-center text-xs font-semibold text-white shadow-sm">
+                <div key={item} className="rounded-2xl border border-white/30 bg-white/10 px-3 py-2 text-center text-xs font-semibold text-white shadow-sm dark:border-slate-600/70 dark:bg-slate-800/60 dark:text-white">
                   {item}
                 </div>
               ))}
@@ -149,7 +149,7 @@ export default function Login() {
               <h2 className="mb-2 text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
                 Acesse sua conta
               </h2>
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 Acesse sua conta para gerenciar seus treinos
               </p>
             </motion.div>
@@ -188,7 +188,7 @@ export default function Login() {
               </motion.div>
 
               <motion.div variants={itemMotion}>
-                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5">
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:shadow-black/20">
                   <input
                     type="checkbox"
                     id="rememberMe"
@@ -217,7 +217,7 @@ export default function Login() {
                 </Button>
               </motion.div>
 
-              <motion.p variants={itemMotion} className="text-center text-sm text-slate-600">
+              <motion.p variants={itemMotion} className="text-center text-sm text-slate-600 dark:text-slate-300">
                 Nao tem uma conta?{' '}
                 <Link to="/cadastro" className="font-medium text-primary hover:text-primary-hover">
                   Criar uma

@@ -21,12 +21,12 @@ export default function WorkoutSectionInfo({ nomeSecao, descricaoSecao, ordemSec
       <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand to-emerald-400 rounded-l-2xl" />
 
       <div className="pl-3">
-        <p className="section-label text-brand mb-0.5">
+        <p className="section-label mb-0.5 text-brand dark:text-white">
           Iniciando bloco {ordemSecao}
         </p>
-        <h3 className="font-display text-base font-bold text-ink">{nomeSecao}</h3>
+        <h3 className="font-display text-base font-bold text-ink dark:text-slate-50">{nomeSecao}</h3>
         {descricaoSecao && (
-          <p className="text-xs text-ink-muted mt-0.5 leading-relaxed">{descricaoSecao}</p>
+          <p className="mt-0.5 text-xs leading-relaxed text-ink-muted dark:text-slate-300">{descricaoSecao}</p>
         )}
       </div>
     </div>

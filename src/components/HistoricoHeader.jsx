@@ -17,12 +17,12 @@ export default function HistoricoHeader({ stats }) {
         {statCards.map((stat) => (
           <Card key={stat.label} className={ui.cardPadding}>
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm text-slate-600">{stat.label}</p>
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-muted text-primary">
-                <i className={`fa-solid ${stat.icon}`} />
+              <p className="text-sm text-slate-600 dark:text-slate-400">{stat.label}</p>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-muted text-primary dark:bg-slate-800 dark:text-white">
+                <i className={`fa-solid ${stat.icon} dark:text-white`} />
               </span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-50">{stat.value}</p>
           </Card>
         ))}
       </div>

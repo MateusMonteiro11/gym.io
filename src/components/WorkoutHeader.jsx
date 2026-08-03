@@ -47,23 +47,23 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
           )}
-          <span className={`text-xs font-medium uppercase tracking-widest ${statusInfo.color}`}>
+            <span className={`text-xs font-medium uppercase tracking-widest ${statusInfo.color} dark:text-slate-300`}>
             {statusInfo.label}
           </span>
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-900 leading-tight">
+        <h1 className="text-2xl font-bold leading-tight text-slate-900 dark:text-slate-50">
           {nomeTreino || 'Treino'}
         </h1>
 
-        <p className="text-sm text-slate-600 mt-0.5 capitalize">{dataHoje}</p>
+        <p className="mt-0.5 capitalize text-sm text-slate-600 dark:text-slate-300">{dataHoje}</p>
       </div>
 
       {/* Botão sair / confirmar */}
       <div className="flex items-center gap-2">
         {confirmando ? (
           <>
-            <span className="text-xs text-slate-600 mr-1">Cancelar treino?</span>
+            <span className="mr-1 text-xs text-slate-600 dark:text-slate-300">Cancelar treino?</span>
             <button
               onClick={() => { setConfirmando(false); onSair() }}
               disabled={salvando}
@@ -74,8 +74,7 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
             </button>
             <button
               onClick={() => setConfirmando(false)}
-              className="text-xs px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg font-medium
-                         hover:bg-gray-200 transition-colors"
+              className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
             >
               Voltar
             </button>
@@ -83,10 +82,9 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
         ) : (
           <button
             onClick={handleSair}
-            className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-700
-                       px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
           >
-            <i className="fa-solid fa-xmark" />
+            <i className="fa-solid fa-xmark dark:text-white" />
             <span>Cancelar</span>
           </button>
         )}

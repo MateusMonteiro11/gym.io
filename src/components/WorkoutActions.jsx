@@ -40,7 +40,7 @@ export default function WorkoutActions({
           transition-all duration-200
         "
       >
-        <i className="fa-solid fa-play" />
+        <i className="fa-solid fa-play text-white" />
         Iniciar treino
       </button>
 
@@ -51,32 +51,29 @@ export default function WorkoutActions({
   if (confirmando) {
     return (
       
-      <div className="bg-white border border-red-100 rounded-2xl p-4 space-y-3">
-        <p className="text-sm text-slate-600 text-center font-medium">
+      <div className="space-y-3 rounded-2xl border border-red-100 bg-white p-4 dark:border-slate-700/70 dark:bg-slate-900/85">
+        <p className="text-center text-sm font-medium text-slate-600 dark:text-slate-300">
           Finalizar o treino agora?
         </p>
-        <p className="text-xs text-slate-600 text-center">
+        <p className="text-center text-xs text-slate-600 dark:text-slate-400">
           O progresso até aqui será salvo.
         </p>
         <div className="flex gap-2">
           <button
             onClick={() => setConfirmando(false)}
-            className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm
-                       font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800"
           >
             Cancelar
           </button>
           <button
             onClick={() => { setConfirmando(false); onFinalizar() }}
             disabled={salvando}
-            className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm
-                       font-semibold hover:bg-red-600 disabled:opacity-50
-                       transition-colors flex items-center justify-center gap-2"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:opacity-50"
           >
             {salvando ? (
-              <><i className="fa-solid fa-spinner animate-spin" /> Salvando…</>
+              <><i className="fa-solid fa-spinner animate-spin text-white" /> Salvando…</>
             ) : (
-              <><i className="fa-solid fa-flag-checkered" /> Finalizar</>
+              <><i className="fa-solid fa-flag-checkered text-white" /> Finalizar</>
             )}
           </button>
         </div>
@@ -96,11 +93,11 @@ export default function WorkoutActions({
           transition-all duration-200
           ${podeAvancar
             ? 'bg-emerald-500 text-white hover:bg-emerald-600 active:scale-[0.98]'
-            : 'bg-slate-50 text-slate-600 cursor-not-allowed'
+            : 'bg-slate-50 text-slate-600 cursor-not-allowed dark:bg-slate-800 dark:text-slate-300'
           }
         `}
       >
-        <i className="fa-solid fa-forward-step" />
+        <i className="fa-solid fa-forward-step text-white" />
         Próximo exercício
       </button>
 
@@ -115,11 +112,11 @@ export default function WorkoutActions({
             transition-all duration-200
             ${!inativo || finalizado
               ? 'bg-red-500 text-white hover:bg-red-600 active:scale-[0.98]'
-              : 'bg-slate-50 text-slate-600 cursor-not-allowed'
+              : 'bg-slate-50 text-slate-600 cursor-not-allowed dark:bg-slate-800 dark:text-slate-300'
             }
           `}
         >
-          <i className="fa-solid fa-flag-checkered" />
+          <i className="fa-solid fa-flag-checkered text-white" />
           Finalizar treino
         </button>
       </div>

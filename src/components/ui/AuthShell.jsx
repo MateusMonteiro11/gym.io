@@ -38,8 +38,8 @@ export default function AuthShell({ brand, form }) {
   const isCadastro = pathname === '/cadastro'
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white p-3 md:p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_12%,rgba(20,87,247,0.16),transparent_32%),radial-gradient(circle_at_84%_22%,rgba(20,87,247,0.12),transparent_30%),linear-gradient(180deg,#ffffff_0%,#f8fbff_48%,#eef5ff_100%)]" aria-hidden />
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-canvas p-3 md:p-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_12%,rgba(20,87,247,0.16),transparent_32%),radial-gradient(circle_at_84%_22%,rgba(20,87,247,0.12),transparent_30%),linear-gradient(180deg,#ffffff_0%,#f8fbff_48%,#eef5ff_100%)] dark:bg-[radial-gradient(circle_at_22%_12%,rgba(20,87,247,0.20),transparent_38%),radial-gradient(circle_at_84%_22%,rgba(20,87,247,0.12),transparent_32%),linear-gradient(180deg,#080d18_0%,#0f172a_52%,#111827_100%)]" aria-hidden />
       <motion.span
         className="pointer-events-none absolute left-8 top-24 h-24 w-24 rounded-full"
         style={{
@@ -70,11 +70,11 @@ export default function AuthShell({ brand, form }) {
         initial="hidden"
         animate="visible"
         variants={shellVariants}
-        className="relative flex w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 shadow-2xl shadow-blue-900/12 ring-1 ring-slate-200/70 backdrop-blur-xl md:min-h-[82vh] md:flex-row"
+        className="relative flex w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 shadow-2xl shadow-blue-900/12 ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/85 dark:ring-slate-700/70 md:min-h-[82vh] md:flex-row"
       >
         <motion.aside
           variants={panelVariants}
-          className="relative flex flex-col overflow-hidden border-b border-slate-200/80 bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 p-6 md:w-1/2 md:border-b-0 md:border-r md:p-12"
+          className="relative flex flex-col overflow-hidden border-b border-slate-200/80 bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 p-6 dark:border-slate-700/70 md:w-1/2 md:border-b-0 md:border-r md:p-12"
         >
           <span className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(20, 87, 247, 0.12)' }} aria-hidden />
           <span className="pointer-events-none absolute bottom-10 left-8 h-40 w-40 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(20, 87, 247, 0.10)' }} aria-hidden />
@@ -99,9 +99,9 @@ export default function AuthShell({ brand, form }) {
 
         <motion.section
           variants={formVariants}
-          className="relative flex flex-1 flex-col justify-center bg-white/90 p-6 sm:p-8 md:w-1/2 md:p-12"
+          className="relative flex flex-1 flex-col justify-center bg-white/90 p-6 dark:bg-slate-950/90 sm:p-8 md:w-1/2 md:p-12"
         >
-          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(20,87,247,0.20)] to-transparent md:hidden" aria-hidden />
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(20,87,247,0.20)] to-transparent dark:via-[rgba(148,163,184,0.18)] md:hidden" aria-hidden />
           {form}
         </motion.section>
       </motion.article>

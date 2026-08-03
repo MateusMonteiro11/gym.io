@@ -28,7 +28,7 @@ export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onC
               className={`cursor-pointer rounded-xl py-3 text-sm font-semibold transition-colors duration-200 ${
                 descanso === tempo
                   ? 'bg-primary text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
               }`}
             >
               {tempo}s
@@ -50,7 +50,7 @@ export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onC
             Cancelar
           </Button>
           <Button className="flex-1" onClick={() => onStart(descanso)}>
-            <i className="fa-solid fa-play" /> Começar treino
+            <i className="fa-solid fa-play text-white" /> Começar treino
           </Button>
         </div>
       </div>

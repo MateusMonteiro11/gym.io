@@ -11,9 +11,9 @@ export default function WorkoutTimer({ formatted, isRunning, onToggle, status })
   const idle       = status === 'idle'
 
   return (
-    <div className="bg-primary text-white rounded-2xl p-6 text-center">
+    <div className="rounded-2xl bg-primary p-6 text-center text-white dark:bg-slate-900 dark:border dark:border-slate-700/70">
 
-      <p className="text-xs font-semibold uppercase tracking-widest opacity-70 mb-2">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-widest opacity-70">
         Tempo de treino
       </p>
 
@@ -22,7 +22,7 @@ export default function WorkoutTimer({ formatted, isRunning, onToggle, status })
       </h2>
 
       {/* Status textual */}
-      <p className="text-xs opacity-60 mb-5 h-4">
+      <p className="mb-5 h-4 text-xs opacity-60">
         {finalizado ? 'Treino finalizado' : isRunning ? 'Cronômetro ativo' : 'Pausado'}
       </p>
 
@@ -30,10 +30,9 @@ export default function WorkoutTimer({ formatted, isRunning, onToggle, status })
       {!idle && !finalizado && (
         <button
           onClick={onToggle}
-          className="w-full bg-white text-primary py-2.5 rounded-xl text-sm font-bold
-                     hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2.5 text-sm font-bold text-primary transition-colors hover:bg-blue-50 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
         >
-          <i className={`fa-solid ${isRunning ? 'fa-pause' : 'fa-play'}`} />
+          <i className={`fa-solid ${isRunning ? 'fa-pause' : 'fa-play'} dark:text-white`} />
           {isRunning ? 'Pausar' : 'Retomar'}
         </button>
       )}

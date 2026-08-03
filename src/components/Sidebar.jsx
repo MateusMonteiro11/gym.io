@@ -9,6 +9,7 @@ import { isSafeRenderableImageUrl } from '../utils/imageUtils'
 import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import UserProfileModal from './UserProfileModal'
+import ThemeToggle from './ui/ThemeToggle'
 
 const navItems = [
   { to: '/dashboard', icon: 'fa-solid fa-grip', label: 'Painel' },
@@ -136,13 +137,16 @@ export default function Sidebar() {
           />
           <h1 className="text-lg font-semibold tracking-tight text-slate-900">Gym.io</h1>
         </button>
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-slate-600 hover:text-slate-900 transition-colors"
-          aria-label="Toggle sidebar"
-        >
-          <i className={`fa-solid fa-${sidebarOpen ? 'times' : 'bars'} text-xl`} />
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle compact className="h-10 px-3" />
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            aria-label="Toggle sidebar"
+          >
+            <i className={`fa-solid fa-${sidebarOpen ? 'times' : 'bars'} text-xl`} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Backdrop Overlay */}
@@ -213,6 +217,7 @@ export default function Sidebar() {
             </div>
             <i className="fa-solid fa-chevron-right text-slate-400 text-xs flex-shrink-0" />
           </button>
+          <ThemeToggle className="mb-4 w-full justify-center" />
           <button
             type="button"
             onClick={handleLogoutClick}
