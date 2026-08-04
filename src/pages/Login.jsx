@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import logoImg from '../assets/images/logo.png'
+import { ArrowRight, ShieldCheck } from 'lucide-react'
 import { login, resetPassword } from '../services/auth/authService'
+import { supabase } from '../lib/supabase'
 import { getLastEmail } from '../utils/sessionStorage'
 import { useUi } from '../contexts/UiContext'
 import { useAuth } from '../hooks/useAuth'
@@ -27,6 +28,19 @@ const itemMotion = {
   visible: { opacity: 1, y: 0 },
 }
 
+const handleGoogleLogin = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/dashboard`,
+    },
+  });
+
+  if (error) {
+    console.error("Erro ao autenticar com Google:", error.message);
+  }
+};
+
 export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -47,38 +61,29 @@ export default function Login() {
     : '/dashboard'
 
   useEffect(() => {
-    if (!loading && usuario) {
-      navigate(redirectTarget, { replace: true })
-    }
+    if (!loading && usuario) navigate(redirectTarget, { replace: true })
   }, [loading, navigate, redirectTarget, usuario])
 
   function validarFormulario() {
     const novoErros = {}
-
     if (!email.trim()) novoErros.email = 'Digite seu email'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) novoErros.email = 'Email invalido'
-
     if (!senha) novoErros.senha = 'Digite sua senha'
-
     setErrors(novoErros)
     return Object.keys(novoErros).length === 0
   }
 
   function validarResetEmail() {
     const novoErros = {}
-
     if (!resetEmail.trim()) novoErros.resetEmail = 'Digite seu email'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) novoErros.resetEmail = 'Email invalido'
-
     setResetErrors(novoErros)
     return Object.keys(novoErros).length === 0
   }
 
   async function handleLogin(e) {
     e.preventDefault()
-
     if (!validarFormulario()) return
-
     try {
       setIsLoading(true)
       await login(email, senha, rememberMe)
@@ -93,17 +98,11 @@ export default function Login() {
 
   async function handleResetPassword(e) {
     e.preventDefault()
-
     if (!validarResetEmail()) return
-
     try {
       setResetLoading(true)
       await resetPassword(resetEmail)
-      notify({
-        title: 'Email enviado',
-        message: 'Verifique sua caixa de entrada para redefinir a senha.',
-        type: 'success',
-      })
+      notify({ title: 'Email enviado', message: 'Verifique sua caixa de entrada para redefinir a senha.', type: 'success' })
       setIsModalOpen(false)
       setResetEmail('')
       setResetErrors({})
@@ -120,38 +119,18 @@ export default function Login() {
       <AuthShell
         brand={
           <>
-            <motion.img
-              src={logoImg}
-              alt="GYM.IO"
-              className="mx-auto mb-6 w-20 drop-shadow-xl sm:w-28 md:mb-8 md:w-48"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl md:text-4xl">Bem-vindo de volta</h1>
-            <p className="mx-auto mb-5 max-w-sm text-base font-medium leading-7 text-white/80 md:mb-6 md:text-lg">
-              Continue organizando treinos, sessões e progresso em um workspace simples.
+            <h1 className="mt-0 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+              Volte para sua rotina.
+            </h1>
+            <p className="mt-4 max-w-lg text-base leading-7 text-white/82 sm:text-lg">
+              Entre para acompanhar seus treinos.
             </p>
-            <div className="mx-auto grid max-w-sm grid-cols-3 gap-2">
-              {[].map((item) => (
-                <div key={item} className="rounded-2xl border border-white/30 bg-white/10 px-3 py-2 text-center text-xs font-semibold text-white shadow-sm dark:border-slate-600/70 dark:bg-slate-800/60 dark:text-white">
-                  {item}
-                </div>
-              ))}
-            </div>
           </>
         }
         form={
           <motion.div className="mx-auto w-full max-w-md" initial="hidden" animate="visible" variants={formMotion}>
-            <motion.div variants={itemMotion} className="mb-8 text-center">
-              <span className="mb-4 inline-flex rounded-full border border-blue-100 bg-primary-muted px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                Login
-              </span>
-              <h2 className="mb-2 text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
-                Acesse sua conta
-              </h2>
-              <p className="text-slate-600 dark:text-slate-300">
-                Acesse sua conta para gerenciar seus treinos
-              </p>
+            <motion.div variants={itemMotion} className="mb-8">
+              <h2 className="text-3xl font-black tracking-tight text-slate-950 dark:text-slate-50">Acesse sua conta</h2>
             </motion.div>
 
             <motion.form onSubmit={handleLogin} className="space-y-4" variants={formMotion}>
@@ -188,13 +167,13 @@ export default function Login() {
               </motion.div>
 
               <motion.div variants={itemMotion}>
-                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:shadow-black/20">
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition hover:border-primary/20 hover:shadow-card-hover dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                   <input
                     type="checkbox"
                     id="rememberMe"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border border-slate-300 transition-colors duration-200 text-primary cursor-pointer"
+                    className="h-4 w-4 cursor-pointer rounded border border-slate-300 text-primary transition-colors duration-200"
                   />
                   <span>Manter-me conectado</span>
                 </label>
@@ -204,7 +183,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-muted hover:text-primary-hover"
+                  className="rounded-lg px-2 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary-muted hover:text-primary-hover"
                 >
                   Esqueceu a senha?
                 </button>
@@ -213,13 +192,29 @@ export default function Login() {
               <motion.div variants={itemMotion}>
                 <Button type="submit" disabled={isLoading} className="w-full">
                   {isLoading ? 'Entrando...' : 'Entrar'}
-                  {!isLoading && <i className="fa-solid fa-arrow-right" />}
+                  {!isLoading && <ArrowRight className="h-4 w-4" />}
                 </Button>
               </motion.div>
 
+              <motion.div variants={itemMotion}>
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-primary/20 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                >
+                  <svg viewBox="0 0 48 48" className="h-5 w-5" aria-hidden>
+                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.652 32.657 29.359 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.079 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.651-.389-3.917z" />
+                    <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.967 12 24 12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.079 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
+                    <path fill="#4CAF50" d="M24 44c5.193 0 9.91-1.987 13.454-5.215l-6.21-5.243C29.197 35.091 26.761 36 24 36c-5.338 0-9.616-3.329-11.286-8.009l-6.522 5.025C9.499 39.556 16.227 44 24 44z" />
+                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-1.599 4.657-5.903 8-11.303 8-2.76 0-5.306-.995-7.286-2.652l-6.522 5.025C12.39 41.402 17.768 44 24 44c11.045 0 20-8.955 20-20 0-1.341-.138-2.651-.389-3.917z" />
+                  </svg>
+                  Entrar com Google
+                </button>
+              </motion.div>
+
               <motion.p variants={itemMotion} className="text-center text-sm text-slate-600 dark:text-slate-300">
-                Nao tem uma conta?{' '}
-                <Link to="/cadastro" className="font-medium text-primary hover:text-primary-hover">
+                Não tem uma conta?{' '}
+                <Link to="/cadastro" className="font-semibold text-primary hover:text-primary-hover">
                   Criar uma
                 </Link>
               </motion.p>

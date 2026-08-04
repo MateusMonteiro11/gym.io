@@ -199,7 +199,7 @@ function DashboardPreview({ compact = false }) {
                     ativo
                   </span>
                 </div>
-                {['Supino reto', 'Desenvolvimento', 'Tríceps corda'].map((item, index) => (
+                {['Supino reto', 'Desenvolvimento', 'Tríceps polia baixa'].map((item, index) => (
                   <div key={item} className="mb-3 flex items-center justify-between rounded-xl bg-slate-50 p-3 dark:bg-slate-800 last:mb-0">
                     <div className="flex items-center gap-3">
                       <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-muted text-xs font-semibold text-primary dark:bg-slate-900 dark:text-white">
@@ -279,7 +279,7 @@ function Hero() {
           variants={fadeUp}
           className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/80 px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm shadow-blue-900/5 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/80 dark:text-slate-300 dark:shadow-black/20"
         >
-          Organização de treinos com experiência de produto premium
+          Aplicação projetada com foco em aprendizado, gratuíto para utilização.
         </motion.div>
         <motion.h1
           variants={fadeUp}
@@ -288,7 +288,7 @@ function Hero() {
           Treinos organizados com a clareza de um produto moderno.
         </motion.h1>
         <motion.p variants={fadeUp} className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-          Gym.io transforma planejamento, execução e histórico de treinos em uma experiência limpa, rápida e profissional.
+          Gym.io transforma planejamento, execução e histórico de treinos em uma experiência limpa, rápida e intuitiva.
         </motion.p>
         <motion.div variants={fadeUp} className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
@@ -353,8 +353,8 @@ function FeaturesSection() {
     <section id="features" className="px-5 py-24 sm:px-6 lg:px-8 dark:bg-slate-950/10">
       <SectionHeader
         eyebrow="Recursos"
-        title="Tudo o que um treino precisa, sem transformar a rotina em planilha."
-        description="As ferramentas principais ficam próximas, visuais e prontas para o próximo movimento."
+        title="Tudo o que seu treino precisa."
+        description="As ferramentas principais ficam próximas e prontas para o próximo movimento."
       />
       <motion.div
         className="mx-auto mt-14 grid max-w-7xl grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
@@ -508,7 +508,7 @@ function ResponsiveSection() {
         <div className="order-1 lg:order-2">
           <SectionHeader
             align="left"
-            eyebrow="Responsivo"
+            eyebrow="Responsividade aplicada"
             title="Do planejamento no desktop à execução no celular."
             description="A experiência mantém o mesmo padrão visual em telas grandes e pequenas, com controles previsíveis e foco no que precisa acontecer agora."
           />
@@ -517,7 +517,7 @@ function ResponsiveSection() {
               [MonitorSmartphone, 'Layout adaptável'],
               [ShieldCheck, 'Fluxos protegidos'],
               [Activity, 'Leitura rápida'],
-              [Zap, 'Interações suaves'],
+              [Zap, 'Interações adaptáveis'],
             ].map(([Icon, label]) => (
               <div key={label} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-700 shadow-sm shadow-blue-900/5 dark:border-slate-700/70 dark:bg-slate-900 dark:text-slate-200">
                 <Icon size={18} className="text-primary dark:text-white" />
@@ -577,7 +577,7 @@ function CreatorSection() {
             align="left"
             eyebrow="Sobre o projeto"
             title="Um projeto pensado como produto, não apenas como experiência de tela."
-            description="O Gym.io nasceu para unir treino, organização e tecnologia em uma plataforma intuitiva, com foco na experiência do usuário, fluxos claros e uma base para evolução."
+            description="O Gym.io nasceu para compor aprendizado, organização e tecnologia em uma plataforma intuitiva, com foco na experiência do usuário, fluxos claros e uma base para evolução."
           />
           <motion.div
             className="mt-8 grid gap-4 sm:grid-cols-2"
@@ -587,10 +587,10 @@ function CreatorSection() {
             variants={stagger}
           >
             {[
-              ['React + Vite', 'Interface rápida e modular.'],
-              ['TailwindCSS', 'Sistema visual leve e consistente.'],
+              ['React + Vite', 'Build da interface e arquitetura.'],
+              ['TailwindCSS', 'Comportamento de design consistente.'],
               ['Supabase', 'Autenticação e dados integrados.'],
-              ['Framer Motion', 'Movimento sútil e premium.'],
+              ['Framer Motion', 'Aplicação de design patterns.'],
             ].map(([title, description]) => (
               <motion.div key={title} variants={fadeUp} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-blue-900/5 dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
                   <p className="font-semibold text-slate-950 dark:text-slate-50">{title}</p>
