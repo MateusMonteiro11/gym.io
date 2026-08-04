@@ -643,10 +643,10 @@ export default function LandingPage() {
   // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-canvas">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-primary" />
-          <p className="text-slate-600">Carregando...</p>
+      <div className="flex h-screen items-center justify-center bg-canvas text-slate-900 dark:text-slate-50">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-white/80 px-6 py-5 shadow-lg shadow-blue-900/10 ring-1 ring-slate-200/70 backdrop-blur dark:bg-slate-900/80 dark:shadow-black/20 dark:ring-slate-700/70">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-400/50 border-t-primary dark:border-slate-400/70 dark:border-t-primary dark:shadow-[0_0_18px_rgba(20,87,247,0.24)]" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Carregando...</p>
         </div>
       </div>
     )
