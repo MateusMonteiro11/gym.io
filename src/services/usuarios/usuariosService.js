@@ -25,7 +25,22 @@ export async function atualizarUsuario(idUsuario, { nome, status, fotoPerfil }) 
 
   // If no rows were updated, attempt to insert a new user record
   if (!data || data.length === 0) {
+    // Try to obtain the current authenticated user's email to satisfy NOT NULL constraints
+    const { data: userData } = await supabase.auth.getUser()
+    const currentUser = userData?.user
+
     const insertData = { id_usuario: idUsuario, ...updateData }
+
+    // Ensure email is provided (email column is NOT NULL)
+    insertData.email = insertData.email || currentUser?.email
+
+    // Ensure nome is not null (nome column is NOT NULL). Use provided nome, or fallback to local-part of email, or empty string.
+    insertData.nome = insertData.nome || (insertData.email ? insertData.email.split('@')[0] : '')
+
+    if (!insertData.email) {
+      throw new Error('Não foi possível criar registro de usuário: email ausente')
+    }
+
     const { data: insertedData, error: insertError } = await supabase
       .from('usuarios')
       .insert(insertData)
