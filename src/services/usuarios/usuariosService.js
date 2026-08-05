@@ -12,6 +12,7 @@ export async function atualizarUsuario(idUsuario, { nome, status, fotoPerfil }) 
     return null
   }
 
+  // Try to update existing user first
   const { data, error } = await supabase
     .from('usuarios')
     .update(updateData)
@@ -20,6 +21,21 @@ export async function atualizarUsuario(idUsuario, { nome, status, fotoPerfil }) 
 
   if (error) {
     throw new Error(error.message)
+  }
+
+  // If no rows were updated, attempt to insert a new user record
+  if (!data || data.length === 0) {
+    const insertData = { id_usuario: idUsuario, ...updateData }
+    const { data: insertedData, error: insertError } = await supabase
+      .from('usuarios')
+      .insert(insertData)
+      .select('id_usuario, nome, email, status, foto_perfil')
+
+    if (insertError) {
+      throw new Error(insertError.message)
+    }
+
+    return insertedData?.[0] || null
   }
 
   return data?.[0] || null
