@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, ShieldCheck } from 'lucide-react'
 import { login, resetPassword } from '../services/auth/authService'
-import { supabase } from '../lib/supabase'
+import { supabase, setAuthStoragePreference } from '../lib/supabase'
 import { getLastEmail } from '../utils/sessionStorage'
 import { useUi } from '../contexts/UiContext'
 import { useAuth } from '../hooks/useAuth'
@@ -28,18 +28,6 @@ const itemMotion = {
   visible: { opacity: 1, y: 0 },
 }
 
-const handleGoogleLogin = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: `${window.location.origin}/dashboard`,
-    },
-  });
-
-  if (error) {
-    console.error("Erro ao autenticar com Google:", error.message);
-  }
-};
 
 export default function Login() {
   const navigate = useNavigate()
@@ -114,9 +102,30 @@ export default function Login() {
     }
   }
 
-  return (
-    <>
-      <AuthShell
+    async function handleGoogleLogin() {
+      try {
+        // Ensure Supabase uses the desired storage (localStorage vs sessionStorage)
+        // before initiating the OAuth redirect so the session tokens are persisted
+        setAuthStoragePreference(rememberMe)
+
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/dashboard`,
+          },
+        })
+
+        if (error) {
+          console.error('Erro ao autenticar com Google:', error.message)
+        }
+      } catch (err) {
+        console.error('Erro inesperado no login com Google:', err)
+      }
+    }
+
+    return (
+      <>
+        <AuthShell
         brand={
           <>
             <h1 className="mt-0 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
