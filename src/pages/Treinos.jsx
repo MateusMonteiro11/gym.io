@@ -627,7 +627,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                 type="text"
                 value={workoutName}
                 maxLength={MAX_WORKOUT_NAME_LENGTH}
-                onChange={(e) => setWorkoutName(normalizeTextInput(e.target.value, MAX_WORKOUT_NAME_LENGTH))}
+                onChange={(e) => setWorkoutName(e.target.value)}
                 className="mt-2 text-lg font-semibold"
               />
               <Label className="mt-4 block">Descrição (opcional)</Label>
@@ -635,7 +635,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
                 rows={3}
                 value={workoutDescription}
                 maxLength={MAX_WORKOUT_DESCRIPTION_LENGTH}
-                onChange={(e) => setWorkoutDescription(normalizeTextInput(e.target.value, MAX_WORKOUT_DESCRIPTION_LENGTH))}
+                onChange={(e) => setWorkoutDescription(e.target.value)}
                 placeholder="Objetivo ou foco do treino..."
                 className={`${ui.input} mt-2 resize-none`}
               />
@@ -770,7 +770,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
             <Input
               value={newSectionName}
               maxLength={MAX_SECTION_NAME_LENGTH}
-              onChange={(e) => setNewSectionName(normalizeTextInput(e.target.value, MAX_SECTION_NAME_LENGTH))}
+              onChange={(e) => setNewSectionName(e.target.value)}
               className="mt-2"
             />
           </div>
@@ -779,7 +779,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
             <textarea
               value={newSectionDescription}
               maxLength={MAX_SECTION_DESCRIPTION_LENGTH}
-              onChange={(e) => setNewSectionDescription(normalizeTextInput(e.target.value, MAX_SECTION_DESCRIPTION_LENGTH))}
+              onChange={(e) => setNewSectionDescription(e.target.value)}
               rows={3}
               placeholder="Opcional"
               className={`${ui.input} mt-2 resize-none`}

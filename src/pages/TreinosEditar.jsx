@@ -637,9 +637,7 @@ export default function TreinosEditar() {
               type="text"
               value={workoutName}
               maxLength={MAX_WORKOUT_NAME_LENGTH}
-              onChange={(e) =>
-                setWorkoutName(normalizeTextInput(e.target.value, MAX_WORKOUT_NAME_LENGTH))
-              }
+              onChange={(e) => setWorkoutName(e.target.value)}
               className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-blue-100"
             />
 
@@ -651,9 +649,7 @@ export default function TreinosEditar() {
               rows={4}
               value={workoutDescription}
               maxLength={MAX_WORKOUT_DESCRIPTION_LENGTH}
-              onChange={(e) =>
-                setWorkoutDescription(normalizeTextInput(e.target.value, MAX_WORKOUT_DESCRIPTION_LENGTH))
-              }
+              onChange={(e) => setWorkoutDescription(e.target.value)}
               placeholder="Adicione uma descrição breve para seu treino"
               className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-blue-100 resize-none"
             />
@@ -743,9 +739,7 @@ export default function TreinosEditar() {
             type="text"
             value={newSectionName}
             maxLength={MAX_SECTION_NAME_LENGTH}
-            onChange={(e) =>
-              setNewSectionName(normalizeTextInput(e.target.value, MAX_SECTION_NAME_LENGTH))
-            }
+            onChange={(e) => setNewSectionName(e.target.value)}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary"
           />
 
@@ -760,9 +754,7 @@ export default function TreinosEditar() {
           <textarea
             value={newSectionDescription}
             maxLength={MAX_SECTION_DESCRIPTION_LENGTH}
-            onChange={(e) =>
-              setNewSectionDescription(normalizeTextInput(e.target.value, MAX_SECTION_DESCRIPTION_LENGTH))
-            }
+            onChange={(e) => setNewSectionDescription(e.target.value)}
             rows={4}
             placeholder="Descrição opcional..."
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary resize-none"
