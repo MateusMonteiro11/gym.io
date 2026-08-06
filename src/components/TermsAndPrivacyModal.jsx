@@ -69,14 +69,14 @@ Apesar dos esforços empregados, nenhum sistema pode garantir segurança absolut
   ]
 
   return (
-    <Modal open={open} onClose={onClose} size="lg">
+    <Modal open={open} onClose={onClose} size="lg" className="flex max-h-[86vh] flex-col overflow-hidden">
       <ModalHeader
         title="Política de Privacidade e Termos de Uso"
         subtitle="gym.io - Última atualização: Junho de 2026"
         onClose={onClose}
       />
 
-      <div className="h-[600px] overflow-y-auto px-6 py-6">
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
