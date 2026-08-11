@@ -50,7 +50,7 @@ export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onC
             Cancelar
           </Button>
           <Button className="flex-1" onClick={() => onStart(descanso)}>
-            <i className="fa-solid fa-play text-white" /> Começar treino
+            <i className="fa-solid fa-play text-white" /> Começar
           </Button>
         </div>
       </div>

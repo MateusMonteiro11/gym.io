@@ -63,14 +63,13 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
       <div className="flex items-center gap-2">
         {confirmando ? (
           <>
-            <span className="mr-1 text-xs text-slate-600 dark:text-slate-300">Cancelar treino?</span>
             <button
               onClick={() => { setConfirmando(false); onSair() }}
               disabled={salvando}
               className="text-xs px-3 py-1.5 bg-red-500 text-white rounded-lg font-medium
                          hover:bg-red-600 disabled:opacity-50 transition-colors"
             >
-              {salvando ? 'Salvando…' : 'Cancelar treino'}
+              {salvando ? 'Salvando…' : 'Cancelar'}
             </button>
             <button
               onClick={() => setConfirmando(false)}
