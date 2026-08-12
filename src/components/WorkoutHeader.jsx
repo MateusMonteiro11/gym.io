@@ -34,12 +34,44 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
     setConfirmando(true)
   }
 
+  const actionButtons = (
+    <div className="flex flex-wrap items-center gap-2">
+      {confirmando ? (
+        <>
+          <button
+            onClick={() => { setConfirmando(false); onSair() }}
+            disabled={salvando}
+            className="text-xs px-3 py-1.5 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 disabled:opacity-50 transition-colors"
+          >
+            {salvando ? 'Salvando…' : 'Cancelar'}
+          </button>
+          <button
+            onClick={() => setConfirmando(false)}
+            className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-900 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+          >
+            Voltar
+          </button>
+        </>
+      ) : (
+        <button
+          onClick={handleSair}
+          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold bg-slate-100 text-slate-900 shadow-sm ring-1 ring-slate-200 transition duration-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700 dark:hover:bg-slate-700"
+        >
+          <i className="fa-solid fa-xmark dark:text-white" />
+          <span>Cancelar</span>
+        </button>
+      )}
+    </div>
+  )
+
   return (
-    <div className="flex items-start justify-between mb-8">
+    <div className="grid gap-3 mb-8 md:flex md:items-start md:justify-between">
 
       {/* Identidade */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
+      <div className="grid gap-3">
+        <div className="md:hidden">{actionButtons}</div>
+
+        <div className="flex items-center gap-2">
           {/* Pulse indicator */}
           {status === 'ativo' && (
             <span className="relative flex h-2 w-2">
@@ -47,7 +79,7 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
           )}
-            <span className={`text-xs font-medium uppercase tracking-widest ${statusInfo.color} dark:text-slate-300`}>
+          <span className={`text-xs font-medium uppercase tracking-widest ${statusInfo.color} dark:text-slate-300`}>
             {statusInfo.label}
           </span>
         </div>
@@ -59,35 +91,7 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
         <p className="mt-0.5 capitalize text-sm text-slate-600 dark:text-slate-300">{dataHoje}</p>
       </div>
 
-      {/* Botão sair / confirmar */}
-      <div className="flex items-center gap-2">
-        {confirmando ? (
-          <>
-            <button
-              onClick={() => { setConfirmando(false); onSair() }}
-              disabled={salvando}
-              className="text-xs px-3 py-1.5 bg-red-500 text-white rounded-lg font-medium
-                         hover:bg-red-600 disabled:opacity-50 transition-colors"
-            >
-              {salvando ? 'Salvando…' : 'Cancelar'}
-            </button>
-            <button
-              onClick={() => setConfirmando(false)}
-              className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
-            >
-              Voltar
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={handleSair}
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-          >
-            <i className="fa-solid fa-xmark dark:text-white" />
-            <span>Cancelar</span>
-          </button>
-        )}
-      </div>
+      <div className="hidden md:flex md:items-center">{actionButtons}</div>
     </div>
   )
 }
