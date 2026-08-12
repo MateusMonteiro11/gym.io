@@ -234,7 +234,7 @@ export default function Login() {
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} size="sm">
         <ModalHeader title="Redefinir senha" subtitle="Enviaremos um link para seu email." onClose={() => setIsModalOpen(false)} />
-        <form onSubmit={handleResetPassword} className="space-y-4 p-6 pt-0">
+        <form onSubmit={handleResetPassword} className="space-y-4 p-6">
           <Input
             type="text"
             placeholder="Digite seu email"

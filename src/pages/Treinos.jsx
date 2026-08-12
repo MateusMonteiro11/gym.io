@@ -764,7 +764,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
             setEditingSection(null)
           }}
         />
-        <div className="space-y-4 p-6 pt-0">
+        <div className="space-y-4 p-6">
           <div>
             <Label>Nome da seção</Label>
             <Input

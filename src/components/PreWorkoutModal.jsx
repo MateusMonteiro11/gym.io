@@ -18,7 +18,7 @@ export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onC
         subtitle={treino?.nome ? `Treino: ${treino.nome}` : 'Configure o descanso padrão'}
         onClose={onClose}
       />
-      <div className="space-y-6 p-6 pt-0">
+      <div className="space-y-6 p-6">
         <div className="grid grid-cols-4 gap-2">
           {[30, 45, 60, 90].map((tempo) => (
             <button

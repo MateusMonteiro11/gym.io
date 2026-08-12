@@ -35,7 +35,7 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
   return (
     <Modal open={open} onClose={onClose} size="md">
       <ModalHeader title="Agendar treino" subtitle="Escolha quando deseja realizar este treino" onClose={onClose} />
-      <div className="space-y-6 p-6 pt-0">
+      <div className="space-y-6 p-6">
         <Card className="border-slate-100 bg-slate-50 p-4 shadow-none">
           <div className="flex items-start justify-between gap-4">
             <div>
