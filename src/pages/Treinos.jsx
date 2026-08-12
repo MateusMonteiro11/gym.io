@@ -619,7 +619,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
           subtitle="Defina o treino, organize seções e adicione exercícios"
           onClose={onClose}
         />
-        <div className="space-y-6 p-6 pt-0 max-h-[70vh] overflow-y-auto">
+        <div className="space-y-6 p-6 pt-6">
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
               <Label>Nome do treino</Label>
