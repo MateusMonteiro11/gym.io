@@ -136,14 +136,14 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors duration-200 border-b-2 ${
+            className={`flex flex-col items-center justify-center gap-1.5 sm:flex-row sm:gap-2 flex-1 px-6 py-4 text-sm font-medium transition-colors duration-200 border-b-2 ${
               activeTab === tab.id
                 ? 'border-primary text-primary'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
-            <i className={`fa-solid ${tab.icon} mr-2`} />
-            {tab.label}
+            <i className={`fa-solid ${tab.icon} text-base`} />
+            <span>{tab.label}</span>
           </button>
         ))}
       </div>
