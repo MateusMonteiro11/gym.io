@@ -31,14 +31,14 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
   const valorNumerico = Number(valor) || 0
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-center gap-2 sm:max-w-[11rem]">
       <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-300">
         {label}
       </span>
       <div className="flex items-center gap-2">
         <button
           onClick={() => onChange(Math.max(0, valorNumerico - 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
           type="button"
         >−</button>
         <div className="relative w-20">
@@ -47,7 +47,7 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
             min="0"
             value={valorNumerico}
             onChange={(e) => onChange(Number(e.target.value) || 0)}
-            className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-center text-base font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
+            className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2 text-center text-base font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
           />
           <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs font-normal text-slate-600 dark:text-slate-300">
             {sufixo}
@@ -55,7 +55,7 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
         </div>
         <button
           onClick={() => onChange(valorNumerico + 1)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
           type="button"
         >+</button>
       </div>
@@ -150,20 +150,22 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
           </button>
 
           {ajusteAberto && (
-            <div className="mt-3 flex justify-around rounded-xl bg-slate-50 py-3 dark:bg-slate-800">
-              <AjusteNumerico
-                label="Carga"
-                valor={carga}
-                onChange={setCarga}
-                sufixo="" /* Melhor vazio neste caso */
-              />
-              <div className="w-px bg-gray-200 dark:bg-slate-700" />
-              <AjusteNumerico
-                label="Reps"
-                valor={repeticoes}
-                onChange={setRepeticoes}
-                sufixo="" /* Melhor vazio neste caso */
-              />
+            <div className="mt-3 rounded-xl bg-slate-50 p-3 dark:bg-slate-800">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-6">
+                <AjusteNumerico
+                  label="Carga"
+                  valor={carga}
+                  onChange={setCarga}
+                  sufixo="" /* Melhor vazio neste caso */
+                />
+                <div className="hidden sm:block h-12 w-px bg-gray-200 dark:bg-slate-700" />
+                <AjusteNumerico
+                  label="Reps"
+                  valor={repeticoes}
+                  onChange={setRepeticoes}
+                  sufixo="" /* Melhor vazio neste caso */
+                />
+              </div>
             </div>
           )}
         </div>
