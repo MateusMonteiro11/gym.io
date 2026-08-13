@@ -150,6 +150,11 @@ export async function cadastrar({
 
       email: normalizedEmail,
       password: senha,
+      options: {
+        data: {
+          nome: normalizedNome,
+        },
+      },
 
     })
 
@@ -164,32 +169,6 @@ export async function cadastrar({
     throw new Error(
       'Usuário não retornado pelo Supabase.'
     )
-  }
-
-  // Insere perfil no banco
-
-  const { error: dbError } =
-    await supabase
-      .from('usuarios')
-      .insert({
-
-        id_usuario: user.id,
-
-        nome: normalizedNome,
-
-        email: normalizedEmail,
-
-      })
-
-  // Trata erros no banco
-
-  if (dbError) {
-
-    // Remove usuário criado no auth para evitar inconsistências
-
-    logError(dbError, '[AuthService] Erro ao criar perfil')
-
-    throw new Error(getUserFriendlyErrorMessage(dbError, 'Não foi possível criar seu perfil.'))
   }
 
   // Sign out the user after registration so they must log in explicitly
