@@ -28,12 +28,14 @@ function StatCard({ label, value, sub, icon }) {
 function TreinoDeHojeCard({ agendamentos, onVerExercicios }) {
   if (!agendamentos?.length) {
     return (
-      <Card className={`${ui.cardPadding} flex min-h-80 flex-col justify-between`}>
+      <Card className={`${ui.cardPadding} flex h-80 flex-col`}>
         <div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Treino de Hoje</h3>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Nenhum treino agendado</p>
+          <p className="mb-6 mt-1 text-sm text-slate-600 dark:text-slate-300">Nenhum treino agendado</p>
         </div>
-        <p className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">Agende um treino na aba Treinos</p>
+        <div className="flex-1 space-y-4 overflow-y-auto">
+          <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">Agende um treino na aba Treinos</p>
+        </div>
       </Card>
     )
   }
@@ -52,7 +54,7 @@ function TreinoDeHojeCard({ agendamentos, onVerExercicios }) {
     dataTreino?.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' }) || ''
 
   return (
-    <Card className={`${ui.cardPadding} flex min-h-80 flex-col justify-between`}>
+  <Card className={`${ui.cardPadding} flex h-80 flex-col justify-between`}>
       <div>
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
