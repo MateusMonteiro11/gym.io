@@ -15,7 +15,12 @@ import { ui } from '../styles/theme'
 
 import { useTreino } from '../hooks/useTreino'
 import { criarTreino, deletarTreino } from '../services/treinos/treinosService'
-import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
+import {
+  getSchedulingErrorMessage,
+  getUserFriendlyErrorMessage,
+  logError,
+} from '../utils/errorMessages'
+import { validateScheduleDate } from '../utils/dateUtils'
 import { criarSecao } from '../services/treinos/secoesService'
 import { adicionarExercicio } from '../services/treinos/treinosExerciciosService'
 import { listarExercicios } from '../services/exercicios/exerciciosService'
@@ -96,6 +101,16 @@ export default function Treinos() {
   async function handleConfirmarAgendamento(dados) {
     if (!usuario?.id || !treinoSelecionado?.id_treino) return
 
+    const dateValidation = validateScheduleDate(dados?.dataAgendada)
+    if (!dateValidation.isValid) {
+      alert({
+        title: 'Revise a data',
+        message: dateValidation.message,
+        type: 'warning',
+      })
+      return
+    }
+
     try {
       await criarAgendamento({
         idUsuario: usuario.id,
@@ -113,7 +128,7 @@ export default function Treinos() {
       logError(error, '[Treinos] Failed to schedule workout')
       alert({
         title: 'Não foi possível agendar',
-        message: getUserFriendlyErrorMessage(error, 'Não foi possível agendar o treino.'),
+        message: getSchedulingErrorMessage(error),
         type: 'error',
       })
     }
