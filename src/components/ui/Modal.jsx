@@ -8,6 +8,7 @@ export default function Modal({
   children,
   size = 'md',
   className = '',
+  overlayClassName = '',
 }) {
   useEffect(() => {
     if (!open) return
@@ -34,7 +35,7 @@ export default function Modal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className={`${ui.overlay} bg-slate-950/45`}
+          className={`${ui.overlay} bg-slate-950/45 ${overlayClassName}`}
           role="presentation"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

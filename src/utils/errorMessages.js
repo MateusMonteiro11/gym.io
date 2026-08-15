@@ -51,6 +51,32 @@ export function getUserFriendlyErrorMessage(error, fallback = DEFAULT_ERROR_MESS
   return fallback
 }
 
+export function getSchedulingErrorMessage(error) {
+  const rawMessage = typeof error?.message === 'string' ? error.message : ''
+  const details = typeof error?.details === 'string' ? error.details : ''
+  const hint = typeof error?.hint === 'string' ? error.hint : ''
+  const code = typeof error?.code === 'string' ? error.code : ''
+  const searchable = `${rawMessage} ${details} ${hint} ${code}`.toLowerCase()
+
+  if (
+    code === '23514' ||
+    /data_agendada.*(check|constraint|anterior|passad)|agendamentos.*check constraint/i.test(searchable)
+  ) {
+    return 'Escolha hoje ou uma data futura.'
+  }
+
+  if (code === '23505' || /agendamentos.*(duplicate key|unique constraint)/i.test(searchable)) {
+    return 'Este treino já está agendado para a data selecionada.'
+  }
+
+  const knownMessage = getUserFriendlyErrorMessage(error, '')
+  if (knownMessage && knownMessage !== rawMessage) {
+    return knownMessage
+  }
+
+  return 'Não foi possível agendar o treino. Tente novamente.'
+}
+
 export function logError(error, context = '') {
   if (!import.meta.env.DEV) {
     return

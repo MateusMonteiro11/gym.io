@@ -1,3 +1,51 @@
+export function getLocalDateInputValue(date = new Date()) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return ''
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+export function validateScheduleDate(value, today = getLocalDateInputValue()) {
+  if (!value) {
+    return {
+      isValid: false,
+      message: 'Escolha uma data para o treino.',
+    }
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return {
+      isValid: false,
+      message: 'Escolha uma data válida.',
+    }
+  }
+
+  const parsedDate = parseDateTime(value)
+  const isRealDate =
+    parsedDate &&
+    !Number.isNaN(parsedDate.getTime()) &&
+    getLocalDateInputValue(parsedDate) === value
+
+  if (!isRealDate) {
+    return {
+      isValid: false,
+      message: 'Escolha uma data válida.',
+    }
+  }
+
+  if (value < today) {
+    return {
+      isValid: false,
+      message: 'Escolha hoje ou uma data futura.',
+    }
+  }
+
+  return { isValid: true, message: '' }
+}
+
 export function parseDateTime(value) {
   if (value instanceof Date) {
     return value
