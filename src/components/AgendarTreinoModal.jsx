@@ -77,7 +77,7 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
             error={dataError}
             aria-invalid={Boolean(dataError)}
             containerClassName="w-full min-w-0 max-w-full"
-            className="mt-2 block min-w-0 max-w-full"
+            className="ios-date-input mt-2 block min-w-0 max-w-full"
           />
         </div>
         <div className="flex min-w-0 max-w-full flex-col gap-3 sm:flex-row">
