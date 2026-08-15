@@ -44,12 +44,11 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
       open={open}
       onClose={onClose}
       size="md"
-      overlayClassName="!items-end !p-0 sm:!items-center sm:!p-4"
-      className="!max-h-[100dvh] !rounded-b-none !border-x-0 !border-b-0 sm:!max-h-[calc(100dvh-2rem)] sm:!rounded-2xl sm:!border"
+      className="min-w-0 !max-h-[calc(100dvh-2rem)] overflow-x-hidden"
     >
       <ModalHeader title="Agendar treino" subtitle="Escolha quando deseja realizar este treino" onClose={onClose} />
-      <div className="space-y-5 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:space-y-6 sm:p-6">
-        <Card className="border-slate-100 bg-slate-50 p-4 shadow-none">
+      <div className="min-w-0 max-w-full space-y-5 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:space-y-6 sm:p-6">
+        <Card className="min-w-0 max-w-full border-slate-100 bg-slate-50 p-4 shadow-none">
           <div className="flex min-w-0 items-start justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
               <h3 className="break-words font-semibold text-slate-900">{treino?.nome}</h3>
@@ -60,7 +59,7 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
             </span>
           </div>
         </Card>
-        <div className="min-w-0">
+        <div className="w-full min-w-0 max-w-full">
           <Label htmlFor="data-agendamento">
             <i className="fa-solid fa-calendar mr-2" />
             Data agendada
@@ -77,10 +76,11 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
             min={today}
             error={dataError}
             aria-invalid={Boolean(dataError)}
-            className="mt-2"
+            containerClassName="w-full min-w-0 max-w-full"
+            className="mt-2 block min-w-0 max-w-full"
           />
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex min-w-0 max-w-full flex-col gap-3 sm:flex-row">
           <Button variant="secondary" className="w-full sm:flex-1" onClick={onClose} disabled={agendando}>
             Cancelar
           </Button>
