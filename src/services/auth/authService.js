@@ -211,18 +211,3 @@ export async function resetPassword(email) {
     throw new Error(getUserFriendlyErrorMessage(error, 'Não foi possível enviar o email de recuperação.'))
   }
 }
-
-// Usuario logado atualmente
-
-export async function getUsuarioAtual() {
-
-  const { data, error } =
-    await supabase.auth.getUser()
-
-  if (error) {
-    logError(error, '[AuthService] Get user failed')
-    throw new Error(getUserFriendlyErrorMessage(error))
-  }
-
-  return data.user
-}

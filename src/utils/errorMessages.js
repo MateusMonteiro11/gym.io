@@ -1,4 +1,4 @@
-export const DEFAULT_ERROR_MESSAGE = 'Ocorreu um erro, tente novamente.'
+const DEFAULT_ERROR_MESSAGE = 'Ocorreu um erro, tente novamente.'
 
 const ERROR_PATTERNS = [
   {

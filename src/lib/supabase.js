@@ -1,14 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import { getSessionStorageTarget, setRememberMe } from '../utils/sessionStorage'
 
-const STORAGE_KEY_PREFIXES = ['sb:token', 'supabase.auth.']
-
 export function setAuthStoragePreference(value) {
   setRememberMe(value)
-}
-
-export function resetAuthStoragePreference() {
-  setRememberMe(false)
 }
 
 function getStorage() {
@@ -23,11 +17,11 @@ function getAlternativeStorage(storage) {
   return storage === localStorage ? sessionStorage : localStorage
 }
 
-function removeSupabaseKeys(storage) {
+function removeSupabaseKeys(storage, authKey) {
   try {
     for (let i = storage.length - 1; i >= 0; i -= 1) {
       const key = storage.key(i)
-      if (key && STORAGE_KEY_PREFIXES.some((prefix) => key.startsWith(prefix))) {
+      if (key && (key === authKey || key.startsWith(`${authKey}-`))) {
         storage.removeItem(key)
       }
     }
@@ -48,7 +42,7 @@ const supabaseStorage = {
     try {
       const storage = getStorage()
       storage.setItem(key, value)
-      removeSupabaseKeys(getAlternativeStorage(storage))
+      removeSupabaseKeys(getAlternativeStorage(storage), key)
     } catch {
       // Ignore storage access issues
     }
@@ -59,10 +53,6 @@ const supabaseStorage = {
     } catch {
       // Ignore storage access issues
     }
-  },
-  clear() {
-    removeSupabaseKeys(localStorage)
-    removeSupabaseKeys(sessionStorage)
   },
 }
 

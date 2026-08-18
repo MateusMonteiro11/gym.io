@@ -103,63 +103,6 @@ export function treinoFinalizado(exercicios, index) {
 }
 
 /**
- * @param {number} index - Índice do exercício atual (0-based)
- * @param {number} total - Total de exercícios
- * @returns {number} - Valor inteiro entre 0 e 100
- */
-export function calcularProgresso(index, total) {
-  if (!total || total <= 0) return 0
-  if (index < 0)           return 0
-  if (index >= total)      return 100
-  return Math.round((index / total) * 100)
-}
-
-/**
- * Quantidade de exercícios restantes APÓS o atual.
- * @param {ExercicioFlat[]} exercicios
- * @param {number} index
- * @returns {number}
- */
-
-export function calcularExerciciosRestantes(exercicios, index) {
-  if (!Array.isArray(exercicios)) return 0
-  return Math.max(exercicios.length - (index + 1), 0)
-}
-
-/**
- * @param {ExercicioFlat[]} exercicios
- * @param {number} index
- * @returns {number}
- */
-
-export function calcularSeriesRestantes(exercicios, index) {
-  if (!Array.isArray(exercicios) || index >= exercicios.length) return 0
-  return exercicios
-    .slice(index)
-    .reduce((total, ex) => total + (ex.series ?? 0), 0)
-}
-
-/**
- * @param {ExercicioFlat[]} exercicios
- * @param {number} index
- * @param {number} serieAtual - Série atual dentro do exercício (1-based)
- * @returns {number}
- */
-
-export function calcularSeriesRestantesDetalhado(exercicios, index, serieAtual = 1) {
-  if (!Array.isArray(exercicios) || index >= exercicios.length) return 0
-
-  const exercicioAtual = exercicios[index]
-  const seriesDoAtual  = Math.max((exercicioAtual?.series ?? 1) - serieAtual, 0)
-
-  const seriesProximos = exercicios
-    .slice(index + 1)
-    .reduce((total, ex) => total + (ex.series ?? 0), 0)
-
-  return seriesDoAtual + seriesProximos
-}
-
-/**
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
  * @returns {ExercicioFlat|null}
@@ -173,52 +116,6 @@ export function obterProximaSecao(exercicios, index) {
   return exercicios.find(
     (item, i) => i > index && item.id_secao !== atual.id_secao
   ) ?? null
-}
-
-/**
- * @param {ExercicioFlat[]} exercicios
- * @returns {{ id_secao: number, nome: string, descricao: string, ordemSecao: number }[]}
- */
-
-export function obterSecoes(exercicios) {
-  if (!Array.isArray(exercicios)) return []
-
-  const visto = new Set()
-  return exercicios
-    .filter(({ id_secao }) => {
-      if (visto.has(id_secao)) return false
-      visto.add(id_secao)
-      return true
-    })
-    .map(({ id_secao, secao, descricaoSecao, ordemSecao }) => ({
-      id_secao,
-      nome       : secao,
-      descricao  : descricaoSecao,
-      ordemSecao,
-    }))
-}
-
-/**
- * Retorna os exercícios de uma seção específica.
- * @param {ExercicioFlat[]} exercicios
- * @param {number} id_secao
- * @returns {ExercicioFlat[]}
- */
-
-export function obterExerciciosDaSecao(exercicios, id_secao) {
-  if (!Array.isArray(exercicios)) return []
-  return exercicios.filter((ex) => ex.id_secao === id_secao)
-}
-
-/**
- * @param {ExercicioFlat[]} exercicios
- * @param {number} id_secao
- * @returns {number} - 1 se não encontrado
- */
-
-export function obterIndiceInicioSecao(exercicios, id_secao) {
-  if (!Array.isArray(exercicios)) return -1
-  return exercicios.findIndex((ex) => ex.id_secao === id_secao)
 }
 
 /**
@@ -271,54 +168,5 @@ export function calcularSumarioTreino(exercicios) {
     totalSecoes      : secoesMap.size,
     tempoEstimadoMin,
     secoes           : [...secoesMap.values()],
-  }
-}
-
-/**
- * @param {ExercicioFlat[]} exercicios
- * @param {number} index - Índice atual
- * @param {number} serieAtual - Série atual dentro do exercício (1-based)
- * @returns {{
- *   percentual           : number,
- *   exerciciosFeitos     : number,
- *   exerciciosRestantes  : number,
- *   seriesRestantes      : number,
- *   totalExercicios      : number,
- *   totalSeries          : number,
- *   secaoAtual           : string|null,
- *   proximaSecao         : string|null,
- *   finalizado           : boolean,
- * }}
- */
-
-export function calcularEstadoTreino(exercicios, index, serieAtual = 1) {
-  if (!Array.isArray(exercicios)) {
-    return {
-      percentual          : 0,
-      exerciciosFeitos    : 0,
-      exerciciosRestantes : 0,
-      seriesRestantes     : 0,
-      totalExercicios     : 0,
-      totalSeries         : 0,
-      secaoAtual          : null,
-      proximaSecao        : null,
-      finalizado          : true,
-    }
-  }
-
-  const atual       = obterExercicioAtual(exercicios, index)
-  const proxSecao   = obterProximaSecao(exercicios, index)
-  const finalizado  = treinoFinalizado(exercicios, index)
-
-  return {
-    percentual          : calcularProgresso(index, exercicios.length),
-    exerciciosFeitos    : Math.min(index, exercicios.length),
-    exerciciosRestantes : calcularExerciciosRestantes(exercicios, index),
-    seriesRestantes     : calcularSeriesRestantesDetalhado(exercicios, index, serieAtual),
-    totalExercicios     : exercicios.length,
-    totalSeries         : exercicios.reduce((acc, ex) => acc + (ex.series ?? 0), 0),
-    secaoAtual          : atual?.secao ?? null,
-    proximaSecao        : proxSecao?.secao ?? null,
-    finalizado,
   }
 }

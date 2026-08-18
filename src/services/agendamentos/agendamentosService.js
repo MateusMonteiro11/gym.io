@@ -51,7 +51,7 @@ export async function criarAgendamento({
     .single()
 
   if (error) throw error
-  return data?.[0] || null
+  return data || null
 }
 
 /**
@@ -107,22 +107,6 @@ export async function listarAgendamentosUsuario(idUsuario) {
   }))
 
   return dadosAjustados
-}
-
-/**
- * Cancela um agendamento
- * @param {number} idAgendamento
- * @returns {Promise<Object>}
- */
-export async function cancelarAgendamento(idAgendamento) {
-  const { data, error } = await supabase
-    .from('agendamentos')
-    .update({ concluido: true })
-    .eq('id_agendamento', idAgendamento)
-    .select()
-
-  if (error) throw error
-  return data?.[0] || null
 }
 
 /**

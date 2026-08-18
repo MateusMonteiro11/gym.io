@@ -1,6 +1,6 @@
-export const MAX_PROFILE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
-export const ACCEPTED_PROFILE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-export const ACCEPTED_PROFILE_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
+const MAX_PROFILE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
+const ACCEPTED_PROFILE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const ACCEPTED_PROFILE_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
 
 export function validateProfileImageFile(file) {
   if (!file) {

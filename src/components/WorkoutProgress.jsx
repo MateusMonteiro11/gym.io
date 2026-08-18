@@ -63,7 +63,7 @@ export default function WorkoutProgress({
                   flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
                   border transition-colors duration-200
                   ${ativa
-                    ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950/50 dark:border-blue-800 dark:text-blue-200'
+                    ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-[#0b0b0d] dark:border-white/[0.06] dark:text-blue-300'
                     : 'bg-slate-50 border-gray-100 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'
                   }
                 `}
