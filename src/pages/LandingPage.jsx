@@ -317,7 +317,7 @@ function Hero() {
 
 function TrustSection() {
   return (
-    <section className="px-5 py-12 sm:px-6 lg:px-8 dark:bg-black/20">
+    <section className="px-5 py-12 sm:px-6 lg:px-8">
       <motion.div
         className="mx-auto grid max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-4"
         initial="hidden"
@@ -345,7 +345,7 @@ function TrustSection() {
 
 function FeaturesSection() {
   return (
-    <section id="features" className="px-5 py-24 sm:px-6 lg:px-8 dark:bg-black/20">
+    <section id="features" className="px-5 py-24 sm:px-6 lg:px-8">
       <SectionHeader
         eyebrow="Recursos"
         title="Tudo o que seu treino precisa."
@@ -387,7 +387,7 @@ function FeaturesSection() {
 
 function ShowcaseSection() {
   return (
-    <section id="showcase" className="relative overflow-hidden px-5 py-24 sm:px-6 lg:px-8 dark:bg-black/20">
+    <section id="showcase" className="relative overflow-hidden px-5 py-24 sm:px-6 lg:px-8">
       <Glow className="left-10 top-1/2 h-80 w-80 -translate-y-1/2 bg-cyan-100/80 dark:bg-blue-800/5" />
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.85fr_1.15fr]">
         <SectionHeader
@@ -428,7 +428,7 @@ function ShowcaseSection() {
 
 function ExperienceSection() {
   return (
-    <section id="experience" className="px-5 py-24 sm:px-6 lg:px-8 dark:bg-black/20">
+    <section id="experience" className="px-5 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1fr]">
         <SectionHeader
           align="left"
@@ -463,7 +463,7 @@ function ExperienceSection() {
 
 function ResponsiveSection() {
   return (
-    <section className="px-5 py-24 sm:px-6 lg:px-8 dark:bg-black/20">
+    <section className="px-5 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
         <motion.div
           className="relative order-2 mx-auto h-[620px] w-full max-w-sm lg:order-1"
@@ -532,7 +532,7 @@ function ResponsiveSection() {
 
 function CreatorSection() {
   return (
-    <section id="creator" className="relative overflow-hidden px-5 py-24 sm:px-6 lg:px-8 dark:bg-black/20">
+    <section id="creator" className="relative overflow-hidden px-5 py-24 sm:px-6 lg:px-8">
       <Glow className="right-20 top-10 h-72 w-72 bg-blue-100/90 dark:bg-blue-800/5" />
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <motion.article
@@ -659,7 +659,7 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-canvas text-slate-950">
       <div
-        className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(20,87,247,0.12),transparent_32%),linear-gradient(180deg,rgba(248,250,252,0.9),rgba(255,255,255,0.96)_30%,rgba(241,245,249,0.7))] dark:bg-[radial-gradient(circle_at_top,rgba(20,87,247,0.10),transparent_28%),radial-gradient(circle_at_85%_35%,rgba(20,87,247,0.035),transparent_22%),linear-gradient(180deg,#020202_0%,#050505_42%,#010101_100%)]"
+        className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(20,87,247,0.12),transparent_32%),linear-gradient(180deg,rgba(248,250,252,0.9),rgba(255,255,255,0.96)_30%,rgba(241,245,249,0.7))] dark:bg-[radial-gradient(circle_at_top,rgba(20,87,247,0.07),transparent_34%),radial-gradient(circle_at_85%_35%,rgba(20,87,247,0.025),transparent_24%)]"
         aria-hidden
       />
       <div className="relative">
