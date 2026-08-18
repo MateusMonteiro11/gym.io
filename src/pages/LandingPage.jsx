@@ -275,12 +275,6 @@ function Hero() {
         animate="visible"
         variants={stagger}
       >
-        <motion.div
-          variants={fadeUp}
-          className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/80 px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm shadow-blue-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/90 dark:text-slate-300 dark:shadow-black/20"
-        >
-          Aplicação projetada com foco em aprendizado, gratuíto para utilização.
-        </motion.div>
         <motion.h1
           variants={fadeUp}
           className="mx-auto max-w-5xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-6xl lg:text-7xl"
