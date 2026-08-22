@@ -47,6 +47,7 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
           </button>
           <button
             onClick={() => setConfirmando(false)}
+            disabled={salvando}
             className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-900 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
           >
             Voltar
@@ -55,7 +56,8 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
       ) : (
         <button
           onClick={handleSair}
-          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold bg-slate-100 text-slate-900 shadow-sm ring-1 ring-slate-200 transition duration-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700 dark:hover:bg-slate-700"
+          disabled={salvando}
+          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold bg-slate-100 text-slate-900 shadow-sm ring-1 ring-slate-200 transition duration-200 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700 dark:hover:bg-slate-700"
         >
           <i className="fa-solid fa-xmark dark:text-white" />
           <span>Cancelar</span>

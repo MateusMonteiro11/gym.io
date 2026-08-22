@@ -1,121 +1,43 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { formatElapsed } from './useWorkoutTimer.js'
 
-/**
- * @typedef {Object} DescansoTimerReturn
- * @property {boolean}  ativo - Se há descanso em andamento
- * @property {number}   restante - Segundos restantes
- * @property {number}   total - Duração total configurada (segundos)
- * @property {number}   percentual - Percentual restante (100 → 0)
- * @property {string}   formatted - Tempo formatado "MM:SS"
- * @property {Function} iniciarDescanso - (segundos?: number) => void
- * @property {Function} pularDescanso - Encerra imediatamente e chama onFim
- * @property {Function} adicionarTempo - (segundos: number) => void — adiciona tempo ao restante
- */
+export function calcularDescanso(sessao, nowMs = Date.now()) {
+  const emDescanso = sessao?.status === 'ativa' && sessao?.fase === 'descanso'
+  const inicioMs = sessao?.descanso_iniciado_em
+    ? Date.parse(sessao.descanso_iniciado_em)
+    : Number.NaN
+  const fimMs = sessao?.descanso_termina_em
+    ? Date.parse(sessao.descanso_termina_em)
+    : Number.NaN
 
-/**
- * @param {Object}    [options]
- * @param {Function}  [options.onFim] - Callback ao zerar o timer
- * @param {number}    [options.duracaoPadrao=60] - Segundos padrão se nenhum for passado
- * @returns {DescansoTimerReturn}
- */
-export function useDescansoTimer({ onFim, duracaoPadrao = 60 } = {}) {
-  const [ativo,     setAtivo]     = useState(false)
-  const [restante,  setRestante]  = useState(0)
-  const [total,     setTotal]     = useState(0)
+  if (!emDescanso || !Number.isFinite(fimMs)) {
+    return { ativo: false, restante: 0, total: 0, percentual: 0 }
+  }
 
-  const intervalRef = useRef(null)
-  const onFimRef    = useRef(onFim)
-  onFimRef.current  = onFim   // mantém referência estável
-
-  // Limpa intervalo ao desmontar
-  useEffect(() => {
-    return () => clearInterval(intervalRef.current)
-  }, [])
-
-  // Contagem regressiva
-  useEffect(() => {
-    if (!ativo) {
-      clearInterval(intervalRef.current)
-      return
-    }
-
-    intervalRef.current = setInterval(() => {
-      setRestante((prev) => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current)
-          setAtivo(false)
-          onFimRef.current?.()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => clearInterval(intervalRef.current)
-  }, [ativo])
-
-  const iniciarDescanso = useCallback((segundos) => {
-    const duracao = segundos ?? duracaoPadrao
-    clearInterval(intervalRef.current)
-    setTotal(duracao)
-    setRestante(duracao)
-    setAtivo(true)
-  }, [duracaoPadrao])
-
-  const pularDescanso = useCallback(() => {
-    clearInterval(intervalRef.current)
-    setAtivo(false)
-    setRestante(0)
-    onFimRef.current?.()
-  }, [])
-
-  const adicionarTempo = useCallback((segundos) => {
-    setRestante((prev) => prev + segundos)
-    setTotal((prev) => prev + segundos)
-  }, [])
-
-  const reset = useCallback(() => {
-
-    clearInterval(intervalRef.current)
-
-    setAtivo(false)
-    setRestante(0)
-    setTotal(0)
-
-  }, [])
-
-  const removerTempo = useCallback((segundos) => {
-
-    setRestante((prev) =>
-      Math.max(prev - segundos, 0)
-    )
-
-    setTotal((prev) =>
-      Math.max(prev - segundos, 0)
-    )
-
-  }, [])
-
+  const pausaMs = sessao?.pausada_em
+    ? Date.parse(sessao.pausada_em)
+    : Number.NaN
+  const referenciaMs = Number.isFinite(pausaMs) ? pausaMs : Number(nowMs)
+  const restante = Math.max(0, Math.ceil((fimMs - referenciaMs) / 1000))
+  const total = Number.isFinite(inicioMs)
+    ? Math.max(0, Math.round((fimMs - inicioMs) / 1000))
+    : Number(sessao.descanso_padrao_segundos || 0)
   const percentual = total > 0
-    ? Math.round((restante / total) * 100)
+    ? Math.min(100, Math.max(0, Math.round((restante / total) * 100)))
     : 0
 
-  const formatted = (() => {
-    const m = String(Math.floor(restante / 60)).padStart(2, '0')
-    const s = String(restante % 60).padStart(2, '0')
-    return `${m}:${s}`
-  })()
-
   return {
-    ativo,
+    ativo: restante > 0,
     restante,
     total,
     percentual,
-    formatted,
-    iniciarDescanso,
-    pularDescanso,
-    adicionarTempo,
-    removerTempo,
-    reset,
+  }
+}
+
+export function useDescansoTimer({ sessao, nowMs = Date.now() } = {}) {
+  const descanso = calcularDescanso(sessao, nowMs)
+
+  return {
+    ...descanso,
+    formatted: formatElapsed(descanso.restante),
   }
 }

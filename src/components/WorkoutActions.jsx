@@ -16,6 +16,7 @@ export default function WorkoutActions({
   indexAtual,
   finalizado,
   salvando,
+  pausado = false,
   onIniciar,
   onAvancar,
   onFinalizar,
@@ -23,7 +24,7 @@ export default function WorkoutActions({
   const [confirmando, setConfirmando] = useState(false)
 
   const inativo      = status === 'idle' || status === 'finalizado'
-  const podeAvancar  = !inativo && !finalizado
+  const podeAvancar  = status === 'ativo' && !finalizado && !salvando && !pausado
 
   // Tela de confirmação de finalização
   if (status === 'idle') {
@@ -32,12 +33,13 @@ export default function WorkoutActions({
 
       <button
         onClick={onIniciar}
+        disabled={salvando}
         className="
           w-full py-4 rounded-2xl
           bg-primary hover:bg-primary-hover
           text-white font-semibold
           flex items-center justify-center gap-3
-          transition-all duration-200
+          transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60
         "
       >
         <i className="fa-solid fa-play text-white" />
@@ -46,6 +48,8 @@ export default function WorkoutActions({
 
     )
   }
+
+  if (status === 'descansando') return null
   
   
   if (confirmando) {
@@ -61,6 +65,7 @@ export default function WorkoutActions({
         <div className="flex gap-2">
           <button
             onClick={() => setConfirmando(false)}
+            disabled={salvando}
             className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800"
           >
             Cancelar
@@ -105,7 +110,7 @@ export default function WorkoutActions({
       <div className="flex gap-2">
         <button
           onClick={() => setConfirmando(true)}
-          disabled={inativo && !finalizado}
+          disabled={(inativo && !finalizado) || salvando}
           className={`
             w-full py-3 rounded-xl text-sm font-semibold
             flex items-center justify-center gap-2

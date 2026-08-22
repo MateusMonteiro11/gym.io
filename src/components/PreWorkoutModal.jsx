@@ -4,7 +4,14 @@ import ModalHeader from './ui/ModalHeader'
 import Input, { Label } from './ui/Input'
 import Button from './ui/Button'
 
-export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onClose, onStart }) {
+export default function PreWorkoutModal({
+  open,
+  treino,
+  descansoPadrao = 60,
+  onClose,
+  onStart,
+  processando = false,
+}) {
   const [descanso, setDescanso] = useState(descansoPadrao)
 
   useEffect(() => {
@@ -12,11 +19,11 @@ export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onC
   }, [open, descansoPadrao])
 
   return (
-    <Modal open={open} onClose={onClose} size="md">
+    <Modal open={open} onClose={processando ? undefined : onClose} size="md">
       <ModalHeader
         title="Iniciar treino"
         subtitle={treino?.nome ? `Treino: ${treino.nome}` : 'Configure o descanso padrão'}
-        onClose={onClose}
+        onClose={processando ? undefined : onClose}
       />
       <div className="space-y-6 p-6">
         <div className="grid grid-cols-4 gap-2">
@@ -25,6 +32,7 @@ export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onC
               key={tempo}
               type="button"
               onClick={() => setDescanso(tempo)}
+              disabled={processando}
               className={`cursor-pointer rounded-xl py-3 text-sm font-semibold transition-colors duration-200 ${
                 descanso === tempo
                   ? 'bg-primary text-white'
@@ -40,17 +48,20 @@ export default function PreWorkoutModal({ open, treino, descansoPadrao = 60, onC
           <Input
             type="number"
             min="0"
+            max="3600"
             value={descanso}
             onChange={(e) => setDescanso(Number(e.target.value))}
+            disabled={processando}
             className="mt-2"
           />
         </div>
         <div className="flex gap-3">
-          <Button variant="secondary" className="flex-1" onClick={onClose}>
+          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={processando}>
             Cancelar
           </Button>
-          <Button className="flex-1" onClick={() => onStart(descanso)}>
-            <i className="fa-solid fa-play text-white" /> Começar
+          <Button className="flex-1" onClick={() => onStart(descanso)} disabled={processando}>
+            <i className={`fa-solid ${processando ? 'fa-spinner animate-spin' : 'fa-play'} text-white`} />
+            {processando ? 'Iniciando…' : 'Começar'}
           </Button>
         </div>
       </div>

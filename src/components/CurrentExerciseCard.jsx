@@ -27,7 +27,7 @@ function SerieBadge({ serieAtual, totalSeries }) {
 }
 
  /* Campo de ajuste numérico (carga ou reps) */
-function AjusteNumerico({ label, valor, onChange, sufixo }) {
+function AjusteNumerico({ label, valor, onChange, sufixo, disabled = false }) {
   const valorNumerico = Number(valor) || 0
 
   return (
@@ -38,6 +38,7 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
       <div className="flex items-center gap-2">
         <button
           onClick={() => onChange(Math.max(0, valorNumerico - 1))}
+          disabled={disabled}
           className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
           type="button"
         >−</button>
@@ -47,6 +48,7 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
             min="0"
             value={valorNumerico}
             onChange={(e) => onChange(Number(e.target.value) || 0)}
+            disabled={disabled}
             className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2 text-center text-base font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
           />
           <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs font-normal text-slate-600 dark:text-slate-300">
@@ -55,6 +57,7 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
         </div>
         <button
           onClick={() => onChange(valorNumerico + 1)}
+          disabled={disabled}
           className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-gray-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
           type="button"
         >+</button>
@@ -72,7 +75,15 @@ function AjusteNumerico({ label, valor, onChange, sufixo }) {
  * @param {Function} props.onConcluirSerie   - (ajustes: { carga, repeticoes }) => void
  */
 
-export default function CurrentExerciseCard({ exercicio, serieAtual, status, tempoDescanso, onConcluirSerie }) {
+export default function CurrentExerciseCard({
+  exercicio,
+  serieAtual,
+  status,
+  tempoDescanso,
+  onConcluirSerie,
+  processando = false,
+  pausado = false,
+}) {
   const [carga,      setCarga]      = useState(0)
   const [repeticoes, setRepeticoes] = useState(0)
   const [ajusteAberto, setAjusteAberto] = useState(false)
@@ -86,7 +97,7 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
 
   if (!exercicio) return null
 
-  const podeInteragir = status === 'ativo'
+  const podeInteragir = status === 'ativo' && !processando && !pausado
 
   function handleConcluir() {
     onConcluirSerie({ carga: Number(carga), repeticoes: Number(repeticoes) })
@@ -99,6 +110,9 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
 
         {/* Nome + série badges */}
         <div className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            {status === 'descansando' ? 'Próxima série' : 'Exercício atual'}
+          </p>
           <div className="flex items-start justify-between gap-2">
             <h2 className="text-xl font-bold leading-tight text-slate-900 dark:text-slate-50">
               {exercicio.nome}
@@ -140,9 +154,10 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
         )}
 
         {/* Ajuste de carga/reps */}
-        <div>
+        {status !== 'descansando' && <div>
           <button
             onClick={() => setAjusteAberto((v) => !v)}
+            disabled={processando || pausado}
             className="flex items-center gap-1 text-xs font-medium text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-300 dark:hover:text-white"
           >
             <i className={`fa-solid ${ajusteAberto ? 'fa-chevron-up' : 'fa-sliders'} text-[10px] dark:text-white`} />
@@ -156,6 +171,7 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
                   label="Carga"
                   valor={carga}
                   onChange={setCarga}
+                  disabled={processando || pausado}
                   sufixo="" /* Melhor vazio neste caso */
                 />
                 <div className="hidden sm:block h-12 w-px bg-gray-200 dark:bg-slate-700" />
@@ -163,15 +179,16 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
                   label="Reps"
                   valor={repeticoes}
                   onChange={setRepeticoes}
+                  disabled={processando || pausado}
                   sufixo="" /* Melhor vazio neste caso */
                 />
               </div>
             </div>
           )}
-        </div>
+        </div>}
 
         {/* Botão concluir série */}
-        <button
+        {status !== 'descansando' && <button
           onClick={handleConcluir}
           disabled={!podeInteragir}
           className={`
@@ -179,17 +196,21 @@ export default function CurrentExerciseCard({ exercicio, serieAtual, status, tem
             flex items-center justify-center gap-2
             transition-all duration-200
             ${podeInteragir
-              ? 'bg-primary text-white hover:bg-primary-hover active:scale-[0.98] shadow-sm shadow-blue-200'
+              ? 'bg-primary text-white hover:bg-primary-hover active:scale-[0.98] shadow-sm shadow-blue-200 dark:shadow-none'
               : 'bg-slate-50 text-slate-600 cursor-not-allowed dark:bg-slate-800 dark:text-slate-300'
             }
           `}
         >
           <i className="fa-solid fa-check dark:text-white" />
-          {serieAtual < exercicio.series
+          {processando
+            ? 'Salvando série…'
+            : pausado
+              ? 'Retome o cronômetro para continuar'
+              : serieAtual < exercicio.series
             ? `Concluir série ${serieAtual}`
             : 'Concluir exercício'
           }
-        </button>
+        </button>}
       </div>
     </div>
   )

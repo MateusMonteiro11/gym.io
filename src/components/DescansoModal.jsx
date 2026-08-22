@@ -16,6 +16,10 @@ export default function DescansoModal({
   onRemoverTempo,
   onPular,
   onContinuar,
+  onAvancarExercicio,
+  processando = false,
+  pausado = false,
+  onRetomarTreino,
 
 }) {
 
@@ -151,7 +155,21 @@ export default function DescansoModal({
         </div>
 
         {/* CONTROLES */}
-        {!descansoFinalizado ? (
+        {pausado && (
+          <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-center text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
+            O cronômetro geral está pausado, mas o descanso continua pelo horário definido.
+          </div>
+        )}
+
+        {pausado ? (
+          <button
+            onClick={onRetomarTreino}
+            disabled={processando}
+            className="w-full rounded-2xl bg-primary py-4 font-semibold text-white transition-all hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {processando ? 'Retomando…' : 'Retomar cronômetro'}
+          </button>
+        ) : !descansoFinalizado ? (
 
           <>
             <div className="
@@ -159,7 +177,8 @@ export default function DescansoModal({
             ">
 
               <button
-                onClick={() => onAdicionarTempo(15)}
+                onClick={onAdicionarTempo}
+                disabled={processando}
                 className="
                   py-3 rounded-xl
                   bg-slate-50 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700
@@ -170,7 +189,8 @@ export default function DescansoModal({
               </button>
 
               <button
-                onClick={() => onRemoverTempo(15)}
+                onClick={onRemoverTempo}
+                disabled={processando}
                 className="
                   py-3 rounded-xl
                   bg-slate-50 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700
@@ -182,6 +202,7 @@ export default function DescansoModal({
 
               <button
                 onClick={onPular}
+                disabled={processando}
                 className="
                   py-3 rounded-xl
                   bg-red-100 text-red-600
@@ -196,6 +217,7 @@ export default function DescansoModal({
 
             <button
               onClick={onContinuar}
+              disabled={processando}
               className="
                 w-full py-4 rounded-2xl
                 bg-primary hover:bg-primary-hover
@@ -205,21 +227,39 @@ export default function DescansoModal({
             >
               Continuar treino
             </button>
+
+            <button
+              onClick={onAvancarExercicio}
+              disabled={processando}
+              className="mt-3 w-full rounded-2xl border border-emerald-200 bg-emerald-50 py-3 font-semibold text-emerald-700 transition-all hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+            >
+              Próximo exercício
+            </button>
           </>
 
         ) : (
 
-          <button
-            onClick={onContinuar}
-            className="
-              w-full py-4 rounded-2xl
-              bg-emerald-500 hover:bg-emerald-600
-              text-white font-semibold
-              transition-all
-            "
-          >
-            Continuar treino
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={onContinuar}
+              disabled={processando}
+              className="
+                w-full py-4 rounded-2xl
+                bg-emerald-500 hover:bg-emerald-600
+                text-white font-semibold
+                transition-all
+              "
+            >
+              Continuar treino
+            </button>
+            <button
+              onClick={onAvancarExercicio}
+              disabled={processando}
+              className="w-full rounded-2xl border border-emerald-200 bg-emerald-50 py-3 font-semibold text-emerald-700 transition-all hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+            >
+              Próximo exercício
+            </button>
+          </div>
 
         )}
 
