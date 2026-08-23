@@ -159,8 +159,10 @@ export default function TreinoPlayer() {
             />
 
             <CurrentExerciseCard
+              key={`${treinoAtivo.exercicioAtual?.id_treino_exercicio ?? 'sem-exercicio'}:${treinoAtivo.serieAtual}`}
               exercicio={treinoAtivo.exercicioAtual}
               serieAtual={treinoAtivo.serieAtual}
+              valoresIniciais={treinoAtivo.valoresIniciaisExercicio}
               status={treinoAtivo.status}
               tempoDescanso={treinoAtivo.tempoDescanso}
               onConcluirSerie={treinoAtivo.concluirSerie}

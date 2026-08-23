@@ -18,8 +18,14 @@ import {
   obterExercicioAtual,
   obterProximaSecao,
 } from '../utils/treinoUtils'
+import {
+  carregarMemoriasComFallback,
+  normalizarIdsExercicios,
+  resolverValoresIniciaisExercicio,
+} from '../utils/memoriaExercicioUtils'
 import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 import { marcarAgendamentoConcluido } from '../services/agendamentos/agendamentosService'
+import { buscarMemoriasExercicios } from '../services/memoria_exercicios/memoriaExerciciosService'
 import {
   ajustarDescansoTreinoSessao,
   avancarExercicioTreinoSessao,
@@ -67,9 +73,14 @@ export function useTreinoAtivo({
 }) {
   const exercicios = useMemo(() => flattenTreino(treino), [treino])
   const sumario = useMemo(() => calcularSumarioTreino(exercicios), [exercicios])
+  const idsExerciciosMemoria = useMemo(
+    () => normalizarIdsExercicios(exercicios.map((item) => item.id_exercicio)),
+    [exercicios]
+  )
 
   const [sessao, setSessao] = useState(null)
   const [seriesConcluidas, setSeriesConcluidas] = useState([])
+  const [memoriasHistoricas, setMemoriasHistoricas] = useState(() => new Map())
   const [sessaoConflitante, setSessaoConflitante] = useState(null)
   const [serverOffsetMs, setServerOffsetMs] = useState(0)
   const [chaveRecuperada, setChaveRecuperada] = useState(null)
@@ -96,6 +107,32 @@ export function useTreinoAtivo({
     onFinalizarRef.current = onFinalizar
     onCancelarRef.current = onCancelar
   }, [onCancelar, onFinalizar])
+
+  useEffect(() => {
+    let ativo = true
+    setMemoriasHistoricas(new Map())
+
+    if (!idUsuario || !idsExerciciosMemoria.length) {
+      return () => {
+        ativo = false
+      }
+    }
+
+    carregarMemoriasComFallback(
+      idsExerciciosMemoria,
+      buscarMemoriasExercicios,
+      (error) => logError(
+        error,
+        '[useTreinoAtivo] Failed to load exercise memories'
+      )
+    ).then((memorias) => {
+      if (ativo) setMemoriasHistoricas(memorias)
+    })
+
+    return () => {
+      ativo = false
+    }
+  }, [idUsuario, idsExerciciosMemoria])
 
   const registrarSessao = useCallback((proximaSessao, novasSeries) => {
     if (!deveAceitarSessaoRecebida(sessaoRef.current, proximaSessao)) {
@@ -407,6 +444,23 @@ export function useTreinoAtivo({
   const indexAtual = Number(sessao?.indice_exercicio_atual ?? 0)
   const serieAtual = Number(sessao?.serie_atual ?? 1)
   const exercicioAtual = obterExercicioAtual(exercicios, indexAtual)
+  const memoriaHistoricaAtual = memoriasHistoricas.get(
+    Number(exercicioAtual?.id_exercicio)
+  ) ?? null
+  const valoresIniciaisExercicio = useMemo(
+    () => resolverValoresIniciaisExercicio({
+      exercicio: exercicioAtual,
+      seriesConcluidas,
+      memoriaHistorica: memoriaHistoricaAtual,
+      idTreinoExercicioAtual: sessao?.id_treino_exercicio_atual ?? null,
+    }),
+    [
+      exercicioAtual,
+      memoriaHistoricaAtual,
+      seriesConcluidas,
+      sessao?.id_treino_exercicio_atual,
+    ]
+  )
   const proximaSecao = obterProximaSecao(exercicios, indexAtual)
   const proximoExercicios = useMemo(
     () => exercicios.slice(indexAtual + 1, indexAtual + 4),
@@ -702,6 +756,7 @@ export function useTreinoAtivo({
     indexAtual,
     serieAtual,
     exercicioAtual,
+    valoresIniciaisExercicio,
     proximoExercicios,
     proximaSecao,
     finalizado,

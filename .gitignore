@@ -3,8 +3,6 @@ node_modules
 
 # production
 dist
-tests
-supabase
 
 # environment variables
 .env
