@@ -1,4 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useReducer, useState } from 'react'
+import {
+  criarChaveFormularioSerie,
+  criarEstadoFormularioSerie,
+  reduzirEstadoFormularioSerie,
+} from '../utils/currentExerciseFormState'
 
 
  /* Badge de série (ex.: "Série 2 / 3") */
@@ -70,6 +75,7 @@ function AjusteNumerico({ label, valor, onChange, sufixo, disabled = false }) {
  * @param {Object}   props
  * @param {import('../utils/treinoUtils').ExercicioFlat | null} props.exercicio
  * @param {number}   props.serieAtual
+ * @param {{carga: number, repeticoes: number}} props.valoresIniciais
  * @param {'idle'|'ativo'|'descansando'|'finalizado'} props.status
  * @param {number}   props.tempoDescanso
  * @param {Function} props.onConcluirSerie   - (ajustes: { carga, repeticoes }) => void
@@ -78,25 +84,49 @@ function AjusteNumerico({ label, valor, onChange, sufixo, disabled = false }) {
 export default function CurrentExerciseCard({
   exercicio,
   serieAtual,
+  valoresIniciais,
   status,
   tempoDescanso,
   onConcluirSerie,
   processando = false,
   pausado = false,
 }) {
-  const [carga,      setCarga]      = useState(0)
-  const [repeticoes, setRepeticoes] = useState(0)
+  const chaveSerie = criarChaveFormularioSerie(
+    exercicio?.id_treino_exercicio,
+    serieAtual
+  )
+  const cargaInicial = valoresIniciais?.carga ?? exercicio?.carga ?? 0
+  const repeticoesIniciais = valoresIniciais?.repeticoes ?? exercicio?.repeticoes ?? 0
+  const [formulario, dispatchFormulario] = useReducer(
+    reduzirEstadoFormularioSerie,
+    null,
+    () => criarEstadoFormularioSerie(chaveSerie, {
+      carga: cargaInicial,
+      repeticoes: repeticoesIniciais,
+    })
+  )
   const [ajusteAberto, setAjusteAberto] = useState(false)
 
-  // Sincroniza com os valores do exercício ao mudar de exercício ou série
+  // Inicializa uma vez por série e aceita defaults assíncronos apenas enquanto
+  // o usuário ainda não editou o formulário atual.
   useEffect(() => {
-    setCarga(Number(exercicio?.carga ?? 0))
-    setRepeticoes(Number(exercicio?.repeticoes ?? 0))
+    dispatchFormulario({
+      type: 'sincronizar',
+      chaveSerie,
+      valoresIniciais: {
+        carga: cargaInicial,
+        repeticoes: repeticoesIniciais,
+      },
+    })
+  }, [cargaInicial, chaveSerie, repeticoesIniciais])
+
+  useEffect(() => {
     setAjusteAberto(false)
-  }, [exercicio, serieAtual])
+  }, [chaveSerie])
 
   if (!exercicio) return null
 
+  const { carga, repeticoes } = formulario
   const podeInteragir = status === 'ativo' && !processando && !pausado
 
   function handleConcluir() {
@@ -170,7 +200,10 @@ export default function CurrentExerciseCard({
                 <AjusteNumerico
                   label="Carga"
                   valor={carga}
-                  onChange={setCarga}
+                  onChange={(valor) => dispatchFormulario({
+                    type: 'editar_carga',
+                    valor,
+                  })}
                   disabled={processando || pausado}
                   sufixo="" /* Melhor vazio neste caso */
                 />
@@ -178,7 +211,10 @@ export default function CurrentExerciseCard({
                 <AjusteNumerico
                   label="Reps"
                   valor={repeticoes}
-                  onChange={setRepeticoes}
+                  onChange={(valor) => dispatchFormulario({
+                    type: 'editar_repeticoes',
+                    valor,
+                  })}
                   disabled={processando || pausado}
                   sufixo="" /* Melhor vazio neste caso */
                 />
