@@ -1,9 +1,9 @@
 import { useState } from 'react'
+import ActionLoading from './ui/ActionLoading'
 
 /**
  * @param {Object}   props
  * @param {'idle'|'ativo'|'descansando'|'finalizado'} props.status
- * @param {number}   props.indexAtual
  * @param {boolean}  props.finalizado
  * @param {boolean}  props.salvando
  * @param {Function} props.onIniciar
@@ -13,7 +13,6 @@ import { useState } from 'react'
 
 export default function WorkoutActions({
   status,
-  indexAtual,
   finalizado,
   salvando,
   pausado = false,
@@ -76,7 +75,7 @@ export default function WorkoutActions({
             className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:opacity-50"
           >
             {salvando ? (
-              <><i className="fa-solid fa-spinner animate-spin text-white" /> Salvando…</>
+              <ActionLoading label="Salvando…" inverse />
             ) : (
               <><i className="fa-solid fa-flag-checkered text-white" /> Finalizar</>
             )}

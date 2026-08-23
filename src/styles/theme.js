@@ -6,7 +6,8 @@ export const ui = {
   input:
     'w-full rounded-xl border border-slate-200 bg-surface px-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition-colors duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-white/[0.06] dark:bg-[#080808] dark:text-slate-100 dark:placeholder:text-slate-500',
   label: 'block text-sm font-medium text-slate-700 mb-1.5 dark:text-slate-200',
-  card: 'bg-surface rounded-2xl border border-slate-200 shadow-sm transition-shadow duration-200 hover:shadow-md hover:border-slate-300 dark:border-transparent dark:bg-[linear-gradient(180deg,#101010_0%,#090909_46%,#050505_100%)] dark:shadow-black/40 dark:hover:border-transparent',
+  card: 'bg-surface rounded-2xl border border-slate-200 shadow-sm dark:border-transparent dark:bg-[linear-gradient(180deg,#101010_0%,#090909_46%,#050505_100%)] dark:shadow-black/40',
+  cardHover: 'transition-shadow duration-200 hover:shadow-card-hover hover:border-slate-300 dark:hover:border-transparent',
   cardPadding: 'p-6',
   overlay: 'fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 dark:bg-black/75',
   modalPanel:
@@ -25,5 +26,4 @@ export const ui = {
     'inline-flex items-center rounded-full bg-primary-muted px-2.5 py-0.5 text-xs font-medium text-primary',
   emptyIcon:
     'mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-muted text-primary text-2xl',
-  loadingSpinner: 'fa-solid fa-spinner animate-spin text-primary text-3xl',
 }

@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
+import DashboardLayout from '../layouts/DashboardLayout'
 
 export function PrivateRoute({
   children
@@ -12,19 +13,14 @@ export function PrivateRoute({
   } = useAuth()
   const location = useLocation()
 
-  if (loading) {
-
-    return (
-      <p className="p-10">
-        Carregando...
-      </p>
-    )
-  }
-
-  if (!usuario) {
+  if (!loading && !usuario) {
 
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  return children
+  return (
+    <DashboardLayout loading={loading} loadingMessage="Preparando sua área...">
+      {loading ? null : children}
+    </DashboardLayout>
+  )
 }

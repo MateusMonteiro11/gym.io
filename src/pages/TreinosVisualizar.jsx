@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
-import DashboardLayout from '../layouts/DashboardLayout'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 
 import {
   buscarTreinoCompleto
@@ -85,39 +85,39 @@ export default function TreinosVisualizar() {
     useState(true)
 
   useEffect(() => {
+    let active = true
 
     async function carregarTreino() {
+      setLoading(true)
+      setTreino(null)
 
       try {
 
         const data =
           await buscarTreinoCompleto(id)
 
-        setTreino(data)
+        if (active) setTreino(data)
 
       } catch (error) {
 
-        console.error(error)
+        if (active) console.error(error)
 
       } finally {
 
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
 
     carregarTreino()
 
+    return () => {
+      active = false
+    }
+
   }, [id])
 
   if (loading) {
-
-    return (
-
-      <div className="min-h-screen flex items-center justify-center">
-        Carregando treino...
-      </div>
-
-    )
+    return <PageLoadingBoundary loading loadingMessage="Carregando treino..." />
   }
 
   if (!treino) {
@@ -131,9 +131,9 @@ export default function TreinosVisualizar() {
     )
   }
   return (
-    <DashboardLayout loading={loading} loadingMessage="Carregando treino...">
+    <PageLoadingBoundary loading={loading} loadingMessage="Carregando treino...">
 
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
           <div>
 
@@ -173,9 +173,9 @@ export default function TreinosVisualizar() {
 
         </div>
 
-        <section className="mb-10 grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
+        <section className="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
+          <div className="min-w-0 rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
             <div className="flex items-start justify-between gap-4">
 
@@ -200,7 +200,7 @@ export default function TreinosVisualizar() {
 
           </div>
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
+          <div className="min-w-0 rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
             <p className="text-sm text-slate-600 uppercase tracking-[0.18em]">
               Resumo
@@ -232,6 +232,6 @@ export default function TreinosVisualizar() {
           )}
 
         </section>
-    </DashboardLayout>
+    </PageLoadingBoundary>
   )
 }

@@ -35,6 +35,41 @@
 }
 
 @layer components {
+  .skeleton-shimmer {
+    --skeleton-base: rgb(226 232 240);
+    --skeleton-highlight: rgb(255 255 255 / 0.82);
+    position: relative;
+    overflow: hidden;
+    background-color: var(--skeleton-base);
+  }
+
+  .skeleton-shimmer-wave {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 30%,
+      var(--skeleton-highlight) 50%,
+      transparent 70%,
+      transparent 100%
+    );
+    will-change: transform;
+  }
+
+  .dark .skeleton-shimmer {
+    --skeleton-base: rgb(24 24 24);
+    --skeleton-highlight: rgb(255 255 255 / 0.12);
+  }
+
+  .skeleton-shimmer-inverse {
+    --skeleton-base: rgb(255 255 255 / 0.2);
+    --skeleton-highlight: rgb(255 255 255 / 0.72);
+  }
+
+  .dark .skeleton-shimmer-inverse {
+    --skeleton-base: rgb(255 255 255 / 0.16);
+    --skeleton-highlight: rgb(255 255 255 / 0.52);
+  }
+
   .loading-ring {
     box-sizing: border-box;
     border: 4px solid rgb(148 163 184 / 0.35);
@@ -45,10 +80,6 @@
     border-color: rgb(255 255 255 / 0.12) !important;
     border-top-color: #1457f7 !important;
     box-shadow: 0 0 18px rgb(20 87 247 / 0.18);
-  }
-
-  .menu-item {
-    @apply transition-colors duration-200;
   }
 
   @supports (-webkit-touch-callout: none) {

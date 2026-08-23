@@ -11,7 +11,7 @@ export function formatElapsed(totalSeconds) {
     : `${mm}:${ss}`
 }
 
-export function calcularTempoTreino(sessao, nowMs = Date.now()) {
+function calcularTempoTreino(sessao, nowMs = Date.now()) {
   if (!sessao?.iniciada_em) return 0
 
   const inicioMs = Date.parse(sessao.iniciada_em)

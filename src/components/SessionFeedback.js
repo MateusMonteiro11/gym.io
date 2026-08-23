@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 
-export const SESSION_FEEDBACK_CLASS = [
+const SESSION_FEEDBACK_CLASS = [
   'fixed right-4 top-4 z-[70] w-[min(28rem,calc(100vw-2rem))]',
   'flex items-start justify-between gap-4 rounded-xl border px-4 py-3 text-sm shadow-lg',
 ].join(' ')

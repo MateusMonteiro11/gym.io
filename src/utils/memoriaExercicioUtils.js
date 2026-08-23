@@ -40,7 +40,7 @@ export function criarMapaMemoriasHistoricas(rows = []) {
   return memorias
 }
 
-export function obterUltimaSerieConfirmada(
+function obterUltimaSerieConfirmada(
   seriesConcluidas,
   idTreinoExercicio
 ) {

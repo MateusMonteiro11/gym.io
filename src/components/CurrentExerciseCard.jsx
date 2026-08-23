@@ -4,6 +4,7 @@ import {
   criarEstadoFormularioSerie,
   reduzirEstadoFormularioSerie,
 } from '../utils/currentExerciseFormState'
+import ActionLoading from './ui/ActionLoading'
 
 
  /* Badge de série (ex.: "Série 2 / 3") */
@@ -237,9 +238,9 @@ export default function CurrentExerciseCard({
             }
           `}
         >
-          <i className="fa-solid fa-check dark:text-white" />
+          {!processando && <i className="fa-solid fa-check dark:text-white" />}
           {processando
-            ? 'Salvando série…'
+            ? <ActionLoading label="Salvando série…" inverse />
             : pausado
               ? 'Retome o cronômetro para continuar'
               : serieAtual < exercicio.series

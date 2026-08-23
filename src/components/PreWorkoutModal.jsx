@@ -3,6 +3,7 @@ import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import Input, { Label } from './ui/Input'
 import Button from './ui/Button'
+import ActionLoading from './ui/ActionLoading'
 
 export default function PreWorkoutModal({
   open,
@@ -60,8 +61,14 @@ export default function PreWorkoutModal({
             Cancelar
           </Button>
           <Button className="flex-1" onClick={() => onStart(descanso)} disabled={processando}>
-            <i className={`fa-solid ${processando ? 'fa-spinner animate-spin' : 'fa-play'} text-white`} />
-            {processando ? 'Iniciando…' : 'Começar'}
+            {processando ? (
+              <ActionLoading label="Iniciando…" inverse />
+            ) : (
+              <>
+                <i className="fa-solid fa-play text-white" />
+                Começar
+              </>
+            )}
           </Button>
         </div>
       </div>

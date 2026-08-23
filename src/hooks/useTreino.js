@@ -16,15 +16,24 @@ export function useTreino() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let active = true
 
     async function carregar() {
+      if (!usuario?.id) {
+        setTreinosSistema([])
+        setMeusTreinos([])
+        setLoading(false)
+        return
+      }
+
+      setLoading(true)
 
       try {
 
-        if (!usuario?.id) return
-
         const treinos =
           await listarTreinos(usuario.id)
+
+        if (!active) return
 
         const sistema =
           treinos.filter(
@@ -41,17 +50,21 @@ export function useTreino() {
 
       } catch (error) {
 
-        console.error(error)
+        if (active) console.error(error)
 
       } finally {
 
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
 
     carregar()
 
-  }, [usuario])
+    return () => {
+      active = false
+    }
+
+  }, [usuario?.id])
 
   return {
     treinosSistema,

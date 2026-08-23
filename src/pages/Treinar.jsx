@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import DashboardLayout from '../layouts/DashboardLayout'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import PreWorkoutModal from '../components/PreWorkoutModal'
 
 import { listarTreinos } from '../services/treinos/treinosService'
@@ -9,6 +9,7 @@ import { listarTreinos } from '../services/treinos/treinosService'
 import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
 import { useAgendamentos } from '../hooks/useAgendamentos'
+import { layout } from '../styles/layout'
 
 function TreinoCard({ treino, onIniciar }) {
 
@@ -100,11 +101,11 @@ function EmptyScheduled() {
 
 export default function Treinar() {
   const navigate = useNavigate()
-  const { alert, confirm, notify } = useUi()
-  const { usuario, loading } = useAuth()
+  const { confirm, notify } = useUi()
+  const { usuario } = useAuth()
   const {
     agendamentos,
-    recarregar: recarregarAgendamentos,
+    loading: loadingAgendamentos,
     excluirAgendamento,
   } = useAgendamentos()
   const [treinos, setTreinos] = useState([])
@@ -114,8 +115,15 @@ export default function Treinar() {
   const [descansoPadrao, setDescansoPadrao] = useState(60)
 
   useEffect(() => {
+    let active = true
 
-  if (loading || !usuario) return
+    if (!usuario?.id) {
+      setTreinos([])
+      setLoadingTreinos(false)
+      return undefined
+    }
+
+    setLoadingTreinos(true)
 
     async function carregarTreinos() {
 
@@ -123,21 +131,25 @@ export default function Treinar() {
 
         const data = await listarTreinos(usuario.id)
 
-        setTreinos(data || [])
+        if (active) setTreinos(data || [])
 
       } catch (error) {
 
-        console.error(error)
+        if (active) console.error(error)
 
       } finally {
 
-        setLoadingTreinos(false)
+        if (active) setLoadingTreinos(false)
       }
     }
 
     carregarTreinos()
 
-  }, [usuario, loading])
+    return () => {
+      active = false
+    }
+
+  }, [usuario?.id])
 
   function handleIniciarTreino(treino) {
 
@@ -146,7 +158,10 @@ export default function Treinar() {
     setModalDescansoOpen(true)
   }
   return (
-    <DashboardLayout loading={loading || loadingTreinos} loadingMessage="Carregando treinos...">
+    <PageLoadingBoundary
+      loading={loadingTreinos || loadingAgendamentos}
+      loadingMessage="Carregando treinos..."
+    >
 
         {/* HEADER */}
         <div className="mb-10">
@@ -179,13 +194,7 @@ export default function Treinar() {
           </div>
 
           {/* Carregar treinos do usuário */}
-          {loadingTreinos ? (
-
-            <div className="text-slate-600">
-              Carregando treinos...
-            </div>
-
-          ) : treinos.length === 0 ? (
+          {treinos.length === 0 ? (
 
             <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
 
@@ -201,7 +210,7 @@ export default function Treinar() {
 
           ) : (
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className={layout.trainingGrid}>
 
               {treinos.map((treino) => (
                 <TreinoCard
@@ -235,7 +244,7 @@ export default function Treinar() {
           {agendamentos.length === 0 ? (
             <EmptyScheduled />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className={layout.trainingGrid}>
               {agendamentos.map((agendamento) => {
                 const treino = agendamento.treino
                 const [ano, mes, dia] = agendamento.data_agendada.split('-')
@@ -263,8 +272,8 @@ export default function Treinar() {
                               type: 'success',
                             })
                           } catch (error) {
-                            alert({
-                              title: 'Erro',
+                            notify({
+                              title: 'Não foi possível remover',
                               message: 'Não foi possível excluir o agendamento.',
                               type: 'error',
                             })
@@ -340,6 +349,6 @@ export default function Treinar() {
 
   
         </section>
-    </DashboardLayout>
+    </PageLoadingBoundary>
   )
 }

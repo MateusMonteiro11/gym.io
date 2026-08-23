@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { listarHistoricos } from '../services/historico/historicoTreinosService'
 import { parseDateTime } from '../utils/dateUtils'
 import { logError } from '../utils/errorMessages'
@@ -8,10 +8,17 @@ export function useHistorico(idUsuario) {
   const [historico, setHistorico] = useState([])
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState(null)
+  const requestIdRef = useRef(0)
 
   const carregarHistorico = async () => {
+    const requestId = ++requestIdRef.current
 
-    if (!idUsuario) return
+    if (!idUsuario) {
+      setHistorico([])
+      setErro(null)
+      setLoading(false)
+      return
+    }
 
     setLoading(true)
     setErro(null)
@@ -19,9 +26,12 @@ export function useHistorico(idUsuario) {
     try {
 
       const dados = await listarHistoricos(idUsuario)
+      if (requestId !== requestIdRef.current) return
       setHistorico(dados || [])
 
     } catch (err) {
+
+      if (requestId !== requestIdRef.current) return
 
       logError(err, '[useHistorico] Failed to load history')
 
@@ -31,7 +41,7 @@ export function useHistorico(idUsuario) {
 
     } finally {
 
-      setLoading(false)
+      if (requestId === requestIdRef.current) setLoading(false)
 
     }
   }
@@ -39,6 +49,10 @@ export function useHistorico(idUsuario) {
   useEffect(() => {
 
     carregarHistorico()
+
+    return () => {
+      requestIdRef.current += 1
+    }
 
   }, [idUsuario])
 
@@ -67,7 +81,7 @@ export function useHistorico(idUsuario) {
       historico.reduce((acc, treino) => {
 
         return acc + Number(
-          treino.total_series || 0
+          treino.total_exercicios || 0
         )
 
       }, 0)
@@ -137,6 +151,8 @@ export function useHistorico(idUsuario) {
       const data = parseDateTime(
         treino.data_execucao
       )
+
+      if (!data || Number.isNaN(data.getTime())) return
 
       const chave =
         `${data.getFullYear()}-${String(

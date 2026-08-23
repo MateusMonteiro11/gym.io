@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import Modal from '../components/ui/Modal'
 import Button from '../components/ui/Button'
+import NotificationCenter from '../components/ui/NotificationCenter'
 
 const UiContext = createContext(null)
 
@@ -20,6 +21,15 @@ const ICON_STYLES = {
   danger: 'bg-danger-muted text-danger',
 }
 
+const NOTIFICATION_DURATIONS = {
+  success: 4500,
+  info: 5500,
+  warning: 7000,
+  error: 9000,
+}
+
+const NOTIFICATION_TYPES = new Set(Object.keys(NOTIFICATION_DURATIONS))
+
 function DialogIcon({ type }) {
   return (
     <div
@@ -33,8 +43,18 @@ function DialogIcon({ type }) {
 export function UiProvider({ children }) {
   const [feedback, setFeedback] = useState(null)
   const [confirmState, setConfirmState] = useState(null)
-  const [toast, setToast] = useState(null)
+  const [notifications, setNotifications] = useState([])
   const confirmResolver = useRef(null)
+  const notificationSequence = useRef(0)
+  const notificationTimers = useRef(new Map())
+
+  useEffect(
+    () => () => {
+      notificationTimers.current.forEach((timer) => window.clearTimeout(timer))
+      notificationTimers.current.clear()
+    },
+    []
+  )
 
   const closeFeedback = useCallback(() => setFeedback(null), [])
 
@@ -42,11 +62,36 @@ export function UiProvider({ children }) {
     setFeedback({ title, message, type, onClose })
   }, [])
 
-  const notify = useCallback(({ title, message, type = 'success', duration = 4000 }) => {
-    setToast({ title, message, type })
-    if (duration > 0) {
-      setTimeout(() => setToast(null), duration)
+  const dismissNotification = useCallback((id) => {
+    const timer = notificationTimers.current.get(id)
+    if (timer) window.clearTimeout(timer)
+    notificationTimers.current.delete(id)
+    setNotifications((current) => current.filter((notification) => notification.id !== id))
+  }, [])
+
+  const notify = useCallback(({ title, message, type = 'success', duration }) => {
+    if (!title && !message) return null
+
+    const normalizedType = NOTIFICATION_TYPES.has(type) ? type : 'info'
+    const defaultDuration = NOTIFICATION_DURATIONS[normalizedType]
+    const requestedDuration = Number(duration)
+    const notificationDuration = Number.isFinite(requestedDuration)
+      ? Math.max(0, requestedDuration)
+      : defaultDuration
+    notificationSequence.current += 1
+    const id = `gym-notification-${notificationSequence.current}`
+
+    setNotifications((current) => [...current, { id, title, message, type: normalizedType }])
+
+    if (notificationDuration > 0) {
+      const timer = window.setTimeout(() => {
+        notificationTimers.current.delete(id)
+        setNotifications((current) => current.filter((notification) => notification.id !== id))
+      }, notificationDuration)
+      notificationTimers.current.set(id, timer)
     }
+
+    return id
   }, [])
 
   const confirm = useCallback(
@@ -81,8 +126,10 @@ export function UiProvider({ children }) {
     closeFeedback()
   }
 
+  const contextValue = useMemo(() => ({ alert, notify, confirm }), [alert, confirm, notify])
+
   return (
-    <UiContext.Provider value={{ alert, notify, confirm }}>
+    <UiContext.Provider value={contextValue}>
       {children}
 
       <Modal open={!!feedback} onClose={handleFeedbackClose} size="sm">
@@ -122,32 +169,7 @@ export function UiProvider({ children }) {
         </div>
       </Modal>
 
-      {toast && (
-        <div
-          className="fixed bottom-6 right-6 z-[60] max-w-sm animate-toast-in"
-          role="status"
-        >
-          <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-lg">
-            <span
-              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${ICON_STYLES[toast.type] || ICON_STYLES.success}`}
-            >
-              <i className={`fa-solid ${ICONS[toast.type] || ICONS.success}`} />
-            </span>
-            <div className="min-w-0 flex-1">
-              {toast.title && <p className="text-sm font-semibold text-slate-900">{toast.title}</p>}
-              {toast.message && <p className="text-sm text-slate-600">{toast.message}</p>}
-            </div>
-            <button
-              type="button"
-              onClick={() => setToast(null)}
-              aria-label="Fechar"
-              className="cursor-pointer text-slate-400 transition-colors duration-200 hover:text-slate-700"
-            >
-              <i className="fa-solid fa-xmark" />
-            </button>
-          </div>
-        </div>
-      )}
+      <NotificationCenter notifications={notifications} onDismiss={dismissNotification} />
     </UiContext.Provider>
   )
 }

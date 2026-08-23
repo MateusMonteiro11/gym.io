@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import DashboardLayout from '../layouts/DashboardLayout'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 
 import {
   buscarTreinoCompleto,
@@ -29,6 +29,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
 import { ui } from '../styles/theme'
 import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
+import ActionLoading from '../components/ui/ActionLoading'
 
 const MAX_WORKOUT_NAME_LENGTH = 120
 const MAX_WORKOUT_DESCRIPTION_LENGTH = 500
@@ -250,16 +251,17 @@ export default function TreinosEditar() {
   const [newSectionDescription, setNewSectionDescription] =
     useState('')
 
-  async function carregarTreino() {
+  const carregarTreino = useCallback(async (isActive = () => true) => {
+    setLoading(true)
+    setWorkoutName('')
+    setWorkoutDescription('')
+    setSections([])
+    setExercicios([])
 
     try {
-
-      setLoading(true)
-
       if (id) {
-
-        const treino =
-          await buscarTreinoCompleto(id)
+        const treino = await buscarTreinoCompleto(id)
+        if (!isActive()) return
 
         if (treino.tipo?.toLowerCase() === 'sistema') {
           alert({
@@ -273,38 +275,33 @@ export default function TreinosEditar() {
 
         setWorkoutName(normalizeTextInput(treino.nome, MAX_WORKOUT_NAME_LENGTH))
         setWorkoutDescription(normalizeTextInput(treino.descricao || '', MAX_WORKOUT_DESCRIPTION_LENGTH))
-
-        setSections(
-          treino.secoes_treino || []
-        )
+        setSections(treino.secoes_treino || [])
       }
 
-      const exerciciosData =
-        await listarExercicios()
+      const exerciciosData = await listarExercicios()
+      if (!isActive()) return
 
-      setExercicios(
-        Array.isArray(exerciciosData)
-          ? exerciciosData
-          : []
-      )
-
+      setExercicios(Array.isArray(exerciciosData) ? exerciciosData : [])
     } catch (error) {
+      if (!isActive()) return
 
       logError(error, '[TreinosEditar] Failed to load workout')
-
       alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível carregar o treino.'), type: 'error' })
-
     } finally {
-
-      setLoading(false)
+      if (isActive()) setLoading(false)
     }
-  }
+  }, [alert, id, navigate])
 
   useEffect(() => {
+    let active = true
 
-    carregarTreino()
+    carregarTreino(() => active)
 
-  }, [id])
+    return () => {
+      active = false
+    }
+
+  }, [carregarTreino])
 
   async function handleSalvarTreino() {
 
@@ -334,7 +331,7 @@ export default function TreinosEditar() {
           descricao: normalizedWorkoutDescription,
         })
 
-        notify({ title: 'Sucesso', message: 'Treino atualizado!', type: 'success' })
+        notify({ title: 'Treino atualizado', message: 'As alterações foram salvas.', type: 'success' })
 
       } else {
 
@@ -361,7 +358,7 @@ export default function TreinosEditar() {
 
       logError(error, '[TreinosEditar] Failed to save workout')
 
-      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível salvar o treino.'), type: 'error' })
+      notify({ title: 'Não foi possível salvar', message: getUserFriendlyErrorMessage(error, 'Não foi possível salvar o treino.'), type: 'error' })
 
     } finally {
 
@@ -415,7 +412,7 @@ export default function TreinosEditar() {
 
       logError(error, '[TreinosEditar] Failed to save section')
 
-      alert({
+      notify({
         title: 'Erro na seção',
         message: getUserFriendlyErrorMessage(error, editingSection ? 'Não foi possível atualizar a seção.' : 'Não foi possível criar a seção.'),
         type: 'error',
@@ -455,8 +452,8 @@ export default function TreinosEditar() {
 
       logError(error, '[TreinosEditar] Failed to add exercise')
 
-      alert({
-        title: 'Erro',
+      notify({
+        title: 'Não foi possível adicionar',
         message: getUserFriendlyErrorMessage(error, 'Não foi possível adicionar o exercício.'),
         type: 'error',
       })
@@ -496,7 +493,7 @@ export default function TreinosEditar() {
       await carregarTreino()
     } catch (error) {
       logError(error, '[TreinosEditar] Failed to remove exercise')
-      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível remover o exercício.'), type: 'error' })
+      notify({ title: 'Não foi possível remover', message: getUserFriendlyErrorMessage(error, 'Não foi possível remover o exercício.'), type: 'error' })
     }
   }
 
@@ -536,7 +533,7 @@ export default function TreinosEditar() {
       await carregarTreino()
     } catch (error) {
       logError(error, '[TreinosEditar] Failed to delete section')
-      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir a seção.'), type: 'error' })
+      notify({ title: 'Não foi possível excluir', message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir a seção.'), type: 'error' })
     }
   }
 
@@ -556,24 +553,17 @@ export default function TreinosEditar() {
       navigate('/treinos')
     } catch (error) {
       logError(error, '[TreinosEditar] Failed to delete workout')
-      alert({ title: 'Erro', message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir o treino.'), type: 'error' })
+      notify({ title: 'Não foi possível excluir', message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir o treino.'), type: 'error' })
     }
   }
 
   if (loading) {
-
-    return (
-
-      <div className="min-h-screen flex items-center justify-center">
-        Carregando treino...
-      </div>
-
-    )
+    return <PageLoadingBoundary loading loadingMessage="Carregando treino..." />
   }
   return (
-    <DashboardLayout loading={loading} loadingMessage="Carregando treino...">
+    <PageLoadingBoundary loading={loading} loadingMessage="Carregando treino...">
 
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
           <div>
 
@@ -625,9 +615,9 @@ export default function TreinosEditar() {
 
         </div>
 
-        <section className="mb-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <section className="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
+          <div className="min-w-0 rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
             <label className="text-sm font-semibold text-slate-700">
               Nome do treino
@@ -661,14 +651,14 @@ export default function TreinosEditar() {
             >
 
               {saving
-                ? 'Salvando...'
+                ? <ActionLoading label="Salvando..." inverse />
                 : 'Salvar treino'}
 
             </button>
 
           </div>
 
-          <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
+          <div className="min-w-0 rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
 
             <p className="text-sm text-slate-600 uppercase tracking-[0.18em]">
               Resumo
@@ -789,7 +779,7 @@ export default function TreinosEditar() {
 
   )}
 
-    </DashboardLayout>
+    </PageLoadingBoundary>
 
   )
 }

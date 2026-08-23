@@ -589,7 +589,7 @@ function CreatorSection() {
               ['React + Vite', 'Build da interface e arquitetura.'],
               ['TailwindCSS', 'Comportamento de design consistente.'],
               ['Supabase', 'Autenticação e dados integrados.'],
-              ['Framer Motion', 'Aplicação de design patterns.'],
+              ['Framer Motion', 'Aplicação de UI patterns.'],
             ].map(([title, description]) => (
               <motion.div key={title} variants={fadeUp} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-blue-900/5 dark:border-transparent dark:bg-[#080808] dark:shadow-black/40">
                   <p className="font-semibold text-slate-950 dark:text-slate-50">{title}</p>

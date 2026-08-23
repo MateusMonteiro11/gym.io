@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { buscarHistoricoCompleto } from '../services/historico/historicoTreinosService'
 import { formatDatePtBr, formatTimePtBr } from '../utils/dateUtils'
+import { SkeletonList } from './ui/Skeleton'
 
-export default function HistoricoCard({ historico, onExpanded }) {
+export default function HistoricoCard({ historico }) {
   const [expandido, setExpandido] = useState(false)
   const [detalhes, setDetalhes] = useState(null)
   const [carregando, setCarregando] = useState(false)
-
-  const formatarData = (data) => formatDatePtBr(data)
-  const formatarHora = (data) => formatTimePtBr(data)
 
   const formatarDuracao = (segundos) => {
     if (!segundos) return '0 min'
@@ -35,7 +33,6 @@ export default function HistoricoCard({ historico, onExpanded }) {
     }
 
     setExpandido(!expandido)
-    onExpanded?.()
   }
 
   return (
@@ -50,7 +47,7 @@ export default function HistoricoCard({ historico, onExpanded }) {
               {historico.treinos?.nome || 'Treino'}
             </h3>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {formatarData(historico.data_execucao)} às {formatarHora(historico.data_execucao)}
+              {formatDatePtBr(historico.data_execucao)} às {formatTimePtBr(historico.data_execucao)}
             </p>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
               <i className="fa-solid fa-stopwatch mr-2 dark:text-white"></i>
@@ -72,16 +69,15 @@ export default function HistoricoCard({ historico, onExpanded }) {
       {expandido && (
         <div className="border-t border-slate-200 bg-slate-50 p-5 dark:border-slate-700/70 dark:bg-slate-950/70">
           {carregando ? (
-            <div className="text-center py-4">
-              <i className="fa-solid fa-spinner mr-2 animate-spin text-primary dark:text-white"></i>
-              <p className="text-slate-600 dark:text-slate-300">Carregando detalhes...</p>
+            <div className="py-1" role="status" aria-label="Carregando detalhes...">
+              <SkeletonList items={2} compact />
             </div>
           ) : detalhes?.historico_exercicios ? (
             <div className="space-y-3">
               <h4 className="mb-3 font-semibold text-slate-700 dark:text-slate-100">Exercícios realizados</h4>
               {detalhes.historico_exercicios.map((exercicio, idx) => (
                 <div
-                  key={idx}
+                  key={exercicio.id_historico_exercicio ?? `${exercicio.id_exercicio ?? 'exercicio'}:${exercicio.serie ?? idx}`}
                   className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700/70 dark:bg-slate-900/85"
                 >
                   <div className="flex items-start justify-between mb-2">

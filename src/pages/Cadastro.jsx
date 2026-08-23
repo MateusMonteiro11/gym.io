@@ -9,6 +9,7 @@ import AuthShell from '../components/ui/AuthShell'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
 import TermsAndPrivacyModal from '../components/TermsAndPrivacyModal'
+import ActionLoading from '../components/ui/ActionLoading'
 
 const formMotion = {
   hidden: { opacity: 0, y: 18 },
@@ -26,7 +27,7 @@ const itemMotion = {
 
 export default function Cadastro() {
   const navigate = useNavigate()
-  const { alert, notify } = useUi()
+  const { notify } = useUi()
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
@@ -87,7 +88,7 @@ export default function Cadastro() {
     } catch (error) {
       const message = getUserFriendlyErrorMessage(error, 'Não foi possível criar sua conta.')
       logError(error, '[Cadastro] Failed to sign up')
-      alert({ title: 'Erro no cadastro', message, type: 'error' })
+      notify({ title: 'Erro no cadastro', message, type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -228,7 +229,7 @@ export default function Cadastro() {
 
               <motion.div variants={itemMotion}>
                 <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? 'Criando conta...' : 'Criar a conta'}
+                  {loading ? <ActionLoading label="Criando conta..." inverse /> : 'Criar a conta'}
                   {!loading && <ArrowRight className="h-4 w-4" />}
                 </Button>
               </motion.div>

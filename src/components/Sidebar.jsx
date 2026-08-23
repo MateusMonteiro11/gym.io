@@ -10,6 +10,8 @@ import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import UserProfileModal from './UserProfileModal'
 import ThemeToggle from './ui/ThemeToggle'
+import { Skeleton } from './ui/Skeleton'
+import ActionLoading from './ui/ActionLoading'
 
 const navItems = [
   { to: '/dashboard', icon: 'fa-solid fa-grip', label: 'Painel' },
@@ -21,34 +23,56 @@ const navItems = [
 export default function Sidebar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { usuario } = useAuth()
+  const { usuario, loading: authLoading } = useAuth()
   const { alert } = useUi()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   const [userData, setUserData] = useState(null)
+  const [loadedUserId, setLoadedUserId] = useState(null)
   const [loadingUserData, setLoadingUserData] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const isOnTrainingPage = pathname.startsWith('/treinar/')
   const hasActiveTraining = isOnTrainingPage
+  const isUserLoading = authLoading || loadingUserData || (
+    Boolean(usuario?.id) && loadedUserId !== usuario.id
+  )
 
   useEffect(() => {
-    if (!usuario?.id) return
+    let active = true
+
+    if (!usuario?.id) {
+      setUserData(null)
+      setLoadedUserId(null)
+      setLoadingUserData(false)
+      return undefined
+    }
 
     const carregarDadosUsuario = async () => {
       try {
         setLoadingUserData(true)
         const dados = await obterUsuario(usuario.id)
-        setUserData(dados)
+        if (active) {
+          setUserData(dados)
+          setLoadedUserId(usuario.id)
+        }
       } catch (err) {
-        console.error('Erro ao carregar dados do usuário:', err)
+        if (active) {
+          console.error('Erro ao carregar dados do usuário:', err)
+          setUserData(null)
+          setLoadedUserId(usuario.id)
+        }
       } finally {
-        setLoadingUserData(false)
+        if (active) setLoadingUserData(false)
       }
     }
 
     carregarDadosUsuario()
+
+    return () => {
+      active = false
+    }
   }, [usuario?.id])
 
   const handleModalClose = () => {
@@ -60,6 +84,7 @@ export default function Sidebar() {
     try {
       const dados = await obterUsuario(usuario.id)
       setUserData(dados)
+      setLoadedUserId(usuario.id)
     } catch (err) {
       console.error('Erro ao atualizar dados do usuário:', err)
     }
@@ -179,7 +204,7 @@ export default function Sidebar() {
                 <button
                   key={to}
                   onClick={() => handleNavigation(to)}
-                  className={`w-full menu-item flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
+                  className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
                     isActive
                       ? 'bg-primary-muted text-primary'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -199,7 +224,9 @@ export default function Sidebar() {
             className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-slate-50 p-2 -ml-2"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary flex-shrink-0 overflow-hidden">
-              {userData?.foto_perfil && isSafeRenderableImageUrl(userData.foto_perfil) ? (
+              {isUserLoading ? (
+                <Skeleton className="h-full w-full rounded-full" />
+              ) : userData?.foto_perfil && isSafeRenderableImageUrl(userData.foto_perfil) ? (
                 <img src={userData.foto_perfil} alt="Foto" className="h-full w-full object-cover" />
               ) : (
                 (userData?.nome?.[0] || usuario?.email?.[0] || 'U').toUpperCase()
@@ -207,13 +234,17 @@ export default function Sidebar() {
             </div>
             <div className="min-w-0 flex-1 text-left">
               <p className="truncate text-sm font-semibold text-slate-900">
-                {loadingUserData ? (
-                  <i className="fa-solid fa-spinner animate-spin text-xs" />
+                {isUserLoading ? (
+                  <Skeleton className="h-3 w-24 rounded-full" />
                 ) : (
                   userData?.nome || usuario?.email?.split('@')[0] || 'Usuário'
                 )}
               </p>
-              <p className="truncate text-xs text-slate-600">{usuario?.email || ''}</p>
+              {isUserLoading ? (
+                <Skeleton className="mt-2 h-2.5 w-32 rounded-full" />
+              ) : (
+                <p className="truncate text-xs text-slate-600">{usuario?.email || ''}</p>
+              )}
             </div>
             <i className="fa-solid fa-chevron-right text-slate-400 text-xs flex-shrink-0" />
           </button>
@@ -264,7 +295,7 @@ export default function Sidebar() {
               disabled={loggingOut}
               className="inline-flex justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loggingOut ? 'Saindo...' : 'Confirmar saída'}
+              {loggingOut ? <ActionLoading label="Saindo..." inverse /> : 'Confirmar saída'}
             </button>
           </div>
         </div>

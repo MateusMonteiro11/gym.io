@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import AgendarTreinoModal from '../components/AgendarTreinoModal'
-import DashboardLayout from '../layouts/DashboardLayout'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import PageHeader from '../components/ui/PageHeader'
 import Banner from '../components/ui/Banner'
 import Card from '../components/ui/Card'
@@ -12,6 +12,7 @@ import ModalHeader from '../components/ui/ModalHeader'
 import Input, { Label } from '../components/ui/Input'
 import { useUi } from '../contexts/UiContext'
 import { ui } from '../styles/theme'
+import { layout } from '../styles/layout'
 
 import { useTreino } from '../hooks/useTreino'
 import { criarTreino, deletarTreino } from '../services/treinos/treinosService'
@@ -26,6 +27,7 @@ import { adicionarExercicio } from '../services/treinos/treinosExerciciosService
 import { listarExercicios } from '../services/exercicios/exerciciosService'
 import { criarAgendamento } from '../services/agendamentos/agendamentosService'
 import { useAuth } from '../hooks/useAuth'
+import ActionLoading from '../components/ui/ActionLoading'
 
 const MAX_WORKOUT_NAME_LENGTH = 120
 const MAX_WORKOUT_DESCRIPTION_LENGTH = 500
@@ -90,7 +92,7 @@ export default function Treinos() {
       })
     } catch (error) {
       logError(error, '[Treinos] Failed to delete workout')
-      alert({
+      notify({
         title: 'Erro ao excluir treino',
         message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir este treino.'),
         type: 'error',
@@ -126,7 +128,7 @@ export default function Treinos() {
       })
     } catch (error) {
       logError(error, '[Treinos] Failed to schedule workout')
-      alert({
+      notify({
         title: 'Não foi possível agendar',
         message: getSchedulingErrorMessage(error),
         type: 'error',
@@ -139,7 +141,7 @@ export default function Treinos() {
   }, [meusTreinos])
 
   return (
-    <DashboardLayout loading={loading} loadingMessage="Carregando treinos...">
+    <PageLoadingBoundary loading={loading} loadingMessage="Carregando treinos...">
       <PageHeader title="Treinos" subtitle="Gerencie, agende e personalize seus treinos" />
 
       <Banner
@@ -164,7 +166,7 @@ export default function Treinos() {
             <p className={ui.sectionSubtitle}>Templates prontos para começar rápido</p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className={layout.workoutsGrid}>
           {treinosSistema.map((treino) => (
             <WorkoutCard
               key={treino.id_treino}
@@ -209,7 +211,7 @@ export default function Treinos() {
             </Button>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className={layout.workoutsGrid}>
             {meusTreinosLocal.map((treino) => (
               <WorkoutCard
                 key={treino.id_treino}
@@ -238,9 +240,10 @@ export default function Treinos() {
       <ModalCriarTreino
         open={modalCriarTreinoOpen}
         onClose={() => setModalCriarTreinoOpen(false)}
+        onCreated={(workout) => setMeusTreinosLocal((current) => [workout, ...current])}
         usuario={usuario}
       />
-    </DashboardLayout>
+    </PageLoadingBoundary>
   )
 }
 
@@ -414,7 +417,7 @@ function WorkoutCard({
   )
 }
 
-function ModalCriarTreino({ open, onClose, usuario }) {
+function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
   const { alert, notify, confirm } = useUi()
   const [saving, setSaving] = useState(false)
   const [workoutName, setWorkoutName] = useState('Novo treino')
@@ -585,16 +588,20 @@ function ModalCriarTreino({ open, onClose, usuario }) {
         id_usuario: usuario.id,
       })
 
-      for (const section of sections) {
+      const createdSections = []
+
+      for (const [sectionIndex, section] of sections.entries()) {
         const secao = await criarSecao({
           id_treino: treino.id_treino,
           nome: section.nome,
           descricao: section.descricao,
-          ordem: sections.indexOf(section) + 1,
+          ordem: sectionIndex + 1,
         })
 
-        for (const exercise of section.treinos_exercicios) {
-          await adicionarExercicio({
+        const createdExercises = []
+
+        for (const [exerciseIndex, exercise] of section.treinos_exercicios.entries()) {
+          const createdExercise = await adicionarExercicio({
             id_treino: treino.id_treino,
             id_secao: secao.id_secao,
             id_exercicio: exercise.exercicios.id_exercicio,
@@ -602,21 +609,24 @@ function ModalCriarTreino({ open, onClose, usuario }) {
             repeticoes: exercise.repeticoes,
             carga: 0,
             descanso_segundos: 60,
-            ordem: section.treinos_exercicios.indexOf(exercise) + 1,
+            ordem: exerciseIndex + 1,
           })
+          createdExercises.push(createdExercise)
         }
+
+        createdSections.push({ ...secao, treinos_exercicios: createdExercises })
       }
 
+      onCreated?.({ ...treino, tipo: treino.tipo || 'usuario', secoes_treino: createdSections })
       notify({
         title: 'Treino criado',
         message: `"${normalizedWorkoutName}" foi salvo com sucesso.`,
         type: 'success',
       })
       onClose()
-      window.location.reload()
     } catch (error) {
       logError(error, '[Treinos] Failed to save workout')
-      alert({
+      notify({
         title: 'Erro ao salvar',
         message: getUserFriendlyErrorMessage(error, 'Não foi possível criar o treino.'),
         type: 'error',
@@ -656,9 +666,7 @@ function ModalCriarTreino({ open, onClose, usuario }) {
               />
               <Button className="mt-6 w-full" onClick={handleSalvarTreino} disabled={saving}>
                 {saving ? (
-                  <>
-                    <i className="fa-solid fa-spinner animate-spin" /> Salvando...
-                  </>
+                  <ActionLoading label="Salvando..." inverse />
                 ) : (
                   <>
                     <i className="fa-solid fa-check" /> Criar treino

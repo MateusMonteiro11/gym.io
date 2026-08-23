@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useHistorico } from '../hooks/useHistorico'
 import { useAgendamentos } from '../hooks/useAgendamentos'
 import { parseDateTime } from '../utils/dateUtils'
-import DashboardLayout from '../layouts/DashboardLayout'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import { ui } from '../styles/theme'
+import { layout } from '../styles/layout'
 
 function StatCard({ label, value, sub, icon }) {
   return (
@@ -87,15 +87,19 @@ function AtividadeRecenteCard({ historico, onVerTodoHistorico }) {
           historico.slice(0, 3).map((treino, idx) => {
             const dataExecucao = parseDateTime(treino.data_execucao)
             const hoje = new Date()
-            const diferenca = Math.floor((hoje - dataExecucao) / (1000 * 60 * 60 * 24))
+            const dataValida = dataExecucao && !Number.isNaN(dataExecucao.getTime())
+            const diferenca = dataValida
+              ? Math.floor((hoje - dataExecucao) / (1000 * 60 * 60 * 24))
+              : null
             let dataFormatada
             if (diferenca === 0) dataFormatada = 'Hoje'
             else if (diferenca === 1) dataFormatada = 'Ontem'
-            else dataFormatada = dataExecucao.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+            else if (dataValida) dataFormatada = dataExecucao.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+            else dataFormatada = 'Data indisponível'
             const minutos = Math.round(treino.duracao_segundos / 60)
             const series = treino.total_series || 0
             return (
-              <div key={idx} className="border-b border-slate-100 pb-4 last:border-b-0 dark:border-slate-700/70">
+              <div key={treino.id_historico ?? idx} className="border-b border-slate-100 pb-4 last:border-b-0 dark:border-slate-700/70">
                 <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">{treino.treinos?.nome || 'Treino'}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">{dataFormatada}</p>
                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
@@ -121,30 +125,26 @@ function AtividadeRecenteCard({ historico, onVerTodoHistorico }) {
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const { usuario, loading: authLoading } = useAuth()
+  const { usuario } = useAuth()
   const { historico, loading: historicoLoading, estatisticas } = useHistorico(usuario?.id)
   const { agendamentos, loading: agendamentosLoading } = useAgendamentos()
-  const [dataAtual, setDataAtual] = useState('')
-  const isLoading = authLoading || historicoLoading || agendamentosLoading
-
-  useEffect(() => {
-    const hoje = new Date()
-    const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
-    const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
-    setDataAtual(`${diasSemana[hoje.getDay()]}, ${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`)
-  }, [])
+  const isLoading = historicoLoading || agendamentosLoading
+  const dataAtual = new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'full',
+  }).format(new Date())
 
   return (
-    <DashboardLayout loading={isLoading} loadingMessage="Carregando painel...">
+    <PageLoadingBoundary loading={isLoading} loadingMessage="Carregando painel...">
       <PageHeader title="Painel" subtitle={dataAtual} />
-      <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <div className={layout.dashboardStatsGrid}>
         <StatCard label="Total de treinos" value={estatisticas.totalTreinos} sub="Desde o início" icon={<i className="fa-solid fa-dumbbell" />} />
         <StatCard
           label="Esta semana"
           value={historico.filter((t) => {
             const umaSemana = 7 * 24 * 60 * 60 * 1000
             const dataExecucao = parseDateTime(t.data_execucao)?.getTime() ?? 0
-            return Date.now() - dataExecucao <= umaSemana
+            const tempoDecorrido = Date.now() - dataExecucao
+            return dataExecucao > 0 && tempoDecorrido >= 0 && tempoDecorrido <= umaSemana
           }).length}
           sub="Últimos 7 dias"
           icon={<i className="fa-solid fa-calendar" />}
@@ -152,10 +152,10 @@ export default function Dashboard() {
         <StatCard label="Total de exercícios" value={estatisticas.totalExercicios} sub="Concluídos" icon={<i className="fa-solid fa-chart-line" />} />
         <StatCard label="Duração média" value={estatisticas.duracaoMedia} sub="Por treino" icon={<i className="fa-solid fa-hourglass" />} />
       </div>
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <div className={layout.dashboardPanelsGrid}>
         <TreinoDeHojeCard agendamentos={agendamentos} onVerExercicios={(id) => id && navigate(`/treinos/visualizar/${id}`)} />
         <AtividadeRecenteCard historico={historico} onVerTodoHistorico={() => navigate('/historico')} />
       </div>
-    </DashboardLayout>
+    </PageLoadingBoundary>
   )
 }

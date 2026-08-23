@@ -82,29 +82,6 @@ export function obterExercicioAtual(exercicios, index) {
 /**
  * @param {ExercicioFlat[]} exercicios
  * @param {number} index
- * @param {number} [quantidade=3]
- * @returns {ExercicioFlat[]}
- */
-
-export function obterProximosExercicios(exercicios, index, quantidade = 3) {
-  if (!Array.isArray(exercicios)) return []
-  return exercicios.slice(index + 1, index + 1 + quantidade)
-}
-
-/**
- * @param {ExercicioFlat[]} exercicios
- * @param {number} index
- * @returns {boolean}
- */
-
-export function treinoFinalizado(exercicios, index) {
-  if (!Array.isArray(exercicios) || exercicios.length === 0) return true
-  return index >= exercicios.length
-}
-
-/**
- * @param {ExercicioFlat[]} exercicios
- * @param {number} index
  * @returns {ExercicioFlat|null}
  */
 

@@ -1,5 +1,6 @@
 import Card from './ui/Card'
 import { ui } from '../styles/theme'
+import { layout } from '../styles/layout'
 
 export default function HistoricoHeader({ stats }) {
   const statCards = [
@@ -13,7 +14,7 @@ export default function HistoricoHeader({ stats }) {
     <header className="mb-8">
       <h1 className={ui.pageTitle}>Histórico de treinos</h1>
       <p className={ui.pageSubtitle}>Visualize o seu progresso ao longo do tempo</p>
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className={layout.historyStatsGrid}>
         {statCards.map((stat) => (
           <Card key={stat.label} className={ui.cardPadding}>
             <div className="mb-3 flex items-center justify-between">

@@ -1,46 +1,5 @@
 import { supabase } from '../../lib/supabase'
 
-/* Criar historico de treino */
-
-export async function criarHistoricoTreino({
-
-  id_usuario,
-  id_treino,
-
-  duracao_segundos,
-  observacoes = null
-
-}) {
-
-  const { data, error } = await supabase
-    .from('historico_treinos')
-    .insert({
-
-      data_execucao:
-        new Date().toISOString(),
-
-      duracao_segundos,
-
-      observacoes,
-
-      id_usuario,
-
-      id_treino
-
-    })
-    .select()
-    .single()
-
-  if (error) {
-
-    console.error(error)
-
-    throw error
-  }
-
-  return data
-}
-
 /* Listar historicos do usuario */
 
 export async function listarHistoricos(
@@ -56,6 +15,7 @@ export async function listarHistoricos(
       data_execucao,
       duracao_segundos,
       total_series,
+      total_exercicios,
       treinos (
         nome
       ),
@@ -100,61 +60,6 @@ export async function listarHistoricos(
     }
 
   })
-}
-
-export async function atualizarHistoricoTreinoStats({
-  id_historico,
-  total_series,
-  total_exercicios,
-}) {
-
-  const { data, error } = await supabase
-    .from('historico_treinos')
-    .update({
-
-      total_series:
-        Number(total_series || 0),
-
-      total_exercicios:
-        Number(total_exercicios || 0),
-
-    })
-    .eq(
-      'id_historico',
-      id_historico
-    )
-    .select(`
-      id_historico,
-      total_series,
-      total_exercicios,
-      duracao_segundos
-    `)
-    .single()
-
-  if (error) {
-
-    console.error(
-      '[atualizarHistoricoTreinoStats] Erro:',
-      error
-    )
-
-    throw error
-  }
-
-  return {
-
-    ...data,
-
-    total_series:
-      Number(data?.total_series || 0),
-
-    total_exercicios:
-      Number(data?.total_exercicios || 0),
-
-    duracao_segundos:
-      Number(data?.duracao_segundos || 0),
-
-  }
 }
 
 /* Busca historico completo, incluindo detalhes dos exercícios feitos naquele treino */

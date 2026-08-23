@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 
-import DashboardLayout from '../layouts/DashboardLayout'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 
 import WorkoutHeader from '../components/WorkoutHeader'
 import CurrentExerciseCard from '../components/CurrentExerciseCard'
@@ -27,25 +27,24 @@ export default function TreinoPlayer() {
 
   const { id } = useParams()
 
-  const { usuario, loading: authLoading } = useAuth()
+  const { usuario } = useAuth()
 
   const [treino, setTreino] = useState(null)
   const [loading, setLoading] = useState(true)
 
   const location = useLocation()
-  const from = `${location.pathname}${location.search}`
   const descansoPadrao = location.state?.descansoPadrao ?? 60
   const [modalInicialOpen, setModalInicialOpen] = useState(
     location.state?.descansoPadrao == null
   )
 
   useEffect(() => {
-    if (authLoading) return
+    if (!usuario?.id) return undefined
 
-    if (!usuario?.id) {
-      navigate('/login', { state: { from }, replace: true })
-      return
-    }
+    let active = true
+    setLoading(true)
+    setTreino(null)
+    setModalInicialOpen(location.state?.descansoPadrao == null)
 
     async function carregarTreino() {
 
@@ -53,21 +52,25 @@ export default function TreinoPlayer() {
 
         const data = await buscarTreinoCompleto(id)
 
-        setTreino(data)
+        if (active) setTreino(data)
 
       } catch (error) {
 
-        logError(error, '[TreinoPlayer] Failed to load workout')
+        if (active) logError(error, '[TreinoPlayer] Failed to load workout')
 
       } finally {
 
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
 
     carregarTreino()
 
-  }, [authLoading, from, id, navigate, usuario?.id])
+    return () => {
+      active = false
+    }
+
+  }, [id, location.state?.descansoPadrao, usuario?.id])
 
   const treinoAtivo = useTreinoAtivo({
     treino,
@@ -84,13 +87,8 @@ export default function TreinoPlayer() {
 
   })
 
-  if (authLoading || loading || !usuario?.id) {
-
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <p className="text-slate-600 dark:text-slate-300">Carregando treino...</p>
-      </div>
-    )
+  if (loading || !usuario?.id) {
+    return <PageLoadingBoundary loading loadingMessage="Carregando treino..." />
   }
 
   if (!treino) {
@@ -122,15 +120,11 @@ export default function TreinoPlayer() {
   }
 
   if (treinoAtivo.carregandoSessao) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <p className="text-slate-600 dark:text-slate-300">Recuperando sessão...</p>
-      </div>
-    )
+    return <PageLoadingBoundary loading loadingMessage="Recuperando sessão..." />
   }
 
   return (
-    <DashboardLayout loading={loading} loadingMessage="Carregando...">
+    <PageLoadingBoundary loading={loading} loadingMessage="Carregando...">
 
         {/* HEADER */}
         <WorkoutHeader
@@ -197,7 +191,6 @@ export default function TreinoPlayer() {
 
             <WorkoutActions
                 status={treinoAtivo.status}
-                indexAtual={treinoAtivo.indexAtual}
                 finalizado={treinoAtivo.finalizado}
                 salvando={treinoAtivo.salvando}
                 pausado={treinoAtivo.pausado}
@@ -250,6 +243,6 @@ export default function TreinoPlayer() {
           }}
           onCancelar={treinoAtivo.cancelarSessaoConflitante}
         />
-    </DashboardLayout>
+    </PageLoadingBoundary>
   )
 }

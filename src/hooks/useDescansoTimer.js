@@ -1,6 +1,6 @@
 import { formatElapsed } from './useWorkoutTimer.js'
 
-export function calcularDescanso(sessao, nowMs = Date.now()) {
+function calcularDescanso(sessao, nowMs = Date.now()) {
   const emDescanso = sessao?.status === 'ativa' && sessao?.fase === 'descanso'
   const inicioMs = sessao?.descanso_iniciado_em
     ? Date.parse(sessao.descanso_iniciado_em)

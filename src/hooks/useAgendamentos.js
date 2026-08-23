@@ -11,20 +11,32 @@ export function useAgendamentos() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function carregar() {
-      try {
-        if (!usuario?.id) return
+    let active = true
 
-        const dados = await listarAgendamentosUsuario(usuario.id)
-        setAgendamentos(dados)
-      } catch (error) {
-        console.error('Erro ao carregar agendamentos:', error)
-      } finally {
+    async function carregar() {
+      if (!usuario?.id) {
+        setAgendamentos([])
         setLoading(false)
+        return
+      }
+
+      setLoading(true)
+
+      try {
+        const dados = await listarAgendamentosUsuario(usuario.id)
+        if (active) setAgendamentos(dados || [])
+      } catch (error) {
+        if (active) console.error('Erro ao carregar agendamentos:', error)
+      } finally {
+        if (active) setLoading(false)
       }
     }
 
     carregar()
+
+    return () => {
+      active = false
+    }
   }, [usuario?.id])
 
   const recarregar = async () => {

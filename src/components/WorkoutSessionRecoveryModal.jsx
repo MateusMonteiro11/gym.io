@@ -1,5 +1,6 @@
 import Modal from './ui/Modal'
 import Button from './ui/Button'
+import ActionLoading from './ui/ActionLoading'
 
 export default function WorkoutSessionRecoveryModal({
   sessao,
@@ -37,7 +38,7 @@ export default function WorkoutSessionRecoveryModal({
             onClick={onCancelar}
             disabled={processando}
           >
-            {processando ? 'Cancelando…' : 'Cancelar sessão'}
+            {processando ? <ActionLoading label="Cancelando…" inverse /> : 'Cancelar sessão'}
           </Button>
         </div>
       </div>

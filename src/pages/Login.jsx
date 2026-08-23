@@ -13,6 +13,7 @@ import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
 import Modal from '../components/ui/Modal'
 import ModalHeader from '../components/ui/ModalHeader'
+import ActionLoading from '../components/ui/ActionLoading'
 
 const formMotion = {
   hidden: { opacity: 0, y: 18 },
@@ -32,12 +33,13 @@ const itemMotion = {
 export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { alert, notify } = useUi()
+  const { notify } = useUi()
   const { usuario, loading } = useAuth()
   const [email, setEmail] = useState(getLastEmail() || '')
   const [senha, setSenha] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [resetEmail, setResetEmail] = useState('')
   const [resetLoading, setResetLoading] = useState(false)
@@ -78,7 +80,7 @@ export default function Login() {
       navigate(redirectTarget)
     } catch (error) {
       const message = error?.message || getUserFriendlyErrorMessage(error, 'Não foi possível entrar.')
-      alert({ title: 'Erro ao entrar', message, type: 'error' })
+      notify({ title: 'Erro ao entrar', message, type: 'error' })
     } finally {
       setIsLoading(false)
     }
@@ -96,7 +98,7 @@ export default function Login() {
       setResetErrors({})
     } catch (error) {
       const message = error?.message || getUserFriendlyErrorMessage(error, 'Não foi possível enviar o email de recuperação.')
-      alert({ title: 'Erro', message, type: 'error' })
+      notify({ title: 'Não foi possível enviar', message, type: 'error' })
     } finally {
       setResetLoading(false)
     }
@@ -104,6 +106,7 @@ export default function Login() {
 
     async function handleGoogleLogin() {
       try {
+        setGoogleLoading(true)
         // Ensure Supabase uses the desired storage (localStorage vs sessionStorage)
         // before initiating the OAuth redirect so the session tokens are persisted
         setAuthStoragePreference(rememberMe)
@@ -117,9 +120,17 @@ export default function Login() {
 
         if (error) {
           console.error('Erro ao autenticar com Google:', error.message)
+          notify({ title: 'Erro ao entrar', message: error.message, type: 'error' })
+          setGoogleLoading(false)
         }
       } catch (err) {
         console.error('Erro inesperado no login com Google:', err)
+        notify({
+          title: 'Erro ao entrar',
+          message: getUserFriendlyErrorMessage(err, 'Não foi possível entrar com o Google.'),
+          type: 'error',
+        })
+        setGoogleLoading(false)
       }
     }
 
@@ -200,7 +211,7 @@ export default function Login() {
 
               <motion.div variants={itemMotion}>
                 <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? 'Entrando...' : 'Entrar'}
+                  {isLoading ? <ActionLoading label="Entrando..." inverse /> : 'Entrar'}
                   {!isLoading && <ArrowRight className="h-4 w-4" />}
                 </Button>
               </motion.div>
@@ -209,15 +220,22 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
-                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-primary/20 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  disabled={isLoading || googleLoading}
+                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-primary/20 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 >
-                  <svg viewBox="0 0 48 48" className="h-5 w-5" aria-hidden>
-                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.652 32.657 29.359 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.079 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.651-.389-3.917z" />
-                    <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.967 12 24 12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.079 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
-                    <path fill="#4CAF50" d="M24 44c5.193 0 9.91-1.987 13.454-5.215l-6.21-5.243C29.197 35.091 26.761 36 24 36c-5.338 0-9.616-3.329-11.286-8.009l-6.522 5.025C9.499 39.556 16.227 44 24 44z" />
-                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-1.599 4.657-5.903 8-11.303 8-2.76 0-5.306-.995-7.286-2.652l-6.522 5.025C12.39 41.402 17.768 44 24 44c11.045 0 20-8.955 20-20 0-1.341-.138-2.651-.389-3.917z" />
-                  </svg>
-                  Entrar com Google
+                  {googleLoading ? (
+                    <ActionLoading label="Conectando..." />
+                  ) : (
+                    <>
+                      <svg viewBox="0 0 48 48" className="h-5 w-5" aria-hidden>
+                        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.652 32.657 29.359 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.079 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955c0-1.341-.138-2.651-.389-3.917z" />
+                        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.967 12 24 12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.079 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
+                        <path fill="#4CAF50" d="M24 44c5.193 0 9.91-1.987 13.454-5.215l-6.21-5.243C29.197 35.091 26.761 36 24 36c-5.338 0-9.616-3.329-11.286-8.009l-6.522 5.025C9.499 39.556 16.227 44 24 44z" />
+                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-1.599 4.657-5.903 8-11.303 8-2.76 0-5.306-.995-7.286-2.652l-6.522 5.025C12.39 41.402 17.768 44 24 44c11.045 0 20-8.955 20-20 0-1.341-.138-2.651-.389-3.917z" />
+                      </svg>
+                      Entrar com Google
+                    </>
+                  )}
                 </button>
               </motion.div>
 
@@ -254,7 +272,7 @@ export default function Login() {
               Cancelar
             </Button>
             <Button type="submit" disabled={resetLoading} className="flex-1">
-              {resetLoading ? 'Enviando...' : 'Enviar'}
+              {resetLoading ? <ActionLoading label="Enviando..." inverse /> : 'Enviar'}
             </Button>
           </div>
         </form>

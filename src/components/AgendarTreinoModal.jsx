@@ -6,6 +6,7 @@ import Input, { Label } from './ui/Input'
 import Button from './ui/Button'
 import Card from './ui/Card'
 import { getLocalDateInputValue, validateScheduleDate } from '../utils/dateUtils'
+import ActionLoading from './ui/ActionLoading'
 
 export default function AgendarTreinoModal({ open, treino, onClose, onAgendar }) {
   const { alert } = useUi()
@@ -86,10 +87,7 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
           </Button>
           <Button className="w-full sm:flex-1" onClick={handleAgendar} disabled={agendando}>
             {agendando ? (
-              <>
-                <i className="fa-solid fa-spinner animate-spin" />
-                Agendando...
-              </>
+              <ActionLoading label="Agendando..." inverse />
             ) : (
               <>
                 <i className="fa-solid fa-calendar-check" />

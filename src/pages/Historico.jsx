@@ -3,26 +3,24 @@ import HistoricoHeader from '../components/HistoricoHeader'
 import HistoricoCard from '../components/HistoricoCard'
 import HistoricoMonth from '../components/HistoricoMonth'
 import HistoricoEmpty from '../components/HistoricoEmpty'
-import DashboardLayout from '../layouts/DashboardLayout'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import Card from '../components/ui/Card'
 import { useAuth } from '../hooks/useAuth'
 import { useHistorico } from '../hooks/useHistorico'
 import { ui } from '../styles/theme'
 
 export default function Historico() {
-  const { usuario, loading: loadingAuth } = useAuth()
+  const { usuario } = useAuth()
   const { historico, loading, erro, estatisticas, agruparPorMes } = useHistorico(usuario?.id)
   const [modo, setModo] = useState('geral')
 
   if (erro) {
     return (
-      <DashboardLayout>
-        <Card className={`${ui.cardPadding} border-danger/30 bg-danger-muted text-center`}>
-          <i className="fa-solid fa-circle-exclamation mb-3 text-3xl text-danger" />
-          <h2 className="mb-2 text-lg font-semibold text-danger">Erro ao carregar histórico</h2>
-          <p className="text-slate-600">{erro}</p>
-        </Card>
-      </DashboardLayout>
+      <Card className={`${ui.cardPadding} border-danger/30 bg-danger-muted text-center`}>
+        <i className="fa-solid fa-circle-exclamation mb-3 text-3xl text-danger" />
+        <h2 className="mb-2 text-lg font-semibold text-danger">Erro ao carregar histórico</h2>
+        <p className="text-slate-600">{erro}</p>
+      </Card>
     )
   }
 
@@ -30,7 +28,7 @@ export default function Historico() {
   const temHistorico = historico.length > 0
 
   return (
-    <DashboardLayout loading={loadingAuth || loading} loadingMessage="Carregando histórico...">
+    <PageLoadingBoundary loading={loading} loadingMessage="Carregando histórico...">
       <HistoricoHeader stats={estatisticas} />
 
       {temHistorico && (
@@ -67,6 +65,6 @@ export default function Historico() {
           ))}
         </div>
       )}
-    </DashboardLayout>
+    </PageLoadingBoundary>
   )
 }

@@ -3,23 +3,33 @@ import {
   Outlet,
   RouterProvider,
 } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 
 import Login from '../pages/Login'
 import Cadastro from '../pages/Cadastro'
 import LandingPage from '../pages/LandingPage'
-import Dashboard from '../pages/Dashboard'
-
-import Treinos from '../pages/Treinos'
-import TreinosEditar from '../pages/TreinosEditar'
-import TreinosVisualizar from '../pages/TreinosVisualizar'
-import Treinar from '../pages/Treinar'
-import TreinoPlayer from '../pages/TreinoPlayer'
-import Historico from '../pages/Historico'
-
 import RedefinirSenha from '../pages/RedefinirSenha'
 import RouteError, { NotFoundPage } from '../pages/RouteError'
-
 import { PrivateRoute } from './PrivateRoute'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
+
+const Dashboard = lazy(() => import('../pages/Dashboard'))
+const Treinos = lazy(() => import('../pages/Treinos'))
+const TreinosEditar = lazy(() => import('../pages/TreinosEditar'))
+const TreinosVisualizar = lazy(() => import('../pages/TreinosVisualizar'))
+const Treinar = lazy(() => import('../pages/Treinar'))
+const TreinoPlayer = lazy(() => import('../pages/TreinoPlayer'))
+const Historico = lazy(() => import('../pages/Historico'))
+
+function ProtectedPage({ children }) {
+  return (
+    <PrivateRoute>
+      <Suspense fallback={<PageLoadingBoundary loading loadingMessage="Carregando página..." />}>
+        {children}
+      </Suspense>
+    </PrivateRoute>
+  )
+}
 
 const router = createBrowserRouter([
   {
@@ -45,65 +55,65 @@ const router = createBrowserRouter([
       {
         path: '/dashboard',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <Dashboard />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {
         path: '/treinos',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <Treinos />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {
         path: '/treinos/visualizar/:id',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <TreinosVisualizar />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {
         path: '/treinos/editar',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <TreinosEditar />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {
         path: '/treinos/editar/:id',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <TreinosEditar />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {
         path: '/treinar',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <Treinar />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {
         path: '/treinar/:id',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <TreinoPlayer />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {
         path: '/historico',
         element: (
-          <PrivateRoute>
+          <ProtectedPage>
             <Historico />
-          </PrivateRoute>
+          </ProtectedPage>
         ),
       },
       {

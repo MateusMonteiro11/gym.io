@@ -40,7 +40,7 @@ async function executarRpc(nome, argumentos) {
   return normalizarSessao(data)
 }
 
-export async function buscarSessaoAtiva() {
+async function buscarSessaoAtiva() {
   const { data, error } = await supabase
     .from('treino_sessoes')
     .select('*')
@@ -53,7 +53,7 @@ export async function buscarSessaoAtiva() {
   return normalizarSessao(data)
 }
 
-export async function buscarSessaoPorId(idSessao) {
+async function buscarSessaoPorId(idSessao) {
   if (!idSessao) return null
 
   const { data, error } = await supabase

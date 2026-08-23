@@ -11,11 +11,15 @@ import { formatDatePtBr, formatTimePtBr } from '../utils/dateUtils'
 import { ui } from '../styles/theme'
 import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 import { validateProfileImageFile } from '../utils/imageUtils'
+import { Skeleton, SkeletonList } from './ui/Skeleton'
+import ActionLoading from './ui/ActionLoading'
 
 export default function UserProfileModal({ open, onClose, onUpdate }) {
   const { usuario } = useAuth()
   const { alert, notify } = useUi()
-  const { historico, loading: loadingHistorico, estatisticas } = useHistorico(usuario?.id)
+  const { historico, loading: loadingHistorico, estatisticas } = useHistorico(
+    open ? usuario?.id : null
+  )
 
   const [activeTab, setActiveTab] = useState('profile')
   const [nome, setNome] = useState('')
@@ -26,28 +30,41 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
   const [carregandoUsuario, setCarregandoUsuario] = useState(false)
 
   useEffect(() => {
-    if (!open || !usuario?.id) return
+    let active = true
+
+    if (!open || !usuario?.id) {
+      setCarregandoUsuario(false)
+      return undefined
+    }
 
     const carregarDadosUsuario = async () => {
       try {
         setCarregandoUsuario(true)
         const usuarioDB = await obterUsuario(usuario.id)
+        if (!active) return
+
         setNome(usuarioDB?.nome || usuario.email?.split('@')[0] || '')
         setStatus(usuarioDB?.status || '')
         setFotoPreview(usuarioDB?.foto_perfil || null)
         setFotoFile(null)
       } catch (err) {
+        if (!active) return
+
         logError(err, '[UserProfileModal] Failed to load user data')
         setNome(usuario.email?.split('@')[0] || '')
         setStatus('')
         setFotoPreview(null)
       } finally {
-        setCarregandoUsuario(false)
+        if (active) setCarregandoUsuario(false)
       }
     }
 
     carregarDadosUsuario()
-  }, [open, usuario])
+
+    return () => {
+      active = false
+    }
+  }, [open, usuario?.email, usuario?.id])
 
   const handleFotoChange = (e) => {
     const file = e.target.files?.[0]
@@ -92,8 +109,8 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
       })
 
       notify({
-        title: 'Sucesso',
-        message: 'Perfil atualizado com sucesso',
+        title: 'Perfil atualizado',
+        message: 'Suas informações foram salvas com sucesso.',
         type: 'success',
       })
 
@@ -102,7 +119,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
     } catch (err) {
       const message = getUserFriendlyErrorMessage(err, 'Não foi possível salvar o perfil.')
       logError(err, '[UserProfileModal] Failed to save profile')
-      alert({
+      notify({
         title: 'Erro ao salvar',
         message,
         type: 'error',
@@ -150,7 +167,20 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
 
       <div className="p-6">
         {/* Profile */}
-        {activeTab === 'profile' && (
+        {activeTab === 'profile' && (carregandoUsuario ? (
+          <div className="space-y-6" role="status" aria-label="Carregando perfil...">
+            <Skeleton className="mx-auto h-24 w-24 rounded-full" />
+            <div className="space-y-3">
+              <Skeleton className="h-3 w-20 rounded-full" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-3 w-16 rounded-full" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+            <Skeleton className="ml-auto h-11 w-1/2 rounded-xl" />
+          </div>
+        ) : (
           <div className="space-y-6">
             <div className="flex flex-col items-center">
               <div className="mb-4">
@@ -221,10 +251,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
               </Button>
               <Button className="flex-1" onClick={handleSalvar} disabled={salvando}>
                 {salvando ? (
-                  <>
-                    <i className="fa-solid fa-spinner animate-spin" />
-                    Salvando...
-                  </>
+                  <ActionLoading label="Salvando..." inverse />
                 ) : (
                   <>
                     <i className="fa-solid fa-check" />
@@ -234,14 +261,14 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
               </Button>
             </div>
           </div>
-        )}
+        ))}
 
         {/* Historico */}
         {activeTab === 'history' && (
           <div className="space-y-4">
             {loadingHistorico ? (
-              <div className="flex justify-center py-8">
-                <i className={ui.loadingSpinner} />
+              <div role="status" aria-label="Carregando histórico...">
+                <SkeletonList items={3} compact />
               </div>
             ) : historico?.length > 0 ? (
               <div className="space-y-3">

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ActionLoading from './ui/ActionLoading'
 
 const STATUS_LABEL = {
   idle        : { label: 'Pronto para iniciar', color: 'text-slate-600' },
@@ -43,7 +44,7 @@ export default function WorkoutHeader({ nomeTreino, status, onSair, salvando = f
             disabled={salvando}
             className="text-xs px-3 py-1.5 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 disabled:opacity-50 transition-colors"
           >
-            {salvando ? 'Salvando…' : 'Cancelar'}
+            {salvando ? <ActionLoading label="Salvando…" inverse /> : 'Cancelar'}
           </button>
           <button
             onClick={() => setConfirmando(false)}

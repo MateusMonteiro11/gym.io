@@ -13,7 +13,6 @@ export function Label({ children, htmlFor, className = '' }) {
 export default function Input({
   className = '',
   error = '',
-  errorVariant = 'error',
   containerClassName = '',
   ...props
 }) {
@@ -26,7 +25,7 @@ export default function Input({
         transition={{ duration: 0.25 }}
         {...props}
       />
-      <FieldError message={error} variant={errorVariant} />
+      <FieldError message={error} />
     </div>
   )
 }

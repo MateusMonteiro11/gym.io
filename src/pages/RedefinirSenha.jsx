@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useUi } from '../contexts/UiContext'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
+import ActionLoading from '../components/ui/ActionLoading'
 import Card from '../components/ui/Card'
 import { ui } from '../styles/theme'
 import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
@@ -35,7 +36,7 @@ export default function RedefinirSenha() {
     } catch (error) {
       const message = getUserFriendlyErrorMessage(error, 'Não foi possível alterar sua senha.')
       logError(error, '[RedefinirSenha] Failed to update password')
-      alert({ title: 'Erro', message, type: 'error' })
+      notify({ title: 'Não foi possível alterar', message, type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -55,7 +56,7 @@ export default function RedefinirSenha() {
           <Input type="password" placeholder="Nova senha" value={senha} maxLength={72} onChange={(e) => setSenha(e.target.value)} required />
           <Input type="password" placeholder="Confirmar senha" value={confirmarSenha} maxLength={72} onChange={(e) => setConfirmarSenha(e.target.value)} required />
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Alterando...' : 'Alterar senha'}
+            {loading ? <ActionLoading label="Alterando..." inverse /> : 'Alterar senha'}
           </Button>
         </form>
       </Card>
