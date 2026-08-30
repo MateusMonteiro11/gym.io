@@ -119,10 +119,11 @@ function SpatialRibbon({ dark, layout, geometry, timeline, reduced, sync }) {
 
   useEffect(() => {
     const scene = sync.sceneRef.current
-    readyRef.current = false
+    const alreadyReady = Boolean(scene?.classList.contains('is-ready'))
+    readyRef.current = alreadyReady
     if (scene) {
-      scene.classList.remove('is-ready')
-      scene.setAttribute('data-ribbon-ready', 'false')
+      scene.setAttribute('data-ribbon-ready', String(alreadyReady))
+      if (alreadyReady && sync.snapshotRef.current) sync.snapshotRef.current.ready = true
       if (import.meta.env.DEV) {
         scene.setAttribute('data-ribbon-layout-epoch', String(sync.snapshot?.layoutEpoch ?? 0))
         scene.setAttribute('data-ribbon-geometry-version', geometry.uuid)
@@ -152,7 +153,7 @@ function SpatialRibbon({ dark, layout, geometry, timeline, reduced, sync }) {
       release()
       geometry.dispose()
     }
-  }, [geometry, invalidate, sync.sceneRef, sync.setFrameRequester, sync.snapshot])
+  }, [geometry, invalidate, sync.sceneRef, sync.setFrameRequester, sync.snapshot, sync.snapshotRef])
 
   useFrame((_, delta) => {
     const snapshot = sync.stateRef.current
@@ -267,11 +268,11 @@ class SceneBoundary extends Component {
   render() { return this.state.failed ? null : this.props.children }
 }
 
-export default function MotionSpineScene({ rootRef }) {
+export default function MotionSpineScene({ rootRef, skipFragmentRecovery = false }) {
   const reduced = Boolean(useReducedMotion())
   const { isDark } = useTheme()
   const sceneRef = useRef(null)
-  const sync = useRibbonScrollSync({ rootRef, sceneRef })
+  const sync = useRibbonScrollSync({ rootRef, sceneRef, skipFragmentRecovery })
   const snapshot = sync.snapshot
   const profile = snapshot?.layout?.profile
 

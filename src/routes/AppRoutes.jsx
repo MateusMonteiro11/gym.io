@@ -20,6 +20,7 @@ const TreinosVisualizar = lazy(() => import('../pages/TreinosVisualizar'))
 const Treinar = lazy(() => import('../pages/Treinar'))
 const TreinoPlayer = lazy(() => import('../pages/TreinoPlayer'))
 const Historico = lazy(() => import('../pages/Historico'))
+const LegalPage = lazy(() => import('../pages/LegalPage'))
 
 function ProtectedPage({ children }) {
   return (
@@ -28,6 +29,14 @@ function ProtectedPage({ children }) {
         {children}
       </Suspense>
     </PrivateRoute>
+  )
+}
+
+function PublicLazyPage({ children }) {
+  return (
+    <Suspense fallback={<PageLoadingBoundary loading loadingMessage="Carregando documento..." />}>
+      {children}
+    </Suspense>
   )
 }
 
@@ -47,6 +56,14 @@ const router = createBrowserRouter([
       {
         path: '/cadastro',
         element: <Cadastro />,
+      },
+      {
+        path: '/termos',
+        element: <PublicLazyPage><LegalPage documentId="terms" /></PublicLazyPage>,
+      },
+      {
+        path: '/privacidade',
+        element: <PublicLazyPage><LegalPage documentId="privacy" /></PublicLazyPage>,
       },
       {
         path: '/redefinir-senha',

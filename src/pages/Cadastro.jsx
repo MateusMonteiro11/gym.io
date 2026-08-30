@@ -36,6 +36,12 @@ export default function Cadastro() {
   const [errors, setErrors] = useState({})
   const [termos, setTermos] = useState(false)
   const [termsModalOpen, setTermsModalOpen] = useState(false)
+  const [initialLegalDocument, setInitialLegalDocument] = useState('terms')
+
+  function openLegalDocument(documentId) {
+    setInitialLegalDocument(documentId)
+    setTermsModalOpen(true)
+  }
 
   function validarForcaSenha(senhaTemp) {
     const temLetra = /[a-zA-Z]/.test(senhaTemp)
@@ -217,11 +223,11 @@ export default function Cadastro() {
                       type="button"
                       onClick={(e) => {
                         e.preventDefault()
-                        setTermsModalOpen(true)
+                        openLegalDocument('terms')
                       }}
-                      className="font-semibold text-primary hover:text-primary-hover"
+                      className="font-semibold text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                     >
-                      termos de privacidade
+                      termos jurídicos
                     </button>
                   </span>
                 </label>
@@ -245,7 +251,11 @@ export default function Cadastro() {
         }
       />
 
-      <TermsAndPrivacyModal open={termsModalOpen} onClose={() => setTermsModalOpen(false)} />
+      <TermsAndPrivacyModal
+        open={termsModalOpen}
+        onClose={() => setTermsModalOpen(false)}
+        initialDocument={initialLegalDocument}
+      />
     </>
   )
 }

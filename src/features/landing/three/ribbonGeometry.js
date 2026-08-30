@@ -63,21 +63,24 @@ function interpolate(values, progress) {
 }
 
 function findControlProgresses(curve, controls, segments) {
-  const sample = new Vector3()
-  let minimumIndex = 0
-  return controls.points.map((target) => {
-    let closestIndex = minimumIndex
-    let closestDistance = Number.POSITIVE_INFINITY
-    for (let index = minimumIndex; index <= segments; index += 1) {
-      curve.getPointAt(index / segments, sample)
-      const distance = sample.distanceToSquared(target)
-      if (distance < closestDistance) {
-        closestDistance = distance
-        closestIndex = index
-      }
-    }
-    minimumIndex = closestIndex
-    return closestIndex / segments
+  const divisions = Math.max(200, segments)
+  curve.arcLengthDivisions = divisions
+  curve.updateArcLengths()
+  const arcLengths = curve.getLengths()
+  const totalLength = Math.max(Number.EPSILON, arcLengths.at(-1))
+
+  return controls.pageYs.map((pageY) => {
+    const pageProgress = Math.max(0, Math.min(
+      1,
+      (pageY - curve.startPageY) / curve.pageSpan,
+    ))
+    const scaled = pageProgress * divisions
+    const lower = Math.floor(scaled)
+    const upper = Math.min(divisions, lower + 1)
+    const amount = scaled - lower
+    const lengthAtPageY = arcLengths[lower]
+      + (arcLengths[upper] - arcLengths[lower]) * amount
+    return lengthAtPageY / totalLength
   })
 }
 

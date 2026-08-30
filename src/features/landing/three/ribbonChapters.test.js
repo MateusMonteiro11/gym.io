@@ -22,7 +22,7 @@ test('keeps the CTA departure gradual and directed beyond the final section', ()
   }
 
   assert.ok(tail.at(-1).sectionY > 1)
-  assert.equal(tail.at(-1).pageSelector, '.landing-footer')
+  assert.equal(tail.at(-1).pageSelector, '.institutional-footer')
   assert.equal(tail.at(-1).anchorY, .45)
   assert.equal(tail.at(-1).twist, 0)
 })
@@ -30,6 +30,36 @@ test('keeps the CTA departure gradual and directed beyond the final section', ()
 test('keeps the physical ribbon origin outside the Hero viewport', () => {
   const origin = ribbonWaypoints.find(({ id }) => id === 'hero-entry')
   assert.ok(origin.sectionY <= -.25)
+})
+
+test('keeps the FAQ trail between desktop columns and outside compact copy', () => {
+  const faqTrail = ribbonWaypoints.filter(({ chapter }) => chapter === 'faq')
+  const ctaEntry = ribbonWaypoints.find(({ id }) => id === 'cta-entry')
+
+  assert.deepEqual(faqTrail.map(({ id }) => id), [
+    'faq-entry',
+    'faq-center',
+    'faq-exit',
+    'faq-departure',
+  ])
+
+  faqTrail.forEach((waypoint, index) => {
+    assert.equal(waypoint.pageSelector, '.faq-heading')
+    assert.equal(waypoint.anchorY, [.04, .5, .96, 1.12][index])
+    assert.ok(waypoint.tabletX > 1)
+    assert.ok(waypoint.mobileX > 1)
+  })
+
+  assert.deepEqual(faqTrail.map(({ viewportX }) => viewportX), [.42, .35, .43, .39])
+  assert.ok(faqTrail[0].viewportX > faqTrail[1].viewportX)
+  assert.ok(faqTrail[2].viewportX > faqTrail[1].viewportX)
+
+  const faqDeparture = faqTrail.at(-1)
+  assert.equal(ctaEntry.viewportX, faqDeparture.viewportX)
+  assert.equal(ctaEntry.tabletX, faqDeparture.tabletX)
+  assert.equal(ctaEntry.mobileX, faqDeparture.mobileX)
+  assert.equal(ctaEntry.z, faqDeparture.z)
+  assert.equal(ctaEntry.twist, faqDeparture.twist)
 })
 
 test('hides the minimum Hero head inside the stable workout-card column', () => {
