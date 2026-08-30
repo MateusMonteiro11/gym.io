@@ -12,6 +12,7 @@ import RedefinirSenha from '../pages/RedefinirSenha'
 import RouteError, { NotFoundPage } from '../pages/RouteError'
 import { PrivateRoute } from './PrivateRoute'
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
+import LandingLoadingState from '../features/landing/LandingLoadingState'
 
 const Dashboard = lazy(() => import('../pages/Dashboard'))
 const Treinos = lazy(() => import('../pages/Treinos'))
@@ -34,7 +35,7 @@ function ProtectedPage({ children }) {
 
 function PublicLazyPage({ children }) {
   return (
-    <Suspense fallback={<PageLoadingBoundary loading loadingMessage="Carregando documento..." />}>
+    <Suspense fallback={<LandingLoadingState message="Carregando documento..." />}>
       {children}
     </Suspense>
   )
