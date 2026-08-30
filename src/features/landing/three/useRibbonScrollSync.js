@@ -5,6 +5,7 @@ import {
   getRibbonDataAnchorChecksum,
 } from './ribbonDataAnchors'
 import { createRibbonGeometry, getRibbonRevealState } from './ribbonGeometry'
+import { getStaticOffsetTop, getStaticPageTop } from './ribbonLayout'
 import { resolveRibbonCorridors } from './ribbonPath'
 import { getRibbonProfile } from './ribbonProfiles'
 import { mapScrollToRibbonU } from './ribbonTimeline'
@@ -33,34 +34,6 @@ function visibleElement(root, selector, index = 0) {
   return visible[index] ?? visible.at(-1) ?? candidates[index] ?? candidates.at(-1) ?? null
 }
 
-function staticOffsetTop(element) {
-  let top = 0
-  let current = element
-  while (current) {
-    top += current.offsetTop ?? 0
-    current = current.offsetParent
-  }
-  return top
-}
-
-function staticPageTop(element, rootTop) {
-  const owningChapter = element.closest?.('[data-ribbon-chapter]')
-  if (!owningChapter) {
-    return element.getBoundingClientRect().top + window.scrollY - rootTop
-  }
-
-  const chapterTop = owningChapter.getBoundingClientRect().top + window.scrollY - rootTop
-  let localTop = 0
-  let current = element
-  while (current && current !== owningChapter) {
-    localTop += current.offsetTop ?? 0
-    const next = current.offsetParent
-    if (!next || !owningChapter.contains(next)) break
-    current = next
-  }
-  return chapterTop + localTop
-}
-
 function measureWaypoints(root, chapterMap, viewportWidth, profile, rootTop) {
   return ribbonWaypoints.map((waypoint) => {
     const chapter = chapterMap.get(waypoint.chapter)
@@ -84,7 +57,7 @@ function measureWaypoints(root, chapterMap, viewportWidth, profile, rootTop) {
         : fallbackX * viewportWidth
 
     const pageY = pageRect?.height > 1
-      ? staticPageTop(pageAnchor, rootTop) + pageRect.height * (waypoint.anchorY ?? 0)
+      ? getStaticPageTop(pageAnchor, rootTop) + pageRect.height * (waypoint.anchorY ?? 0)
       : chapter.top + chapter.height * waypoint.sectionY
 
     return {
@@ -179,7 +152,7 @@ function getLayoutSignature(layout) {
   ].join('|')
 }
 
-export default function useRibbonScrollSync({ rootRef, sceneRef }) {
+export default function useRibbonScrollSync({ rootRef, sceneRef, skipFragmentRecovery = false }) {
   const stateRef = useRef({ ...emptySnapshot })
   const frameRequesterRef = useRef(null)
   const visibleRef = useRef(true)
@@ -188,11 +161,13 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
   const previousRef = useRef({ position: 0, time: performance.now() })
   const rootTopRef = useRef(0)
   const recoveredHashRef = useRef('')
+  const skipFragmentRecoveryRef = useRef(skipFragmentRecovery)
   const layoutRef = useRef(null)
   const signatureRef = useRef('')
   const epochRef = useRef(0)
   const snapshotRef = useRef(null)
   const [snapshot, setSnapshot] = useState(null)
+  skipFragmentRecoveryRef.current = skipFragmentRecovery
 
   const requestFrame = useCallback(() => {
     if (visibleRef.current) frameRequesterRef.current?.()
@@ -212,6 +187,11 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
     if (!root || !scene) return undefined
 
     let disposed = false
+    let layoutSettleTimer = 0
+    let pendingLayoutInvalidation = ''
+    let deferLayoutUntilScroll = false
+    const observedWidths = new WeakMap()
+    const observedHeights = new WeakMap()
     const nextFrame = () => new Promise((resolve) => window.requestAnimationFrame(resolve))
 
     const measureLayout = () => {
@@ -234,7 +214,7 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
         const rect = element.getBoundingClientRect()
         return {
           id: chapter.id,
-          top: staticOffsetTop(element) - rootTop,
+          top: getStaticOffsetTop(element) - rootTop,
           height: rect.height,
         }
       }).filter(Boolean)
@@ -268,6 +248,7 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
         progress: chapterMap.get('progress') ?? null,
         capabilities: chapterMap.get('capabilities') ?? null,
         creator: chapterMap.get('creator') ?? null,
+        faq: chapterMap.get('faq') ?? null,
         cta: chapterMap.get('cta') ?? null,
       }
 
@@ -299,6 +280,10 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
     const recoverFragmentIfNeeded = async () => {
       const hash = window.location.hash
       if (!hash || recoveredHashRef.current === hash) return
+      if (skipFragmentRecoveryRef.current) {
+        recoveredHashRef.current = hash
+        return
+      }
       const targetId = decodeURIComponent(hash.slice(1))
       const target = document.getElementById(targetId)
       if (shouldRecoverFragment({ hash, scrollY: window.scrollY, target })) {
@@ -384,8 +369,9 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
       }
       snapshotRef.current = nextSnapshot
       publishRibbonData(root, dataAnchors, nextLayout.viewportWidth)
-      scene.classList.remove('is-ready')
-      scene.setAttribute('data-ribbon-ready', 'false')
+      if (!scene.classList.contains('is-ready')) {
+        scene.setAttribute('data-ribbon-ready', 'false')
+      }
       setSnapshot(nextSnapshot)
     }
 
@@ -397,8 +383,50 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
       })
     }
 
-    const resizeObserver = new ResizeObserver(() => {
-      schedulePrepare(RIBBON_BOOTSTRAP_REASON.LAYOUT_INVALIDATION)
+    const scheduleSettledPrepare = (reason, deferUntilScroll = false) => {
+      if (layoutSettleTimer) window.clearTimeout(layoutSettleTimer)
+      layoutSettleTimer = window.setTimeout(() => {
+        layoutSettleTimer = 0
+        if (deferUntilScroll) {
+          pendingLayoutInvalidation = reason
+          return
+        }
+        schedulePrepare(reason)
+      }, 140)
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      let widthChanged = false
+      let heightChanged = false
+      entries.forEach((entry) => {
+        const width = entry.contentRect.width
+        const height = entry.contentRect.height
+        const previousWidth = observedWidths.get(entry.target)
+        const previousHeight = observedHeights.get(entry.target)
+        if (Number.isFinite(previousWidth) && Math.abs(width - previousWidth) > 1) {
+          widthChanged = true
+        }
+        if (Number.isFinite(previousHeight) && Math.abs(height - previousHeight) > 1) {
+          heightChanged = true
+        }
+        observedWidths.set(entry.target, width)
+        observedHeights.set(entry.target, height)
+      })
+
+      if (widthChanged) {
+        if (layoutSettleTimer) window.clearTimeout(layoutSettleTimer)
+        layoutSettleTimer = 0
+        deferLayoutUntilScroll = false
+        schedulePrepare(RIBBON_BOOTSTRAP_REASON.RESIZE)
+        return
+      }
+
+      if (heightChanged) deferLayoutUntilScroll = true
+
+      scheduleSettledPrepare(
+        RIBBON_BOOTSTRAP_REASON.LAYOUT_INVALIDATION,
+        deferLayoutUntilScroll,
+      )
     })
     resizeObserver.observe(root)
     ribbonChapters.forEach((chapter) => {
@@ -431,7 +459,14 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
     }
 
     const onOrientationChange = () => schedulePrepare(RIBBON_BOOTSTRAP_REASON.RESIZE)
-    const onScroll = () => captureNativeScroll()
+    const onScroll = () => {
+      captureNativeScroll()
+      if (!pendingLayoutInvalidation && !deferLayoutUntilScroll) return
+      const reason = pendingLayoutInvalidation || RIBBON_BOOTSTRAP_REASON.LAYOUT_INVALIDATION
+      pendingLayoutInvalidation = ''
+      deferLayoutUntilScroll = false
+      schedulePrepare(reason)
+    }
     const onPageShow = () => schedulePrepare(RIBBON_BOOTSTRAP_REASON.PAGE_SHOW)
     const onHashChange = () => {
       recoveredHashRef.current = ''
@@ -465,6 +500,7 @@ export default function useRibbonScrollSync({ rootRef, sceneRef }) {
       window.removeEventListener('hashchange', onHashChange)
       window.removeEventListener('popstate', onPopState)
       if (prepareFrameRef.current) window.cancelAnimationFrame(prepareFrameRef.current)
+      if (layoutSettleTimer) window.clearTimeout(layoutSettleTimer)
     }
   }, [requestFrame, rootRef, sceneRef])
 

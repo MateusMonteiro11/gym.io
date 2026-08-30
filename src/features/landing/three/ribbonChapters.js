@@ -10,6 +10,7 @@ export const ribbonChapters = [
   { id: 'progress', selector: '[data-ribbon-chapter="progress"]' },
   { id: 'capabilities', selector: '[data-ribbon-chapter="capabilities"]' },
   { id: 'creator', selector: '[data-ribbon-chapter="creator"]' },
+  { id: 'faq', selector: '[data-ribbon-chapter="faq"]' },
   { id: 'cta', selector: '[data-ribbon-chapter="cta"]' },
 ]
 
@@ -48,8 +49,8 @@ export const ribbonDataAnchors = [
   },
 ]
 
-// X positions follow real DOM elements. Y stays chapter-relative so sticky
-// content measures identically after hash loads and scroll restoration.
+// X positions follow real DOM elements. Stable page anchors are used where
+// expanding content must not move the visible path during remeasurement.
 export const ribbonWaypoints = [
   { id: 'hero-entry', chapter: 'hero', sectionY: -.28, viewportX: .82, z: -.2, twist: -.04, state: RIBBON_STATE.ACTIVE },
   {
@@ -156,14 +157,19 @@ export const ribbonWaypoints = [
 
   { id: 'creator-entry', chapter: 'creator', sectionY: .08, selector: '.creator-photo', anchorX: .76, fallbackX: .3, z: -.05, twist: -.01, state: RIBBON_STATE.MEMORY },
   { id: 'creator-center', chapter: 'creator', sectionY: .48, selector: '.creator-copy', anchorX: .18, fallbackX: .62, z: .07, twist: .016, state: RIBBON_STATE.MEMORY },
-  { id: 'creator-exit', chapter: 'creator', sectionY: .94, viewportX: .34, z: -.025, twist: -.008, state: RIBBON_STATE.MEMORY },
+  { id: 'creator-exit', chapter: 'creator', sectionY: .94, viewportX: .34, tabletX: 1.03, mobileX: 1.08, z: -.025, twist: -.008, state: RIBBON_STATE.MEMORY },
 
-  { id: 'cta-entry', chapter: 'cta', sectionY: .04, viewportX: .34, z: -.025, twist: -.008, state: RIBBON_STATE.ACTIVE },
+  { id: 'faq-entry', chapter: 'faq', sectionY: .04, pageSelector: '.faq-heading', anchorY: .04, viewportX: .42, tabletX: 1.05, mobileX: 1.1, z: -.025, twist: -.008, state: RIBBON_STATE.MEMORY },
+  { id: 'faq-center', chapter: 'faq', sectionY: .5, pageSelector: '.faq-heading', anchorY: .5, viewportX: .35, tabletX: 1.01, mobileX: 1.06, z: .018, twist: .006, state: RIBBON_STATE.MEMORY },
+  { id: 'faq-exit', chapter: 'faq', sectionY: .96, pageSelector: '.faq-heading', anchorY: .96, viewportX: .43, tabletX: 1.04, mobileX: 1.1, z: -.015, twist: -.005, state: RIBBON_STATE.MEMORY },
+  { id: 'faq-departure', chapter: 'faq', sectionY: 1.02, pageSelector: '.faq-heading', anchorY: 1.12, viewportX: .39, tabletX: 1.03, mobileX: 1.08, z: -.025, twist: -.008, state: RIBBON_STATE.MEMORY },
+
+  { id: 'cta-entry', chapter: 'cta', sectionY: .04, viewportX: .39, tabletX: 1.03, mobileX: 1.08, z: -.025, twist: -.008, state: RIBBON_STATE.ACTIVE },
   { id: 'cta-title', chapter: 'cta', sectionY: .24, viewportX: .42, z: .035, twist: .008, state: RIBBON_STATE.ACTIVE },
   { id: 'cta-action', chapter: 'cta', sectionY: .42, viewportX: .35, z: -.015, twist: -.004, state: RIBBON_STATE.ACTIVE },
   { id: 'cta-mid', chapter: 'cta', sectionY: .6, viewportX: .39, z: .01, twist: .003, state: RIBBON_STATE.ACTIVE },
   { id: 'cta-lower', chapter: 'cta', sectionY: .78, viewportX: .46, z: .006, twist: .002, state: RIBBON_STATE.ACTIVE },
   { id: 'cta-departure', chapter: 'cta', sectionY: .9, viewportX: .53, z: .003, twist: .001, state: RIBBON_STATE.ACTIVE },
   { id: 'cta-divider', chapter: 'cta', sectionY: .98, viewportX: .6, z: .001, twist: 0, state: RIBBON_STATE.ACTIVE },
-  { id: 'cta-hidden-tail', chapter: 'cta', sectionY: 1.18, pageSelector: '.landing-footer', anchorY: .45, viewportX: .72, mobileX: .72, z: 0, twist: 0, state: RIBBON_STATE.ACTIVE },
+  { id: 'cta-hidden-tail', chapter: 'cta', sectionY: 1.18, pageSelector: '.institutional-footer', anchorY: .45, viewportX: .72, mobileX: .72, z: 0, twist: 0, state: RIBBON_STATE.ACTIVE },
 ]

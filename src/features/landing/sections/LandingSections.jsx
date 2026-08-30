@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   AnimatePresence,
   motion,
+  useReducedMotion,
   useMotionValueEvent,
   useScroll,
 } from 'framer-motion'
@@ -18,6 +19,8 @@ import {
   Play,
 } from 'lucide-react'
 import profileImg from '../../../assets/images/mateus_profile.jpeg'
+import { FAQ_ITEMS } from '../../publicSite/publicContent'
+import PublicHashLink from '../../publicSite/PublicHashLink'
 
 const revealTransition = { duration: .72, ease: [.16, 1, .3, 1] }
 
@@ -164,7 +167,7 @@ export function HeroSection() {
         </motion.div>
         <motion.div className="hero-actions" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .7, ...revealTransition }}>
           <Link to="/cadastro" className="primary-link">Começar agora <ArrowUpRight size={18} /></Link>
-          <a href="#flow" className="secondary-link">Siga o rastro <ArrowDown size={17} /></a>
+          <PublicHashLink to="/#flow" className="secondary-link">Siga o rastro <ArrowDown size={17} /></PublicHashLink>
         </motion.div>
       </div>
       <motion.div
@@ -345,6 +348,69 @@ export function CreatorStory() {
   )
 }
 
+export function FaqSection() {
+  const reducedMotion = Boolean(useReducedMotion())
+
+  return (
+    <section className="faq-section section-shell" id="faq" data-ribbon-chapter="faq" aria-labelledby="faq-title">
+      <Reveal className="faq-heading">
+        <SectionEyebrow index="05">Perguntas frequentes</SectionEyebrow>
+        <h2 id="faq-title"><span>Antes de</span>{' '}<span>começar.</span></h2>
+        <DescriptionLines lines={['Que tal conhecer mais de perto.', 'O essencial do Gym.io', 'Para que você desfrute sem medo.']} />
+      </Reveal>
+      <div className="faq-list">
+        {FAQ_ITEMS.map((item) => <FaqItem item={item} reducedMotion={reducedMotion} key={item.id} />)}
+      </div>
+    </section>
+  )
+}
+
+function FaqItem({ item, reducedMotion }) {
+  const [open, setOpen] = useState(false)
+  const triggerId = `faq-trigger-${item.id}`
+  const panelId = `faq-panel-${item.id}`
+  const transition = reducedMotion
+    ? { duration: 0 }
+    : { duration: .42, ease: [.16, 1, .3, 1] }
+
+  return (
+    <article className={`faq-item${open ? ' is-open' : ''}`}>
+      <h3 className="faq-item-heading">
+        <button
+          type="button"
+          className="faq-item-trigger"
+          id={triggerId}
+          aria-expanded={open}
+          aria-controls={panelId}
+          onClick={() => setOpen((current) => !current)}
+        >
+          <span>{item.question}</span>
+          <i aria-hidden>+</i>
+        </button>
+      </h3>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            className="faq-answer-shell"
+            id={panelId}
+            role="region"
+            aria-labelledby={triggerId}
+            initial={reducedMotion ? false : { height: 0, opacity: 0, y: -8 }}
+            animate={{ height: 'auto', opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: -8 }}
+            transition={transition}
+          >
+            <div className="faq-answer">
+              {item.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              {item.relatedLink && <Link to={item.relatedLink.to}>{item.relatedLink.label} <ArrowUpRight size={15} /></Link>}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </article>
+  )
+}
+
 export function FinalCall() {
   return (
     <section className="final-call section-shell" id="cta" data-ribbon-chapter="cta" aria-labelledby="final-title">
@@ -354,15 +420,5 @@ export function FinalCall() {
         <Link to="/cadastro">Criar minha conta <ArrowUpRight size={20} /></Link>
       </Reveal>
     </section>
-  )
-}
-
-export function LandingFooter() {
-  return (
-    <footer className="landing-footer">
-      <a href="#top" className="footer-brand">Gym.io <span>↑</span></a>
-      <p>Planeje, execute e lembre. </p>
-      <div><Link to="/login">Entrar</Link><Link to="/cadastro">Começar</Link><span>Gym.io © 2026</span></div>
-    </footer>
   )
 }

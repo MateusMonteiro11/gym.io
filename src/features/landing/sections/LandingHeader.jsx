@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import logoBlueImg from '../../../assets/images/logo_blue.png'
 import ThemeToggle from '../../../components/ui/ThemeToggle'
+import PublicHashLink from '../../publicSite/PublicHashLink'
 
 export default function LandingHeader() {
   const [compact, setCompact] = useState(false)
@@ -20,7 +21,7 @@ export default function LandingHeader() {
         <span>Gym.io</span>
       </Link>
       <nav className="landing-nav" aria-label="Navegação principal">
-        <a href="#flow">Fluxo</a><a href="#progress">Memória</a><a href="#capabilities">Produto</a>
+        <PublicHashLink to="/#flow">Fluxo</PublicHashLink><PublicHashLink to="/#progress">Memória</PublicHashLink><PublicHashLink to="/#capabilities">Produto</PublicHashLink>
       </nav>
       <div className="landing-actions">
         <ThemeToggle compact variant="ghost" />
