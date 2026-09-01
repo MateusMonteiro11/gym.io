@@ -14,6 +14,14 @@ export const ribbonChapters = [
   { id: 'cta', selector: '[data-ribbon-chapter="cta"]' },
 ]
 
+const heroTextCollisionSelectors = [
+  '.hero-eyebrow',
+  '.hero-line-mask:first-child',
+  '.hero-line-mask:nth-child(2)',
+  '.hero-description',
+  '.hero-actions',
+]
+
 export const ribbonDataAnchors = [
   {
     id: 'exercise',
@@ -21,30 +29,33 @@ export const ribbonDataAnchors = [
     waypointId: 'hero-arc-top',
     role: 'EXERCISE',
     preferredSide: 'right',
-    clearancePx: 220,
-    collisionSelectors: ['.hero-copy', '.landing-header'],
+    clearancePx: 38,
+    lockPreferredSideOnDesktop: true,
+    collisionSelectors: [...heroTextCollisionSelectors, '.landing-header'],
     mobileBehavior: 'compact',
   },
   {
     id: 'series',
     selector: '.hero-data-series',
-    waypointId: 'hero-title-trace',
-    pageOffsetY: -166,
+    waypointId: 'hero-arc-steer',
     role: 'PROGRESS',
-    preferredSide: 'right',
-    clearancePx: 38,
-    collisionSelectors: ['.hero-copy', '.landing-header'],
+    preferredSide: 'left',
+    clearancePx: 36,
+    minVerticalGapPx: 28,
+    lockPreferredSideOnDesktop: true,
+    collisionSelectors: [...heroTextCollisionSelectors, '.landing-header'],
     mobileBehavior: 'compact',
   },
   {
     id: 'previous',
     selector: '.hero-data-previous',
     waypointId: 'hero-lower',
-    pageOffsetY: 130,
     role: 'MEMORY',
-    preferredSide: 'left',
-    clearancePx: 30,
-    collisionSelectors: ['.hero-copy'],
+    preferredSide: 'right',
+    clearancePx: 32,
+    minVerticalGapPx: 32,
+    lockPreferredSideOnDesktop: true,
+    collisionSelectors: heroTextCollisionSelectors,
     mobileBehavior: 'hidden',
   },
 ]

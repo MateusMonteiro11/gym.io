@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createRibbonDataAnchorLayout, getRibbonDataAnchorChecksum } from './ribbonDataAnchors.js'
 import { createRibbonGeometry } from './ribbonGeometry.js'
-import { RIBBON_STATE } from './ribbonChapters.js'
+import { ribbonDataAnchors, RIBBON_STATE } from './ribbonChapters.js'
 
 const layout = {
   profile: {
@@ -40,7 +40,11 @@ const measurements = {
     previous: { width: 144, height: 50 },
   },
   exclusions: {
-    '.hero-copy': { left: 60, right: 790, top: 150, bottom: 780, width: 730, height: 630 },
+    '.hero-eyebrow': { left: 60, right: 190, top: 120, bottom: 138, width: 130, height: 18 },
+    '.hero-line-mask:first-child': { left: 60, right: 610, top: 250, bottom: 390, width: 550, height: 140 },
+    '.hero-line-mask:nth-child(2)': { left: 60, right: 930, top: 405, bottom: 545, width: 870, height: 140 },
+    '.hero-description': { left: 60, right: 340, top: 590, bottom: 660, width: 280, height: 70 },
+    '.hero-actions': { left: 60, right: 390, top: 690, bottom: 745, width: 330, height: 55 },
     '.landing-header': { left: 0, right: 1440, top: 0, bottom: 80, width: 1440, height: 80 },
   },
 }
@@ -56,8 +60,25 @@ test('anchors Hero data to path progress outside the headline exclusion', () => 
   assert.equal(anchors.length, 3)
   anchors.forEach((anchor) => {
     assert.ok(anchor.pathU >= 0 && anchor.pathU <= 1)
-    assert.equal(overlap(anchor.rect, measurements.exclusions['.hero-copy']), 0)
+    ribbonDataAnchors
+      .find(({ id }) => id === anchor.id)
+      .collisionSelectors
+      .forEach((selector) => {
+        assert.equal(overlap(anchor.rect, measurements.exclusions[selector]), 0)
+      })
   })
+})
+
+test('orders Hero data down the path with alternating desktop sides', () => {
+  const geometry = createRibbonGeometry({ layout, segments: 180 })
+  const anchors = createRibbonDataAnchorLayout(layout, geometry, measurements)
+
+  assert.deepEqual(anchors.map(({ id }) => id), ['exercise', 'series', 'previous'])
+  assert.deepEqual(anchors.map(({ side }) => side), ['right', 'left', 'right'])
+  assert.ok(anchors[0].pathU < anchors[1].pathU)
+  assert.ok(anchors[1].pathU < anchors[2].pathU)
+  assert.ok(anchors[0].rect.bottom + 28 <= anchors[1].rect.top)
+  assert.ok(anchors[1].rect.bottom + 32 <= anchors[2].rect.top)
 })
 
 test('keeps anchor positions and checksum deterministic for one layout epoch', () => {

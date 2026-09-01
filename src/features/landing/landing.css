@@ -215,10 +215,13 @@ html:has(.landing) { scroll-behavior: smooth; }
 .section-eyebrow span { color: var(--blue); font-variant-numeric: tabular-nums; }
 .training-flow { position: relative; min-height: 280vh; background: transparent; }
 .flow-sticky { position: sticky; top: 0; min-height: 100svh; display: grid; grid-template-columns: minmax(0, .78fr) minmax(460px, 1.1fr); gap: clamp(3rem, 8vw, 8rem); align-items: center; padding-block: 6rem 3.5rem; }
+.flow-sticky.is-rest { width: min(1536px, calc(100% - 3rem)); grid-template-columns: minmax(0, 1fr) minmax(460px, 620px); gap: clamp(3rem, 4vw, 5rem); }
 .flow-copy-column { min-width: 0; }
 .desktop-flow-story { min-height: 360px; display: flex; align-items: center; }
 .flow-story > span { display: block; margin-bottom: 1.25rem; color: var(--blue); font-size: .68rem; font-weight: 650; letter-spacing: .04em; }
 .flow-story h2 { max-width: 610px; margin: 0 0 1.7rem; font-size: clamp(3.5rem, 6vw, 6.7rem); line-height: .88; letter-spacing: -.07em; }
+.flow-story.is-rest h2 { width: 100%; max-width: none; line-height: .9; }
+.flow-story.is-rest .flow-title-line { display: block; white-space: nowrap; }
 .flow-story .description-lines { max-width: 37rem; }
 .flow-steps { display: flex; gap: .55rem; }
 .flow-steps i { width: 28px; height: 3px; border-radius: 3px; background: var(--line); transition: width .3s ease, background-color .3s ease; }
@@ -442,7 +445,10 @@ html:has(.landing) { scroll-behavior: smooth; }
 @media (max-width: 1024px) {
   .section-shell { width: min(1120px, calc(100% - 3rem)); }
   .flow-sticky { grid-template-columns: minmax(0, .82fr) minmax(420px, 1.18fr); gap: 3rem; }
+  .flow-sticky.is-rest { grid-template-columns: minmax(0, .82fr) minmax(420px, 1.18fr); gap: 3rem; }
   .flow-story h2 { font-size: clamp(3.4rem, 6.5vw, 5.4rem); }
+  .flow-story.is-rest .flow-title-line { display: inline; white-space: normal; }
+  .flow-story.is-rest .flow-title-line:first-child::after { content: ' '; }
   .progress-section, .capability-block { gap: 3.5rem; }
   .hero-data-exercise { right: 3rem; }
   .hero-data-series { right: 24vw; }
@@ -489,8 +495,9 @@ html:has(.landing) { scroll-behavior: smooth; }
   .hero-data-node { min-width: 7.5rem; text-shadow: 0 1px 14px var(--paper); }
   .hero-data-node > span { font-size: .52rem; }
   .hero-data-node strong { font-size: 1rem; }
-  .hero-data-exercise { top: 0; left: 0; right: auto; }
-  .hero-data-series { top: 1rem; right: 0; }
+  .hero-data-exercise, .hero-data-series { left: clamp(0rem, 4vw, 1rem); right: auto; }
+  .hero-data-exercise { top: 0; }
+  .hero-data-series { top: 6.5rem; }
   .hero-data-series strong { font-size: 2.35rem; }
   .hero-data-load { top: 7.2rem; left: 3%; right: auto; }
   .hero-data-load strong { font-size: 3.9rem; }

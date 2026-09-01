@@ -52,20 +52,21 @@ export default function LandingExperience() {
     const frame = window.requestAnimationFrame(() => {
       scrollToTarget(animateHashNavigation ? 'smooth' : 'instant')
     })
+    const syncHashTarget = () => scrollToTarget('instant')
     const timers = animateHashNavigation
       ? []
-      : [150, 500, 1100].map((delay) => window.setTimeout(scrollToTarget, delay))
+      : [150, 500, 1100].map((delay) => window.setTimeout(syncHashTarget, delay))
 
     if (!animateHashNavigation) {
-      document.fonts?.ready.then(scrollToTarget)
-      window.addEventListener('load', scrollToTarget)
+      document.fonts?.ready.then(syncHashTarget)
+      window.addEventListener('load', syncHashTarget)
     }
 
     return () => {
       cancelled = true
       window.cancelAnimationFrame(frame)
       timers.forEach((timer) => window.clearTimeout(timer))
-      if (!animateHashNavigation) window.removeEventListener('load', scrollToTarget)
+      if (!animateHashNavigation) window.removeEventListener('load', syncHashTarget)
     }
   }, [animateHashNavigation, hash, key])
 
