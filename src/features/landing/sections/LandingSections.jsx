@@ -32,7 +32,8 @@ const flowStates = [
   },
   {
     label: 'Descanso',
-    title: 'A pausa também é treino.',
+    title: 'Sua pausa conta.',
+    titleLines: ['Sua pausa', 'conta.'],
     lines: ['O cronômetro assume a prioridade.', 'O exercício permanece reconhecível.', 'A próxima decisão já está preparada.'],
   },
   {
@@ -138,14 +139,18 @@ function FlowStory({ stage }) {
   return (
     <motion.div
       key={current.label}
-      className="flow-story"
+      className={`flow-story${stage === 1 ? ' is-rest' : ''}`}
       initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: .42, ease: [.16, 1, .3, 1] }}
     >
       <span>{current.label}</span>
-      <h2>{current.title}</h2>
+      <h2>
+        {current.titleLines
+          ? current.titleLines.map((line) => <span className="flow-title-line" key={line}>{line}</span>)
+          : current.title}
+      </h2>
       <DescriptionLines lines={current.lines} />
     </motion.div>
   )

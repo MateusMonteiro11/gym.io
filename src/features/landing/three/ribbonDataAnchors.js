@@ -84,8 +84,18 @@ export function createRibbonDataAnchorLayout(layout, geometry, measurements) {
     const waypointU = controlProgressById[definition.waypointId]
     if (!measurement || !waypoint || !Number.isFinite(waypointU)) return
 
-    const targetPageY = waypoint.pageY + (definition.pageOffsetY ?? 0)
+    const previousAnchor = placed.at(-1)
+    const minimumCenterY = previousAnchor
+      ? previousAnchor.rect.bottom
+        + (definition.minVerticalGapPx ?? 24)
+        + measurement.height * .5
+      : Number.NEGATIVE_INFINITY
+    const targetPageY = Math.max(
+      waypoint.pageY + (definition.pageOffsetY ?? 0),
+      minimumCenterY,
+    )
     const pathU = definition.pageOffsetY
+      || targetPageY !== waypoint.pageY
       ? findPathUForPageY(curve, layout, targetPageY, segments)
       : waypointU
     const frameIndex = Math.round(pathU * segments)
@@ -103,7 +113,11 @@ export function createRibbonDataAnchorLayout(layout, geometry, measurements) {
       .map((selector) => measurements.exclusions[selector])
       .filter(Boolean)
 
-    const candidates = [preferredSign, -preferredSign].map((sign, index) => {
+    const candidateSigns = layout.profile.key === 'desktop'
+      && definition.lockPreferredSideOnDesktop
+      ? [preferredSign]
+      : [preferredSign, -preferredSign]
+    const candidates = candidateSigns.map((sign, index) => {
       const candidateSide = index === 0
         ? definition.preferredSide
         : definition.preferredSide === 'right' ? 'left' : 'right'
@@ -124,7 +138,7 @@ export function createRibbonDataAnchorLayout(layout, geometry, measurements) {
         layout.viewportWidth - margin - measurement.width * .5,
       )
       const y = clamp(
-        rawY,
+        Math.max(rawY, minimumCenterY),
         measurements.hero.top + margin + measurement.height * .5,
         measurements.hero.bottom - margin - measurement.height * .5,
       )

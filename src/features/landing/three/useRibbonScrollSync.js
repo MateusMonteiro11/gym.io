@@ -80,6 +80,35 @@ function toPageRect(rect, rootTop, fixed = false) {
   }
 }
 
+function getTextContentRect(element) {
+  const textRects = []
+  const visit = (node) => {
+    if (node.nodeType === 3 && node.textContent?.trim()) {
+      const range = document.createRange()
+      range.selectNodeContents(node)
+      const rect = range.getBoundingClientRect()
+      if (rect.width > 1 && rect.height > 1) textRects.push(rect)
+      return
+    }
+    node.childNodes?.forEach(visit)
+  }
+  visit(element)
+  if (!textRects.length) return element.getBoundingClientRect()
+
+  const left = Math.min(...textRects.map((rect) => rect.left))
+  const right = Math.max(...textRects.map((rect) => rect.right))
+  const top = Math.min(...textRects.map((rect) => rect.top))
+  const bottom = Math.max(...textRects.map((rect) => rect.bottom))
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    width: right - left,
+    height: bottom - top,
+  }
+}
+
 function measureRibbonData(root, rootTop) {
   const hero = root.querySelector('[data-ribbon-chapter="hero"]')
   const heroRect = hero?.getBoundingClientRect()
@@ -96,7 +125,11 @@ function measureRibbonData(root, rootTop) {
     anchor.collisionSelectors.forEach((selector) => {
       if (exclusions[selector]) return
       const element = root.querySelector(selector)
-      const exclusionRect = element?.getBoundingClientRect()
+      const exclusionRect = element
+        ? selector === '.landing-header'
+          ? element.getBoundingClientRect()
+          : getTextContentRect(element)
+        : null
       if (exclusionRect?.width > 1 && exclusionRect?.height > 1) {
         exclusions[selector] = toPageRect(
           exclusionRect,
