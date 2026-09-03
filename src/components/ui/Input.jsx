@@ -21,8 +21,12 @@ export default function Input({
   const inputProps = { ...props }
 
   if (error) {
-    if (inputProps['aria-invalid'] === undefined) inputProps['aria-invalid'] = true
-    if (errorId && !inputProps['aria-describedby']) inputProps['aria-describedby'] = errorId
+    inputProps['aria-invalid'] = true
+
+    if (errorId) {
+      const describedBy = inputProps['aria-describedby']
+      inputProps['aria-describedby'] = describedBy ? `${describedBy} ${errorId}` : errorId
+    }
   }
 
   return (
