@@ -1,102 +1,40 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import PreWorkoutModal from '../components/PreWorkoutModal'
+import ScheduledWorkoutDeck from '../components/training/ScheduledWorkoutDeck'
+import WorkoutCatalog from '../components/training/WorkoutCatalog'
+import WorkoutWeekSelector from '../components/training/WorkoutWeekSelector'
 
 import { listarTreinos } from '../services/treinos/treinosService'
 
 import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
 import { useAgendamentos } from '../hooks/useAgendamentos'
-import { layout } from '../styles/layout'
+import { getLocalDateInputValue, parseDateTime } from '../utils/dateUtils'
+import {
+  clampActiveIndex,
+  getLastNavigableWeek,
+  getWeekStartKey,
+  groupAppointmentsByDate,
+} from '../utils/trainingDiscovery'
 
-function TreinoCard({ treino, onIniciar }) {
+const agendaDateFormatter = new Intl.DateTimeFormat('pt-BR', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+})
 
-  const totalSecoes = treino.secoes_treino?.length || 0
-
-  const totalExercicios = treino.secoes_treino?.reduce(
-    (acc, secao) => acc + (secao.treinos_exercicios?.length || 0),
-    0
-  )
-
-  return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
-
-      {/* Action Icon Header */}
-      <div className="flex items-center justify-end gap-2 border-b border-slate-100 bg-slate-50 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
-        <button
-          onClick={() => onIniciar(treino)}
-          title="Iniciar treino"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover transition-all duration-200 text-xs font-medium"
-        >
-          <i className="fa-solid fa-play text-xs"></i>
-          <span className="hidden sm:inline">Iniciar</span>
-        </button>
-      </div>
-
-      <div className="p-5 flex flex-col gap-4">
-
-        <div className="flex items-start justify-between">
-
-          <div>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
-              {treino.nome}
-            </h3>
-
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {treino.descricao || 'Sem descrição'}
-            </p>
-          </div>
-
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-muted dark:bg-slate-800">
-            <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 text-sm">
-
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700/70 dark:bg-slate-950/70">
-            <p className="text-slate-600 dark:text-slate-400">Exercícios</p>
-            <strong className="text-slate-700 dark:text-slate-100">
-              {totalExercicios}
-            </strong>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700/70 dark:bg-slate-950/70">
-            <p className="text-slate-600 dark:text-slate-400">Seções</p>
-            <strong className="text-slate-700 dark:text-slate-100">
-              {totalSecoes}
-            </strong>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  )
+function capitalize(value) {
+  return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : ''
 }
 
-function EmptyScheduled() {
+function formatAgendaTitle(dateKey, today) {
+  if (dateKey === today) return 'Treinos de hoje'
 
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
-
-      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800">
-        <i className="fa-regular fa-calendar text-2xl text-slate-600 dark:text-slate-300"></i>
-      </div>
-
-      <h3 className="mb-2 text-lg font-semibold text-slate-700 dark:text-slate-100">
-        Sem treinos programados disponíveis
-      </h3>
-
-      <p className="text-sm text-slate-600 dark:text-slate-300">
-        Você ainda não possui treinos programados.
-      </p>
-
-    </div>
-  )
+  const date = parseDateTime(dateKey)
+  return date ? capitalize(agendaDateFormatter.format(date)) : 'Agenda do dia'
 }
 
 export default function Treinar() {
@@ -108,11 +46,32 @@ export default function Treinar() {
     loading: loadingAgendamentos,
     excluirAgendamento,
   } = useAgendamentos()
+
+  const [today] = useState(() => getLocalDateInputValue())
+  const [selectedDate, setSelectedDate] = useState(today)
+  const [weekStart, setWeekStart] = useState(() => getWeekStartKey(today))
+  const [activeIndex, setActiveIndex] = useState(0)
   const [treinos, setTreinos] = useState([])
   const [loadingTreinos, setLoadingTreinos] = useState(true)
   const [treinoSelecionado, setTreinoSelecionado] = useState(null)
   const [modalDescansoOpen, setModalDescansoOpen] = useState(false)
   const [descansoPadrao, setDescansoPadrao] = useState(60)
+  const [removingId, setRemovingId] = useState(null)
+
+  const minWeekStart = useMemo(() => getWeekStartKey(today), [today])
+  const appointmentsByDate = useMemo(
+    () => groupAppointmentsByDate(agendamentos),
+    [agendamentos]
+  )
+  const appointmentDates = useMemo(
+    () => new Set(Object.keys(appointmentsByDate)),
+    [appointmentsByDate]
+  )
+  const selectedAppointments = appointmentsByDate[selectedDate] || []
+  const maxWeekStart = useMemo(
+    () => getLastNavigableWeek(agendamentos, today),
+    [agendamentos, today]
+  )
 
   useEffect(() => {
     let active = true
@@ -126,19 +85,12 @@ export default function Treinar() {
     setLoadingTreinos(true)
 
     async function carregarTreinos() {
-
       try {
-
         const data = await listarTreinos(usuario.id)
-
         if (active) setTreinos(data || [])
-
       } catch (error) {
-
         if (active) console.error(error)
-
       } finally {
-
         if (active) setLoadingTreinos(false)
       }
     }
@@ -148,207 +100,166 @@ export default function Treinar() {
     return () => {
       active = false
     }
-
   }, [usuario?.id])
 
+  useEffect(() => {
+    setActiveIndex((currentIndex) => clampActiveIndex(currentIndex, selectedAppointments.length))
+  }, [selectedAppointments.length])
+
+  useEffect(() => {
+    if (weekStart <= maxWeekStart) return
+
+    setWeekStart(maxWeekStart)
+    setSelectedDate(maxWeekStart === minWeekStart ? today : maxWeekStart)
+    setActiveIndex(0)
+  }, [maxWeekStart, minWeekStart, today, weekStart])
+
   function handleIniciarTreino(treino) {
-
     setTreinoSelecionado(treino)
-
     setModalDescansoOpen(true)
   }
+
+  function handleIniciarAgendamento(agendamento) {
+    const treino = agendamento?.treino
+    if (!treino?.id_treino) return
+
+    const descanso = agendamento.tempo_descanso ?? 60
+    setDescansoPadrao(descanso)
+    navigate(`/treinar/${treino.id_treino}`, {
+      state: { descansoPadrao: descanso },
+    })
+  }
+
+  async function handleRemoverAgendamento(agendamento) {
+    const ok = await confirm({
+      title: 'Excluir agendamento',
+      message: `Deseja remover ${agendamento?.treino?.nome || 'este treino'} da sua agenda?`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
+
+    setRemovingId(agendamento.id_agendamento)
+
+    try {
+      await excluirAgendamento(agendamento.id_agendamento)
+      notify({
+        title: 'Agendamento removido',
+        message: 'O treino foi retirado da sua agenda.',
+        type: 'success',
+      })
+    } catch (error) {
+      notify({
+        title: 'Não foi possível remover',
+        message: 'Não foi possível excluir o agendamento.',
+        type: 'error',
+      })
+    } finally {
+      setRemovingId(null)
+    }
+  }
+
+  function handleWeekChange(nextWeekStart) {
+    setWeekStart(nextWeekStart)
+    setSelectedDate(nextWeekStart === minWeekStart ? today : nextWeekStart)
+    setActiveIndex(0)
+  }
+
+  function handleSelectDate(dateKey) {
+    setSelectedDate(dateKey)
+    setActiveIndex(0)
+  }
+
+  function handleBrowseWorkouts() {
+    const target = document.getElementById('treinos-disponiveis')
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    target?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+  }
+
   return (
     <PageLoadingBoundary
       loading={loadingTreinos || loadingAgendamentos}
       loadingMessage="Carregando treinos..."
     >
-
-        {/* HEADER */}
-        <div className="mb-10">
-
-          <h1 className="text-3xl font-bold text-slate-900">
+      <div className="mx-auto w-full max-w-5xl pb-10 sm:pb-16">
+        <header className="mb-9 max-w-2xl sm:mb-12">
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-primary">
+            Seu próximo movimento
+          </p>
+          <h1 className="mt-3 text-[clamp(2.5rem,8vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-slate-950 dark:text-white">
             Treinar
           </h1>
-
-          <p className="text-slate-600 mt-1">
-            Escolha um treino para iniciar.
+          <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
+            Encontre o treino certo para o dia e comece sem perder o ritmo.
           </p>
+        </header>
 
-        </div>
-
-        {/* TREINOS DISPONÍVEIS */}
-        <section className="mb-10">
-
-          <div className="flex items-center justify-between mb-5">
-
-            <div>
-              <h2 className="text-xl font-semibold text-slate-900">
-                Treinos disponíveis
-              </h2>
-
-              <p className="text-sm text-slate-600 mt-1">
-                Seus treinos prontos para execução.
-              </p>
-            </div>
-
-          </div>
-
-          {/* Carregar treinos do usuário */}
-          {treinos.length === 0 ? (
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
-
-              <h3 className="mb-2 text-lg font-semibold text-slate-700 dark:text-slate-100">
-                Nenhum treino encontrado
-              </h3>
-
-              <p className="text-sm text-slate-600 dark:text-slate-300">
-                Crie um treino em “Treinos” para começar.
-              </p>
-
-            </div>
-
-          ) : (
-
-            <div className={layout.trainingGrid}>
-
-              {treinos.map((treino) => (
-                <TreinoCard
-                  key={treino.id_treino}
-                  treino={treino}
-                  onIniciar={handleIniciarTreino}
-                />
-              ))}
-
-            </div>
-
-          )}
-
-        </section>
-
-        {/* TREINOS AGENDADOS */}
-        <section>
-
-          <div className="mb-5">
-
-            <h2 className="text-xl font-semibold text-slate-900">
-              Treinos agendados
-            </h2>
-
-            <p className="text-sm text-slate-600 mt-1">
-              Seus próximos treinos programados.
-            </p>
-
-          </div>
-
-          {agendamentos.length === 0 ? (
-            <EmptyScheduled />
-          ) : (
-            <div className={layout.trainingGrid}>
-              {agendamentos.map((agendamento) => {
-                const treino = agendamento.treino
-                const [ano, mes, dia] = agendamento.data_agendada.split('-')
-                const dataFormatada = `${dia}/${mes}/${ano}`
-                return (
-                  <div key={agendamento.id_agendamento} className="flex flex-col overflow-hidden rounded-2xl border border-blue-200 bg-white bg-gradient-to-br from-blue-50 transition-all hover:shadow-md dark:border-slate-700/70 dark:from-slate-900 dark:to-slate-950 dark:shadow-black/20">
-
-                    {/* Action Icons Header */}
-                    <div className="flex items-center justify-end gap-2 border-b border-blue-100 bg-blue-50 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
-                      <button
-                        onClick={async () => {
-                          const ok = await confirm({
-                            title: 'Excluir agendamento',
-                            message: 'Deseja remover este treino da sua agenda?',
-                            confirmLabel: 'Excluir',
-                            variant: 'danger',
-                          })
-                          if (!ok) return
-
-                          try {
-                            await excluirAgendamento(agendamento.id_agendamento)
-                            notify({
-                              title: 'Agendamento removido',
-                              message: 'O treino foi retirado da sua agenda.',
-                              type: 'success',
-                            })
-                          } catch (error) {
-                            notify({
-                              title: 'Não foi possível remover',
-                              message: 'Não foi possível excluir o agendamento.',
-                              type: 'error',
-                            })
-                          }
-                        }}
-                        title="Excluir agendamento"
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all duration-200 text-xs font-medium"
-                      >
-                        <i className="fa-solid fa-trash text-xs"></i>
-                        <span className="hidden sm:inline">Excluir</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDescansoPadrao(agendamento.tempo_descanso)
-                          navigate(`/treinar/${treino?.id_treino}`, {
-                            state: {
-                              descansoPadrao: agendamento.tempo_descanso,
-                            },
-                          })
-                        }}
-                        title="Iniciar treino"
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover transition-all duration-200 text-xs font-medium"
-                      >
-                        <i className="fa-solid fa-play text-xs"></i>
-                        <span className="hidden sm:inline">Iniciar</span>
-                      </button>
-                    </div>
-
-                    <div className="p-5 flex flex-col gap-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
-                            {treino?.nome}
-                          </h3>
-                          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                            {treino?.descricao || 'Sem descrição'}
-                          </p>
-                        </div>
-                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-muted dark:bg-slate-800">
-                          <i className="fa-solid fa-dumbbell text-primary text-lg"></i>
-                        </div>
-                      </div>
-
-                      <div className="rounded-xl border border-blue-100 bg-white p-3 text-sm dark:border-slate-700/70 dark:bg-slate-950/70">
-                        <p className="text-slate-600 dark:text-slate-400">Agendado para</p>
-                        <strong className="text-slate-700 dark:text-slate-100">{dataFormatada}</strong>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-          <PreWorkoutModal
-            open={modalDescansoOpen}
-            treino={treinoSelecionado}
-            descansoPadrao={descansoPadrao}
-            onClose={() => setModalDescansoOpen(false)}
-            onStart={(descanso) => {
-              setDescansoPadrao(descanso)
-              setModalDescansoOpen(false)
-
-              if (treinoSelecionado) {
-                navigate(`/treinar/${treinoSelecionado.id_treino}`, {
-                  state: {
-                    descansoPadrao: descanso,
-                  },
-                })
-              }
-            }}
+        <section className="mx-auto max-w-3xl" aria-labelledby="agenda-title">
+          <WorkoutWeekSelector
+            weekStart={weekStart}
+            selectedDate={selectedDate}
+            today={today}
+            appointmentDates={appointmentDates}
+            minWeekStart={minWeekStart}
+            maxWeekStart={maxWeekStart}
+            onWeekChange={handleWeekChange}
+            onSelectDate={handleSelectDate}
           />
 
-  
+          <div className="mt-8 sm:mt-10">
+            <div className="mb-6 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-primary">
+                  Agenda do dia
+                </p>
+                <h2 id="agenda-title" className="mt-2 text-2xl font-semibold tracking-[-0.035em] text-slate-950 dark:text-white sm:text-3xl">
+                  {formatAgendaTitle(selectedDate, today)}
+                </h2>
+              </div>
+              {selectedAppointments.length > 0 ? (
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {selectedAppointments.length} {selectedAppointments.length === 1 ? 'treino' : 'treinos'}
+                </p>
+              ) : null}
+            </div>
+
+            <ScheduledWorkoutDeck
+              appointments={selectedAppointments}
+              activeIndex={activeIndex}
+              selectedDate={selectedDate}
+              today={today}
+              removingId={removingId}
+              onActiveIndexChange={setActiveIndex}
+              onStart={handleIniciarAgendamento}
+              onRemove={handleRemoverAgendamento}
+              onBrowseWorkouts={handleBrowseWorkouts}
+            />
+          </div>
         </section>
+
+        <WorkoutCatalog
+          workouts={treinos}
+          onStart={handleIniciarTreino}
+          onManageWorkouts={() => navigate('/treinos')}
+        />
+
+        <PreWorkoutModal
+          open={modalDescansoOpen}
+          treino={treinoSelecionado}
+          descansoPadrao={descansoPadrao}
+          onClose={() => setModalDescansoOpen(false)}
+          onStart={(descanso) => {
+            setDescansoPadrao(descanso)
+            setModalDescansoOpen(false)
+
+            if (treinoSelecionado) {
+              navigate(`/treinar/${treinoSelecionado.id_treino}`, {
+                state: { descansoPadrao: descanso },
+              })
+            }
+          }}
+        />
+      </div>
     </PageLoadingBoundary>
   )
 }

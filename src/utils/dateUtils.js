@@ -97,6 +97,23 @@ export function parseDateTime(value) {
   return new Date(normalized)
 }
 
+export function normalizeDatabaseUtcTimestamp(value) {
+  if (typeof value !== 'string') return value
+
+  const timestamp = value.trim()
+  if (!timestamp) return timestamp
+
+  const hasTimezoneOffset = /[+-]\d{2}:?\d{2}$/.test(timestamp)
+  const hasZulu = timestamp.endsWith('Z')
+  if (hasTimezoneOffset || hasZulu) return timestamp
+
+  const isDatabaseTimestamp = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/.test(timestamp)
+  if (!isDatabaseTimestamp) return timestamp
+
+  const normalized = `${timestamp.replace(' ', 'T')}Z`
+  return Number.isNaN(Date.parse(normalized)) ? timestamp : normalized
+}
+
 export function formatDatePtBr(value) {
   const data = parseDateTime(value)
   if (!data || Number.isNaN(data.getTime())) return ''

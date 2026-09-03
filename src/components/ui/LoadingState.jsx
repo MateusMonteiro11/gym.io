@@ -49,45 +49,51 @@ function PageHeaderSkeleton({
   )
 }
 
-function StatCardsSkeleton() {
-  return (
-    <div className={layout.dashboardStatsGrid}>
-      {Array.from({ length: 4 }, (_, index) => (
-        <div key={index} className={`${cardClass} p-6 xl:min-h-[166px]`}>
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <Skeleton className="mb-3 h-3.5 w-28 rounded-full" />
-              <Skeleton className={`h-10 rounded-xl ${index === 3 ? 'w-24' : 'w-16'}`} />
-              <Skeleton className="mt-4 h-2.5 w-20 rounded-full" />
-            </div>
-            <Skeleton className="h-12 w-12 shrink-0 rounded-xl" />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function DashboardPanelSkeleton({ activity = false }) {
-  return (
-    <div className={`${cardClass} flex h-80 flex-col p-6`}>
-      <Skeleton className={`h-5 rounded-lg ${activity ? 'w-40' : 'w-36'}`} />
-      <Skeleton className="mb-6 mt-3 h-3 w-52 rounded-full" />
-      <div className="flex flex-1 items-start justify-center py-8">
-        <Skeleton className={`h-3.5 rounded-full ${activity ? 'w-52' : 'w-48'}`} />
-      </div>
-    </div>
-  )
-}
-
 function DashboardSkeleton() {
   return (
     <>
       <PageHeaderSkeleton titleClassName="w-32" />
-      <StatCardsSkeleton />
-      <div className={layout.dashboardPanelsGrid}>
-        <DashboardPanelSkeleton />
-        <DashboardPanelSkeleton activity />
+      <div className="space-y-6">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]">
+          {Array.from({ length: 2 }, (_, index) => (
+            <div key={index} className={`${cardClass} min-h-[330px] p-8`}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-28 rounded-full" />
+                  <Skeleton className={`h-7 rounded-lg ${index === 0 ? 'w-72' : 'w-56'}`} />
+                </div>
+                <Skeleton className="h-11 w-11 shrink-0 rounded-2xl" />
+              </div>
+              <Skeleton className={`mt-10 rounded-xl ${index === 0 ? 'h-16 w-24' : 'h-10 w-52'}`} />
+              <Skeleton className="mt-4 h-3 w-48 rounded-full" />
+              <Skeleton className={`mt-12 w-full rounded-xl ${index === 0 ? 'h-12' : 'h-11'}`} />
+            </div>
+          ))}
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          {Array.from({ length: 2 }, (_, index) => (
+            <div key={index} className={`${cardClass} min-h-[178px] p-6`}>
+              <div className="flex items-start justify-between">
+                <div>
+                  <Skeleton className="h-3 w-32 rounded-full" />
+                  <Skeleton className="mt-6 h-9 w-28 rounded-xl" />
+                  <Skeleton className="mt-4 h-3 w-56 rounded-full" />
+                </div>
+                <Skeleton className="h-10 w-10 rounded-xl" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className={`${cardClass} min-h-[290px] p-8`}>
+          <Skeleton className="h-3 w-28 rounded-full" />
+          <Skeleton className="mt-3 h-7 w-60 rounded-lg" />
+          <Skeleton className="mt-3 h-3 w-96 max-w-[75vw] rounded-full" />
+          <div className="mt-10 grid grid-cols-12 gap-2">
+            {Array.from({ length: 84 }, (_, index) => (
+              <Skeleton key={index} className="aspect-square w-full rounded-[3px]" />
+            ))}
+          </div>
+        </div>
       </div>
     </>
   )
@@ -215,89 +221,134 @@ function HistorySkeleton() {
   )
 }
 
-function TrainingCardSkeleton() {
+function TrainingWeekSelectorSkeleton() {
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
-      <div className="flex h-[45px] items-center justify-end border-b border-slate-100 bg-slate-50 px-4 dark:border-slate-700/70 dark:bg-slate-950/70">
-        <Skeleton className="h-7 w-[73px] rounded-lg" />
-      </div>
-      <div className="flex flex-col gap-4 p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <div className="flex h-7 items-center">
-              <Skeleton className="h-5 w-4/5 rounded-lg" />
-            </div>
-            <div className="flex h-7 items-center">
-              <Skeleton className="h-5 w-2/3 rounded-lg" />
-            </div>
-            <div className="mt-1 flex h-5 items-center">
-              <Skeleton className="h-3.5 w-full rounded-full" />
-            </div>
-            <div className="flex h-5 items-center">
-              <Skeleton className="h-3.5 w-4/5 rounded-full" />
-            </div>
-          </div>
-          <Skeleton className="h-12 w-12 shrink-0 rounded-xl" />
+    <div className="border-b border-slate-200/80 pb-6 dark:border-white/[0.07]">
+      <div className="mb-5 flex items-end justify-between gap-4">
+        <div>
+          <Skeleton className="h-3 w-20 rounded-full" />
+          <Skeleton className="mt-3 h-5 w-40 rounded-lg" />
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Skeleton className="h-[66px] w-full rounded-xl" />
-          <Skeleton className="h-[66px] w-full rounded-xl" />
+        <div className="flex gap-2">
+          <Skeleton className="h-11 w-11 rounded-full" />
+          <Skeleton className="h-11 w-11 rounded-full" />
+        </div>
+      </div>
+
+      <div className="training-rail -mx-6 overflow-hidden sm:mx-0">
+        <div className="grid min-w-[19.25rem] grid-cols-7 gap-0 sm:min-w-0 sm:gap-2">
+          {Array.from({ length: 7 }, (_, index) => (
+            <div
+              key={index}
+              className={`flex min-h-[4.75rem] flex-col items-center justify-center rounded-2xl px-1 py-2 sm:min-h-[5.25rem] ${
+                index === 3 ? 'bg-primary/[0.06] dark:bg-white/[0.04]' : ''
+              }`}
+            >
+              <Skeleton className="h-2.5 w-6 rounded-full" />
+              <Skeleton className="mt-2 h-5 w-5 rounded-md" />
+              <Skeleton className="mt-2 h-1.5 w-1.5 rounded-full" />
+            </div>
+          ))}
         </div>
       </div>
     </div>
   )
 }
 
-function TrainingGridSkeleton({ count = 5 }) {
+function ScheduledWorkoutDeckSkeleton() {
   return (
-    <div className={layout.trainingGrid}>
-      {Array.from({ length: count }, (_, index) => <TrainingCardSkeleton key={index} />)}
+    <div className="relative pt-8 sm:pt-10">
+      <div className="absolute inset-x-5 top-3 h-[18rem] rounded-[1.75rem] border border-primary/10 bg-primary/10 dark:border-white/[0.05] dark:bg-[#101010]" />
+      <div className="absolute inset-x-2 top-6 h-[18rem] rounded-[1.75rem] border border-primary/10 bg-primary/15 dark:border-white/[0.06] dark:bg-[#111]" />
+
+      <div className="relative z-10 flex min-h-[21.5rem] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.07)] dark:border-white/[0.06] dark:bg-[#080808] dark:shadow-[0_24px_60px_rgba(0,0,0,0.36)] sm:min-h-[23rem]">
+        <div className="flex min-h-14 items-center justify-between gap-4 border-b border-slate-100 px-5 py-3 dark:border-white/[0.06] sm:px-6">
+          <Skeleton className="h-3 w-32 rounded-full" />
+          <Skeleton className="h-11 w-11 rounded-full" />
+        </div>
+        <div className="flex flex-1 flex-col px-5 py-6 sm:px-7 sm:py-8">
+          <Skeleton className="h-1 w-10 rounded-full" />
+          <Skeleton className="mt-5 h-10 w-4/5 rounded-xl sm:h-12 sm:w-3/5" />
+          <Skeleton className="mt-3 h-10 w-3/5 rounded-xl sm:h-12 sm:w-2/5" />
+          <Skeleton className="mt-5 h-3.5 w-full rounded-full" />
+          <Skeleton className="mt-2 h-3.5 w-4/5 rounded-full" />
+          <Skeleton className="mt-auto h-3 w-40 rounded-full" />
+        </div>
+        <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-white/[0.06] dark:bg-[#050505] sm:p-5">
+          <Skeleton className="h-12 w-full rounded-2xl" />
+        </div>
+      </div>
     </div>
   )
 }
 
-function EmptyScheduledSkeleton() {
+function CatalogWorkoutCardSkeleton() {
   return (
-    <div className={`${cardClass} flex min-h-[219px] flex-col items-center justify-center p-10 text-center`}>
-      <Skeleton className="h-16 w-16 rounded-2xl" />
-      <Skeleton className="mt-4 h-5 w-72 max-w-[74vw] rounded-lg" />
-      <Skeleton className="mt-3 h-3.5 w-64 max-w-[70vw] rounded-full" />
+    <div className="flex min-h-[17rem] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white dark:border-white/[0.06] dark:bg-[#080808]">
+      <div className="flex min-h-14 items-center border-b border-slate-100 px-5 py-3 dark:border-white/[0.06] sm:px-6">
+        <Skeleton className="h-3 w-28 rounded-full" />
+      </div>
+      <div className="flex flex-1 flex-col px-5 py-6 sm:px-7">
+        <Skeleton className="h-1 w-10 rounded-full" />
+        <Skeleton className="mt-5 h-7 w-4/5 rounded-lg" />
+        <Skeleton className="mt-3 h-7 w-3/5 rounded-lg" />
+        <Skeleton className="mt-4 h-3.5 w-full rounded-full" />
+        <Skeleton className="mt-2 h-3.5 w-4/5 rounded-full" />
+        <Skeleton className="mt-auto h-3 w-36 rounded-full" />
+      </div>
+      <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-white/[0.06] dark:bg-[#050505] sm:p-5">
+        <Skeleton className="h-12 w-full rounded-2xl" />
+      </div>
     </div>
   )
 }
 
 function TrainingSkeleton() {
   return (
-    <>
-      <div className="mb-10">
-        <Skeleton className="h-9 w-32 rounded-xl" />
-        <div className="mt-1 flex h-6 items-center">
-          <Skeleton className="h-4 w-72 max-w-[78vw] rounded-full" />
-        </div>
-      </div>
-      <section className="mb-10">
-        <div className="mb-5">
-          <div className="flex h-7 items-center">
-            <Skeleton className="h-6 w-52 rounded-lg" />
+    <div className="mx-auto w-full max-w-5xl pb-10 sm:pb-16">
+      <header className="mb-9 max-w-2xl sm:mb-12">
+        <Skeleton className="h-3 w-36 rounded-full" />
+        <Skeleton className="mt-3 h-10 w-40 rounded-xl sm:h-[4.4rem] sm:w-64" />
+        <Skeleton className="mt-4 h-4 w-full max-w-xl rounded-full" />
+        <Skeleton className="mt-2 h-4 w-4/5 max-w-lg rounded-full sm:hidden" />
+      </header>
+
+      <section className="mx-auto max-w-3xl">
+        <TrainingWeekSelectorSkeleton />
+
+        <div className="mt-8 sm:mt-10">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <Skeleton className="h-3 w-24 rounded-full" />
+              <Skeleton className="mt-3 h-7 w-52 rounded-lg sm:h-8 sm:w-64" />
+            </div>
+            <Skeleton className="h-3 w-14 rounded-full" />
           </div>
-          <div className="mt-1 flex h-5 items-center">
-            <Skeleton className="h-3 w-64 rounded-full" />
-          </div>
+          <ScheduledWorkoutDeckSkeleton />
         </div>
-        <TrainingGridSkeleton count={5} />
       </section>
-      <section>
-        <div className="mb-5">
-          <div className="flex h-7 items-center">
-            <Skeleton className="h-6 w-48 rounded-lg" />
+
+      <section className="mt-16 sm:mt-20">
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <Skeleton className="h-3 w-24 rounded-full" />
+            <Skeleton className="mt-3 h-7 w-56 rounded-lg sm:h-8 sm:w-72" />
+            <Skeleton className="mt-3 h-3.5 w-64 max-w-[70vw] rounded-full" />
           </div>
-          <div className="mt-1 flex h-5 items-center">
-            <Skeleton className="h-3 w-64 rounded-full" />
-          </div>
+          <Skeleton className="hidden h-11 w-28 rounded-xl sm:block" />
         </div>
-        <EmptyScheduledSkeleton />
+
+        <div className="training-rail -mx-4 flex gap-4 overflow-hidden px-4 pb-6 sm:-mx-6 sm:gap-5 sm:px-6 lg:mx-0 lg:px-0">
+          {Array.from({ length: 3 }, (_, index) => (
+            <div key={index} className="min-w-[min(84vw,22rem)] sm:min-w-[22rem] lg:min-w-[23rem]">
+              <CatalogWorkoutCardSkeleton />
+            </div>
+          ))}
+        </div>
+
+        <Skeleton className="mt-1 h-11 w-40 rounded-xl sm:hidden" />
       </section>
-    </>
+    </div>
   )
 }
 

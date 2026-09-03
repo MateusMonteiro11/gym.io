@@ -82,6 +82,98 @@
     box-shadow: 0 0 18px rgb(20 87 247 / 0.18);
   }
 
+  .workout-library-card__surface {
+    transition:
+      transform 200ms ease,
+      border-color 200ms ease,
+      background-color 200ms ease;
+  }
+
+  .workout-library-card__header {
+    height: 5rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .workout-library-card :is(a, button) {
+    transition-property: background-color, border-color, opacity;
+    transition-duration: 200ms;
+  }
+
+  .workout-library-card :is(a, button):active {
+    opacity: 0.78;
+  }
+
+  .workout-library-card__layer {
+    opacity: 0.78;
+    transition:
+      transform 200ms ease,
+      opacity 200ms ease,
+      background-color 200ms ease;
+  }
+
+  .workout-library-card__arrow,
+  .workout-library-card__accent {
+    transition:
+      transform 200ms ease,
+      opacity 200ms ease;
+  }
+
+  .workout-library-card:focus-within .workout-library-card__surface {
+    border-color: rgb(20 87 247 / 0.35);
+    transform: translate3d(0, -3px, 0);
+  }
+
+  .workout-library-card:focus-within .workout-library-card__layer {
+    opacity: 1;
+    transform: translate3d(2px, -2px, 0);
+  }
+
+  .workout-library-card:focus-within .workout-library-card__arrow {
+    transform: translate3d(3px, 0, 0);
+  }
+
+  .workout-library-card:focus-within .workout-library-card__accent {
+    opacity: 1;
+  }
+
+  .dark .workout-library-card:focus-within .workout-library-card__surface {
+    border-color: rgb(59 130 246 / 0.45);
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .workout-library-card__header {
+      height: 7rem;
+      align-items: flex-start;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .workout-library-card:hover .workout-library-card__surface {
+      border-color: rgb(20 87 247 / 0.35);
+      transform: translate3d(0, -3px, 0);
+    }
+
+    .workout-library-card:hover .workout-library-card__layer {
+      opacity: 1;
+      transform: translate3d(2px, -2px, 0);
+    }
+
+    .workout-library-card:hover .workout-library-card__arrow {
+      transform: translate3d(3px, 0, 0);
+    }
+
+    .workout-library-card:hover .workout-library-card__accent {
+      opacity: 1;
+    }
+
+    .dark .workout-library-card:hover .workout-library-card__surface {
+      border-color: rgb(59 130 246 / 0.45);
+    }
+  }
+
   @supports (-webkit-touch-callout: none) {
     .ios-date-input {
       -webkit-appearance: none;
@@ -99,6 +191,15 @@
 }
 
 @layer utilities {
+  .training-rail {
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+  }
+
+  .training-rail::-webkit-scrollbar {
+    display: none;
+  }
+
   .dark .text-slate-950,
   .dark .text-slate-900,
   .dark .text-slate-800 {
@@ -290,5 +391,55 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .workout-library-card__surface,
+  .workout-library-card__layer,
+  .workout-library-card__arrow {
+    transform: none !important;
+  }
+
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-surface {
+    transition-property: transform, border-color, background-color;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+  }
+
+  .dashboard-surface:hover,
+  .dashboard-surface:focus-within {
+    transform: translateY(-3px);
+    border-color: rgb(20 87 247 / 0.34);
+  }
+
+  .dashboard-momentum-card:hover,
+  .dashboard-momentum-card:focus-within {
+    border-color: rgb(255 255 255 / 0.5);
+  }
+}
+
+.dashboard-momentum-card {
+  background-color: #1457f7 !important;
+  border-color: #1457f7 !important;
+}
+
+.dark .dashboard-momentum-card {
+  background-color: #1457f7 !important;
+  background-image: none !important;
+  border-color: #1457f7 !important;
+}
+
+.dark .dashboard-week-day-active {
+  background-color: #fff !important;
+  color: #1457f7 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-surface,
+  .dashboard-surface:hover,
+  .dashboard-surface:focus-within {
+    transform: none !important;
   }
 }

@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase'
+import { normalizeDatabaseUtcTimestamp } from '../../utils/dateUtils'
 
 /* Listar historicos do usuario */
 
@@ -45,6 +46,9 @@ export async function listarHistoricos(
 
     return {
       ...item,
+
+      data_execucao:
+        normalizeDatabaseUtcTimestamp(item.data_execucao),
 
       total_series:
         Number(item.total_series || 0),
@@ -107,5 +111,9 @@ export async function buscarHistoricoCompleto(
     throw error
   }
 
-  return data
+  return {
+    ...data,
+    data_execucao: normalizeDatabaseUtcTimestamp(data?.data_execucao),
+    total_exercicios: Number(data?.total_exercicios || 0),
+  }
 }
