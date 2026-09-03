@@ -168,7 +168,7 @@ export default function Treinos() {
         </div>
         <div className={layout.workoutsGrid}>
           {treinosSistema.map((treino) => (
-            <WorkoutCard
+            <WorkoutLibraryCard
               key={treino.id_treino}
               workout={treino}
               viewPath={`/treinos/visualizar/${treino.id_treino}`}
@@ -213,7 +213,7 @@ export default function Treinos() {
         ) : (
           <div className={layout.workoutsGrid}>
             {meusTreinosLocal.map((treino) => (
-              <WorkoutCard
+              <WorkoutLibraryCard
                 key={treino.id_treino}
                 workout={treino}
                 showActions
@@ -311,7 +311,7 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
   )
 }
 
-function WorkoutCard({
+function WorkoutLibraryCard({
   workout,
   showActions = false,
   isSystem = false,
@@ -323,97 +323,98 @@ function WorkoutCard({
   const navigate = useNavigate()
   const exerciseCount = countExercises(workout)
   const sectionCount = workout?.secoes_treino?.length ?? 0
+  const typeLabel = isSystem ? 'Sistema' : 'Personalizado'
 
   return (
-    <Card className="overflow-hidden p-0">
-      <div
-        className={`h-2 ${isSystem ? 'bg-gradient-to-r from-primary to-blue-400' : 'bg-gradient-to-r from-slate-700 to-slate-500'}`}
+    <article className="workout-library-card group relative isolate flex min-h-[24.5rem] pt-2">
+      <span
+        aria-hidden="true"
+        className={`workout-library-card__layer pointer-events-none absolute inset-x-3 bottom-0 top-0 rounded-[1.75rem] ${
+          isSystem
+            ? 'bg-primary/15 dark:bg-primary/25'
+            : 'bg-slate-200 dark:bg-[#171717]'
+        }`}
       />
 
-      {/* Action Icons Header */}
-      <div className="flex items-center justify-end gap-1.5 border-b border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
-        <Link
-          to={viewPath}
-          title="Visualizar treino"
-          className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-slate-200 text-slate-700 transition-all duration-200 text-xs font-medium hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
-        >
-          <i className="fa-solid fa-eye text-xs dark:text-white" />
-          <span className="hidden sm:inline">Visualizar</span>
-        </Link>
-        {onAgendar && (
-          <button
-            type="button"
-            onClick={() => onAgendar(workout)}
-            title="Agendar treino"
-            className="group inline-flex items-center gap-1 rounded px-2 py-1 bg-primary text-white transition-all duration-200 text-xs font-medium hover:bg-primary-hover dark:bg-primary dark:text-white"
-          >
-            <i className="fa-solid fa-calendar-plus text-xs text-white" />
-            <span className="hidden sm:inline">Agendar</span>
-          </button>
-        )}
-      </div>
-
-      <div className="p-5">
-        <div className="mb-4 flex items-start justify-between gap-3">
+      <div className="workout-library-card__surface relative z-10 flex min-h-96 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-surface dark:border-white/[0.06] dark:bg-[#080808]">
+        <div className="workout-library-card__header flex shrink-0 gap-2 px-4 py-4">
           <span
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-lg ${
+            className={`inline-flex min-h-7 items-center rounded-full border px-2 text-[0.625rem] font-semibold uppercase tracking-[0.08em] ${
               isSystem
-                ? 'bg-primary-muted text-primary dark:bg-slate-800 dark:text-white'
-                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-white'
+                ? 'border-primary/20 bg-primary/10 text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-blue-300'
+                : 'border-slate-200 bg-slate-100 text-slate-700 dark:border-white/[0.08] dark:bg-[#111] dark:text-slate-200'
             }`}
           >
-            <i className={`fa-solid ${isSystem ? 'fa-bookmark' : 'fa-dumbbell'} dark:text-white`} />
+            {typeLabel}
           </span>
-          <div className="flex flex-col items-end gap-1.5">
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                isSystem
-                  ? 'bg-primary-muted text-primary dark:bg-slate-800 dark:text-white'
-                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-100'
-              }`}
+
+          {showActions && editPath && !isSystem ? (
+            <div
+              className="flex items-center gap-1"
+              role="group"
+              aria-label={`Ações de ${workout.nome}`}
             >
-              {isSystem ? 'Sistema' : 'Personalizado'}
-            </span>
-            {showActions && editPath && !isSystem && (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => onDelete?.(workout)}
-                  title="Excluir treino"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition-all duration-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-white dark:hover:bg-rose-900/70"
-                >
-                  <i className="fa-solid fa-trash text-xs dark:text-white" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate(editPath)}
-                  title="Editar treino"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-all duration-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
-                >
-                  <i className="fa-solid fa-pen text-xs dark:text-white" />
-                </button>
-              </div>
-            )}
-          </div>
+              <button
+                type="button"
+                onClick={() => navigate(editPath)}
+                title="Editar treino"
+                aria-label={`Editar ${workout.nome}`}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:border-white/[0.08] dark:text-slate-300 dark:hover:bg-[#151515] dark:focus-visible:ring-offset-[#080808]"
+              >
+                <i className="fa-solid fa-pen text-xs" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onDelete?.(workout)}
+                title="Excluir treino"
+                aria-label={`Excluir ${workout.nome}`}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 dark:border-rose-900/60 dark:text-rose-300 dark:hover:bg-rose-950/40 dark:focus-visible:ring-offset-[#080808]"
+              >
+                <i className="fa-solid fa-trash-can text-xs" aria-hidden="true" />
+              </button>
+            </div>
+          ) : null}
         </div>
 
-        <h3 className="line-clamp-1 font-semibold text-slate-900 dark:text-slate-50">{workout.nome}</h3>
-        <p className="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
-          {workout.descricao || 'Sem descrição'}
-        </p>
+        <div className="flex flex-1 flex-col px-5 pb-5 pt-4 sm:pb-6">
+          <span className="workout-library-card__accent mb-5 h-1 w-10 rounded-full bg-primary" aria-hidden="true" />
 
-        <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
-          <div className="rounded-lg border border-slate-100 bg-slate-50 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
-            <p className="font-semibold text-slate-900 dark:text-slate-100">{sectionCount}</p>
-            <p className="text-slate-500 dark:text-slate-400">seções</p>
-          </div>
-          <div className="rounded-lg border border-slate-100 bg-slate-50 py-2 dark:border-slate-700/70 dark:bg-slate-950/70">
-            <p className="font-semibold text-slate-900 dark:text-slate-100">{exerciseCount}</p>
-            <p className="text-slate-500 dark:text-slate-400">exercícios</p>
+          <h3 className="line-clamp-2 text-[1.65rem] font-semibold leading-[1.05] tracking-[-0.035em] text-slate-950 dark:text-white sm:text-[1.8rem]">
+            {workout.nome}
+          </h3>
+          <p className="mt-4 line-clamp-2 min-h-12 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            {workout.descricao || 'Sem descrição'}
+          </p>
+
+          <p className="mt-6 text-[0.6875rem] font-medium text-slate-500 dark:text-slate-400">
+            {sectionCount} {sectionCount === 1 ? 'seção' : 'seções'}
+            <span className="mx-2 text-slate-300 dark:text-slate-700" aria-hidden="true">/</span>
+            {exerciseCount} {exerciseCount === 1 ? 'exercício' : 'exercícios'}
+          </p>
+
+          <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-8">
+            <Link
+              to={viewPath}
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-1 text-sm font-semibold text-slate-800 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:text-slate-100 dark:hover:text-blue-300 dark:focus-visible:ring-offset-[#080808]"
+            >
+              Visualizar
+              <i className="workout-library-card__arrow fa-solid fa-arrow-right text-xs text-primary" aria-hidden="true" />
+            </Link>
+
+            {onAgendar ? (
+              <button
+                type="button"
+                onClick={() => onAgendar(workout)}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#080808]"
+              >
+                <i className="fa-solid fa-calendar-plus text-xs" aria-hidden="true" />
+                Agendar
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
-    </Card>
+    </article>
   )
 }
 

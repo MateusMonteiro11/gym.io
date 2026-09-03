@@ -1,11 +1,27 @@
 import { motion, AnimatePresence } from 'framer-motion'
 
-export default function FieldError({ message }) {
+export default function FieldError({ message, id, variant = 'card' }) {
 
   return (
     <AnimatePresence mode="wait">
-      {message && (
+      {message && variant === 'inline' && (
+        <motion.p
+          id={id}
+          role="alert"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.16, ease: 'easeOut' }}
+          className="mt-1.5 text-sm font-medium leading-5 text-red-600 dark:text-red-400"
+        >
+          {message}
+        </motion.p>
+      )}
+
+      {message && variant !== 'inline' && (
         <motion.div
+          id={id}
+          role="alert"
           initial={{ opacity: 0, y: -8, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -8, scale: 0.95 }}

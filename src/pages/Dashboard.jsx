@@ -1,161 +1,80 @@
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+
+import DashboardMomentumCard from '../components/dashboard/DashboardMomentumCard'
+import DashboardNextWorkoutCard from '../components/dashboard/DashboardNextWorkoutCard'
+import DashboardQuickMetric from '../components/dashboard/DashboardQuickMetric'
+import WorkoutConsistencyHeatmap from '../components/dashboard/WorkoutConsistencyHeatmap'
+import PageHeader from '../components/ui/PageHeader'
+import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
+import { useAgendamentos } from '../hooks/useAgendamentos'
 import { useAuth } from '../hooks/useAuth'
 import { useHistorico } from '../hooks/useHistorico'
-import { useAgendamentos } from '../hooks/useAgendamentos'
-import { parseDateTime } from '../utils/dateUtils'
-import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
-import PageHeader from '../components/ui/PageHeader'
-import Card from '../components/ui/Card'
-import Button from '../components/ui/Button'
-import { ui } from '../styles/theme'
-import { layout } from '../styles/layout'
+import { getDashboardInsights } from '../utils/dashboardInsights'
 
-function StatCard({ label, value, sub, icon }) {
-  return (
-    <Card className={`${ui.cardPadding} flex items-start justify-between`}>
-      <div>
-        <p className="mb-2 text-sm font-medium text-slate-600 dark:text-slate-400">{label}</p>
-        <p className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">{value}</p>
-        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">{sub}</p>
-      </div>
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-muted text-xl text-primary dark:bg-slate-800 dark:text-white">
-        {icon}
-      </div>
-    </Card>
-  )
-}
-
-function TreinoDeHojeCard({ agendamentos, onVerExercicios }) {
-  if (!agendamentos?.length) {
-    return (
-      <Card className={`${ui.cardPadding} flex h-80 flex-col`}>
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Treino de Hoje</h3>
-          <p className="mb-6 mt-1 text-sm text-slate-600 dark:text-slate-300">Nenhum treino agendado</p>
-        </div>
-        <div className="flex-1 space-y-4 overflow-y-auto">
-          <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">Agende um treino na aba Treinos</p>
-        </div>
-      </Card>
-    )
-  }
-
-  const hoje = new Date().toLocaleDateString('sv-SE')
-  const primeiroAgendamento = agendamentos[0]
-  const isHoje = primeiroAgendamento.data_agendada === hoje
-  const treinoNome = primeiroAgendamento?.treino?.nome || 'Treino'
-  const exerciciosCount =
-    primeiroAgendamento?.treino?.secoes_treino?.reduce(
-      (acc, secao) => acc + (secao?.treinos_exercicios?.length || 0),
-      0
-    ) || 0
-  const dataTreino = parseDateTime(primeiroAgendamento.data_agendada)
-  const dataFormatada =
-    dataTreino?.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' }) || ''
-
-  return (
-  <Card className={`${ui.cardPadding} flex h-80 flex-col justify-between`}>
-      <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
-            {isHoje ? 'Treino de Hoje' : 'Próximo Treino'}
-          </h3>
-          {!isHoje && <span className={ui.badge}>{dataFormatada}</span>}
-        </div>
-        <p className="mb-4 text-sm text-slate-600 dark:text-slate-300">
-          {isHoje ? 'Seu treino agendado para hoje' : 'Próximo treino agendado'}
-        </p>
-        <p className="text-lg font-semibold text-slate-900 dark:text-slate-50">{treinoNome}</p>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{exerciciosCount} exercício(s)</p>
-      </div>
-      <Button variant="secondary" className="mt-6 w-fit" onClick={() => onVerExercicios(primeiroAgendamento.id_treino)}>
-        Ver exercícios
-      </Button>
-    </Card>
-  )
-}
-
-function AtividadeRecenteCard({ historico, onVerTodoHistorico }) {
-  return (
-    <Card className={`${ui.cardPadding} flex h-80 flex-col`}>
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Atividade recente</h3>
-      <p className="mb-6 mt-1 text-sm text-slate-600 dark:text-slate-300">Seus últimos treinos concluídos</p>
-      <div className="flex-1 space-y-4 overflow-y-auto">
-        {historico.length === 0 ? (
-          <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">Nenhum treino concluído ainda</p>
-        ) : (
-          historico.slice(0, 3).map((treino, idx) => {
-            const dataExecucao = parseDateTime(treino.data_execucao)
-            const hoje = new Date()
-            const dataValida = dataExecucao && !Number.isNaN(dataExecucao.getTime())
-            const diferenca = dataValida
-              ? Math.floor((hoje - dataExecucao) / (1000 * 60 * 60 * 24))
-              : null
-            let dataFormatada
-            if (diferenca === 0) dataFormatada = 'Hoje'
-            else if (diferenca === 1) dataFormatada = 'Ontem'
-            else if (dataValida) dataFormatada = dataExecucao.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
-            else dataFormatada = 'Data indisponível'
-            const minutos = Math.round(treino.duracao_segundos / 60)
-            const series = treino.total_series || 0
-            return (
-              <div key={treino.id_historico ?? idx} className="border-b border-slate-100 pb-4 last:border-b-0 dark:border-slate-700/70">
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">{treino.treinos?.nome || 'Treino'}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{dataFormatada}</p>
-                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                  {series} séries • {minutos} min
-                </p>
-              </div>
-            )
-          })
-        )}
-      </div>
-      {historico.length > 3 && (
-        <button
-          type="button"
-          onClick={onVerTodoHistorico}
-          className="mt-4 w-full cursor-pointer rounded-xl py-2 text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-        >
-          Ver todo histórico
-        </button>
-      )}
-    </Card>
-  )
+function periodComparison(delta, zeroCopy) {
+  if (delta > 0) return `+${delta} em relação ao período anterior`
+  if (delta < 0) return `${Math.abs(delta)} a menos que no período anterior`
+  return zeroCopy
 }
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { usuario } = useAuth()
-  const { historico, loading: historicoLoading, estatisticas } = useHistorico(usuario?.id)
+  const { historico, loading: historicoLoading } = useHistorico(usuario?.id)
   const { agendamentos, loading: agendamentosLoading } = useAgendamentos()
   const isLoading = historicoLoading || agendamentosLoading
-  const dataAtual = new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'full',
-  }).format(new Date())
+  const insights = useMemo(() => getDashboardInsights(historico), [historico])
+  const nextAppointment = agendamentos?.[0] || null
+  const dataAtual = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full' }).format(new Date())
+
+  const handleStart = (appointment) => {
+    if (!appointment?.id_treino) return
+    navigate(`/treinar/${appointment.id_treino}`, {
+      state: { descansoPadrao: appointment.tempo_descanso ?? 60 },
+    })
+  }
 
   return (
     <PageLoadingBoundary loading={isLoading} loadingMessage="Carregando painel...">
-      <PageHeader title="Painel" subtitle={dataAtual} />
-      <div className={layout.dashboardStatsGrid}>
-        <StatCard label="Total de treinos" value={estatisticas.totalTreinos} sub="Desde o início" icon={<i className="fa-solid fa-dumbbell" />} />
-        <StatCard
-          label="Esta semana"
-          value={historico.filter((t) => {
-            const umaSemana = 7 * 24 * 60 * 60 * 1000
-            const dataExecucao = parseDateTime(t.data_execucao)?.getTime() ?? 0
-            const tempoDecorrido = Date.now() - dataExecucao
-            return dataExecucao > 0 && tempoDecorrido >= 0 && tempoDecorrido <= umaSemana
-          }).length}
-          sub="Últimos 7 dias"
-          icon={<i className="fa-solid fa-calendar" />}
-        />
-        <StatCard label="Total de exercícios" value={estatisticas.totalExercicios} sub="Concluídos" icon={<i className="fa-solid fa-chart-line" />} />
-        <StatCard label="Duração média" value={estatisticas.duracaoMedia} sub="Por treino" icon={<i className="fa-solid fa-hourglass" />} />
-      </div>
-      <div className={layout.dashboardPanelsGrid}>
-        <TreinoDeHojeCard agendamentos={agendamentos} onVerExercicios={(id) => id && navigate(`/treinos/visualizar/${id}`)} />
-        <AtividadeRecenteCard historico={historico} onVerTodoHistorico={() => navigate('/historico')} />
-      </div>
+      <PageHeader title="Painel" subtitle={dataAtual}>
+        <p className="max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:text-right">
+          Seu sucesso está na próxima decisão.
+        </p>
+      </PageHeader>
+
+      <main className="space-y-6" aria-label="Resumo do seu ritmo de treinos">
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]" aria-label="Destaques do painel">
+          <DashboardMomentumCard insights={insights} />
+          <DashboardNextWorkoutCard
+            appointment={nextAppointment}
+            onStart={handleStart}
+            onView={(id) => id && navigate(`/treinos/visualizar/${id}`)}
+            onChoose={() => navigate('/treinar')}
+          />
+        </section>
+
+        <section className="grid gap-6 md:grid-cols-2" aria-label="Indicadores de curto prazo">
+          <DashboardQuickMetric
+            eyebrow="Neste mês"
+            value={insights.currentMonthExercises}
+            label={insights.currentMonthExercises === 1 ? 'exercício' : 'exercícios'}
+            detail={periodComparison(insights.monthDelta, insights.currentMonthExercises === 0 ? 'Seu primeiro exercício do mês pode começar hoje.' : 'Mesmo volume do mês anterior')}
+            icon="fa-calendar-days"
+          />
+          <DashboardQuickMetric
+            eyebrow="Neste trimestre"
+            value={insights.currentQuarterExercises}
+            label={insights.currentQuarterExercises === 1 ? 'exercício' : 'exercícios'}
+            detail={periodComparison(insights.quarterDelta, insights.currentQuarterExercises === 0 ? 'Seu primeiro exercício do trimestre pode começar hoje.' : 'Mesmo volume do trimestre anterior')}
+            icon="fa-bolt"
+          />
+        </section>
+
+        <section aria-label="Consistência anual">
+          <WorkoutConsistencyHeatmap history={historico} />
+        </section>
+      </main>
     </PageLoadingBoundary>
   )
 }

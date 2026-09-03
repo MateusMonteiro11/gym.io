@@ -227,7 +227,7 @@ export default function Cadastro() {
                       }}
                       className="font-semibold text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                     >
-                      termos jurídicos
+                      Termos Jurídicos
                     </button>
                   </span>
                 </label>

@@ -13,9 +13,18 @@ export function Label({ children, htmlFor, className = '' }) {
 export default function Input({
   className = '',
   error = '',
+  errorId,
+  errorVariant = 'card',
   containerClassName = '',
   ...props
 }) {
+  const inputProps = { ...props }
+
+  if (error) {
+    if (inputProps['aria-invalid'] === undefined) inputProps['aria-invalid'] = true
+    if (errorId && !inputProps['aria-describedby']) inputProps['aria-describedby'] = errorId
+  }
+
   return (
     <div className={containerClassName}>
       <motion.input
@@ -23,9 +32,9 @@ export default function Input({
         animate={error ? { x: [-2, 2, -2, 2, 0] } : {}}
         whileFocus={{ y: -1, scale: 1.005 }}
         transition={{ duration: 0.25 }}
-        {...props}
+        {...inputProps}
       />
-      <FieldError message={error} />
+      <FieldError id={errorId} message={error} variant={errorVariant} />
     </div>
   )
 }
