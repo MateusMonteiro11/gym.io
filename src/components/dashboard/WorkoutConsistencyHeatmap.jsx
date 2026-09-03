@@ -39,7 +39,12 @@ function activityLabel(day) {
 export default function WorkoutConsistencyHeatmap({ history }) {
   const [range, setRange] = useState('current-year')
   const heatmap = useMemo(() => buildExerciseHeatmap(history, new Date(), { range }), [history, range])
-  const lastAvailableIndex = heatmap.days.findLastIndex((day) => !day.isOutsideRange)
+  const lastAvailableIndex = (() => {
+    for (let index = heatmap.days.length - 1; index >= 0; index -= 1) {
+      if (!heatmap.days[index]?.isOutsideRange) return index
+    }
+    return -1
+  })()
   const [activeIndex, setActiveIndex] = useState(Math.max(lastAvailableIndex, 0))
   const cellRefs = useRef([])
   const railRef = useRef(null)
