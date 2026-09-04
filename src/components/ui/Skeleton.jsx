@@ -1,29 +1,13 @@
-import { motion, useReducedMotion } from 'framer-motion'
-
-const shimmerTransition = {
-  duration: 1.35,
-  ease: 'linear',
-  repeat: Infinity,
-  repeatDelay: 0.08,
-}
-
-export function Skeleton({ className = '', inverse = false }) {
-  const reduceMotion = useReducedMotion()
-
+export function Skeleton({ className = '', inverse = false, animated = true }) {
   return (
-    <motion.span
+    <span
       aria-hidden="true"
       className={`skeleton-shimmer block ${inverse ? 'skeleton-shimmer-inverse' : ''} ${className}`}
     >
-      {!reduceMotion && (
-        <motion.span
-          className="skeleton-shimmer-wave pointer-events-none absolute inset-0"
-          initial={{ x: '-100%' }}
-          animate={{ x: '100%' }}
-          transition={shimmerTransition}
-        />
+      {animated && (
+        <span className="skeleton-shimmer-wave pointer-events-none absolute inset-0" />
       )}
-    </motion.span>
+    </span>
   )
 }
 

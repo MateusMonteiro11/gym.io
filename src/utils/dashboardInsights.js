@@ -166,14 +166,17 @@ export function buildExerciseHeatmap(
       ? labelDate.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')
       : ''
   })
+  const days = weeks.flatMap((week) => week.days)
+  const totalExercises = days.reduce((total, day) => total + day.count, 0)
 
   return {
     range: selectedRange,
     weeks,
-    days: weeks.flatMap((week) => week.days),
+    days,
     monthLabels,
     startDate: rangeStart,
     endDate: reference,
+    totalExercises,
   }
 }
 
