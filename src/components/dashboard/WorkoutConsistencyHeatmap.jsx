@@ -30,10 +30,18 @@ function cellClass(day) {
   ][intensityLevel(day.count)]
 }
 
+function activityDate(day) {
+  return day.date.toLocaleDateString('pt-BR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
 function activityLabel(day) {
-  const date = day.date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
-  if (day.isFuture) return `${date}: data futura`
-  return `${date}: ${day.count} ${day.count === 1 ? 'exercício concluído' : 'exercícios concluídos'}`
+  const date = activityDate(day)
+  if (day.isFuture) return `${date}, data futura`
+  return `${date}, ${day.count} ${day.count === 1 ? 'exercício concluído' : 'exercícios concluídos'}`
 }
 
 export default function WorkoutConsistencyHeatmap({ history }) {
@@ -52,6 +60,7 @@ export default function WorkoutConsistencyHeatmap({ history }) {
     ? heatmap.days[lastAvailableIndex]
     : heatmap.days[activeIndex]
   const chartWidth = heatmap.weeks.length * (CELL_SIZE + CELL_GAP) - CELL_GAP
+  const rangeTotalLabel = range === 'current-year' ? 'Total no ano' : 'Total em 12 meses'
 
   useEffect(() => {
     setActiveIndex(Math.max(lastAvailableIndex, 0))
@@ -88,8 +97,8 @@ export default function WorkoutConsistencyHeatmap({ history }) {
 
   return (
     <Card hover={false} className="dashboard-surface border-slate-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[#090909] sm:p-8">
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-        <div>
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             {range === 'current-year' ? 'Ano atual' : 'Últimos 12 meses'}
           </p>
@@ -97,11 +106,11 @@ export default function WorkoutConsistencyHeatmap({ history }) {
             Exercícios ao longo do ano
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            Cada quadrado representa um dia. Quanto mais intenso o azul, mais exercícios foram concluídos.
+            Cada quadrado representa um dia. Quanto mais intenso o azul, mais exercícios foram concluídos no dia selecionado.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 lg:items-end">
+        <div className="flex w-full flex-col gap-3 xl:w-[31rem] xl:items-end">
           <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]" aria-label="Período do calendário">
             {RANGE_OPTIONS.map((option) => {
               const selected = option.value === range
@@ -122,9 +131,49 @@ export default function WorkoutConsistencyHeatmap({ history }) {
               )
             })}
           </div>
-          <p className="min-h-5 text-sm font-medium text-slate-700 dark:text-slate-200" aria-live="polite">
-            {activeDay ? activityLabel(activeDay) : 'Nenhuma atividade registrada'}
-          </p>
+
+          <div className="grid w-full gap-3 sm:grid-cols-2">
+            <div className="flex min-h-24 flex-col justify-between rounded-2xl border border-primary/15 bg-primary/[0.055] px-4 py-3.5 dark:border-primary/25 dark:bg-primary/[0.09]">
+              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-primary dark:text-blue-300">
+                {rangeTotalLabel}
+              </p>
+              <div className="mt-3 flex items-end gap-2">
+                <strong className="text-3xl font-semibold leading-none tracking-[-0.05em] text-slate-950 dark:text-white">
+                  {heatmap.totalExercises}
+                </strong>
+                <span className="pb-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  {heatmap.totalExercises === 1 ? 'exercício' : 'exercícios'}
+                </span>
+              </div>
+            </div>
+
+            <div
+              className="flex min-h-24 flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 dark:border-white/[0.08] dark:bg-white/[0.04]"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+                Dia selecionado
+              </p>
+              {activeDay ? (
+                <div className="mt-2">
+                  <time
+                    dateTime={activeDay.key}
+                    className="block text-xs font-medium text-slate-600 dark:text-slate-300"
+                  >
+                    {activityDate(activeDay)}
+                  </time>
+                  <p className="mt-1 text-sm font-semibold text-slate-950 dark:text-white">
+                    {activeDay.count} {activeDay.count === 1 ? 'exercício concluído' : 'exercícios concluídos'}
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+                  Nenhuma atividade registrada
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -176,7 +225,13 @@ export default function WorkoutConsistencyHeatmap({ history }) {
                   onFocus={() => setActiveIndex(index)}
                   onMouseEnter={() => !day.isOutsideRange && setActiveIndex(index)}
                   onKeyDown={(event) => handleKeyDown(event, index)}
-                  className={`rounded-[3px] border transition-colors duration-200 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#090909] ${cellClass(day)} ${day.isToday ? 'ring-1 ring-slate-700 ring-offset-1 dark:ring-white' : ''}`}
+                  className={`rounded-[3px] border transition-colors duration-200 focus-visible:z-10 focus-visible:outline-none ${cellClass(day)} ${
+                    index === activeIndex
+                      ? 'z-10 ring-2 ring-primary ring-offset-2 ring-offset-white dark:ring-blue-400 dark:ring-offset-[#090909]'
+                      : day.isToday
+                        ? 'ring-1 ring-slate-700 ring-offset-1 dark:ring-white'
+                        : ''
+                  }`}
                 />
               ))}
             </div>
