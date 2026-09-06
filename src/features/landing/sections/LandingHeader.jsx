@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import logoBlueImg from '../../../assets/images/logo_blue.png'
 import ThemeToggle from '../../../components/ui/ThemeToggle'
 import PublicHashLink from '../../publicSite/PublicHashLink'
 
-export default function LandingHeader() {
+export default function LandingHeader({ authMode } = {}) {
+  const location = useLocation()
   const [compact, setCompact] = useState(false)
   const { scrollY, scrollYProgress } = useScroll()
 
@@ -25,8 +26,10 @@ export default function LandingHeader() {
       </nav>
       <div className="landing-actions">
         <ThemeToggle compact variant="ghost" />
-        <Link to="/login" className="landing-login">Entrar</Link>
-        <Link to="/cadastro" className="landing-start">Começar <span aria-hidden>↗</span></Link>
+        {!authMode && <Link to="/login" className="landing-login">Entrar</Link>}
+        <Link to={authMode === 'signup' ? '/login' : '/cadastro'} state={authMode ? location.state : undefined} className="landing-start">
+          {authMode === 'signup' ? 'Entrar' : 'Começar'} <span aria-hidden>↗</span>
+        </Link>
       </div>
       <motion.i className="landing-header-progress" style={{ scaleX: scrollYProgress }} aria-hidden />
     </header>

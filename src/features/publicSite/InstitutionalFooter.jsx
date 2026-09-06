@@ -17,7 +17,7 @@ function FooterRouteLinks({ links }) {
   ))
 }
 
-export default function InstitutionalFooter() {
+export default function InstitutionalFooter({ authState } = {}) {
   return (
     <footer className="institutional-footer" aria-labelledby="institutional-footer-title">
       <div className="institutional-footer-main section-shell">
@@ -49,8 +49,8 @@ export default function InstitutionalFooter() {
         </nav>
 
         <nav className="institutional-footer-actions" aria-label="Acessar o Gym.io">
-          <Link to="/login" className="institutional-footer-secondary">Entrar</Link>
-          <Link to="/cadastro" className="institutional-footer-primary">Começar</Link>
+          <Link to="/login" state={authState} className="institutional-footer-secondary">Entrar</Link>
+          <Link to="/cadastro" state={authState} className="institutional-footer-primary">Começar</Link>
         </nav>
       </div>
 

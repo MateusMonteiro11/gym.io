@@ -9,6 +9,7 @@ export default function Modal({
   size = 'md',
   className = '',
   overlayClassName = '',
+  ariaLabel,
 }) {
   useEffect(() => {
     if (!open) return
@@ -48,6 +49,7 @@ export default function Modal({
           <motion.div
             role="dialog"
             aria-modal="true"
+            aria-label={ariaLabel}
             className={`${ui.modalPanel} ${sizes[size] || sizes.md} ${className}`}
             initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
