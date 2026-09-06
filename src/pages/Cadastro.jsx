@@ -72,7 +72,7 @@ export default function Cadastro() {
     if (!confirmarSenha) novoErros.confirmarSenha = 'Confirmação de senha é obrigatória'
     else if (senha !== confirmarSenha) novoErros.confirmarSenha = 'As senhas não coincidem'
     if (!termos) {
-      novoErros.termos = 'Você deve concordar com os termos'
+      novoErros.termos = true
       setTermsShakeKey((current) => current + 1)
     }
     setErrors(novoErros)
