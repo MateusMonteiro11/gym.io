@@ -5,6 +5,7 @@ import { buildExerciseHeatmap } from '../../utils/dashboardInsights'
 
 const CELL_SIZE = 12
 const CELL_GAP = 4
+const CHART_PADDING = 8
 const RANGE_OPTIONS = [
   { value: 'current-year', label: 'Ano atual' },
   { value: 'rolling-year', label: 'Últimos 12 meses' },
@@ -73,7 +74,22 @@ export default function WorkoutConsistencyHeatmap({ history }) {
     let bounded = Math.max(0, Math.min(lastAvailableIndex, nextIndex))
     while (bounded < lastAvailableIndex && heatmap.days[bounded]?.isOutsideRange) bounded += 1
     setActiveIndex(bounded)
-    cellRefs.current[bounded]?.focus()
+    const cell = cellRefs.current[bounded]
+    const rail = railRef.current
+    cell?.focus({ preventScroll: true })
+    if (!cell || !rail) return
+
+    const cellRect = cell.getBoundingClientRect()
+    const railRect = rail.getBoundingClientRect()
+    const leftEdge = railRect.left + CHART_PADDING
+    const rightEdge = railRect.right - CHART_PADDING
+    const offset = cellRect.left < leftEdge
+      ? cellRect.left - leftEdge
+      : cellRect.right > rightEdge
+        ? cellRect.right - rightEdge
+        : 0
+
+    if (offset) rail.scrollTo({ left: rail.scrollLeft + offset, behavior: 'instant' })
   }
 
   const handleKeyDown = (event, index) => {
@@ -96,7 +112,7 @@ export default function WorkoutConsistencyHeatmap({ history }) {
   }
 
   return (
-    <Card hover={false} className="dashboard-surface border-slate-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[#090909] sm:p-8">
+    <Card hover={false} className="dashboard-surface min-w-0 w-full max-w-full border-slate-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[#090909] sm:p-8">
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
@@ -110,8 +126,8 @@ export default function WorkoutConsistencyHeatmap({ history }) {
           </p>
         </div>
 
-        <div className="flex w-full flex-col gap-3 xl:w-[31rem] xl:items-end">
-          <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]" aria-label="Período do calendário">
+        <div className="flex min-w-0 w-full flex-col gap-3 xl:w-[31rem] xl:items-end">
+          <div className="inline-flex w-fit max-w-full rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]" aria-label="Período do calendário">
             {RANGE_OPTIONS.map((option) => {
               const selected = option.value === range
               return (
@@ -120,7 +136,7 @@ export default function WorkoutConsistencyHeatmap({ history }) {
                   type="button"
                   aria-pressed={selected}
                   onClick={() => setRange(option.value)}
-                  className={`min-h-11 rounded-lg px-3 text-xs font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#090909] ${
+                  className={`min-h-11 min-w-0 rounded-lg px-3 text-xs font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#090909] ${
                     selected
                       ? 'bg-white text-primary shadow-sm dark:bg-white/[0.1] dark:text-blue-300'
                       : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
@@ -177,8 +193,8 @@ export default function WorkoutConsistencyHeatmap({ history }) {
         </div>
       </div>
 
-      <div ref={railRef} className="training-rail mt-8 overflow-x-auto pb-3" tabIndex="-1">
-        <div className="w-max" style={{ minWidth: `${chartWidth + 36}px` }}>
+      <div ref={railRef} className="training-rail mt-8 min-w-0 w-full max-w-full overflow-x-auto pb-3" tabIndex="-1">
+        <div className="w-max p-2" style={{ minWidth: `${chartWidth + 36 + CHART_PADDING * 2}px` }}>
           <div
             className="ml-9 grid"
             style={{ gridTemplateColumns: `repeat(${heatmap.weeks.length}, ${CELL_SIZE}px)`, gap: `${CELL_GAP}px` }}
@@ -223,7 +239,8 @@ export default function WorkoutConsistencyHeatmap({ history }) {
                   aria-label={activityLabel(day)}
                   aria-current={day.isToday ? 'date' : undefined}
                   onFocus={() => setActiveIndex(index)}
-                  onMouseEnter={() => !day.isOutsideRange && setActiveIndex(index)}
+                  onClick={() => setActiveIndex(index)}
+                  onMouseMove={() => !day.isOutsideRange && setActiveIndex(index)}
                   onKeyDown={(event) => handleKeyDown(event, index)}
                   className={`rounded-[3px] border transition-colors duration-200 focus-visible:z-10 focus-visible:outline-none ${cellClass(day)} ${
                     index === activeIndex
@@ -240,7 +257,10 @@ export default function WorkoutConsistencyHeatmap({ history }) {
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-5 dark:border-white/[0.06]">
-        <p className="text-xs text-slate-500 dark:text-slate-400">Navegue com as setas para consultar cada dia.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="sm:hidden">Deslize para ver outros meses e toque em um dia.</span>
+          <span className="hidden sm:inline">Navegue com as setas para consultar cada dia.</span>
+        </p>
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400" aria-label="Legenda de intensidade de exercícios">
           <span>Menos</span>
           <span className="h-3 w-3 rounded-[3px] border border-slate-200 bg-slate-100 dark:border-white/[0.06] dark:bg-white/[0.06]" />

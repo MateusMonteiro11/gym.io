@@ -15,7 +15,6 @@ import { useAgendamentos } from '../hooks/useAgendamentos'
 import { getLocalDateInputValue, parseDateTime } from '../utils/dateUtils'
 import {
   clampActiveIndex,
-  getLastNavigableWeek,
   getWeekStartKey,
   groupAppointmentsByDate,
 } from '../utils/trainingDiscovery'
@@ -68,10 +67,6 @@ export default function Treinar() {
     [appointmentsByDate]
   )
   const selectedAppointments = appointmentsByDate[selectedDate] || []
-  const maxWeekStart = useMemo(
-    () => getLastNavigableWeek(agendamentos, today),
-    [agendamentos, today]
-  )
 
   useEffect(() => {
     let active = true
@@ -105,14 +100,6 @@ export default function Treinar() {
   useEffect(() => {
     setActiveIndex((currentIndex) => clampActiveIndex(currentIndex, selectedAppointments.length))
   }, [selectedAppointments.length])
-
-  useEffect(() => {
-    if (weekStart <= maxWeekStart) return
-
-    setWeekStart(maxWeekStart)
-    setSelectedDate(maxWeekStart === minWeekStart ? today : maxWeekStart)
-    setActiveIndex(0)
-  }, [maxWeekStart, minWeekStart, today, weekStart])
 
   function handleIniciarTreino(treino) {
     setTreinoSelecionado(treino)
@@ -201,7 +188,6 @@ export default function Treinar() {
             today={today}
             appointmentDates={appointmentDates}
             minWeekStart={minWeekStart}
-            maxWeekStart={maxWeekStart}
             onWeekChange={handleWeekChange}
             onSelectDate={handleSelectDate}
           />

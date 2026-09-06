@@ -31,11 +31,11 @@ export default function WorkoutWeekSelector({
     return new Date(year, month - 1, day)
   }, [selectedDate])
   const canGoBack = weekStart > minWeekStart
-  const canGoForward = weekStart < maxWeekStart
+  const canGoForward = !maxWeekStart || weekStart < maxWeekStart
 
   return (
-    <div className="border-b border-slate-200/80 pb-6 dark:border-white/[0.07]">
-      <div className="mb-5 flex items-end justify-between gap-4">
+    <div className="border-b border-slate-200/80 pb-10 dark:border-white/[0.07] sm:pb-6">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-5 sm:flex-nowrap">
         <div>
           <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-primary">
             Sua semana
@@ -45,7 +45,7 @@ export default function WorkoutWeekSelector({
           </p>
         </div>
 
-        <div className="flex items-center gap-2" aria-label="Navegar entre semanas">
+        <div className="ml-auto flex shrink-0 items-center gap-2 sm:ml-0" aria-label="Navegar entre semanas">
           <button
             type="button"
             onClick={() => onWeekChange(addDaysKey(weekStart, -7))}
@@ -67,8 +67,8 @@ export default function WorkoutWeekSelector({
         </div>
       </div>
 
-      <div className="training-rail -mx-6 overflow-x-auto sm:mx-0 sm:overflow-visible">
-        <div className="grid min-w-[19.25rem] grid-cols-7 gap-0 sm:min-w-0 sm:gap-2" role="group" aria-label="Dias da semana">
+      <div className="min-w-0 w-full overflow-visible">
+        <div className="grid min-w-0 grid-cols-7 gap-1 sm:gap-2" role="group" aria-label="Dias da semana">
           {days.map(({ date, key }) => {
             const isSelected = key === selectedDate
             const isToday = key === today
