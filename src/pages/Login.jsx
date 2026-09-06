@@ -98,7 +98,7 @@ export default function Login() {
     <>
       <h2 id="auth-form-title" tabIndex={-1}>Bem vindo de volta</h2>
       <form onSubmit={handleLogin} noValidate aria-busy={busy}>
-        <fieldset disabled={busy} className="auth-fields">
+        <fieldset disabled={busy} className="m-0 grid min-w-0 gap-[1.1rem] border-0 border-none border-current p-0">
           <legend className="sr-only">Dados de acesso</legend>
           <SocialAuth loading={googleLoading} disabled={busy} onClick={() => startGoogleAuth(rememberMe)} />
           <AuthField id="email" label="E-mail" type="email" autoComplete="email" placeholder="seu@email.com"
@@ -123,11 +123,11 @@ export default function Login() {
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} size="sm" ariaLabel="Redefinir senha" className="auth-dialog">
         <ModalHeader title="Redefinir senha" subtitle="Enviaremos um link para seu email." onClose={() => setIsModalOpen(false)} />
-        <form onSubmit={handleResetPassword} noValidate className="auth-reset-form" aria-busy={resetLoading}>
+        <form onSubmit={handleResetPassword} noValidate className="grid gap-6 p-6" aria-busy={resetLoading}>
           <AuthField id="resetEmail" label="E-mail" type="email" autoComplete="email" placeholder="seu@email.com"
             value={resetEmail} maxLength={254} autoCapitalize="none" autoCorrect="off" error={resetErrors.resetEmail}
             onChange={(event) => { setResetEmail(event.target.value); setResetErrors({}) }} />
-          <div className="auth-dialog-actions">
+          <div className="auth-dialog-actions flex gap-3">
             <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)} whileTap={undefined}>Cancelar</Button>
             <Button type="submit" disabled={resetLoading} className="auth-submit" whileTap={undefined}>
               {resetLoading ? <ActionLoading label="Enviando..." inverse /> : 'Enviar'}

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import Modal from './ui/Modal'
-import ModalHeader from './ui/ModalHeader'
-import LegalDocumentContent from '../features/publicSite/LegalDocumentContent'
+import Modal from '@/components/ui/Modal'
+import ModalHeader from '@/components/ui/ModalHeader'
+import LegalDocumentContent from './LegalDocumentContent'
 import {
   getLegalDocument,
   LEGAL_DOCUMENTS,
   LEGAL_LAST_UPDATED,
-} from '../features/publicSite/legalDocuments'
+} from './legalDocuments'
 
 const documentTabs = [LEGAL_DOCUMENTS.terms, LEGAL_DOCUMENTS.privacy]
 

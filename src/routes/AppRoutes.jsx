@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 
-import AuthShell from '../components/ui/AuthShell'
+import AuthShell from '../features/auth/AuthShell'
 import Login from '../pages/Login'
 import Cadastro from '../pages/Cadastro'
 import LandingPage from '../pages/LandingPage'
