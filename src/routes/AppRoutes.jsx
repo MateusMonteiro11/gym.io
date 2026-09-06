@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 
+import AuthShell from '../components/ui/AuthShell'
 import Login from '../pages/Login'
 import Cadastro from '../pages/Cadastro'
 import LandingPage from '../pages/LandingPage'
@@ -13,6 +14,7 @@ import RouteError, { NotFoundPage } from '../pages/RouteError'
 import { PrivateRoute } from './PrivateRoute'
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import LandingLoadingState from '../features/landing/LandingLoadingState'
+import RouteScrollReset from './RouteScrollReset'
 
 const Dashboard = lazy(() => import('../pages/Dashboard'))
 const Treinos = lazy(() => import('../pages/Treinos'))
@@ -41,9 +43,18 @@ function PublicLazyPage({ children }) {
   )
 }
 
+function AppFrame() {
+  return (
+    <>
+      <RouteScrollReset />
+      <Outlet />
+    </>
+  )
+}
+
 const router = createBrowserRouter([
   {
-    element: <Outlet />,
+    element: <AppFrame />,
     errorElement: <RouteError />,
     children: [
       {
@@ -51,12 +62,11 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: '/login',
-        element: <Login />,
-      },
-      {
-        path: '/cadastro',
-        element: <Cadastro />,
+        element: <AuthShell />,
+        children: [
+          { path: '/login', element: <Login /> },
+          { path: '/cadastro', element: <Cadastro /> },
+        ],
       },
       {
         path: '/termos',

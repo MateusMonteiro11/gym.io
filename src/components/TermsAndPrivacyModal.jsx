@@ -42,7 +42,7 @@ export default function TermsAndPrivacyModal({ open, onClose, initialDocument = 
   }
 
   return (
-    <Modal open={open} onClose={onClose} size="xl" className="flex max-h-[90vh] flex-col overflow-hidden">
+    <Modal ariaLabel="Documentos jurídicos" open={open} onClose={onClose} size="xl" className="flex max-h-[90vh] flex-col overflow-hidden">
       <ModalHeader
         title="Documentos jurídicos"
         subtitle={`Gym.io · Última atualização: ${LEGAL_LAST_UPDATED}`}
