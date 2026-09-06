@@ -135,7 +135,7 @@ function DashboardHeatmapSkeleton() {
   const chartWidth = heatmap.weeks.length * (cellSize + cellGap) - cellGap
 
   return (
-    <div className={`${dashboardCardClass} overflow-hidden p-6 sm:p-8`}>
+    <div className={`${dashboardCardClass} min-w-0 w-full max-w-full p-6 sm:p-8`}>
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0 flex-1">
           <Skeleton className="h-3 w-24 rounded-full" />
@@ -143,8 +143,8 @@ function DashboardHeatmapSkeleton() {
           <Skeleton className="mt-3 h-3.5 w-full max-w-2xl rounded-full" />
           <Skeleton className="mt-2 h-3.5 w-3/4 max-w-lg rounded-full sm:hidden" />
         </div>
-        <div className="w-full space-y-3 xl:flex xl:w-[31rem] xl:flex-col xl:items-end">
-          <div className="flex w-fit gap-1 rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]">
+        <div className="min-w-0 w-full space-y-3 xl:flex xl:w-[31rem] xl:flex-col xl:items-end">
+          <div className="flex w-fit max-w-full gap-1 rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]">
             <Skeleton className="h-11 w-20 rounded-lg" />
             <Skeleton className="h-11 w-28 rounded-lg" />
           </div>
@@ -169,9 +169,9 @@ function DashboardHeatmapSkeleton() {
         </div>
       </div>
 
-      <div className="mt-8 overflow-hidden pb-3">
+      <div className="mt-8 min-w-0 w-full max-w-full overflow-hidden pb-3">
         <div className="flex min-w-full justify-end sm:justify-start">
-          <div className="w-max shrink-0" style={{ minWidth: `${chartWidth + 36}px` }}>
+          <div className="w-max shrink-0 p-2" style={{ minWidth: `${chartWidth + 36 + 16}px` }}>
             <div
               className="ml-9 grid"
               style={{ gridTemplateColumns: `repeat(${heatmap.weeks.length}, ${cellSize}px)`, gap: `${cellGap}px` }}
@@ -363,24 +363,24 @@ function HistorySkeleton() {
 
 function TrainingWeekSelectorSkeleton() {
   return (
-    <div className="border-b border-slate-200/80 pb-6 dark:border-white/[0.07]">
-      <div className="mb-5 flex items-end justify-between gap-4">
+    <div className="border-b border-slate-200/80 pb-10 dark:border-white/[0.07] sm:pb-6">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-5 sm:flex-nowrap">
         <div>
           <Skeleton className="h-3 w-20 rounded-full" />
           <Skeleton className="mt-3 h-5 w-40 rounded-lg" />
         </div>
-        <div className="flex gap-2">
+        <div className="ml-auto flex shrink-0 gap-2 sm:ml-0">
           <Skeleton className="h-11 w-11 rounded-full" />
           <Skeleton className="h-11 w-11 rounded-full" />
         </div>
       </div>
 
-      <div className="training-rail -mx-6 overflow-hidden sm:mx-0">
-        <div className="grid min-w-[19.25rem] grid-cols-7 gap-0 sm:min-w-0 sm:gap-2">
+      <div className="min-w-0 w-full overflow-visible">
+        <div className="grid min-w-0 grid-cols-7 gap-1 sm:gap-2">
           {Array.from({ length: 7 }, (_, index) => (
             <div
               key={index}
-              className={`flex min-h-[4.75rem] flex-col items-center justify-center rounded-2xl px-1 py-2 sm:min-h-[5.25rem] ${
+              className={`flex min-h-[4.75rem] min-w-0 flex-col items-center justify-center rounded-2xl px-1 py-2 sm:min-h-[5.25rem] ${
                 index === 3 ? 'bg-primary/[0.06] dark:bg-white/[0.04]' : ''
               }`}
             >
