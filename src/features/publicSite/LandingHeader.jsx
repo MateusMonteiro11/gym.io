@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import logoBlueImg from '../../../assets/images/logo_blue.png'
-import ThemeToggle from '../../../components/ui/ThemeToggle'
-import PublicHashLink from '../../publicSite/PublicHashLink'
+import logoBlueImg from '@/assets/images/logo_blue.png'
+import ThemeToggle from '@/components/ui/ThemeToggle'
+import PublicHashLink from './PublicHashLink'
 
 export default function LandingHeader({ authMode } = {}) {
   const location = useLocation()

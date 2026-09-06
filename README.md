@@ -38,7 +38,12 @@ gym.io/
 ├── src/
 │   ├── assets/images/     # Imagens e recursos estáticos
 │   ├── components/        # Componentes reutilizáveis
+│   │   └── ui/            # Primitivos genéricos de interface
 │   ├── contexts/          # Contextos globais (AuthContext, etc.)
+│   ├── features/
+│   │   ├── auth/          # Shell, apresentação, campos e hooks de login/cadastro
+│   │   ├── landing/       # Experiência, seções e animação 3D da landing
+│   │   └── publicSite/    # Cabeçalho, rodapé, navegação e documentos jurídicos compartilhados
 │   ├── hooks/             # Custom hooks
 │   ├── layouts/           # Layouts de página
 │   ├── lib/               # Utilitários e integrações (CRUD de treinos)
@@ -48,13 +53,22 @@ gym.io/
 │   ├── styles/            # Estilos globais
 │   ├── utils/             # Funções auxiliares
 │   ├── App.jsx
-│   ├── index.css
 │   └── main.jsx
 ├── index.html
 ├── package.json
 ├── tailwind.config.js
 └── vite.config.js
 ```
+
+As páginas de rota continuam em `src/pages`, incluindo `Login.jsx` e `Cadastro.jsx`.
+Os serviços de autenticação permanecem em `src/services/auth`.
+
+O Tailwind cobre os layouts simples. `src/styles/index.css` contém os estilos globais;
+`features/publicSite/publicSite.css` reúne o tema e os estilos públicos compartilhados;
+`features/landing/landing.css` contém apenas a apresentação específica da landing.
+`features/auth/auth.css` preserva a cascata de tema, os seletores de estado, os ajustes
+responsivos e as animações que precisam de CSS. Os módulos de entrada importam os
+estilos públicos antes de seus estilos específicos.
 
 ---
 

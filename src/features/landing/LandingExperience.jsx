@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { MotionConfig, useReducedMotion } from 'framer-motion'
 import { useLocation, useNavigationType } from 'react-router-dom'
-import LandingHeader from './sections/LandingHeader'
+import LandingHeader from '../publicSite/LandingHeader'
 import {
   CapabilitiesSection,
   CreatorStory,
@@ -13,6 +13,7 @@ import {
 } from './sections/LandingSections'
 import InstitutionalFooter from '../publicSite/InstitutionalFooter'
 import { shouldAnimateHashNavigation } from '../publicSite/hashNavigation'
+import '../publicSite/publicSite.css'
 import './landing.css'
 
 const MotionSpineScene = lazy(() => import('./three/MotionSpineScene'))

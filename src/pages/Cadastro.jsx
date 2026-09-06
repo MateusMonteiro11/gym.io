@@ -9,7 +9,7 @@ import SocialAuth from '../features/auth/SocialAuth'
 import useGoogleAuth from '../features/auth/useGoogleAuth'
 import { focusFirstError, useAuthDialogFocus } from '../features/auth/useAuthFeedback'
 import Button from '../components/ui/Button'
-import TermsAndPrivacyModal from '../components/TermsAndPrivacyModal'
+import TermsAndPrivacyModal from '../features/publicSite/TermsAndPrivacyModal'
 import ActionLoading from '../components/ui/ActionLoading'
 
 export default function Cadastro() {
@@ -103,7 +103,7 @@ export default function Cadastro() {
     <>
       <h2 id="auth-form-title" tabIndex={-1}>Criar sua conta</h2>
       <form onSubmit={handleCadastro} noValidate aria-busy={busy}>
-        <fieldset disabled={busy} className="auth-fields">
+        <fieldset disabled={busy} className="m-0 grid min-w-0 gap-[1.1rem] border-0 border-none border-current p-0">
           <legend className="sr-only">Dados para criar sua conta</legend>
           <SocialAuth loading={googleLoading} disabled={busy} onClick={() => startGoogleAuth(false)} />
           <AuthField id="nome" label="Nome" type="text" autoComplete="name" placeholder="Seu nome completo"
@@ -116,7 +116,7 @@ export default function Cadastro() {
             <AuthField id="senha" label="Senha" type="password" autoComplete="new-password" placeholder="Crie sua senha"
               value={senha} maxLength={72} error={errors.senha} aria-describedby="password-guidance"
               onChange={(event) => { setSenha(event.target.value); setErrors((current) => ({ ...current, senha: '' })) }} />
-            <p id="password-guidance" className="auth-guidance">Use pelo menos 6 caracteres, uma letra, um número e um caractere especial.</p>
+            <p id="password-guidance" className="mb-0 mt-[.6rem] text-[.73rem] leading-[1.65] text-[color:var(--muted)]">Use pelo menos 6 caracteres, uma letra, um número e um caractere especial.</p>
             {senha && <p className="auth-strength" role="status">
               <span className={`auth-strength-track ${senhaValida.valida ? 'is-valid' : senha.length >= 4 ? 'is-medium' : ''}`} aria-hidden><i /></span>
               {senhaValida.valida ? '✓ Segura' : senha.length >= 4 ? '◐ Média' : '○ Fraca'}

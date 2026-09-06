@@ -33,7 +33,7 @@ function AuthFormView({ outlet, reducedMotion, onMeasure, focusOnMount }) {
   }, [shouldFocus])
 
   return (
-    <motion.div ref={contentRef} className="auth-form-view"
+    <motion.div ref={contentRef} className="auth-form-view flow-root"
       inert={isPresent ? undefined : ''}
       initial={reducedMotion || !shouldFocus ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
