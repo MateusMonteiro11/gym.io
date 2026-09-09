@@ -207,6 +207,14 @@
     display: none;
   }
 
+  .week-day-selected {
+    box-shadow: 0 0 1rem -0.25rem rgb(20 87 247 / 0.42);
+  }
+
+  .dark .week-day-selected {
+    box-shadow: 0 0 1rem -0.25rem rgb(20 87 247 / 0.52);
+  }
+
   .dark .text-slate-950,
   .dark .text-slate-900,
   .dark .text-slate-800 {

@@ -88,7 +88,7 @@ export default function WorkoutWeekSelector({
                   isSelected
                     ? 'bg-primary text-white shadow-[0_12px_30px_rgba(20,87,247,0.24)]'
                     : isPast
-                      ? 'cursor-not-allowed text-slate-300 dark:text-slate-700'
+                      ? 'cursor-not-allowed text-slate-300 dark:text-slate-700 dark:opacity-40'
                       : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#101010]'
                 }`}
               >

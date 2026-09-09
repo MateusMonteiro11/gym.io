@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import PreWorkoutModal from '../components/PreWorkoutModal'
@@ -38,6 +38,7 @@ function formatAgendaTitle(dateKey, today) {
 
 export default function Treinar() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { confirm, notify } = useUi()
   const { usuario } = useAuth()
   const {
@@ -104,6 +105,17 @@ export default function Treinar() {
   function handleIniciarTreino(treino) {
     setTreinoSelecionado(treino)
     setModalDescansoOpen(true)
+  }
+
+  async function handleVisualizarTreino(treino, catalogSelection) {
+    // Save the source entry as well, so the browser Back button restores the catalog.
+    await navigate(`${location.pathname}${location.search}${location.hash}`, {
+      replace: true,
+      state: { ...location.state, catalogSelection },
+    })
+    navigate(`/treinos/visualizar/${treino.id_treino}`, {
+      state: { from: '/treinar', catalogSelection },
+    })
   }
 
   function handleIniciarAgendamento(agendamento) {
@@ -225,6 +237,8 @@ export default function Treinar() {
 
         <WorkoutCatalog
           workouts={treinos}
+          initialSelection={location.state?.catalogSelection}
+          onViewWorkout={handleVisualizarTreino}
           onStart={handleIniciarTreino}
           onManageWorkouts={() => navigate('/treinos')}
         />
