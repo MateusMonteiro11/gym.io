@@ -33,9 +33,7 @@ function SerieBadge({ serieAtual, totalSeries }) {
 }
 
  /* Campo de ajuste numérico (carga ou reps) */
-function AjusteNumerico({ label, valor, onChange, sufixo, disabled = false }) {
-  const valorNumerico = Number(valor) || 0
-
+function AjusteNumerico({ label, valor, valorNumerico, onChange, onBlur, sufixo, disabled = false }) {
   return (
     <div className="flex flex-col items-center gap-2 sm:max-w-[11rem]">
       <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-300">
@@ -52,8 +50,12 @@ function AjusteNumerico({ label, valor, onChange, sufixo, disabled = false }) {
           <input
             type="number"
             min="0"
-            value={valorNumerico}
-            onChange={(e) => onChange(Number(e.target.value) || 0)}
+            step="any"
+            inputMode="decimal"
+            aria-label={label}
+            value={valor}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={onBlur}
             disabled={disabled}
             className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2 text-center text-base font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
           />
@@ -131,7 +133,13 @@ export default function CurrentExerciseCard({
   const podeInteragir = status === 'ativo' && !processando && !pausado
 
   function handleConcluir() {
-    onConcluirSerie({ carga: Number(carga), repeticoes: Number(repeticoes) })
+    dispatchFormulario({ type: 'confirmar' })
+    onConcluirSerie({ carga, repeticoes })
+  }
+
+  function alternarAjustes() {
+    if (ajusteAberto) dispatchFormulario({ type: 'confirmar' })
+    setAjusteAberto((aberto) => !aberto)
   }
 
   return (
@@ -187,7 +195,7 @@ export default function CurrentExerciseCard({
         {/* Ajuste de carga/reps */}
         {status !== 'descansando' && <div>
           <button
-            onClick={() => setAjusteAberto((v) => !v)}
+            onClick={alternarAjustes}
             disabled={processando || pausado}
             className="flex items-center gap-1 text-xs font-medium text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-300 dark:hover:text-white"
           >
@@ -200,7 +208,9 @@ export default function CurrentExerciseCard({
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-6">
                 <AjusteNumerico
                   label="Carga"
-                  valor={carga}
+                  valor={formulario.cargaTexto}
+                  valorNumerico={carga}
+                  onBlur={() => dispatchFormulario({ type: 'confirmar_carga' })}
                   onChange={(valor) => dispatchFormulario({
                     type: 'editar_carga',
                     valor,
@@ -211,7 +221,9 @@ export default function CurrentExerciseCard({
                 <div className="hidden sm:block h-12 w-px bg-gray-200 dark:bg-slate-700" />
                 <AjusteNumerico
                   label="Reps"
-                  valor={repeticoes}
+                  valor={formulario.repeticoesTexto}
+                  valorNumerico={repeticoes}
+                  onBlur={() => dispatchFormulario({ type: 'confirmar_repeticoes' })}
                   onChange={(valor) => dispatchFormulario({
                     type: 'editar_repeticoes',
                     valor,

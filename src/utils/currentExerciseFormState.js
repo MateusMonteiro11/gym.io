@@ -1,7 +1,31 @@
 function normalizarNumero(valor) {
   if (valor == null || valor === '') return 0
   const numero = Number(valor)
-  return Number.isFinite(numero) ? numero : 0
+  return Number.isFinite(numero) && numero >= 0 ? numero : 0
+}
+
+function editarCampo(estado, campo, valor) {
+  const texto = String(valor ?? '')
+  const numero = Number(texto)
+  const valido = texto.trim() !== '' && Number.isFinite(numero) && numero >= 0
+  const confirmado = `${campo}Confirmado`
+
+  return {
+    ...estado,
+    [`${campo}Texto`]: texto,
+    [campo]: valido ? numero : estado[confirmado],
+    // Os botões enviam números e confirmam imediatamente; digitação envia texto.
+    [confirmado]: valido && typeof valor === 'number' ? numero : estado[confirmado],
+    sujo: true,
+  }
+}
+
+function confirmarCampo(estado, campo) {
+  return {
+    ...estado,
+    [`${campo}Texto`]: String(estado[campo]),
+    [`${campo}Confirmado`]: estado[campo],
+  }
 }
 
 export function criarChaveFormularioSerie(idTreinoExercicio, serieAtual) {
@@ -10,10 +34,16 @@ export function criarChaveFormularioSerie(idTreinoExercicio, serieAtual) {
 }
 
 export function criarEstadoFormularioSerie(chaveSerie, valoresIniciais = {}) {
+  const carga = normalizarNumero(valoresIniciais.carga)
+  const repeticoes = normalizarNumero(valoresIniciais.repeticoes)
   return {
     chaveSerie,
-    carga: normalizarNumero(valoresIniciais.carga),
-    repeticoes: normalizarNumero(valoresIniciais.repeticoes),
+    carga,
+    repeticoes,
+    cargaConfirmado: carga,
+    repeticoesConfirmado: repeticoes,
+    cargaTexto: String(carga),
+    repeticoesTexto: String(repeticoes),
     sujo: false,
   }
 }
@@ -31,14 +61,23 @@ export function reduzirEstadoFormularioSerie(estado, acao) {
       const repeticoes = normalizarNumero(acao.valoresIniciais?.repeticoes)
       if (carga === estado.carga && repeticoes === estado.repeticoes) return estado
 
-      return { ...estado, carga, repeticoes }
+      return criarEstadoFormularioSerie(acao.chaveSerie, { carga, repeticoes })
     }
 
     case 'editar_carga':
-      return { ...estado, carga: normalizarNumero(acao.valor), sujo: true }
+      return editarCampo(estado, 'carga', acao.valor)
 
     case 'editar_repeticoes':
-      return { ...estado, repeticoes: normalizarNumero(acao.valor), sujo: true }
+      return editarCampo(estado, 'repeticoes', acao.valor)
+
+    case 'confirmar_carga':
+      return confirmarCampo(estado, 'carga')
+
+    case 'confirmar_repeticoes':
+      return confirmarCampo(estado, 'repeticoes')
+
+    case 'confirmar':
+      return confirmarCampo(confirmarCampo(estado, 'carga'), 'repeticoes')
 
     default:
       return estado
