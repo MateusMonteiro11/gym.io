@@ -1,12 +1,12 @@
 import { ui } from '../../styles/theme'
 
-export default function Card({ className = '', children, hover = true, ...props }) {
+export default function Card({ as: Component = 'div', className = '', children, hover = true, ...props }) {
   return (
-    <div
+    <Component
       className={`${ui.card} ${hover ? ui.cardHover : ''} ${className}`}
       {...props}
     >
       {children}
-    </div>
+    </Component>
   )
 }
