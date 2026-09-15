@@ -8,17 +8,26 @@ export default function Disclosure({
   label,
   openLabel,
   defaultOpen = false,
+  open: controlledOpen,
+  onOpenChange,
   className = '',
   buttonClassName = '',
   contentClassName = '',
   children,
 }) {
-  const [open, setOpen] = useState(defaultOpen)
+  const [internalOpen, setInternalOpen] = useState(defaultOpen)
+  const open = controlledOpen ?? internalOpen
   const reduceMotion = useReducedMotion()
   const generatedId = useId().replace(/[^a-z0-9_-]/gi, '')
   const buttonId = `disclosure-button-${generatedId}`
   const contentId = `disclosure-content-${generatedId}`
   const duration = reduceMotion ? 0.01 : 0.2
+
+  function toggle() {
+    const nextOpen = !open
+    if (controlledOpen == null) setInternalOpen(nextOpen)
+    onOpenChange?.(nextOpen)
+  }
 
   return (
     <div className={className}>
@@ -27,7 +36,7 @@ export default function Disclosure({
         type="button"
         aria-expanded={open}
         aria-controls={contentId}
-        onClick={() => setOpen((value) => !value)}
+        onClick={toggle}
         className={`${ui.btnGhost} min-h-11 w-fit text-xs font-semibold ${buttonClassName}`}
       >
         <span>{open ? openLabel : label}</span>

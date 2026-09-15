@@ -1,7 +1,7 @@
 import { normalizeDatabaseUtcTimestamp, parseDateTime, getLocalDateInputValue } from '../../utils/dateUtils.js'
 
 export const PERIODS = {
-  '30d': { label: '30 dias' },
+  '30d': { label: 'Mensal' },
   all: { label: 'Total' },
 }
 
