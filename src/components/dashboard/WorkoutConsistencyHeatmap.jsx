@@ -24,10 +24,10 @@ function cellClass(day) {
 
   return [
     'border-slate-200 bg-slate-100 dark:border-white/[0.06] dark:bg-white/[0.06]',
-    'border-blue-200 bg-blue-200 dark:border-blue-950 dark:bg-blue-950',
-    'border-blue-400 bg-blue-400 dark:border-blue-800 dark:bg-blue-800',
-    'border-blue-600 bg-blue-600 dark:border-blue-600 dark:bg-blue-600',
-    'border-blue-800 bg-blue-800 dark:border-blue-400 dark:bg-blue-400',
+    'border-blue-200 bg-blue-200 dark:border-blue-400 dark:bg-blue-400',
+    'border-blue-400 bg-blue-400 dark:border-blue-600 dark:bg-blue-600',
+    'border-blue-600 bg-blue-600 dark:border-blue-800 dark:bg-blue-800',
+    'border-blue-800 bg-blue-800 dark:border-blue-950 dark:bg-blue-950',
   ][intensityLevel(day.count)]
 }
 
@@ -264,10 +264,10 @@ export default function WorkoutConsistencyHeatmap({ history }) {
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400" aria-label="Legenda de intensidade de exercícios">
           <span>Menos</span>
           <span className="h-3 w-3 rounded-[3px] border border-slate-200 bg-slate-100 dark:border-white/[0.06] dark:bg-white/[0.06]" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-200 bg-blue-200 dark:border-blue-950 dark:bg-blue-950" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-400 bg-blue-400 dark:border-blue-800 dark:bg-blue-800" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-600 bg-blue-600" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-800 bg-blue-800 dark:border-blue-400 dark:bg-blue-400" />
+          <span className="h-3 w-3 rounded-[3px] border border-blue-200 bg-blue-200 dark:border-blue-400 dark:bg-blue-400" />
+          <span className="h-3 w-3 rounded-[3px] border border-blue-400 bg-blue-400 dark:border-blue-600 dark:bg-blue-600" />
+          <span className="h-3 w-3 rounded-[3px] border border-blue-600 bg-blue-600 dark:border-blue-800 dark:bg-blue-800" />
+          <span className="h-3 w-3 rounded-[3px] border border-blue-800 bg-blue-800 dark:border-blue-950 dark:bg-blue-950" />
           <span>Mais</span>
         </div>
       </div>
