@@ -1,25 +1,30 @@
-import { ArrowLeft, ArrowRight, Check, CircleHelp, Dumbbell, Minus, RotateCcw, TriangleAlert } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Dumbbell, RotateCcw, TriangleAlert } from 'lucide-react'
 
 import Card from '../../components/ui/Card.jsx'
-import Disclosure from '../../components/ui/Disclosure.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { ExerciseTrendChart } from './HistoryCharts.jsx'
 import { buildEvolution, durationLabel, evolutionInsight, exerciseSummary, groupExercises, numberLabel, sessionMetrics, shortDate, timeLabel } from './historyModel.js'
+import WorkoutExerciseTimeline, { WorkoutExerciseTimelineSkeleton } from './WorkoutExerciseTimeline.jsx'
 
 export function HistoryError({ detail = false, onRetry }) {
   return <div className="history-state history-error" role="alert"><TriangleAlert size={26} aria-hidden="true" /><h2>{detail ? 'Não foi possível abrir este treino' : 'Não foi possível carregar o histórico'}</h2><p>Seus registros continuam salvos. Tente carregar novamente.</p><button type="button" className="history-button" onClick={onRetry}><RotateCcw size={16} aria-hidden="true" />Tentar novamente</button></div>
 }
 
-export function HistorySkeleton({ detail = false }) {
+export function HistorySkeleton({ detail = false, embedded = false }) {
   if (detail) return <div className="space-y-5" role="status" aria-busy="true">
     <span className="history-sr-only">Carregando detalhes do treino</span>
-    <Skeleton className="h-11 w-40 rounded-xl" />
-    <Skeleton className="h-8 w-3/5 rounded-xl" />
-    {Array.from({ length: 3 }, (_, index) => <Card hover={false} className="p-6" key={index}>
-      <Skeleton className="h-4 w-1/3 rounded-full" />
-      <Skeleton className="mt-4 h-6 w-2/3 rounded-lg" />
-      <Skeleton className="mt-3 h-3 w-full rounded-full" />
-    </Card>)}
+    {!embedded && <>
+      <Skeleton className="h-11 w-40 rounded-xl" />
+      <Skeleton className="h-8 w-3/5 rounded-xl" />
+    </>}
+    <Card hover={false} className="grid grid-cols-3 gap-3 p-3 sm:p-5">
+      {Array.from({ length: 3 }, (_, index) => <div className="min-w-0 py-2" key={index}>
+        <Skeleton className="h-3 w-14 max-w-full rounded-full" />
+        <Skeleton className="mt-3 h-7 w-16 max-w-full rounded-lg" />
+      </div>)}
+    </Card>
+    <Skeleton className="h-6 w-52 rounded-lg" />
+    <WorkoutExerciseTimelineSkeleton />
   </div>
 
   return <div className="space-y-6" role="status" aria-busy="true">
@@ -70,28 +75,18 @@ export function WorkoutDetail({ session, resource, onBack, backLabel = 'Voltar a
       <p>{session?.date ? `${session.date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })} · ${timeLabel(session.date)}` : 'Data não registrada'}</p>
       <h1 id="history-detail-title">{session?.name || 'Treino registrado'}</h1>
     </div>
-    {resource.status === 'loading' ? <HistorySkeleton detail /> : resource.status === 'error' ? <HistoryError detail onRetry={resource.retry} /> : <>
-      <dl className="history-detail-metrics">
-        <MetricItem label="Duração" value={durationLabel(session.duration)} />
-        <MetricItem label="Séries" value={numberLabel(metrics.sets)} note={!metrics.reliability.sets ? 'parcial' : null} />
-        <MetricItem label="Exercícios" value={numberLabel(metrics.exercises)} note={!metrics.reliability.exercises ? 'parcial' : null} />
-      </dl>
+    {resource.status === 'loading' ? <HistorySkeleton detail embedded /> : resource.status === 'error' ? <HistoryError detail onRetry={resource.retry} /> : <>
+      <Card hover={false} className="history-detail-summary-card">
+        <dl className="history-detail-metrics">
+          <MetricItem label="Duração" value={durationLabel(session.duration)} />
+          <MetricItem label="Séries" value={numberLabel(metrics.sets)} note={!metrics.reliability.sets ? 'parcial' : null} />
+          <MetricItem label="Exercícios" value={numberLabel(metrics.exercises)} note={!metrics.reliability.exercises ? 'parcial' : null} />
+        </dl>
+      </Card>
       {!groups.length ? <div className="history-state"><p>Os detalhes das séries não estão disponíveis neste registro.</p></div> : <>
         {!session.recordingSessionId && <p className="history-data-note">Registro antigo: exercícios em ordem estável. A sequência e os horários de execução não foram registrados.</p>}
         <div className="history-detail-section-heading"><h2>Exercícios realizados</h2><span>{groups.length} {groups.length === 1 ? 'exercício' : 'exercícios'}</span></div>
-        <ol className="history-exercise-flow">{groups.map((group, index) => <li key={group.key}>
-          <span className="history-exercise-node" aria-hidden="true">{index + 1}</span>
-          <div className="history-exercise-heading"><div><h3>{group.name}</h3><span>{group.sets.length} séries{group.date && ` · ${timeLabel(group.date)}`}</span></div><button type="button" id={`history-exercise-${group.exerciseId}-${index}`} onClick={(event) => onExercise(group.exerciseId, event.currentTarget)}>Ver evolução<ArrowRight size={15} aria-hidden="true" /></button></div>
-          <Disclosure
-            label="Ver detalhes das séries"
-            openLabel="Ocultar detalhes das séries"
-            defaultOpen={index === 0}
-            className="history-exercise"
-            buttonClassName="history-exercise-disclosure"
-          >
-            <div className="history-table-scroll"><table><caption className="history-sr-only">Séries de {group.name}</caption><thead><tr><th>Série</th><th>Carga</th><th>Reps</th><th>Status</th></tr></thead><tbody>{group.sets.map((set) => <tr key={set.id}><td>{numberLabel(set.series)}</td><td>{numberLabel(set.weight, 2)}{set.weight != null && <small className="history-inline-unit"> kg</small>}</td><td>{numberLabel(set.reps)}</td><td><span className={`history-set-status ${set.complete === true ? 'is-complete' : set.complete === false ? 'is-incomplete' : ''}`}>{set.complete === true ? <Check size={15} aria-hidden="true" /> : set.complete === false ? <Minus size={15} aria-hidden="true" /> : <CircleHelp size={15} aria-hidden="true" />}<span>{set.complete === true ? 'Concluída' : set.complete === false ? 'Não concluída' : 'Não informado'}</span></span></td></tr>)}</tbody></table></div>
-          </Disclosure>
-        </li>)}</ol>
+        <WorkoutExerciseTimeline exercises={groups} onExercise={onExercise} />
       </>}
       <p className="history-detail-footnote">O tempo inclui os descansos da sessão. “—” indica informação não registrada.</p>
     </>}
@@ -106,16 +101,18 @@ export function ExerciseProgression({ session, exercise, sessions, sets, onBack,
   return <section className="history-drill-view" aria-labelledby="history-exercise-title">
     <button type="button" className="history-back" onClick={onBack} ref={backRef}><ArrowLeft size={17} aria-hidden="true" />Voltar ao treino</button>
     <div className="history-detail-heading"><p>{session.name}</p><h1 id="history-exercise-title">{exercise.name}</h1></div>
-    <dl className="history-exercise-summary">
-      <MetricItem label="Última carga" value={summary.latest ? `${numberLabel(summary.latest.value, 2)} kg` : '—'} note={summary.latest?.reps != null ? `${numberLabel(summary.latest.reps)} rep` : null} />
-      <MetricItem label="Melhor carga" value={summary.best ? `${numberLabel(summary.best.value, 2)} kg` : '—'} note={summary.best ? shortDate(new Date(summary.best.timestamp)) : null} />
-      <MetricItem label="Variação no período" value={summary.variation == null ? '—' : `${summary.variation > 0 ? '+' : ''}${numberLabel(summary.variation, 1)}%`} note={summary.reliable ? 'primeiro × último registro' : 'dados insuficientes'} />
-    </dl>
-    <div className="history-progression-chart">
+    <Card hover={false} className="history-detail-summary-card">
+      <dl className="history-exercise-summary">
+        <MetricItem label="Última carga" value={summary.latest ? `${numberLabel(summary.latest.value, 2)} kg` : '—'} note={summary.latest?.reps != null ? `${numberLabel(summary.latest.reps)} rep` : null} />
+        <MetricItem label="Melhor carga" value={summary.best ? `${numberLabel(summary.best.value, 2)} kg` : '—'} note={summary.best ? shortDate(new Date(summary.best.timestamp)) : null} />
+        <MetricItem label="Variação no período" value={summary.variation == null ? '—' : `${summary.variation > 0 ? '+' : ''}${numberLabel(summary.variation, 1)}%`} note={summary.reliable ? 'primeiro × último' : 'dados insuficientes'} />
+      </dl>
+    </Card>
+    <Card hover={false} className="history-progression-chart">
       <div className="history-progression-heading"><div><h2>Progressão registrada</h2><p>Maior carga concluída em cada sessão deste exercício.</p></div></div>
       <ExerciseTrendChart points={points} />
       <p className="history-insight">{evolutionInsight(points)}</p>
-    </div>
+    </Card>
     <div className="history-progress-sessions"><div className="history-detail-section-heading"><h2>Sessões recentes</h2><span>{recent.length} registros</span></div>{recent.length ? <ol>{recent.map((point) => <li key={point.sessionId}><button type="button" id={`history-progression-session-${point.sessionId}`} onClick={(event) => onWorkoutSelect(point.sessionId, event.currentTarget)}><span><strong>{point.name}</strong><small>{shortDate(new Date(point.timestamp))} · {timeLabel(new Date(point.timestamp))}</small></span><span><strong>{numberLabel(point.value, 2)} kg</strong>{point.reps != null && <small>{numberLabel(point.reps)} rep</small>}</span><ArrowRight size={16} aria-hidden="true" /></button></li>)}</ol> : <div className="history-state"><p>Nenhuma sessão com carga registrada no período.</p></div>}</div>
   </section>
 }

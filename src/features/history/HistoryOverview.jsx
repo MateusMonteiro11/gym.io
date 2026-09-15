@@ -8,7 +8,7 @@ import { ui } from '../../styles/theme.js'
 import { durationLabel, numberLabel, PERIODS } from './historyModel.js'
 
 const METRICS = [
-  { key: 'workouts', label: 'Treinos' },
+  { key: 'workouts', label: 'Quantidade de treinos' },
   { key: 'exercises', label: 'Exercícios realizados' },
   { key: 'averageDuration', label: 'Duração média' },
 ]
