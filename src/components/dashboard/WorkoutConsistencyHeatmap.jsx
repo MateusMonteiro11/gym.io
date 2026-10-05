@@ -23,11 +23,11 @@ function cellClass(day) {
   if (day.isOutsideRange) return 'border-transparent bg-transparent opacity-0'
 
   return [
-    'border-slate-200 bg-slate-100 dark:border-white/[0.06] dark:bg-white/[0.06]',
-    'border-blue-200 bg-blue-200 dark:border-blue-400 dark:bg-blue-400',
-    'border-blue-400 bg-blue-400 dark:border-blue-600 dark:bg-blue-600',
-    'border-blue-600 bg-blue-600 dark:border-blue-800 dark:bg-blue-800',
-    'border-blue-800 bg-blue-800 dark:border-blue-950 dark:bg-blue-950',
+    'border-app-line bg-app-muted',
+    'border-transparent bg-app-heat-1',
+    'border-transparent bg-app-heat-2',
+    'border-transparent bg-app-heat-3',
+    'border-transparent bg-app-heat-4',
   ][intensityLevel(day.count)]
 }
 
@@ -112,22 +112,22 @@ export default function WorkoutConsistencyHeatmap({ history }) {
   }
 
   return (
-    <Card hover={false} className="dashboard-surface min-w-0 w-full max-w-full border-slate-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[#090909] sm:p-8">
+    <Card hover={false} className="dashboard-surface min-w-0 w-full max-w-full border-app-line bg-app-surface p-6 sm:p-8">
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-app-accent">
             {range === 'current-year' ? 'Ano atual' : 'Últimos 12 meses'}
           </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-slate-950 dark:text-white">
+          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-app-ink">
             Exercícios ao longo do ano
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-app-secondary">
             Cada quadrado representa um dia. Quanto mais intenso o azul, mais exercícios foram concluídos no dia selecionado.
           </p>
         </div>
 
         <div className="flex min-w-0 w-full flex-col gap-3 xl:w-[31rem] xl:items-end">
-          <div className="inline-flex w-fit max-w-full rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]" aria-label="Período do calendário">
+          <div className="inline-flex w-fit max-w-full rounded-xl border border-app-line bg-app-muted p-1" aria-label="Período do calendário">
             {RANGE_OPTIONS.map((option) => {
               const selected = option.value === range
               return (
@@ -136,10 +136,10 @@ export default function WorkoutConsistencyHeatmap({ history }) {
                   type="button"
                   aria-pressed={selected}
                   onClick={() => setRange(option.value)}
-                  className={`min-h-11 min-w-0 rounded-lg px-3 text-xs font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#090909] ${
+                  className={`min-h-11 min-w-0 rounded-lg px-3 text-xs font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 ring-offset-app-canvas ${
                     selected
-                      ? 'bg-white text-primary shadow-sm dark:bg-white/[0.1] dark:text-blue-300'
-                      : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
+                      ? 'bg-app-surface text-app-accent shadow-sm'
+                      : 'text-app-secondary hover:text-app-ink'
                   }`}
                 >
                   {option.label}
@@ -149,42 +149,42 @@ export default function WorkoutConsistencyHeatmap({ history }) {
           </div>
 
           <div className="grid w-full gap-3 sm:grid-cols-2">
-            <div className="flex min-h-24 flex-col justify-between rounded-2xl border border-primary/15 bg-primary/[0.055] px-4 py-3.5 dark:border-primary/25 dark:bg-primary/[0.09]">
-              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-primary dark:text-blue-300">
+            <div className="flex min-h-24 flex-col justify-between rounded-2xl border border-app-accent/15 bg-app-action/[0.055] px-4 py-3.5">
+              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-app-accent">
                 {rangeTotalLabel}
               </p>
               <div className="mt-3 flex items-end gap-2">
-                <strong className="text-3xl font-semibold leading-none tracking-[-0.05em] text-slate-950 dark:text-white">
+                <strong className="text-3xl font-semibold leading-none tracking-[-0.05em] text-app-ink">
                   {heatmap.totalExercises}
                 </strong>
-                <span className="pb-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
+                <span className="pb-0.5 text-xs font-medium text-app-secondary">
                   {heatmap.totalExercises === 1 ? 'exercício' : 'exercícios'}
                 </span>
               </div>
             </div>
 
             <div
-              className="flex min-h-24 flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 dark:border-white/[0.08] dark:bg-white/[0.04]"
+              className="flex min-h-24 flex-col justify-between rounded-2xl border border-app-line bg-app-muted px-4 py-3.5"
               aria-live="polite"
               aria-atomic="true"
             >
-              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-app-secondary">
                 Dia selecionado
               </p>
               {activeDay ? (
                 <div className="mt-2">
                   <time
                     dateTime={activeDay.key}
-                    className="block text-xs font-medium text-slate-600 dark:text-slate-300"
+                    className="block text-xs font-medium text-app-secondary"
                   >
                     {activityDate(activeDay)}
                   </time>
-                  <p className="mt-1 text-sm font-semibold text-slate-950 dark:text-white">
+                  <p className="mt-1 text-sm font-semibold text-app-ink">
                     {activeDay.count} {activeDay.count === 1 ? 'exercício concluído' : 'exercícios concluídos'}
                   </p>
                 </div>
               ) : (
-                <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+                <p className="mt-2 text-sm font-medium text-app-secondary">
                   Nenhuma atividade registrada
                 </p>
               )}
@@ -201,14 +201,14 @@ export default function WorkoutConsistencyHeatmap({ history }) {
             aria-hidden="true"
           >
             {heatmap.monthLabels.map((label, index) => (
-              <span key={`${label}-${index}`} className="h-5 whitespace-nowrap text-[10px] font-medium capitalize text-slate-500 dark:text-slate-400">
+              <span key={`${label}-${index}`} className="h-5 whitespace-nowrap text-[10px] font-medium capitalize text-app-secondary">
                 {label}
               </span>
             ))}
           </div>
 
           <div className="mt-2 flex items-start gap-3">
-            <div className="grid h-[108px] w-6 shrink-0 grid-rows-7 gap-1 text-[10px] font-medium text-slate-500 dark:text-slate-400" aria-hidden="true">
+            <div className="grid h-[108px] w-6 shrink-0 grid-rows-7 gap-1 text-[10px] font-medium text-app-secondary" aria-hidden="true">
               <span />
               <span>seg</span>
               <span />
@@ -244,9 +244,9 @@ export default function WorkoutConsistencyHeatmap({ history }) {
                   onKeyDown={(event) => handleKeyDown(event, index)}
                   className={`rounded-[3px] border transition-colors duration-200 focus-visible:z-10 focus-visible:outline-none ${cellClass(day)} ${
                     index === activeIndex
-                      ? 'z-10 ring-2 ring-primary ring-offset-2 ring-offset-white dark:ring-blue-400 dark:ring-offset-[#090909]'
+                      ? 'z-10 ring-2 ring-app-accent ring-offset-2 ring-offset-app-surface ring-offset-app-canvas'
                       : day.isToday
-                        ? 'ring-1 ring-slate-700 ring-offset-1 dark:ring-white'
+                        ? 'ring-1 ring-app-line ring-offset-1'
                         : ''
                   }`}
                 />
@@ -256,18 +256,18 @@ export default function WorkoutConsistencyHeatmap({ history }) {
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-5 dark:border-white/[0.06]">
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-4 border-t border-app-line pt-5">
+        <p className="text-xs text-app-secondary">
           <span className="sm:hidden">Deslize para ver outros meses e toque em um dia.</span>
           <span className="hidden sm:inline">Navegue com as setas para consultar cada dia.</span>
         </p>
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400" aria-label="Legenda de intensidade de exercícios">
+        <div className="flex items-center gap-2 text-xs text-app-secondary" aria-label="Legenda de intensidade de exercícios">
           <span>Menos</span>
-          <span className="h-3 w-3 rounded-[3px] border border-slate-200 bg-slate-100 dark:border-white/[0.06] dark:bg-white/[0.06]" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-200 bg-blue-200 dark:border-blue-400 dark:bg-blue-400" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-400 bg-blue-400 dark:border-blue-600 dark:bg-blue-600" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-600 bg-blue-600 dark:border-blue-800 dark:bg-blue-800" />
-          <span className="h-3 w-3 rounded-[3px] border border-blue-800 bg-blue-800 dark:border-blue-950 dark:bg-blue-950" />
+          <span className="h-3 w-3 rounded-[3px] border border-app-line bg-app-muted" />
+          <span className="h-3 w-3 rounded-[3px] bg-app-heat-1" />
+          <span className="h-3 w-3 rounded-[3px] bg-app-heat-2" />
+          <span className="h-3 w-3 rounded-[3px] bg-app-heat-3" />
+          <span className="h-3 w-3 rounded-[3px] bg-app-heat-4" />
           <span>Mais</span>
         </div>
       </div>

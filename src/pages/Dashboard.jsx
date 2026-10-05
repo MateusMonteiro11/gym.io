@@ -6,6 +6,7 @@ import DashboardNextWorkoutCard from '../components/dashboard/DashboardNextWorko
 import DashboardQuickMetric from '../components/dashboard/DashboardQuickMetric'
 import WorkoutConsistencyHeatmap from '../components/dashboard/WorkoutConsistencyHeatmap'
 import PageHeader from '../components/ui/PageHeader'
+import ContentEntrance from '../components/ui/ContentEntrance'
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import { useAgendamentos } from '../hooks/useAgendamentos'
 import { useAuth } from '../hooks/useAuth'
@@ -37,14 +38,16 @@ export default function Dashboard() {
 
   return (
     <PageLoadingBoundary loading={isLoading} loadingMessage="Carregando painel...">
-      <PageHeader title="Painel" subtitle={dataAtual}>
-        <p className="max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:text-right">
-          Seu sucesso está na próxima decisão.
-        </p>
-      </PageHeader>
+      <ContentEntrance>
+        <PageHeader title="Painel" subtitle={dataAtual}>
+          <p className="max-w-sm text-sm leading-relaxed text-app-secondary sm:text-right">
+            Seu sucesso está na próxima decisão.
+          </p>
+        </PageHeader>
+      </ContentEntrance>
 
       <main className="space-y-6" aria-label="Resumo do seu ritmo de treinos">
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]" aria-label="Destaques do painel">
+        <ContentEntrance as="section" index={1} className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]" aria-label="Destaques do painel">
           <DashboardMomentumCard insights={insights} />
           <DashboardNextWorkoutCard
             appointment={nextAppointment}
@@ -52,9 +55,9 @@ export default function Dashboard() {
             onView={(id) => id && navigate(`/treinos/visualizar/${id}`)}
             onChoose={() => navigate('/treinar')}
           />
-        </section>
+        </ContentEntrance>
 
-        <section className="grid gap-6 md:grid-cols-2" aria-label="Indicadores de curto prazo">
+        <ContentEntrance as="section" index={2} className="grid gap-6 md:grid-cols-2" aria-label="Indicadores de curto prazo">
           <DashboardQuickMetric
             eyebrow="Neste mês"
             value={insights.currentMonthExercises}
@@ -69,11 +72,11 @@ export default function Dashboard() {
             detail={periodComparison(insights.quarterDelta, insights.currentQuarterExercises === 0 ? 'Seu primeiro exercício do trimestre pode começar hoje.' : 'Mesmo volume do trimestre anterior')}
             icon="fa-bolt"
           />
-        </section>
+        </ContentEntrance>
 
-        <section aria-label="Consistência anual">
+        <ContentEntrance as="section" index={3} aria-label="Consistência anual">
           <WorkoutConsistencyHeatmap history={historico} />
-        </section>
+        </ContentEntrance>
       </main>
     </PageLoadingBoundary>
   )

@@ -36,8 +36,8 @@ export default function PreWorkoutModal({
               disabled={processando}
               className={`cursor-pointer rounded-xl py-3 text-sm font-semibold transition-colors duration-200 ${
                 descanso === tempo
-                  ? 'bg-primary text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
+                  ? 'bg-app-action text-white'
+                  : 'bg-app-muted text-app-secondary hover:bg-app-muted'
               }`}
             >
               {tempo}s

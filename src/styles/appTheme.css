@@ -1,0 +1,114 @@
+/* The authenticated shell scopes its tokens to the document so global dialogs
+   and notifications share the same palette without changing public surfaces. */
+@custom-variant app (&:is(html:has(.app-shell), html:has(.app-shell) *));
+
+@theme inline {
+  --color-app-canvas: var(--app-canvas);
+  --color-app-surface: var(--app-surface);
+  --color-app-muted: var(--app-muted);
+  --color-app-ink: var(--app-ink);
+  --color-app-secondary: var(--app-secondary);
+  --color-app-line: var(--app-line);
+  --color-app-control: var(--app-control);
+  --color-app-action: var(--app-action);
+  --color-app-action-hover: var(--app-action-hover);
+  --color-app-neutral-action: var(--app-neutral-action);
+  --color-app-accent: var(--app-accent);
+  --color-app-selection: var(--app-selection);
+  --color-app-success: var(--app-success);
+  --color-app-success-muted: var(--app-success-muted);
+  --color-app-success-action: var(--app-success-action);
+  --color-app-success-hover: var(--app-success-hover);
+  --color-app-danger: var(--app-danger);
+  --color-app-danger-muted: var(--app-danger-muted);
+  --color-app-danger-action: var(--app-danger-action);
+  --color-app-danger-hover: var(--app-danger-hover);
+  --color-app-warning: var(--app-warning);
+  --color-app-warning-muted: var(--app-warning-muted);
+  --color-app-overlay: var(--app-overlay);
+  --color-app-heat-1: var(--app-heat-1);
+  --color-app-heat-2: var(--app-heat-2);
+  --color-app-heat-3: var(--app-heat-3);
+  --color-app-heat-4: var(--app-heat-4);
+}
+
+html:has(.app-shell) {
+  --app-canvas: #f5f5f7;
+  --app-surface: #ffffff;
+  --app-muted: #eeeef1;
+  --app-ink: #18181b;
+  --app-secondary: #61656f;
+  --app-line: #dddee3;
+  --app-control: #7a7d87;
+  --app-action: #1457f7;
+  --app-action-hover: #0f4ad4;
+  --app-neutral-action: #303034;
+  --app-accent: #1457f7;
+  --app-selection: #edf2ff;
+  --app-success: #087c58;
+  --app-success-muted: #e8f6ee;
+  --app-success-action: #087c58;
+  --app-success-hover: #066144;
+  --app-danger: #b42335;
+  --app-danger-muted: #fff0f1;
+  --app-danger-action: #c4263a;
+  --app-danger-hover: #a51e30;
+  --app-warning: #875500;
+  --app-warning-muted: #fff4da;
+  --app-overlay: rgb(16 16 18 / .60);
+  --app-heat-1: #c5d5ff;
+  --app-heat-2: #8cafff;
+  --app-heat-3: #1457f7;
+  --app-heat-4: #103da8;
+  color: var(--app-ink);
+  background: var(--app-canvas);
+  scrollbar-color: var(--app-control) var(--app-canvas);
+}
+
+html.dark:has(.app-shell) {
+  --app-canvas: #101012;
+  --app-surface: #18181b;
+  --app-muted: #222225;
+  --app-ink: #f4f4f5;
+  --app-secondary: #a6a6ad;
+  --app-line: #343438;
+  --app-control: #777780;
+  --app-accent: #729aff;
+  --app-selection: #202c48;
+  --app-success: #64d6a7;
+  --app-success-muted: #17382b;
+  --app-danger: #ff9aa7;
+  --app-danger-muted: #41212a;
+  --app-warning: #edc16b;
+  --app-warning-muted: #392e19;
+  --app-overlay: rgb(0 0 0 / .72);
+  --app-heat-1: #253b70;
+  --app-heat-2: #365eaa;
+  --app-heat-3: #729aff;
+  --app-heat-4: #bbd0ff;
+}
+
+@layer base {
+  html:has(.app-shell) body { background: var(--app-canvas); color: var(--app-ink); }
+  html:has(.app-shell) ::selection { background: var(--app-action); color: white; }
+  html:has(.app-shell) :focus-visible { outline: 2px solid var(--app-accent); outline-offset: 3px; }
+  html:has(.app-shell) :is(input, textarea, select) {
+    color: var(--app-ink);
+    caret-color: var(--app-accent);
+    accent-color: var(--app-accent);
+  }
+  html:has(.app-shell) :is(input, textarea)::placeholder { color: var(--app-secondary); opacity: 1; }
+}
+
+@layer components {
+  html:has(.app-shell) .skeleton-shimmer {
+    --skeleton-base: var(--app-muted);
+    --skeleton-highlight: color-mix(in srgb, var(--app-surface) 80%, transparent);
+  }
+  html:has(.app-shell) .skeleton-shimmer-inverse {
+    --skeleton-base: rgb(255 255 255 / .2);
+    --skeleton-highlight: rgb(255 255 255 / .72);
+  }
+  html:has(.app-shell) .loading-ring { border-color: var(--app-line); border-top-color: var(--app-accent); box-shadow: none; }
+  .app-shell .week-day-selected { box-shadow: 0 3px 12px -6px rgb(20 87 247 / .45); }
+}

@@ -35,7 +35,7 @@ export default function WorkoutActions({
         disabled={salvando}
         className="
           w-full py-4 rounded-2xl
-          bg-primary hover:bg-primary-hover
+          bg-app-action hover:bg-app-action-hover
           text-white font-semibold
           flex items-center justify-center gap-3
           transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60
@@ -54,25 +54,25 @@ export default function WorkoutActions({
   if (confirmando) {
     return (
       
-      <div className="space-y-3 rounded-2xl border border-red-100 bg-white p-4 dark:border-slate-700/70 dark:bg-slate-900/85">
-        <p className="text-center text-sm font-medium text-slate-600 dark:text-slate-300">
+      <div className="space-y-3 rounded-2xl border border-app-danger bg-app-surface p-4">
+        <p className="text-center text-sm font-medium text-app-secondary">
           Finalizar o treino agora?
         </p>
-        <p className="text-center text-xs text-slate-600 dark:text-slate-400">
+        <p className="text-center text-xs text-app-secondary">
           O progresso até aqui será salvo.
         </p>
         <div className="flex gap-2">
           <button
             onClick={() => setConfirmando(false)}
             disabled={salvando}
-            className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800"
+            className="flex-1 rounded-xl border border-app-line py-2.5 text-sm font-medium text-app-secondary transition-colors hover:bg-app-muted"
           >
             Cancelar
           </button>
           <button
             onClick={() => { setConfirmando(false); onFinalizar() }}
             disabled={salvando}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:opacity-50"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-app-danger-action py-2.5 text-sm font-semibold text-white transition-colors hover:bg-app-danger-hover disabled:opacity-50"
           >
             {salvando ? (
               <ActionLoading label="Salvando…" inverse />
@@ -96,8 +96,8 @@ export default function WorkoutActions({
           flex items-center justify-center gap-2
           transition-all duration-200
           ${podeAvancar
-            ? 'bg-emerald-500 text-white hover:bg-emerald-600 active:scale-[0.98]'
-            : 'bg-slate-50 text-slate-600 cursor-not-allowed dark:bg-slate-800 dark:text-slate-300'
+            ? 'bg-app-success-action text-white hover:bg-app-success-hover active:scale-[0.98]'
+            : 'bg-app-muted text-app-secondary cursor-not-allowed'
           }
         `}
       >
@@ -115,8 +115,8 @@ export default function WorkoutActions({
             flex items-center justify-center gap-2
             transition-all duration-200
             ${!inativo || finalizado
-              ? 'bg-red-500 text-white hover:bg-red-600 active:scale-[0.98]'
-              : 'bg-slate-50 text-slate-600 cursor-not-allowed dark:bg-slate-800 dark:text-slate-300'
+              ? 'bg-app-danger-action text-white hover:bg-app-danger-hover active:scale-[0.98]'
+              : 'bg-app-muted text-app-secondary cursor-not-allowed'
             }
           `}
         >

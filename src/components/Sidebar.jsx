@@ -149,7 +149,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Header com Hamburger Button */}
-      <div className="flex md:hidden w-full items-center justify-between border-b border-slate-200/80 bg-white p-5">
+      <div className="flex md:hidden w-full items-center justify-between border-b border-app-line/80 bg-app-surface p-5">
         <button
           onClick={handleLogoClick}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
@@ -157,16 +157,16 @@ export default function Sidebar() {
         >
           <img
             src={logoImg}
-            className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-slate-200/80"
+            className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-app-line"
             alt="Logo Gym.io"
           />
-          <h1 className="text-lg font-semibold tracking-tight text-slate-900">Gym.io</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-app-ink">Gym.io</h1>
         </button>
         <div className="flex items-center gap-2">
           <ThemeToggle compact className="h-10 px-3" />
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-app-line text-app-secondary transition-colors hover:bg-app-muted hover:text-app-ink"
             aria-label="Toggle sidebar"
           >
             <i className={`fa-solid fa-${sidebarOpen ? 'times' : 'bars'} text-xl`} />
@@ -177,13 +177,13 @@ export default function Sidebar() {
       {/* Mobile Backdrop Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-30 bg-app-overlay md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed md:static inset-y-0 left-0 z-40 flex w-72 flex-col justify-between border-b border-slate-200/80 bg-white p-5 md:border-b-0 md:border-r md:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 ${
+      <aside className={`fixed md:static inset-y-0 left-0 z-40 flex w-72 flex-col justify-between border-b border-app-line/80 bg-app-surface p-5 md:border-b-0 md:border-r md:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       } md:w-72 md:border-b-0 md:border-r md:p-6 md:relative`}>
         <div>
@@ -191,10 +191,10 @@ export default function Sidebar() {
           <div className="mb-8 flex items-center gap-3 hidden md:flex">
             <img
               src={logoImg}
-              className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-slate-200/80"
+              className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-app-line"
               alt="Logo Gym.io"
             />
-            <h1 className="text-lg font-semibold tracking-tight text-slate-900">Gym.io</h1>
+            <h1 className="text-lg font-semibold tracking-tight text-app-ink">Gym.io</h1>
           </div>
 
           <nav className="space-y-1">
@@ -206,8 +206,8 @@ export default function Sidebar() {
                   onClick={() => handleNavigation(to)}
                   className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
                     isActive
-                      ? 'bg-primary-muted text-primary'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-app-selection text-app-accent'
+                      : 'text-app-secondary hover:bg-app-muted hover:text-app-ink'
                   }`}
                 >
                   <i className={`${icon} w-5 text-center`} />
@@ -218,12 +218,12 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <div className="mt-8 border-t border-slate-100 pt-5">
+        <div className="mt-8 border-t border-app-line pt-5">
           <button
             onClick={() => setProfileModalOpen(true)}
-            className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-slate-50 p-2 -ml-2"
+            className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-app-muted p-2 -ml-2"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-sm font-semibold text-primary flex-shrink-0 overflow-hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-app-selection text-sm font-semibold text-app-accent flex-shrink-0 overflow-hidden">
               {isUserLoading ? (
                 <Skeleton className="h-full w-full rounded-full" />
               ) : userData?.foto_perfil && isSafeRenderableImageUrl(userData.foto_perfil) ? (
@@ -233,7 +233,7 @@ export default function Sidebar() {
               )}
             </div>
             <div className="min-w-0 flex-1 text-left">
-              <p className="truncate text-sm font-semibold text-slate-900">
+              <p className="truncate text-sm font-semibold text-app-ink">
                 {isUserLoading ? (
                   <Skeleton className="h-3 w-24 rounded-full" />
                 ) : (
@@ -243,16 +243,16 @@ export default function Sidebar() {
               {isUserLoading ? (
                 <Skeleton className="mt-2 h-2.5 w-32 rounded-full" />
               ) : (
-                <p className="truncate text-xs text-slate-600">{usuario?.email || ''}</p>
+                <p className="truncate text-xs text-app-secondary">{usuario?.email || ''}</p>
               )}
             </div>
-            <i className="fa-solid fa-chevron-right text-slate-400 text-xs flex-shrink-0" />
+            <i className="fa-solid fa-chevron-right text-app-secondary text-xs flex-shrink-0" />
           </button>
           <ThemeToggle className="mb-4 w-full justify-center" />
           <button
             type="button"
             onClick={handleLogoutClick}
-            className="flex w-full items-center gap-2 text-sm text-slate-600 transition-colors duration-200 hover:text-danger"
+            className="flex w-full items-center gap-2 text-sm text-app-secondary transition-colors duration-200 hover:text-app-danger"
           >
             <i className="fa-solid fa-right-from-bracket w-4" />
             Sair
@@ -278,14 +278,14 @@ export default function Sidebar() {
           onClose={handleCancelLogout}
         />
         <div className="px-6 py-5">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-app-secondary">
             Ao confirmar, você será desconectado do sistema e retornará para a tela de login.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={handleCancelLogout}
-              className="inline-flex justify-center rounded-lg border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-200"
+              className="inline-flex justify-center rounded-lg border border-app-line bg-app-muted px-4 py-2 text-sm font-medium text-app-ink transition-colors duration-200 hover:bg-app-muted"
             >
               Cancelar
             </button>
@@ -293,7 +293,7 @@ export default function Sidebar() {
               type="button"
               onClick={handleLogoutConfirm}
               disabled={loggingOut}
-              className="inline-flex justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex justify-center rounded-lg bg-app-neutral-action px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-app-neutral-action disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loggingOut ? <ActionLoading label="Saindo..." inverse /> : 'Confirmar saída'}
             </button>

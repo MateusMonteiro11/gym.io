@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ui } from '../../styles/theme'
 
 export default function Modal({
@@ -11,6 +11,7 @@ export default function Modal({
   overlayClassName = '',
   ariaLabel,
 }) {
+  const reducedMotion = useReducedMotion()
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
@@ -36,7 +37,7 @@ export default function Modal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className={`${ui.overlay} bg-slate-950/45 ${overlayClassName}`}
+          className={`${ui.overlay} bg-slate-950/45 app:bg-app-neutral-action/45 ${overlayClassName}`}
           role="presentation"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -51,9 +52,9 @@ export default function Modal({
             aria-modal="true"
             aria-label={ariaLabel}
             className={`${ui.modalPanel} ${sizes[size] || sizes.md} ${className}`}
-            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 14, scale: 0.97 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, scale: 0.97 }}
             transition={{ duration: 0.24, ease: 'easeOut' }}
             onClick={(e) => e.stopPropagation()}
           >

@@ -35,16 +35,18 @@
 .auth-page .auth-field label { margin: 0; color: var(--ink); font-size: .8rem; font-weight: 500; }
 .auth-page .auth-input {
   width: 100%; min-width: 0; min-height: 48px; padding: .7rem .85rem;
-  border: 1px solid var(--line); border-radius: 10px;
+  border: 1px solid var(--field-border); border-radius: var(--field-radius);
   background: var(--paper); color: var(--ink); font: inherit; font-size: 16px;
   box-shadow: none; transition: border-color .15s ease;
 }
 .auth-page .auth-input::placeholder { color: var(--muted); opacity: 1; }
-.auth-page .auth-input:hover { border-color: var(--muted); box-shadow: none; }
-.auth-page .auth-input:focus { border-color: var(--blue); background: var(--surface-strong); outline: 2px solid var(--blue); outline-offset: 2px; box-shadow: none; }
+.auth-page .auth-input:hover { border-color: var(--field-border-hover); box-shadow: none; }
+.auth-page .auth-input:focus { border-color: var(--blue); background: var(--surface-strong); outline: none; box-shadow: none; }
+.auth-page .auth-input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 .auth-page .auth-input[aria-invalid="true"] { border-color: #c43b3b; }
 /* Existing dark utility overrides use !important; keep auth on landing tokens. */
-.dark .auth-page .auth-input { background: var(--paper) !important; border-color: var(--line) !important; color: var(--ink) !important; }
+.dark .auth-page .auth-input { background: var(--paper) !important; border-color: var(--field-border) !important; color: var(--ink) !important; }
+.dark .auth-page .auth-input:hover { border-color: var(--field-border-hover) !important; }
 .dark .auth-page .auth-input:focus { background: var(--surface-strong) !important; border-color: var(--blue) !important; }
 .dark .auth-page .auth-input[aria-invalid="true"] { border-color: #ef7777 !important; }
 .auth-page .auth-field [role="alert"] { font-size: .8rem; }

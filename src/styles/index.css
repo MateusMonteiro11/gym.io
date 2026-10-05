@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./appTheme.css";
+@import "./formFields.css";
 @config "../../tailwind.config.js";
 
 :root {
@@ -7,7 +9,7 @@
   --color-surface-muted: 248 250 252;
 }
 
-.dark {
+.dark:not(:has(.app-shell)) {
   --color-canvas: 3 3 3;
   --color-surface: 8 8 8;
   --color-surface-muted: 16 16 16;
@@ -61,7 +63,7 @@
     }
   }
 
-  .dark .skeleton-shimmer {
+  .dark:not(:has(.app-shell)) .skeleton-shimmer {
     --skeleton-base: rgb(24 24 24);
     --skeleton-highlight: rgb(255 255 255 / 0.12);
   }
@@ -71,7 +73,7 @@
     --skeleton-highlight: rgb(255 255 255 / 0.72);
   }
 
-  .dark .skeleton-shimmer-inverse {
+  .dark:not(:has(.app-shell)) .skeleton-shimmer-inverse {
     --skeleton-base: rgb(255 255 255 / 0.16);
     --skeleton-highlight: rgb(255 255 255 / 0.52);
   }
@@ -82,7 +84,7 @@
     border-top-color: #1457f7;
   }
 
-  .dark .loading-ring {
+  .dark:not(:has(.app-shell)) .loading-ring {
     border-color: rgb(255 255 255 / 0.12) !important;
     border-top-color: #1457f7 !important;
     box-shadow: 0 0 18px rgb(20 87 247 / 0.18);
@@ -126,7 +128,7 @@
   }
 
   .workout-library-card:focus-within .workout-library-card__surface {
-    border-color: rgb(20 87 247 / 0.35);
+    border-color: var(--app-accent);
     transform: translate3d(0, -3px, 0);
   }
 
@@ -143,7 +145,7 @@
     opacity: 1;
   }
 
-  .dark .workout-library-card:focus-within .workout-library-card__surface {
+  .dark:not(:has(.app-shell)) .workout-library-card:focus-within .workout-library-card__surface {
     border-color: rgb(59 130 246 / 0.45);
   }
 
@@ -158,7 +160,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     .workout-library-card:hover .workout-library-card__surface {
-      border-color: rgb(20 87 247 / 0.35);
+      border-color: var(--app-accent);
       transform: translate3d(0, -3px, 0);
     }
 
@@ -175,7 +177,7 @@
       opacity: 1;
     }
 
-    .dark .workout-library-card:hover .workout-library-card__surface {
+    .dark:not(:has(.app-shell)) .workout-library-card:hover .workout-library-card__surface {
       border-color: rgb(59 130 246 / 0.45);
     }
   }
@@ -210,186 +212,186 @@
     box-shadow: 0 0 1rem -0.25rem rgb(20 87 247 / 0.42);
   }
 
-  .dark .week-day-selected {
+  .dark:not(:has(.app-shell)) .week-day-selected {
     box-shadow: 0 0 1rem -0.25rem rgb(20 87 247 / 0.52);
   }
 
-  .dark .text-slate-950,
-  .dark .text-slate-900,
-  .dark .text-slate-800 {
+  .dark:not(:has(.app-shell)) .text-slate-950,
+  .dark:not(:has(.app-shell)) .text-slate-900,
+  .dark:not(:has(.app-shell)) .text-slate-800 {
     color: rgb(241 245 249) !important;
   }
 
-  .dark .text-slate-700,
-  .dark .text-slate-600 {
+  .dark:not(:has(.app-shell)) .text-slate-700,
+  .dark:not(:has(.app-shell)) .text-slate-600 {
     color: rgb(203 213 225) !important;
   }
 
-  .dark .text-slate-500,
-  .dark .text-slate-400 {
+  .dark:not(:has(.app-shell)) .text-slate-500,
+  .dark:not(:has(.app-shell)) .text-slate-400 {
     color: rgb(148 163 184) !important;
   }
 
-  .dark .border-slate-300,
-  .dark .border-slate-200,
-  .dark .border-slate-100 {
+  .dark:not(:has(.app-shell)) .border-slate-300,
+  .dark:not(:has(.app-shell)) .border-slate-200,
+  .dark:not(:has(.app-shell)) .border-slate-100 {
     border-color: rgb(255 255 255 / 0.06) !important;
   }
 
-  .dark .border-slate-200\/80,
-  .dark .border-slate-200\/70,
-  .dark .border-slate-100\/80 {
+  .dark:not(:has(.app-shell)) .border-slate-200\/80,
+  .dark:not(:has(.app-shell)) .border-slate-200\/70,
+  .dark:not(:has(.app-shell)) .border-slate-100\/80 {
     border-color: rgb(255 255 255 / 0.06) !important;
   }
 
-  .dark .ring-slate-200\/80,
-  .dark .ring-slate-200\/70 {
+  .dark:not(:has(.app-shell)) .ring-slate-200\/80,
+  .dark:not(:has(.app-shell)) .ring-slate-200\/70 {
     --tw-ring-color: rgb(255 255 255 / 0.06) !important;
   }
 
-  .dark .bg-slate-100,
-  .dark .bg-slate-50 {
+  .dark:not(:has(.app-shell)) .bg-slate-100,
+  .dark:not(:has(.app-shell)) .bg-slate-50 {
     background-color: rgb(16 16 16) !important;
   }
 
-  .dark .bg-slate-900 {
+  .dark:not(:has(.app-shell)) .bg-slate-900 {
     background-color: rgb(16 16 16) !important;
   }
 
-  .dark .bg-slate-900\/50,
-  .dark .bg-slate-950\/45 {
+  .dark:not(:has(.app-shell)) .bg-slate-900\/50,
+  .dark:not(:has(.app-shell)) .bg-slate-950\/45 {
     background-color: rgb(0 0 0 / 0.72) !important;
   }
 
-  .dark .bg-primary-muted {
+  .dark:not(:has(.app-shell)) .bg-primary-muted {
     background-color: rgb(16 16 16) !important;
   }
 
-  .dark .bg-primary-muted.text-primary {
+  .dark:not(:has(.app-shell)) .bg-primary-muted.text-primary {
     color: rgb(59 130 246) !important;
   }
 
-  .dark .border-primary\/20 {
+  .dark:not(:has(.app-shell)) .border-primary\/20 {
     border-color: rgb(255 255 255 / 0.08) !important;
   }
 
-  .dark .ring-primary\/20 {
+  .dark:not(:has(.app-shell)) .ring-primary\/20 {
     --tw-ring-color: rgb(20 87 247 / 0.22) !important;
   }
 
-  .dark .bg-slate-50\/80,
-  .dark .bg-slate-50\/70 {
+  .dark:not(:has(.app-shell)) .bg-slate-50\/80,
+  .dark:not(:has(.app-shell)) .bg-slate-50\/70 {
     background-color: rgb(10 10 10 / 0.82) !important;
   }
 
-  .dark .bg-white {
+  .dark:not(:has(.app-shell)) .bg-white {
     background-color: rgb(var(--color-surface)) !important;
   }
 
-  .dark .bg-white\/85 {
+  .dark:not(:has(.app-shell)) .bg-white\/85 {
     background-color: rgb(var(--color-surface) / 0.85) !important;
   }
 
-  .dark .bg-white\/90 {
+  .dark:not(:has(.app-shell)) .bg-white\/90 {
     background-color: rgb(var(--color-surface) / 0.9) !important;
   }
 
-  .dark .bg-white\/80 {
+  .dark:not(:has(.app-shell)) .bg-white\/80 {
     background-color: rgb(var(--color-surface) / 0.8) !important;
   }
 
-  .dark .hover\:bg-slate-50:hover {
+  .dark:not(:has(.app-shell)) .hover\:bg-slate-50:hover {
     background-color: rgb(16 16 16) !important;
   }
 
-  .dark .hover\:text-slate-900:hover {
+  .dark:not(:has(.app-shell)) .hover\:text-slate-900:hover {
     color: rgb(248 250 252) !important;
   }
 
-  .dark .focus\:bg-white:focus {
+  .dark:not(:has(.app-shell)) .focus\:bg-white:focus {
     background-color: rgb(var(--color-surface)) !important;
   }
 
-  .dark .from-white {
+  .dark:not(:has(.app-shell)) .from-white {
     --tw-gradient-from: rgb(var(--color-surface)) var(--tw-gradient-from-position) !important;
     --tw-gradient-to: rgb(var(--color-surface) / 0) var(--tw-gradient-to-position) !important;
     --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
   }
 
-  .dark .to-white {
+  .dark:not(:has(.app-shell)) .to-white {
     --tw-gradient-to: rgb(var(--color-surface)) var(--tw-gradient-to-position) !important;
   }
 
   /* Escala dark global: canvas preto, superfícies neutras e controles elevados. */
-  .dark [class*="dark:bg-slate-950"] {
+  .dark:not(:has(.app-shell)) [class*="dark:bg-slate-950"] {
     background-color: rgb(3 3 3 / 0.96) !important;
   }
 
-  .dark [class*="dark:bg-slate-900"] {
+  .dark:not(:has(.app-shell)) [class*="dark:bg-slate-900"] {
     background-color: rgb(8 8 8 / 0.96) !important;
   }
 
-  .dark [class*="dark:bg-slate-900/85"] {
+  .dark:not(:has(.app-shell)) [class*="dark:bg-slate-900/85"] {
     background-color: rgb(8 8 8) !important;
     background-image: linear-gradient(180deg, #101010 0%, #090909 46%, #050505 100%) !important;
     border-color: transparent !important;
   }
 
-  .dark [class*="dark:bg-slate-800"] {
+  .dark:not(:has(.app-shell)) [class*="dark:bg-slate-800"] {
     background-color: rgb(16 16 16) !important;
   }
 
-  .dark [class*="dark:bg-slate-700"] {
+  .dark:not(:has(.app-shell)) [class*="dark:bg-slate-700"] {
     background-color: rgb(24 24 24) !important;
   }
 
-  .dark [class*="dark:bg-slate-500"] {
+  .dark:not(:has(.app-shell)) [class*="dark:bg-slate-500"] {
     background-color: rgb(64 64 64) !important;
   }
 
-  .dark [class*="dark:bg-slate-400"] {
+  .dark:not(:has(.app-shell)) [class*="dark:bg-slate-400"] {
     background-color: rgb(82 82 82) !important;
   }
 
-  .dark [class*="dark:hover:bg-slate-950"]:hover,
-  .dark [class*="dark:hover:bg-slate-800"]:hover,
-  .dark [class*="dark:hover:bg-slate-700"]:hover {
+  .dark:not(:has(.app-shell)) [class*="dark:hover:bg-slate-950"]:hover,
+  .dark:not(:has(.app-shell)) [class*="dark:hover:bg-slate-800"]:hover,
+  .dark:not(:has(.app-shell)) [class*="dark:hover:bg-slate-700"]:hover {
     background-color: rgb(24 24 24) !important;
   }
 
-  .dark [class*="dark:border-slate-"] {
+  .dark:not(:has(.app-shell)) [class*="dark:border-slate-"] {
     border-color: rgb(255 255 255 / 0.06) !important;
   }
 
-  .dark .dark\:border-transparent,
-  .dark .dark\:hover\:border-transparent:hover {
+  .dark:not(:has(.app-shell)) .dark\:border-transparent,
+  .dark:not(:has(.app-shell)) .dark\:hover\:border-transparent:hover {
     border-color: transparent !important;
   }
 
-  .dark [class*="dark:ring-slate-"] {
+  .dark:not(:has(.app-shell)) [class*="dark:ring-slate-"] {
     --tw-ring-color: rgb(255 255 255 / 0.06) !important;
   }
 
-  .dark [class*="dark:from-slate-900"] {
+  .dark:not(:has(.app-shell)) [class*="dark:from-slate-900"] {
     --tw-gradient-from: rgb(12 12 12) var(--tw-gradient-from-position) !important;
     --tw-gradient-to: rgb(12 12 12 / 0) var(--tw-gradient-to-position) !important;
     --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
   }
 
-  .dark [class*="dark:via-slate-900"] {
+  .dark:not(:has(.app-shell)) [class*="dark:via-slate-900"] {
     --tw-gradient-to: rgb(8 8 8 / 0) var(--tw-gradient-to-position) !important;
     --tw-gradient-stops: var(--tw-gradient-from), rgb(8 8 8) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
   }
 
-  .dark [class*="dark:to-slate-950"] {
+  .dark:not(:has(.app-shell)) [class*="dark:to-slate-950"] {
     --tw-gradient-to: rgb(3 3 3) var(--tw-gradient-to-position) !important;
   }
 
-  .dark [class*="shadow-blue-900"] {
+  .dark:not(:has(.app-shell)) [class*="shadow-blue-900"] {
     --tw-shadow-color: rgb(0 0 0 / 0.5) !important;
   }
 
-  .dark .hover\:border-blue-200:hover {
+  .dark:not(:has(.app-shell)) .hover\:border-blue-200:hover {
     border-color: rgb(255 255 255 / 0.12) !important;
   }
 }
@@ -430,7 +432,7 @@
   .dashboard-surface:hover,
   .dashboard-surface:focus-within {
     transform: translateY(-3px);
-    border-color: rgb(20 87 247 / 0.34);
+    border-color: var(--app-accent);
   }
 
   .dashboard-momentum-card:hover,
@@ -440,19 +442,12 @@
 }
 
 .dashboard-momentum-card {
-  background-color: #1457f7 !important;
-  border-color: #1457f7 !important;
+  background-color: #1457f7;
+  border-color: #1457f7;
 }
 
-.dark .dashboard-momentum-card {
-  background-color: #1457f7 !important;
-  background-image: none !important;
-  border-color: #1457f7 !important;
-}
-
-.dark .dashboard-week-day-active {
-  background-color: #fff !important;
-  color: #1457f7 !important;
+.app-shell .dashboard-week-day-active {
+  color: var(--app-action);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,3 +1,6 @@
+import { motion, useReducedMotion } from 'framer-motion'
+import { APP_EASE } from './ui/appMotion'
+
 /**
  * @param {Object}   props
  * @param {string}   props.formatted - Tempo formatado "MM:SS"
@@ -18,6 +21,7 @@ export default function WorkoutTimer({
   onAdicionarTempo,
   onPularDescanso,
 }) {
+  const reducedMotion = useReducedMotion()
   const finalizado = status === 'finalizado'
   const idle       = status === 'idle'
   const descansando = status === 'descansando'
@@ -35,15 +39,15 @@ export default function WorkoutTimer({
 
   return (
     <section
-      className={`overflow-hidden rounded-2xl p-5 text-center text-white shadow-lg sm:p-6 ${
+      className={`overflow-hidden rounded-2xl bg-app-action p-5 text-center text-white shadow-card sm:p-6 ${
         descansando
-          ? 'bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 shadow-blue-300/30 dark:from-indigo-600 dark:via-blue-600 dark:to-cyan-600 dark:shadow-black/70'
-          : 'bg-primary shadow-blue-300/30 dark:border dark:border-slate-700/70 dark:bg-slate-900 dark:shadow-none'
+          ? 'ring-1 ring-white/25'
+          : ''
       }`}
       aria-live="polite"
     >
 
-      <p className="mb-2 text-xs font-semibold uppercase tracking-widest opacity-70">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/90">
         {descansando ? 'Descanso' : 'Tempo de treino'}
       </p>
 
@@ -52,21 +56,27 @@ export default function WorkoutTimer({
       </h2>
 
       {/* Status textual */}
-      <p className="text-xs font-medium text-white/75">
+      <motion.p
+        key={statusTexto}
+        initial={reducedMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.15, ease: APP_EASE }}
+        className="text-xs font-medium text-white/90"
+      >
         {statusTexto}
-      </p>
+      </motion.p>
 
       {descansando && (
         <>
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/20 dark:bg-white/20">
+          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/20">
             <div
-              className="h-full rounded-full bg-white transition-[width] duration-700 dark:bg-white"
+              className="h-full rounded-full bg-white transition-[width] duration-700"
               style={{ width: `${Math.max(0, Math.min(100, percentualDescanso))}%` }}
             />
           </div>
 
           {proximaSerie && (
-            <p className="mt-3 truncate text-xs text-white/75">
+            <p className="mt-3 truncate text-xs text-white/90">
               Próxima: <span className="font-semibold text-white">{proximaSerie}</span>
             </p>
           )}
@@ -76,7 +86,7 @@ export default function WorkoutTimer({
               type="button"
               onClick={onAdicionarTempo}
               disabled={disabled || pausado}
-              className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-3 text-sm font-bold text-blue-700 transition hover:bg-blue-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-white dark:text-blue-700 dark:hover:bg-blue-50"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-3 text-sm font-bold text-app-action transition hover:bg-white/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
             >
               <i className="fa-solid fa-plus" />
               +15s
@@ -85,7 +95,7 @@ export default function WorkoutTimer({
               type="button"
               onClick={onToggle}
               disabled={disabled}
-              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/35 bg-white/10 px-3 text-sm font-bold text-white transition hover:bg-white/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/35 bg-white/10 px-3 text-sm font-bold text-white transition hover:bg-white/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <i className={`fa-solid ${pausado ? 'fa-play' : 'fa-pause'}`} />
               {pausado ? 'Retomar' : 'Pausar treino'}
@@ -96,7 +106,7 @@ export default function WorkoutTimer({
             type="button"
             onClick={onPularDescanso}
             disabled={disabled || pausado}
-            className="mx-auto mt-3 flex min-h-8 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-semibold text-white/70 transition hover:bg-white/10 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+            className="mx-auto mt-3 flex min-h-8 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-semibold text-white/90 transition hover:bg-white/10 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
             <i className="fa-solid fa-forward" />
             Pular descanso
@@ -109,9 +119,9 @@ export default function WorkoutTimer({
         <button
           onClick={onToggle}
           disabled={disabled}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2.5 text-sm font-bold text-primary transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2.5 text-sm font-bold text-app-action transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <i className={`fa-solid ${timerAtivo ? 'fa-pause' : 'fa-play'} dark:text-white`} />
+          <i className={`fa-solid ${timerAtivo ? 'fa-pause' : 'fa-play'} `} />
           {timerAtivo ? 'Pausar' : 'Retomar'}
         </button>
       )}

@@ -1,4 +1,6 @@
 import { useLocation } from 'react-router-dom'
+import { MotionConfig } from 'framer-motion'
+import { PageMotionProvider } from '../components/ui/ContentEntrance'
 import Sidebar from '../components/Sidebar'
 import LoadingState from '../components/ui/LoadingState'
 import { resolveLoadingVariant } from '../components/ui/loadingVariants'
@@ -8,13 +10,17 @@ export default function DashboardLayout({ children, loading, loadingMessage }) {
   const loadingVariant = resolveLoadingVariant(pathname)
 
   return (
-    <div className="flex min-h-screen flex-col bg-canvas md:flex-row">
-      <Sidebar />
-      <main className="flex min-w-0 flex-1 flex-col p-6 md:p-8">
-        <div className="mx-auto min-w-0 w-full max-w-7xl flex-1">
-          {loading ? <LoadingState message={loadingMessage} variant={loadingVariant} /> : children}
-        </div>
-      </main>
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div className="app-shell flex min-h-screen flex-col bg-app-canvas text-app-ink md:flex-row">
+        <Sidebar />
+        <PageMotionProvider pageKey={pathname}>
+          <main className="flex min-w-0 flex-1 flex-col p-6 md:p-8">
+            <div className="mx-auto min-w-0 w-full max-w-7xl flex-1">
+              {loading ? <LoadingState message={loadingMessage} variant={loadingVariant} /> : children}
+            </div>
+          </main>
+        </PageMotionProvider>
+      </div>
+    </MotionConfig>
   )
 }

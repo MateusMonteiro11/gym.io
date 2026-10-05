@@ -94,21 +94,21 @@ export default function TreinoPlayer() {
   if (!treino) {
 
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex min-h-screen items-center justify-center bg-app-muted">
 
-        <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
+        <div className="max-w-md rounded-2xl border border-app-line bg-app-surface p-8 text-center">
 
-          <h2 className="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-50">
+          <h2 className="mb-2 text-xl font-semibold text-app-ink">
             Treino não encontrado
           </h2>
 
-          <p className="mb-5 text-slate-600 dark:text-slate-300">
+          <p className="mb-5 text-app-secondary">
             O treino solicitado não existe ou foi removido.
           </p>
 
           <button
             onClick={() => navigate('/treinar')}
-            className="rounded-xl bg-primary px-5 py-3 text-white hover:bg-primary-hover"
+            className="rounded-xl bg-app-action px-5 py-3 text-white hover:bg-app-action-hover"
           >
             Voltar
           </button>

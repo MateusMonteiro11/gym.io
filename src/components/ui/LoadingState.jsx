@@ -57,7 +57,7 @@ function PageHeaderSkeleton({
   )
 }
 
-const dashboardCardClass = 'rounded-2xl border border-slate-200 bg-white dark:border-white/[0.08] dark:bg-[#090909]'
+const dashboardCardClass = 'rounded-2xl border border-slate-200 app:border-app-line bg-white app:bg-app-surface dark:border-white/[0.08] dark:bg-[#090909]'
 
 function DashboardMomentumSkeleton() {
   return (
@@ -144,7 +144,7 @@ function DashboardHeatmapSkeleton() {
           <Skeleton className="mt-2 h-3.5 w-3/4 max-w-lg rounded-full sm:hidden" />
         </div>
         <div className="min-w-0 w-full space-y-3 xl:flex xl:w-[31rem] xl:flex-col xl:items-end">
-          <div className="flex w-fit max-w-full gap-1 rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]">
+          <div className="flex w-fit max-w-full gap-1 rounded-xl border border-slate-200 app:border-app-line bg-slate-50 app:bg-app-muted p-1 dark:border-white/[0.08] dark:bg-white/[0.04]">
             <Skeleton className="h-11 w-20 rounded-lg" />
             <Skeleton className="h-11 w-28 rounded-lg" />
           </div>
@@ -154,8 +154,8 @@ function DashboardHeatmapSkeleton() {
                 key={index}
                 className={`flex min-h-24 flex-col justify-between rounded-2xl border px-4 py-3.5 ${
                   index === 0
-                    ? 'border-primary/15 bg-primary/[0.055] dark:border-primary/25 dark:bg-primary/[0.09]'
-                    : 'border-slate-200 bg-slate-50 dark:border-white/[0.08] dark:bg-white/[0.04]'
+                    ? 'border-primary/15 app:border-app-accent/15 bg-primary/[0.055] app:bg-app-action/[0.055] dark:border-primary/25 dark:bg-primary/[0.09]'
+                    : 'border-slate-200 app:border-app-line bg-slate-50 app:bg-app-muted dark:border-white/[0.08] dark:bg-white/[0.04]'
                 }`}
               >
                 <Skeleton className="h-2.5 w-24 rounded-full" />
@@ -178,14 +178,14 @@ function DashboardHeatmapSkeleton() {
             >
               {heatmap.monthLabels.map((label, index) => (
                 <span key={`${label}-${index}`} className="h-5">
-                  {label && <span className="block h-2.5 w-7 rounded-full bg-slate-200 dark:bg-white/[0.08]" />}
+                  {label && <span className="block h-2.5 w-7 rounded-full bg-slate-200 app:bg-app-muted dark:bg-white/[0.08]" />}
                 </span>
               ))}
             </div>
             <div className="mt-2 flex items-start gap-3">
               <div className="grid h-[108px] w-6 shrink-0 grid-rows-7 gap-1">
                 {Array.from({ length: 7 }, (_, index) => (
-                  <span key={index} className={index % 2 === 1 ? 'my-auto h-2 w-5 rounded-full bg-slate-200 dark:bg-white/[0.08]' : ''} />
+                  <span key={index} className={index % 2 === 1 ? 'my-auto h-2 w-5 rounded-full bg-slate-200 app:bg-app-muted dark:bg-white/[0.08]' : ''} />
                 ))}
               </div>
               <div
@@ -200,7 +200,7 @@ function DashboardHeatmapSkeleton() {
                 {heatmap.days.map((day) => (
                   <span
                     key={day.key}
-                    className={`rounded-[3px] ${day.isOutsideRange ? 'bg-transparent' : 'border border-slate-200 bg-slate-100 dark:border-white/[0.06] dark:bg-white/[0.06]'}`}
+                    className={`rounded-[3px] ${day.isOutsideRange ? 'bg-transparent' : 'border border-slate-200 app:border-app-line bg-slate-100 app:bg-app-muted dark:border-white/[0.06] dark:bg-white/[0.06]'}`}
                   />
                 ))}
               </div>
@@ -209,12 +209,12 @@ function DashboardHeatmapSkeleton() {
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-5 dark:border-white/[0.06]">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 app:border-app-line pt-5 dark:border-white/[0.06]">
         <Skeleton className="h-3 w-64 max-w-full rounded-full" />
         <div className="flex items-center gap-2">
           <Skeleton className="h-3 w-10 rounded-full" />
           {Array.from({ length: 5 }, (_, index) => (
-            <span key={index} className="h-3 w-3 rounded-[3px] border border-slate-200 bg-slate-100 dark:border-white/[0.06] dark:bg-white/[0.06]" />
+            <span key={index} className="h-3 w-3 rounded-[3px] border border-slate-200 app:border-app-line bg-slate-100 app:bg-app-muted dark:border-white/[0.06] dark:bg-white/[0.06]" />
           ))}
           <Skeleton className="h-3 w-8 rounded-full" />
         </div>
@@ -264,8 +264,8 @@ function SectionHeadingSkeleton({ action = false }) {
 function WorkoutCardSkeleton({ personalized = false, className = '' }) {
   return (
     <div className={`relative isolate flex min-h-[24.5rem] pt-2 ${className}`}>
-      <span className={`pointer-events-none absolute inset-x-3 bottom-0 top-0 rounded-[1.75rem] ${personalized ? 'bg-slate-200 dark:bg-[#171717]' : 'bg-primary/15 dark:bg-primary/25'}`} />
-      <div className="relative z-10 flex min-h-96 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-surface dark:border-white/[0.06] dark:bg-[#080808]">
+      <span className={`pointer-events-none absolute inset-x-3 bottom-0 top-0 rounded-[1.75rem] ${personalized ? 'bg-slate-200 app:bg-app-muted dark:bg-[#171717]' : 'bg-primary/15 app:bg-app-action/15 dark:bg-primary/25'}`} />
+      <div className="relative z-10 flex min-h-96 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 app:border-app-line/80 bg-surface app:bg-app-surface dark:border-white/[0.06] dark:bg-[#080808]">
         <div className="flex h-20 shrink-0 items-center justify-between gap-2 px-4 py-4 md:h-28 md:flex-col md:items-start md:justify-center lg:h-20 lg:flex-row lg:items-center lg:justify-between">
           <Skeleton className="h-7 w-24 rounded-full" />
           {personalized && (
@@ -308,7 +308,7 @@ function WorkoutsSkeleton() {
   return (
     <>
       <PageHeaderSkeleton titleClassName="w-36" />
-      <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary-muted/60 p-6 dark:border-white/[0.06] dark:bg-[#090909] sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-primary/20 app:border-app-accent/20 bg-primary-muted/60 app:bg-app-selection/60 p-6 dark:border-white/[0.06] dark:bg-[#090909] sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-start gap-4">
           <Skeleton className="h-12 w-12 shrink-0 rounded-xl" />
           <div className="min-w-0 flex-1">
@@ -352,7 +352,7 @@ function HistorySkeleton() {
           ))}
         </div>
       </header>
-      <div className="flex min-h-[266px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
+      <div className="flex min-h-[266px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 app:border-app-line bg-white app:bg-app-surface py-16 text-center dark:border-slate-700/70 dark:bg-slate-900/85">
         <Skeleton className="h-16 w-16 rounded-2xl" />
         <Skeleton className="mt-4 h-5 w-56 rounded-lg" />
         <Skeleton className="mt-3 h-3.5 w-80 max-w-[78vw] rounded-full" />
@@ -363,7 +363,7 @@ function HistorySkeleton() {
 
 function TrainingWeekSelectorSkeleton() {
   return (
-    <div className="border-b border-slate-200/80 pb-10 dark:border-white/[0.07] sm:pb-6">
+    <div className="border-b border-slate-200/80 app:border-app-line/80 pb-10 dark:border-white/[0.07] sm:pb-6">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-5 sm:flex-nowrap">
         <div>
           <Skeleton className="h-3 w-20 rounded-full" />
@@ -381,7 +381,7 @@ function TrainingWeekSelectorSkeleton() {
             <div
               key={index}
               className={`flex min-h-[4.75rem] min-w-0 flex-col items-center justify-center rounded-2xl px-1 py-2 sm:min-h-[5.25rem] ${
-                index === 3 ? 'bg-primary/[0.06] dark:bg-white/[0.04]' : ''
+                index === 3 ? 'bg-primary/[0.06] app:bg-app-action/[0.06] dark:bg-white/[0.04]' : ''
               }`}
             >
               <Skeleton className="h-2.5 w-6 rounded-full" />
@@ -398,11 +398,11 @@ function TrainingWeekSelectorSkeleton() {
 function ScheduledWorkoutDeckSkeleton() {
   return (
     <div className="relative pt-8 sm:pt-10">
-      <div className="absolute inset-x-5 top-3 h-[18rem] rounded-[1.75rem] border border-primary/10 bg-primary/10 dark:border-white/[0.05] dark:bg-[#101010]" />
-      <div className="absolute inset-x-2 top-6 h-[18rem] rounded-[1.75rem] border border-primary/10 bg-primary/15 dark:border-white/[0.06] dark:bg-[#111]" />
+      <div className="absolute inset-x-5 top-3 h-[18rem] rounded-[1.75rem] border border-primary/10 app:border-app-accent/10 bg-primary/10 app:bg-app-action/10 dark:border-white/[0.05] dark:bg-[#101010]" />
+      <div className="absolute inset-x-2 top-6 h-[18rem] rounded-[1.75rem] border border-primary/10 app:border-app-accent/10 bg-primary/15 app:bg-app-action/15 dark:border-white/[0.06] dark:bg-[#111]" />
 
-      <div className="relative z-10 flex min-h-[21.5rem] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.07)] dark:border-white/[0.06] dark:bg-[#080808] dark:shadow-[0_24px_60px_rgba(0,0,0,0.36)] sm:min-h-[23rem]">
-        <div className="flex min-h-14 items-center justify-between gap-4 border-b border-slate-100 px-5 py-3 dark:border-white/[0.06] sm:px-6">
+      <div className="relative z-10 flex min-h-[21.5rem] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 app:border-app-line/80 bg-white app:bg-app-surface shadow-[0_18px_50px_rgba(15,23,42,0.07)] dark:border-white/[0.06] dark:bg-[#080808] dark:shadow-[0_24px_60px_rgba(0,0,0,0.36)] sm:min-h-[23rem]">
+        <div className="flex min-h-14 items-center justify-between gap-4 border-b border-slate-100 app:border-app-line px-5 py-3 dark:border-white/[0.06] sm:px-6">
           <Skeleton className="h-3 w-32 rounded-full" />
           <Skeleton className="h-11 w-11 rounded-full" />
         </div>
@@ -414,7 +414,7 @@ function ScheduledWorkoutDeckSkeleton() {
           <Skeleton className="mt-2 h-3.5 w-4/5 rounded-full" />
           <Skeleton className="mt-auto h-3 w-40 rounded-full" />
         </div>
-        <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-white/[0.06] dark:bg-[#050505] sm:p-5">
+        <div className="border-t border-slate-100 app:border-app-line bg-slate-50/70 app:bg-app-muted/70 p-4 dark:border-white/[0.06] dark:bg-[#050505] sm:p-5">
           <Skeleton className="h-12 w-full rounded-2xl" />
         </div>
       </div>
@@ -424,8 +424,8 @@ function ScheduledWorkoutDeckSkeleton() {
 
 function CatalogWorkoutCardSkeleton() {
   return (
-    <div className="flex min-h-[17rem] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white dark:border-white/[0.06] dark:bg-[#080808]">
-      <div className="flex min-h-14 items-center border-b border-slate-100 px-5 py-3 dark:border-white/[0.06] sm:px-6">
+    <div className="flex min-h-[17rem] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 app:border-app-line/80 bg-white app:bg-app-surface dark:border-white/[0.06] dark:bg-[#080808]">
+      <div className="flex min-h-14 items-center border-b border-slate-100 app:border-app-line px-5 py-3 dark:border-white/[0.06] sm:px-6">
         <Skeleton className="h-3 w-28 rounded-full" />
       </div>
       <div className="flex flex-1 flex-col px-5 py-6 sm:px-7">
@@ -436,7 +436,7 @@ function CatalogWorkoutCardSkeleton() {
         <Skeleton className="mt-2 h-3.5 w-4/5 rounded-full" />
         <Skeleton className="mt-auto h-3 w-36 rounded-full" />
       </div>
-      <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-white/[0.06] dark:bg-[#050505] sm:p-5">
+      <div className="border-t border-slate-100 app:border-app-line bg-slate-50/70 app:bg-app-muted/70 p-4 dark:border-white/[0.06] dark:bg-[#050505] sm:p-5">
         <Skeleton className="h-12 w-full rounded-2xl" />
       </div>
     </div>
@@ -503,7 +503,7 @@ function FormFieldSkeleton({ tall = false }) {
 
 function WorkoutViewSectionSkeleton({ rows = 5 }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-3xl border border-slate-200 app:border-app-line bg-white app:bg-app-surface p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex h-5 items-center">
@@ -526,7 +526,7 @@ function WorkoutViewSectionSkeleton({ rows = 5 }) {
 
 function WorkoutEditorSectionSkeleton() {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border border-slate-200 app:border-app-line bg-white app:bg-app-surface p-6 shadow-sm">
       <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-3">
           <Skeleton className="h-6 w-48 rounded-lg" />
@@ -553,7 +553,7 @@ function WorkoutDetailSkeleton({ editing = false, isNew = false }) {
     <>
       <PageHeaderSkeleton eyebrow actions={actions} titleClassName="w-64" />
       <section className={`mb-10 grid gap-6 ${editing ? 'lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]' : 'lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]'}`}>
-        <div className="min-w-0 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="min-w-0 rounded-[2rem] border border-slate-200 app:border-app-line bg-white app:bg-app-surface p-8 shadow-sm">
           {editing ? (
             <div className="space-y-6">
               <FormFieldSkeleton />
@@ -574,7 +574,7 @@ function WorkoutDetailSkeleton({ editing = false, isNew = false }) {
             </div>
           )}
         </div>
-        <div className="min-w-0 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="min-w-0 rounded-[2rem] border border-slate-200 app:border-app-line bg-white app:bg-app-surface p-8 shadow-sm">
           <div className="flex h-5 items-center">
             <Skeleton className="h-3 w-20 rounded-full" />
           </div>
@@ -607,14 +607,14 @@ function PlayerSkeleton() {
       </div>
       <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3 lg:items-start lg:gap-6">
         <div className="space-y-5 lg:col-span-2">
-          <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
+          <div className="space-y-4 rounded-2xl border border-slate-200 app:border-app-line bg-white app:bg-app-surface p-5 dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
             <div className="flex items-center justify-between gap-4">
               <Skeleton className="h-3 w-24 rounded-full" />
               <Skeleton className="h-3 w-56 max-w-[55%] rounded-full" />
             </div>
             <Skeleton className="h-2 w-full rounded-full" />
           </div>
-          <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
+          <div className="overflow-hidden rounded-2xl border border-gray-100 app:border-app-line bg-white app:bg-app-surface dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20">
             <div className="space-y-4 p-5">
               <div className="space-y-2">
                 <Skeleton className="h-2.5 w-24 rounded-full" />
@@ -636,13 +636,13 @@ function PlayerSkeleton() {
           </div>
         </div>
         <aside className="space-y-4">
-          <div className="overflow-hidden rounded-2xl bg-primary p-5 text-center text-white shadow-lg shadow-blue-300/30 dark:border dark:border-slate-700/70 dark:bg-slate-900 dark:shadow-none sm:p-6">
+          <div className="overflow-hidden rounded-2xl bg-primary app:bg-app-action p-5 text-center text-white shadow-lg shadow-blue-300/30 dark:border dark:border-slate-700/70 dark:bg-slate-900 dark:shadow-none sm:p-6">
             <Skeleton className="mx-auto h-3 w-24 rounded-full" inverse />
             <Skeleton className="mx-auto mt-3 h-14 w-40 rounded-xl" inverse />
             <Skeleton className="mx-auto mt-3 h-3 w-28 rounded-full" inverse />
           </div>
           <Skeleton className="h-16 w-full rounded-2xl" />
-          <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm shadow-slate-200/40 dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-none">
+          <div className="rounded-2xl border border-gray-100 app:border-app-line bg-white app:bg-app-surface p-5 shadow-sm shadow-slate-200/40 dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-none">
             <Skeleton className="h-3 w-28 rounded-full" />
             <Skeleton className="mt-3 h-[74px] w-full rounded-xl" />
             <div className="mt-3 space-y-2">

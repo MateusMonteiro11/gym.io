@@ -28,16 +28,16 @@ export function CategoryBreakdown({ items, selectedId, onSelect }) {
           onClick={() => onSelect(item.id)}
           onMouseEnter={() => onSelect(item.id)}
           onFocus={() => onSelect(item.id)}
-          className="w-full rounded-xl px-2 py-2 text-left text-slate-600 transition-colors duration-200 hover:bg-slate-50 hover:text-slate-900 focus-visible:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/[0.04] dark:hover:text-white dark:focus-visible:bg-white/[0.04]"
+          className="w-full rounded-xl px-2 py-2 text-left text-app-secondary transition-colors duration-200 hover:bg-app-muted hover:text-app-ink focus-visible:bg-app-muted"
         >
           <span className="flex min-h-8 items-center gap-3">
-            <span className="w-6 shrink-0 text-xs font-semibold tabular-nums text-primary">{index + 1}</span>
-            <span className={`min-w-0 flex-1 truncate text-sm font-semibold ${selectedId === item.id ? 'text-primary dark:text-blue-300' : ''}`}>{item.name}</span>
+            <span className="w-6 shrink-0 text-xs font-semibold tabular-nums text-app-accent">{index + 1}</span>
+            <span className={`min-w-0 flex-1 truncate text-sm font-semibold ${selectedId === item.id ? 'text-app-accent' : ''}`}>{item.name}</span>
             <span className="shrink-0 text-xs font-semibold tabular-nums">{percentageLabel(item.percentage)}</span>
           </span>
-          <span className="ml-9 block h-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/[0.06]" aria-hidden="true">
+          <span className="ml-9 block h-1 overflow-hidden rounded-full bg-app-muted" aria-hidden="true">
             <motion.i
-              className="block h-full rounded-full bg-primary"
+              className="block h-full rounded-full bg-app-action"
               animate={{ width: `${Math.max(5, item.percentage)}%`, opacity: 0.28 + item.intensity * 0.72 }}
               transition={{ duration: reduceMotion ? 0.01 : 0.18, ease: 'easeOut' }}
             />
@@ -49,7 +49,7 @@ export function CategoryBreakdown({ items, selectedId, onSelect }) {
       label={`Ver mais ${additional.length} ${additional.length === 1 ? 'categoria' : 'categorias'}`}
       openLabel="Ocultar categorias"
       className="history-category-more mt-4"
-      buttonClassName="text-xs text-slate-500 dark:text-slate-400"
+      buttonClassName="text-xs text-app-secondary"
       contentClassName="history-values-table"
     >
       <table>
@@ -72,16 +72,16 @@ export default function MuscleDistribution({ distribution }) {
     <div className="mb-6">
       <div><h2 id="history-muscle-title" className={ui.sectionTitle}>Distribuição muscular</h2><p className={ui.sectionSubtitle}>Presença dos exercícios concluídos no período.</p></div>
     </div>
-    {!selected ? <div className="flex min-h-52 flex-col items-center justify-center gap-3 px-4 text-center text-slate-500 dark:text-slate-400"><Layers3 size={24} aria-hidden="true" /><p className="max-w-sm text-sm leading-relaxed">Ainda não há dados suficientes para montar sua distribuição muscular.</p></div> : <>
+    {!selected ? <div className="flex min-h-52 flex-col items-center justify-center gap-3 px-4 text-center text-app-secondary"><Layers3 size={24} aria-hidden="true" /><p className="max-w-sm text-sm leading-relaxed">Ainda não há dados suficientes para montar sua distribuição muscular.</p></div> : <>
       <div className="mb-5 flex items-end justify-between gap-4" aria-live="polite">
         <div className="min-w-0">
-          <span className="text-xs text-slate-500 dark:text-slate-400">Categoria selecionada</span>
-          <strong className="mt-1 block truncate text-xl font-semibold tracking-tight text-slate-900 dark:text-white">{selected.name}</strong>
+          <span className="text-xs text-app-secondary">Categoria selecionada</span>
+          <strong className="mt-1 block truncate text-xl font-semibold tracking-tight text-app-ink">{selected.name}</strong>
         </div>
-        <div className="shrink-0 text-right"><b className="block text-xl font-semibold tabular-nums text-primary dark:text-blue-300">{percentageLabel(selected.percentage)}</b><small className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{occurrenceLabel(selected.count)}</small></div>
+        <div className="shrink-0 text-right"><b className="block text-xl font-semibold tabular-nums text-app-accent">{percentageLabel(selected.percentage)}</b><small className="mt-1 block text-xs text-app-secondary">{occurrenceLabel(selected.count)}</small></div>
       </div>
       <CategoryBreakdown items={distribution.items} selectedId={selected.id} onSelect={setSelectedId} />
     </>}
-    {!distribution.reliable && <p className="mt-5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{occurrenceLabel(distribution.unresolved)} sem categoria ou confirmação suficiente ficaram fora dos percentuais.</p>}
+    {!distribution.reliable && <p className="mt-5 text-xs leading-relaxed text-app-secondary">{occurrenceLabel(distribution.unresolved)} sem categoria ou confirmação suficiente ficaram fora dos percentuais.</p>}
   </Card>
 }

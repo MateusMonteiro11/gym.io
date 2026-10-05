@@ -13,17 +13,17 @@ function workoutCounts(appointment) {
 export default function DashboardNextWorkoutCard({ appointment, onStart, onView, onChoose }) {
   if (!appointment) {
     return (
-      <Card hover={false} className="dashboard-surface flex min-h-[330px] flex-col border-slate-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[#090909] sm:p-8">
+      <Card hover={false} className="dashboard-surface flex min-h-[330px] flex-col border-app-line bg-app-surface p-6 sm:p-8">
         <div className="flex items-start justify-between gap-5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Próxima ação</p>
-            <h2 className="mt-3 text-2xl font-semibold leading-tight text-slate-950 dark:text-white">Escolha o seu próximo treino</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-app-accent">Próxima ação</p>
+            <h2 className="mt-3 text-2xl font-semibold leading-tight text-app-ink">Escolha o seu próximo treino</h2>
           </div>
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-muted text-primary dark:bg-blue-950/60 dark:text-blue-300" aria-hidden="true">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-app-selection text-app-accent" aria-hidden="true">
             <i className="fa-solid fa-arrow-right" />
           </div>
         </div>
-        <p className="mt-5 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mt-5 max-w-md text-sm leading-relaxed text-app-secondary">
           Você não tem um treino agendado. Explore o catálogo e comece quando estiver pronto.
         </p>
         <div className="mt-auto pt-8">
@@ -47,20 +47,20 @@ export default function DashboardNextWorkoutCard({ appointment, onStart, onView,
   })
 
   return (
-    <Card hover={false} className="dashboard-surface flex min-h-[330px] flex-col border-slate-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[#090909] sm:p-8">
+    <Card hover={false} className="dashboard-surface flex min-h-[330px] flex-col border-app-line bg-app-surface p-6 sm:p-8">
       <div className="flex items-start justify-between gap-5">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{isToday ? 'Treino de hoje' : 'Próximo treino'}</p>
-          <p className="mt-2 text-sm capitalize text-slate-500 dark:text-slate-400">{isToday ? 'Hoje' : dateLabel}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-app-accent">{isToday ? 'Treino de hoje' : 'Próximo treino'}</p>
+          <p className="mt-2 text-sm capitalize text-app-secondary">{isToday ? 'Hoje' : dateLabel}</p>
         </div>
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-muted text-primary dark:bg-blue-950/60 dark:text-blue-300" aria-hidden="true">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-app-selection text-app-accent" aria-hidden="true">
           <i className={`fa-solid ${isToday ? 'fa-play' : 'fa-calendar-check'}`} />
         </div>
       </div>
 
       <div className="mt-8">
-        <h2 className="text-3xl font-semibold leading-tight tracking-[-0.035em] text-slate-950 dark:text-white">{workoutName}</h2>
-        <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">
+        <h2 className="text-3xl font-semibold leading-tight tracking-[-0.035em] text-app-ink">{workoutName}</h2>
+        <p className="mt-4 text-sm text-app-secondary">
           {counts.sections} {counts.sections === 1 ? 'seção' : 'seções'} <span aria-hidden="true">•</span>{' '}
           {counts.exercises} {counts.exercises === 1 ? 'exercício' : 'exercícios'}
         </p>

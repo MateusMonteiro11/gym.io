@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
+import ContentEntrance from '../components/ui/ContentEntrance'
 
 import {
   buscarTreinoCompleto,
@@ -62,13 +63,13 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
             setIsOpen(true)
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full border border-app-line rounded-xl px-4 py-3 bg-app-surface focus:outline-none focus:ring-2 focus:ring-app-accent focus:border-transparent"
         />
         {searchState && (
           <button
             type="button"
             onClick={() => onSearchChange('')}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-app-secondary hover:text-app-secondary"
           >
             <i className="fa-solid fa-times text-sm" />
           </button>
@@ -76,7 +77,7 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
       </div>
 
       {isOpen && searchState && (
-        <div className="absolute top-full left-0 right-0 z-10 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-72 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 z-10 mt-2 bg-app-surface border border-app-line rounded-xl shadow-lg max-h-72 overflow-y-auto">
           {filteredExercises.length > 0 ? (
             <div className="p-2">
               {filteredExercises.map((exercise) => (
@@ -87,18 +88,18 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
                     onSelectExercise(exercise.id_exercicio)
                     setIsOpen(false)
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-blue-50 text-slate-900 transition-colors duration-150 mb-1 last:mb-0"
+                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-app-selection text-app-ink transition-colors duration-150 mb-1 last:mb-0"
                 >
                   <p className="font-medium text-sm">{exercise.nome}</p>
                   {exercise.grupo_muscular && (
-                    <p className="text-xs text-slate-500">{exercise.grupo_muscular}</p>
+                    <p className="text-xs text-app-secondary">{exercise.grupo_muscular}</p>
                   )}
                 </button>
               ))}
             </div>
           ) : (
             <div className="p-4 text-center">
-              <p className="text-sm text-slate-500">Nenhum exercício encontrado</p>
+              <p className="text-sm text-app-secondary">Nenhum exercício encontrado</p>
             </div>
           )}
         </div>
@@ -120,7 +121,7 @@ function SectionEditor({
 
   return (
 
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border border-app-line bg-app-surface p-6 shadow-sm">
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
 
@@ -130,7 +131,7 @@ function SectionEditor({
             {section.nome}
           </h3>
 
-          <p className="text-sm text-slate-600 mt-2">
+          <p className="text-sm text-app-secondary mt-2">
             {section.descricao || 'Sem descrição'}
           </p>
 
@@ -140,7 +141,7 @@ function SectionEditor({
           <button
             type="button"
             onClick={() => onEditSection(section)}
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-2xl border border-app-line bg-app-surface px-4 py-2 text-sm font-semibold text-app-ink hover:bg-app-muted"
           >
             Editar
           </button>
@@ -148,7 +149,7 @@ function SectionEditor({
           <button
             type="button"
             onClick={() => onDeleteSection(section.id_secao)}
-            className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
+            className="rounded-2xl border border-app-danger bg-app-danger-muted px-4 py-2 text-sm font-semibold text-app-danger hover:bg-app-danger-muted"
           >
             Excluir
           </button>
@@ -177,7 +178,7 @@ function SectionEditor({
 
             <div
               key={item.id_treino_exercicio}
-              className="flex flex-col gap-3 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-2xl bg-app-muted p-4 sm:flex-row sm:items-center sm:justify-between"
             >
 
               <div>
@@ -186,7 +187,7 @@ function SectionEditor({
                   {item.exercicios?.nome}
                 </p>
 
-                <p className="text-xs text-slate-600">
+                <p className="text-xs text-app-secondary">
                   {item.series || 4} séries •{' '}
                   {item.repeticoes || 12} reps
                 </p>
@@ -194,14 +195,14 @@ function SectionEditor({
               </div>
 
               <div className="flex items-center justify-between gap-3 sm:justify-end">
-                <span className="text-xs text-slate-600">
+                <span className="text-xs text-app-secondary">
                   #{index + 1}
                 </span>
 
                 <button
                   type="button"
                   onClick={() => onRemoveExercise(item.id_treino_exercicio)}
-                  className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
+                  className="rounded-2xl border border-app-danger bg-app-danger-muted px-4 py-2 text-sm font-semibold text-app-danger hover:bg-app-danger-muted"
                 >
                   Excluir
                 </button>
@@ -563,11 +564,11 @@ export default function TreinosEditar() {
   return (
     <PageLoadingBoundary loading={loading} loadingMessage="Carregando treino...">
 
-        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <ContentEntrance className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
           <div>
 
-            <p className="text-sm text-primary font-semibold">
+            <p className="text-sm text-app-accent font-semibold">
               Editar treinos
             </p>
 
@@ -575,7 +576,7 @@ export default function TreinosEditar() {
               Personalize seu treino
             </h1>
 
-            <p className="text-slate-600 mt-2">
+            <p className="text-app-secondary mt-2">
               Ajuste seções e exercícios.
             </p>
 
@@ -585,7 +586,7 @@ export default function TreinosEditar() {
 
             <Link
               to="/treinos"
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="rounded-xl border border-app-line bg-app-surface px-4 py-2 text-sm font-semibold text-app-ink hover:bg-app-muted"
             >
               Voltar
             </Link>
@@ -594,7 +595,7 @@ export default function TreinosEditar() {
 
               <Link
                 to={`/treinos/visualizar/${id}`}
-                className="rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-900"
+                className="rounded-xl bg-app-neutral-action px-4 py-2 text-sm font-semibold text-white hover:bg-app-neutral-action"
               >
                 Visualizar treino
               </Link>
@@ -605,7 +606,7 @@ export default function TreinosEditar() {
               <button
                 type="button"
                 onClick={handleDeleteTreino}
-                className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
+                className="rounded-xl border border-app-danger bg-app-danger-muted px-4 py-2 text-sm font-semibold text-app-danger hover:bg-app-danger-muted"
               >
                 Excluir treino
               </button>
@@ -613,13 +614,13 @@ export default function TreinosEditar() {
 
           </div>
 
-        </div>
+        </ContentEntrance>
 
-        <section className="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <ContentEntrance as="section" index={1} className="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
 
-          <div className="min-w-0 rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
+          <div className="min-w-0 rounded-[2rem] bg-app-surface p-8 shadow-sm border border-app-line">
 
-            <label className="text-sm font-semibold text-slate-700">
+            <label className="text-sm font-semibold text-app-ink">
               Nome do treino
             </label>
 
@@ -628,10 +629,10 @@ export default function TreinosEditar() {
               value={workoutName}
               maxLength={MAX_WORKOUT_NAME_LENGTH}
               onChange={(e) => setWorkoutName(e.target.value)}
-              className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-blue-100"
+              className="mt-3 w-full rounded-3xl border border-app-line bg-app-muted px-5 py-4 text-lg font-semibold outline-none focus:border-app-accent focus:ring-2 focus:ring-app-accent"
             />
 
-            <label className="text-sm font-semibold text-slate-700 mt-6 block">
+            <label className="text-sm font-semibold text-app-ink mt-6 block">
               Descrição do treino (opcional)
             </label>
 
@@ -641,13 +642,13 @@ export default function TreinosEditar() {
               maxLength={MAX_WORKOUT_DESCRIPTION_LENGTH}
               onChange={(e) => setWorkoutDescription(e.target.value)}
               placeholder="Adicione uma descrição breve para seu treino"
-              className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-blue-100 resize-none"
+              className="mt-3 w-full rounded-3xl border border-app-line bg-app-muted px-5 py-4 text-sm outline-none focus:border-app-accent focus:ring-2 focus:ring-app-accent resize-none"
             />
 
             <button
               onClick={handleSalvarTreino}
               disabled={saving}
-              className="mt-6 rounded-2xl bg-primary px-5 py-3 text-white font-semibold hover:bg-primary-hover disabled:opacity-50"
+              className="mt-6 rounded-2xl bg-app-action px-5 py-3 text-white font-semibold hover:bg-app-action-hover disabled:opacity-50"
             >
 
               {saving
@@ -658,9 +659,9 @@ export default function TreinosEditar() {
 
           </div>
 
-          <div className="min-w-0 rounded-[2rem] bg-white p-8 shadow-sm border border-slate-200">
+          <div className="min-w-0 rounded-[2rem] bg-app-surface p-8 shadow-sm border border-app-line">
 
-            <p className="text-sm text-slate-600 uppercase tracking-[0.18em]">
+            <p className="text-sm text-app-secondary uppercase tracking-[0.18em]">
               Resumo
             </p>
 
@@ -678,16 +679,16 @@ export default function TreinosEditar() {
                 setNewSectionDescription('')
                 setShowSectionModal(true)
               }}
-              className="mt-6 inline-flex items-center justify-center rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover"
+              className="mt-6 inline-flex items-center justify-center rounded-3xl bg-app-action px-5 py-3 text-sm font-semibold text-white hover:bg-app-action-hover"
             >
               + Adicionar nova seção
             </button>
 
           </div>
 
-        </section>
+        </ContentEntrance>
 
-        <section className="space-y-6">
+        <ContentEntrance as="section" index={2} className="space-y-6">
 
           {sections.map((section) => (
 
@@ -703,25 +704,25 @@ export default function TreinosEditar() {
 
           ))}
 
-        </section>
+        </ContentEntrance>
 
       {showSectionModal && (
 
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-app-neutral-action/50 backdrop-blur-sm">
 
-      <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl">
+      <div className="w-full max-w-lg rounded-3xl bg-app-surface p-8 shadow-2xl">
 
         <h2 className="text-2xl font-bold">
           {editingSection ? 'Editar seção' : 'Nova seção'}
         </h2>
 
-        <p className="text-slate-600 mt-2">
+        <p className="text-app-secondary mt-2">
           Configure o nome e descrição da seção.
         </p>
 
         <div className="mt-6">
 
-          <label className="text-sm font-semibold text-slate-700">
+          <label className="text-sm font-semibold text-app-ink">
             Nome da seção
           </label>
 
@@ -730,14 +731,14 @@ export default function TreinosEditar() {
             value={newSectionName}
             maxLength={MAX_SECTION_NAME_LENGTH}
             onChange={(e) => setNewSectionName(e.target.value)}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary"
+            className="mt-2 w-full rounded-2xl border border-app-line bg-app-muted px-4 py-3 outline-none focus:border-app-accent"
           />
 
         </div>
 
         <div className="mt-5">
 
-          <label className="text-sm font-semibold text-slate-700">
+          <label className="text-sm font-semibold text-app-ink">
             Descrição
           </label>
 
@@ -747,7 +748,7 @@ export default function TreinosEditar() {
             onChange={(e) => setNewSectionDescription(e.target.value)}
             rows={4}
             placeholder="Descrição opcional..."
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary resize-none"
+            className="mt-2 w-full rounded-2xl border border-app-line bg-app-muted px-4 py-3 outline-none focus:border-app-accent resize-none"
           />
 
         </div>
@@ -759,14 +760,14 @@ export default function TreinosEditar() {
               setShowSectionModal(false)
               setEditingSection(null)
             }}
-            className="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-2xl border border-app-line px-5 py-3 font-semibold text-app-ink hover:bg-app-muted"
           >
             Cancelar
           </button>
 
           <button
             onClick={handleSaveSection}
-            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-white hover:bg-primary-hover"
+            className="rounded-2xl bg-app-action px-5 py-3 font-semibold text-white hover:bg-app-action-hover"
           >
             {editingSection ? 'Atualizar seção' : 'Criar seção'}
           </button>

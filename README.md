@@ -63,6 +63,13 @@ gym.io/
 As páginas de rota continuam em `src/pages`, incluindo `Login.jsx` e `Cadastro.jsx`.
 Os serviços de autenticação permanecem em `src/services/auth`.
 
+A área autenticada usa os tokens semânticos de `src/styles/appTheme.css`, registrados
+com `@theme inline`. O marcador `.app-shell` ativa a paleta no documento, incluindo
+diálogos e notificações globais; a variante `app:` adapta componentes compartilhados
+sem alterar as páginas públicas. `ContentEntrance` e `appMotion` centralizam as entradas
+de 220 ms, com atraso máximo de 165 ms e suporte a movimento reduzido. O layout registra
+os blocos já apresentados para evitar repetir entradas após filtros ou recarregamentos.
+
 O Tailwind cobre os layouts simples. `src/styles/index.css` contém os estilos globais;
 `features/publicSite/publicSite.css` reúne o tema e os estilos públicos compartilhados;
 `features/landing/landing.css` contém apenas a apresentação específica da landing.
