@@ -14,11 +14,11 @@ const ICONS = {
 }
 
 const ICON_STYLES = {
-  success: 'bg-success-muted text-success',
-  error: 'bg-danger-muted text-danger',
-  warning: 'bg-amber-50 text-amber-600',
-  info: 'bg-primary-muted text-primary',
-  danger: 'bg-danger-muted text-danger',
+  success: 'bg-success-muted app:bg-app-success-muted text-success app:text-app-success',
+  error: 'bg-danger-muted app:bg-app-danger-muted text-danger app:text-app-danger',
+  warning: 'bg-amber-50 app:bg-app-warning-muted text-amber-600 app:text-app-warning',
+  info: 'bg-primary-muted app:bg-app-selection text-primary app:text-app-accent',
+  danger: 'bg-danger-muted app:bg-app-danger-muted text-danger app:text-app-danger',
 }
 
 const NOTIFICATION_DURATIONS = {
@@ -135,9 +135,9 @@ export function UiProvider({ children }) {
       <Modal open={!!feedback} onClose={handleFeedbackClose} size="sm">
         <div className="p-6">
           <DialogIcon type={feedback?.type} />
-          <h3 className="text-center text-lg font-semibold text-slate-900">{feedback?.title}</h3>
+          <h3 className="text-center text-lg font-semibold text-slate-900 app:text-app-ink">{feedback?.title}</h3>
           {feedback?.message && (
-            <p className="mt-2 whitespace-pre-line text-center text-sm leading-relaxed text-slate-600">
+            <p className="mt-2 whitespace-pre-line text-center text-sm leading-relaxed text-slate-600 app:text-app-secondary">
               {feedback.message}
             </p>
           )}
@@ -150,9 +150,9 @@ export function UiProvider({ children }) {
       <Modal open={!!confirmState} onClose={() => finishConfirm(false)} size="sm">
         <div className="p-6">
           <DialogIcon type={confirmState?.variant === 'danger' ? 'danger' : 'warning'} />
-          <h3 className="text-center text-lg font-semibold text-slate-900">{confirmState?.title}</h3>
+          <h3 className="text-center text-lg font-semibold text-slate-900 app:text-app-ink">{confirmState?.title}</h3>
           {confirmState?.message && (
-            <p className="mt-2 text-center text-sm leading-relaxed text-slate-600">{confirmState.message}</p>
+            <p className="mt-2 text-center text-sm leading-relaxed text-slate-600 app:text-app-secondary">{confirmState.message}</p>
           )}
           <div className="mt-6 flex gap-3">
             <Button variant="secondary" className="flex-1" onClick={() => finishConfirm(false)}>

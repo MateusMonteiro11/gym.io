@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
+import ContentEntrance from '../components/ui/ContentEntrance'
 import PreWorkoutModal from '../components/PreWorkoutModal'
 import ScheduledWorkoutDeck from '../components/training/ScheduledWorkoutDeck'
 import WorkoutCatalog from '../components/training/WorkoutCatalog'
@@ -181,19 +182,19 @@ export default function Treinar() {
       loadingMessage="Carregando treinos..."
     >
       <div className="mx-auto w-full max-w-5xl pb-10 sm:pb-16">
-        <header className="mb-9 max-w-2xl sm:mb-12">
-          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-primary">
+        <ContentEntrance as="header" className="mb-9 max-w-2xl sm:mb-12">
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-app-accent">
             Seu próximo movimento
           </p>
-          <h1 className="mt-3 text-[clamp(2.5rem,8vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-slate-950 dark:text-white">
+          <h1 className="mt-3 text-[clamp(2.5rem,8vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-app-ink">
             Treinar
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
+          <p className="mt-4 max-w-xl text-sm leading-6 text-app-secondary sm:text-base">
             Encontre o treino certo para o dia e comece sem perder o ritmo.
           </p>
-        </header>
+        </ContentEntrance>
 
-        <section className="mx-auto max-w-3xl" aria-labelledby="agenda-title">
+        <ContentEntrance as="section" index={1} className="mx-auto max-w-3xl" aria-labelledby="agenda-title">
           <WorkoutWeekSelector
             weekStart={weekStart}
             selectedDate={selectedDate}
@@ -207,15 +208,15 @@ export default function Treinar() {
           <div className="mt-8 sm:mt-10">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-primary">
+                <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-app-accent">
                   Agenda do dia
                 </p>
-                <h2 id="agenda-title" className="mt-2 text-2xl font-semibold tracking-[-0.035em] text-slate-950 dark:text-white sm:text-3xl">
+                <h2 id="agenda-title" className="mt-2 text-2xl font-semibold tracking-[-0.035em] text-app-ink sm:text-3xl">
                   {formatAgendaTitle(selectedDate, today)}
                 </h2>
               </div>
               {selectedAppointments.length > 0 ? (
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-medium text-app-secondary">
                   {selectedAppointments.length} {selectedAppointments.length === 1 ? 'treino' : 'treinos'}
                 </p>
               ) : null}
@@ -233,8 +234,9 @@ export default function Treinar() {
               onBrowseWorkouts={handleBrowseWorkouts}
             />
           </div>
-        </section>
+        </ContentEntrance>
 
+        <ContentEntrance index={2}>
         <WorkoutCatalog
           workouts={treinos}
           initialSelection={location.state?.catalogSelection}
@@ -243,6 +245,7 @@ export default function Treinar() {
           onManageWorkouts={() => navigate('/treinos')}
         />
 
+        </ContentEntrance>
         <PreWorkoutModal
           open={modalDescansoOpen}
           treino={treinoSelecionado}

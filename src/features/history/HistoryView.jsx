@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { motion, MotionConfig, useReducedMotion } from 'framer-motion'
+import ContentEntrance from '../../components/ui/ContentEntrance.jsx'
 import { ArrowRight, Dumbbell } from 'lucide-react'
 
 import Card from '../../components/ui/Card.jsx'
@@ -25,7 +25,6 @@ import { canonicalHistoryParams, exerciseHistoryParams, parentHistoryParams, per
 import './history.css'
 
 export default function HistoryView({ userId, repository, initialNow, demonstration = false }) {
-  const reduceMotion = useReducedMotion()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -158,35 +157,27 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
   if (view === 'exercise') return <div className="history-page mx-auto max-w-4xl pb-16"><ExerciseProgression session={selected} exercise={exercise} sessions={visible} sets={visibleSets} onBack={() => goBack('workout')} onWorkoutSelect={(id, button) => openWorkout(id, button, 'exercise')} backRef={backRef} /></div>
   if (view === 'workout') return <div className="history-page mx-auto max-w-4xl pb-16"><WorkoutDetail session={selected} resource={detail} onBack={() => goBack(location.state?.historyParent === 'exercise' ? 'exercise' : 'overview')} backLabel={location.state?.historyParent === 'exercise' ? 'Voltar à evolução' : 'Voltar ao histórico'} onExercise={openExercise} backRef={backRef} /></div>
 
-  const narrative = {
-    hidden: { opacity: 1 },
-    visible: { opacity: 1, transition: { staggerChildren: reduceMotion ? 0 : 0.055 } },
-  }
-  const chapter = reduceMotion
-    ? { hidden: { opacity: 1 }, visible: { opacity: 1 } }
-    : { hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } } }
-
-  if (!allSessions.length) return <MotionConfig reducedMotion="user"><motion.div className="history-page mx-auto max-w-6xl pb-16" variants={narrative} initial="hidden" animate="visible">
-    <motion.div variants={chapter}><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></motion.div>
-    <motion.div variants={chapter}>
+  if (!allSessions.length) return <div className="history-page mx-auto max-w-6xl pb-16">
+    <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></ContentEntrance>
+    <ContentEntrance index={1}>
       <Card hover={false} className="mt-6 flex flex-col items-center px-6 py-12 text-center sm:py-14">
-        <Dumbbell size={26} className="mx-auto text-slate-400" aria-hidden="true" />
+        <Dumbbell size={26} className="mx-auto text-app-secondary" aria-hidden="true" />
         <div className="mt-5 flex w-full flex-col items-center gap-3 text-center">
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Ainda não há treinos no seu histórico.</h2>
-          <p className="w-full max-w-lg text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">Finalize seu primeiro treino para começar a acompanhar sua evolução.</p>
+          <h2 className="text-xl font-semibold text-app-ink">Ainda não há treinos no seu histórico.</h2>
+          <p className="w-full max-w-lg text-center text-sm leading-relaxed text-app-secondary">Finalize seu primeiro treino para começar a acompanhar sua evolução.</p>
         </div>
         <Link to="/treinar" className={`${ui.btnPrimary} mt-8 min-h-11`}>Começar treino<ArrowRight size={16} aria-hidden="true" /></Link>
       </Card>
-    </motion.div>
-  </motion.div></MotionConfig>
+    </ContentEntrance>
+  </div>
 
-  return <MotionConfig reducedMotion="user"><motion.div className="history-page mx-auto max-w-6xl pb-16" variants={narrative} initial="hidden" animate="visible">
-    <motion.div variants={chapter}><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></motion.div>
-    <motion.div variants={chapter} className="mt-6 grid min-w-0 grid-cols-1 items-start gap-6 xl:grid-cols-5">
+  return <div className="history-page mx-auto max-w-6xl pb-16">
+    <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></ContentEntrance>
+    <ContentEntrance index={1} className="mt-6 grid min-w-0 grid-cols-1 items-start gap-6 xl:grid-cols-5">
       <TrainingRhythm data={trend} metric={trendMetric} onMetricChange={setTrendMetric} />
       <MuscleDistribution distribution={categoryDistribution} />
-    </motion.div>
-    <motion.div variants={chapter} className="mt-16 sm:mt-20"><FeaturedExercises data={featuredExercises} /></motion.div>
-    <motion.div variants={chapter} className="mt-16 sm:mt-20"><WorkoutHistory sessions={recentSessions} allSessions={allSessions} onSelect={openWorkout} /></motion.div>
-  </motion.div></MotionConfig>
+    </ContentEntrance>
+    <ContentEntrance index={2} className="mt-16 sm:mt-20"><FeaturedExercises data={featuredExercises} /></ContentEntrance>
+    <ContentEntrance index={3} className="mt-16 sm:mt-20"><WorkoutHistory sessions={recentSessions} allSessions={allSessions} onSelect={openWorkout} /></ContentEntrance>
+  </div>
 }

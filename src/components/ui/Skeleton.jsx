@@ -17,7 +17,7 @@ export function SkeletonList({ items = 3, compact = false, className = '' }) {
       {Array.from({ length: items }, (_, index) => (
         <div
           key={index}
-          className={`rounded-2xl border border-slate-200/80 bg-white/70 dark:border-white/[0.06] dark:bg-[#0b0b0b] ${
+          className={`rounded-2xl border border-slate-200/80 app:border-app-line bg-white/70 app:bg-app-surface/70 dark:border-white/[0.06] dark:bg-[#0b0b0b] ${
             compact ? 'p-3' : 'p-4'
           }`}
         >

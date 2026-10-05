@@ -14,12 +14,12 @@ export default function DashboardMomentumCard({ insights }) {
   return (
     <Card
       hover={false}
-      className="dashboard-surface dashboard-momentum-card relative min-h-[330px] overflow-hidden border-primary bg-primary p-6 text-white sm:p-8"
+      className="dashboard-surface dashboard-momentum-card relative min-h-[330px] overflow-hidden border-app-accent bg-app-action p-6 text-white sm:p-8"
     >
       <div className="relative z-10 flex h-full flex-col">
         <div className="flex items-start justify-between gap-5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/75">Ritmo semanal</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/90">Ritmo semanal</p>
             <h2 className="mt-3 max-w-lg text-2xl font-semibold leading-tight text-white sm:text-3xl">
               Seu movimento desta semana
             </h2>
@@ -35,7 +35,7 @@ export default function DashboardMomentumCard({ insights }) {
           </strong>
           <div className="pb-1">
             <p className="text-sm font-medium text-white">{insights.currentWeekExercises === 1 ? 'exercício concluído' : 'exercícios concluídos'}</p>
-            <p className="mt-1 text-xs text-white/70">{comparisonCopy(insights.currentWeekExercises, insights.previousWeekExercises)}</p>
+            <p className="mt-1 text-xs text-white/90">{comparisonCopy(insights.currentWeekExercises, insights.previousWeekExercises)}</p>
           </div>
         </div>
 
@@ -43,7 +43,7 @@ export default function DashboardMomentumCard({ insights }) {
           <div className="grid grid-cols-7 gap-2" aria-label="Atividade da semana atual">
             {insights.weekDays.map((day) => (
               <div key={day.key} className="min-w-0 text-center">
-                <span className="block truncate text-[10px] font-semibold uppercase text-white/60">
+                <span className="block truncate text-[10px] font-semibold uppercase text-white/90">
                   {weekDayFormatter.format(day.date).replace('.', '')}
                 </span>
                 <span
@@ -51,8 +51,8 @@ export default function DashboardMomentumCard({ insights }) {
                     day.isFuture
                       ? 'border-white/[0.08] bg-white/[0.04] text-white/30'
                       : day.count > 0
-                        ? 'dashboard-week-day-active border-white/30 bg-white text-primary'
-                        : 'border-white/[0.12] bg-white/[0.08] text-white/65'
+                        ? 'dashboard-week-day-active border-white/30 bg-white text-app-accent'
+                        : 'border-white/[0.12] bg-white/[0.08] text-white/90'
                   } ${day.isToday ? 'ring-2 ring-white/60 ring-offset-2 ring-offset-primary' : ''}`}
                   aria-label={`${day.date.toLocaleDateString('pt-BR', { dateStyle: 'full' })}: ${day.count} ${day.count === 1 ? 'exercício concluído' : 'exercícios concluídos'}`}
                 >

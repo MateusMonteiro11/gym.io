@@ -8,7 +8,7 @@ const categories = [
   { id: 'sistema', label: 'Sistema', cardLabel: 'Treino do sistema' },
 ]
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-black'
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2'
 
 export default function WorkoutCatalog({
   workouts,
@@ -106,16 +106,16 @@ export default function WorkoutCatalog({
     <section ref={sectionRef} id="treinos-disponiveis" className="mt-16 min-w-0 scroll-mt-8 sm:mt-20" aria-labelledby="catalog-title">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-primary">Escolha livre</p>
-          <h2 id="catalog-title" className="mt-2 text-2xl font-semibold tracking-[-0.035em] text-slate-950 dark:text-white sm:text-3xl">
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-app-accent">Escolha livre</p>
+          <h2 id="catalog-title" className="mt-2 text-2xl font-semibold tracking-[-0.035em] text-app-ink sm:text-3xl">
             Treinos disponíveis
           </h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Comece agora, mesmo sem um agendamento.</p>
+          <p className="mt-2 text-sm text-app-secondary">Comece agora, mesmo sem um agendamento.</p>
         </div>
         <button
           type="button"
           onClick={onManageWorkouts}
-          className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-primary transition-colors hover:bg-primary-muted dark:hover:bg-[#101010] ${focusRing}`}
+          className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-app-accent transition-colors hover:bg-app-selection  ${focusRing}`}
         >
           Gerenciar
           <ArrowRight size={16} aria-hidden="true" />
@@ -123,7 +123,7 @@ export default function WorkoutCatalog({
       </div>
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div role="tablist" aria-label="Categorias de treinos" className="inline-flex max-w-full gap-1 rounded-2xl bg-slate-200/60 p-1 dark:bg-white/[0.05]">
+        <div role="tablist" aria-label="Categorias de treinos" className="inline-flex max-w-full gap-1 rounded-2xl bg-app-muted/60 p-1">
           {categories.map((item, index) => (
             <button
               key={item.id}
@@ -138,8 +138,8 @@ export default function WorkoutCatalog({
               onKeyDown={(event) => handleTabKeyDown(event, index)}
               className={`inline-flex min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${focusRing} ${
                 category === item.id
-                  ? 'bg-white text-primary shadow-sm dark:bg-[#181818]'
-                  : 'text-slate-600 hover:bg-white/60 dark:text-slate-400 dark:hover:bg-white/[0.04]'
+                  ? 'bg-app-surface text-app-accent shadow-sm dark:hover:bg-app-line'
+                  : 'text-app-secondary hover:bg-app-surface/60 dark:hover:bg-app-line dark:hover:text-app-ink'
               }`}
             >
               {item.label}
@@ -155,7 +155,7 @@ export default function WorkoutCatalog({
               aria-controls={`catalog-panel-${category}`}
               disabled={direction < 0 ? !navigation.previous : !navigation.next}
               onClick={() => scrollCards(direction)}
-              className={`flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-default disabled:opacity-35 dark:border-white/[0.1] dark:bg-[#080808] dark:text-slate-200 dark:hover:bg-[#181818] ${focusRing}`}
+              className={`flex h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface text-app-ink transition-colors hover:bg-app-muted disabled:cursor-default disabled:opacity-35     ${focusRing}`}
             >
               {direction < 0 ? <ArrowLeft size={18} aria-hidden="true" /> : <ArrowRight size={18} aria-hidden="true" />}
             </button>
@@ -174,11 +174,11 @@ export default function WorkoutCatalog({
           className={`min-w-0 rounded-2xl ${focusRing}`}
         >
           {category === item.id && (visibleWorkouts.length === 0 ? (
-            <div className="rounded-[1.75rem] border border-dashed border-slate-300 px-5 py-10 text-center dark:border-white/[0.1]">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <div className="rounded-[1.75rem] border border-dashed border-app-line px-5 py-10 text-center">
+              <h3 className="text-lg font-semibold text-app-ink">
                 {category === 'usuario' ? 'Nenhum treino personalizado ainda' : 'Nenhum treino do sistema disponível'}
               </h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-sm text-app-secondary">
                 {category === 'usuario'
                   ? 'Crie seu treino ou personalize um modelo na área de Treinos.'
                   : groupedWorkouts.usuario.length > 0
@@ -212,7 +212,7 @@ export default function WorkoutCatalog({
                           data-workout-preview
                           aria-label={`Visualizar treino: ${workout.nome || 'Treino'}`}
                           onClick={() => onViewWorkout(workout, { category, workoutId: workout.id_treino })}
-                          className={`min-h-11 w-full rounded-xl px-2 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary-muted dark:hover:bg-[#181818] ${focusRing}`}
+                          className={`min-h-11 w-full rounded-xl px-2 py-2 text-sm font-semibold text-app-accent transition-colors hover:bg-app-selection  ${focusRing}`}
                         >
                           Visualizar treino
                         </button>

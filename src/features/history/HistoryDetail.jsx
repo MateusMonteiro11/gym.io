@@ -38,7 +38,7 @@ export function HistorySkeleton({ detail = false, embedded = false }) {
     </div>
     <Card hover={false} className="p-6 sm:p-8">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {Array.from({ length: 4 }, (_, index) => <div key={index} className="rounded-xl bg-primary-muted p-3 dark:bg-primary/10 sm:p-4">
+        {Array.from({ length: 4 }, (_, index) => <div key={index} className="rounded-xl bg-app-selection p-3 sm:p-4">
           <Skeleton className="h-3 w-24 rounded-full" />
           <Skeleton className="mt-3 h-8 w-20 rounded-lg" />
         </div>)}

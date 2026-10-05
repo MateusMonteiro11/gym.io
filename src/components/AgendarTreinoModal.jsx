@@ -49,13 +49,13 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
     >
       <ModalHeader title="Agendar treino" subtitle="Escolha quando deseja realizar este treino" onClose={onClose} />
       <div className="min-w-0 max-w-full space-y-5 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:space-y-6 sm:p-6">
-        <Card className="min-w-0 max-w-full border-slate-100 bg-slate-50 p-4 shadow-none">
+        <Card className="min-w-0 max-w-full border-app-line bg-app-muted p-4 shadow-none">
           <div className="flex min-w-0 items-start justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
-              <h3 className="break-words font-semibold text-slate-900">{treino?.nome}</h3>
-              <p className="mt-1 break-words text-sm text-slate-600">{treino?.descricao || 'Sem descrição'}</p>
+              <h3 className="break-words font-semibold text-app-ink">{treino?.nome}</h3>
+              <p className="mt-1 break-words text-sm text-app-secondary">{treino?.descricao || 'Sem descrição'}</p>
             </div>
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-muted text-primary">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-selection text-app-accent">
               <i className="fa-solid fa-dumbbell" />
             </span>
           </div>
@@ -68,6 +68,7 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
           <Input
             id="data-agendamento"
             type="date"
+            lang="pt-BR"
             value={dataAgendada}
             onChange={(event) => {
               const nextValue = event.target.value

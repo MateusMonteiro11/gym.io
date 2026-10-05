@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import { appEntrance } from '../ui/appMotion'
 
 import Button from '../ui/Button'
 import WorkoutCard from './WorkoutCard'
@@ -33,20 +34,20 @@ export default function ScheduledWorkoutDeck({
 
   if (!activeAppointment) {
     return (
-      <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-white/60 px-6 py-10 text-center dark:border-white/[0.1] dark:bg-[#080808] sm:px-10 sm:py-12">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-muted text-primary dark:bg-[#101010]">
+      <div className="rounded-[1.75rem] border border-dashed border-app-line bg-app-surface/60 px-6 py-10 text-center sm:px-10 sm:py-12">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-app-selection text-app-accent">
           <i className="fa-regular fa-calendar-check text-lg" aria-hidden="true" />
         </div>
-        <h3 className="mt-5 text-xl font-semibold tracking-[-0.025em] text-slate-900 dark:text-white">
+        <h3 className="mt-5 text-xl font-semibold tracking-[-0.025em] text-app-ink">
           Seu dia está livre
         </h3>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-300">
+        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-app-secondary">
           Não há treino agendado para {selectedDateLabel.toLowerCase()}. Seus treinos continuam disponíveis logo abaixo.
         </p>
         <button
           type="button"
           onClick={onBrowseWorkouts}
-          className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-primary transition-colors hover:bg-primary-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:bg-[#101010] dark:focus-visible:ring-offset-black"
+          className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-app-accent transition-colors hover:bg-app-selection focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2"
         >
           Ver treinos disponíveis
           <i className="fa-solid fa-arrow-down text-xs" aria-hidden="true" />
@@ -103,7 +104,7 @@ export default function ScheduledWorkoutDeck({
               type="button"
               onClick={() => onActiveIndexChange(activeIndex + layerIndex)}
               aria-label={`Mostrar ${workout?.nome || 'próximo treino'}`}
-              className="absolute inset-x-0 top-8 h-[18rem] rounded-[1.75rem] border border-primary/10 bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:border-white/[0.06] dark:bg-[#111] dark:focus-visible:ring-offset-black sm:top-10"
+              className="absolute inset-x-0 top-8 h-[18rem] rounded-[1.75rem] border border-app-accent/10 bg-app-action focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 sm:top-10"
               style={{
                 zIndex: 5 - layerIndex,
                 transform: `translateY(${-layerIndex * 14}px) scale(${1 - layerIndex * 0.035})`,
@@ -122,9 +123,7 @@ export default function ScheduledWorkoutDeck({
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.12}
           onDragEnd={handleDragEnd}
-          initial={reduceMotion ? false : { opacity: 0, y: 8, scale: 0.99 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: reduceMotion ? 0 : 0.2, ease: 'easeOut' }}
+          {...appEntrance(reduceMotion)}
         >
           <WorkoutCard
             workout={activeWorkout}
@@ -133,7 +132,7 @@ export default function ScheduledWorkoutDeck({
             actions={(
               <>
                 {appointments.length > 1 ? (
-                  <span className="text-xs font-medium tabular-nums text-slate-400 dark:text-slate-500">
+                  <span className="text-xs font-medium tabular-nums text-app-secondary">
                     {activeIndex + 1}/{appointments.length}
                   </span>
                 ) : null}
@@ -142,7 +141,7 @@ export default function ScheduledWorkoutDeck({
                   onClick={() => onRemove(activeAppointment)}
                   disabled={removingId === activeAppointment.id_agendamento}
                   aria-label={`Remover agendamento de ${activeWorkout?.nome || 'treino'}`}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-wait disabled:opacity-50 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-app-secondary transition-colors hover:bg-app-danger-muted hover:text-app-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-danger disabled:cursor-wait disabled:opacity-50"
                 >
                   <i className={`fa-solid ${removingId === activeAppointment.id_agendamento ? 'fa-spinner fa-spin' : 'fa-trash-can'} text-sm`} aria-hidden="true" />
                 </button>
@@ -163,14 +162,14 @@ export default function ScheduledWorkoutDeck({
 
       {appointments.length > 1 ? (
         <div className="mt-5 flex items-center justify-between gap-4">
-          <p className="text-xs text-slate-500 dark:text-slate-400">Deslize ou use as setas para navegar</p>
+          <p className="text-xs text-app-secondary">Deslize ou use as setas para navegar</p>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => onActiveIndexChange(activeIndex - 1)}
               disabled={!canGoBack}
               aria-label="Treino anterior"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition-colors hover:border-primary/30 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-30 dark:border-white/[0.08] dark:text-slate-200"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-app-line text-app-ink transition-colors hover:border-app-accent/30 hover:text-app-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent disabled:cursor-not-allowed disabled:opacity-30"
             >
               <i className="fa-solid fa-chevron-left text-xs" aria-hidden="true" />
             </button>
@@ -179,7 +178,7 @@ export default function ScheduledWorkoutDeck({
               onClick={() => onActiveIndexChange(activeIndex + 1)}
               disabled={!canGoForward}
               aria-label="Próximo treino"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition-colors hover:border-primary/30 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-30 dark:border-white/[0.08] dark:text-slate-200"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-app-line text-app-ink transition-colors hover:border-app-accent/30 hover:text-app-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent disabled:cursor-not-allowed disabled:opacity-30"
             >
               <i className="fa-solid fa-chevron-right text-xs" aria-hidden="true" />
             </button>

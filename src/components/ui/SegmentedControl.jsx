@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-black'
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary app:focus-visible:ring-app-accent focus-visible:ring-offset-2 dark:focus-visible:ring-offset-black'
 
 export default function SegmentedControl({
   value,
@@ -14,7 +14,7 @@ export default function SegmentedControl({
 
   return (
     <div
-      className={`inline-flex max-w-full gap-1 rounded-2xl bg-slate-200/60 p-1 dark:bg-white/[0.05] ${className}`}
+      className={`inline-flex max-w-full gap-1 rounded-2xl bg-slate-200/60 app:bg-app-muted/60 p-1 dark:bg-white/[0.05] ${className}`}
       role="group"
       aria-label={ariaLabel}
     >
@@ -29,14 +29,14 @@ export default function SegmentedControl({
             onClick={() => onChange(option.value)}
             className={`relative inline-flex min-h-11 min-w-0 items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold transition-colors duration-200 ${focusRing} ${
               selected
-                ? 'text-primary'
-                : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
+                ? 'text-primary app:text-app-accent'
+                : 'text-slate-600 app:text-app-secondary hover:bg-white/60 hover:text-slate-900 app:hover:text-app-ink dark:text-slate-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
             }`}
           >
             {selected ? (
               <motion.span
                 layoutId={layoutId}
-                className="absolute inset-0 rounded-xl bg-white shadow-sm dark:bg-[#181818]"
+                className="absolute inset-0 rounded-xl bg-white app:bg-app-surface shadow-sm dark:bg-[#181818]"
                 transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: [0.16, 1, 0.3, 1] }}
                 aria-hidden="true"
               />

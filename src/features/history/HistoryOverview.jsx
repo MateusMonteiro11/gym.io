@@ -56,29 +56,29 @@ export default function HistoryOverview({ stats, period, onPeriodChange, onRefre
             <RefreshCw size={17} aria-hidden="true" />
           </button>
         </div>
-        {demonstration ? <span className="text-right text-xs text-slate-500 dark:text-slate-400">Dados de demonstração</span> : null}
+        {demonstration ? <span className="text-right text-xs text-app-secondary">Dados de demonstração</span> : null}
       </div>
     </PageHeader>
 
     <Card as="section" hover={false} className="p-6 sm:p-8" aria-label="Visão geral do histórico">
       <dl className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {METRICS.map(({ key, label }) => <div className="min-w-0 rounded-xl bg-primary-muted p-3 dark:bg-primary/10 sm:p-4" key={key}>
-            <dt className="text-xs font-medium text-primary dark:text-blue-300">{label}</dt>
-            <dd className="mt-2 whitespace-nowrap text-xl font-semibold tracking-tight text-primary dark:text-blue-300 sm:text-3xl">
+        {METRICS.map(({ key, label }) => <div className="min-w-0 rounded-xl bg-app-selection p-3 sm:p-4" key={key}>
+            <dt className="text-xs font-medium text-app-accent">{label}</dt>
+            <dd className="mt-2 whitespace-nowrap text-xl font-semibold tracking-tight text-app-accent sm:text-3xl">
               <AnimatedValue identity={`${period}-${key}-${stats[key]}`}>{metricValue(key, stats[key])}</AnimatedValue>
             </dd>
-            {!stats.reliability[key] ? <small className="mt-1 block text-xs text-primary/70 dark:text-blue-300/70">Dados parciais</small> : null}
+            {!stats.reliability[key] ? <small className="mt-1 block text-xs text-app-accent">Dados parciais</small> : null}
           </div>)}
-        <div className="min-w-0 rounded-xl bg-primary-muted p-3 dark:bg-primary/10 sm:p-4">
-          <dt className="text-xs font-medium text-primary dark:text-blue-300">Dias esta semana</dt>
-          <dd className="mt-2 whitespace-nowrap text-xl font-semibold tracking-tight text-primary dark:text-blue-300 sm:text-3xl">
+        <div className="min-w-0 rounded-xl bg-app-selection p-3 sm:p-4">
+          <dt className="text-xs font-medium text-app-accent">Dias esta semana</dt>
+          <dd className="mt-2 whitespace-nowrap text-xl font-semibold tracking-tight text-app-accent sm:text-3xl">
             <AnimatedValue identity={`week-${stats.weekActiveDays}`}>{weekLabel}</AnimatedValue>
           </dd>
-          <small className="mt-1 block text-xs text-primary/70 dark:text-blue-300/70">semana atual</small>
+          <small className="mt-1 block text-xs text-app-accent">semana atual</small>
         </div>
       </dl>
 
-      {stats.partial ? <p className="mt-6 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Alguns registros antigos estão incompletos. Métricas afetadas aparecem como parciais ou indisponíveis.</p> : null}
+      {stats.partial ? <p className="mt-6 text-xs leading-relaxed text-app-secondary">Alguns registros antigos estão incompletos. Métricas afetadas aparecem como parciais ou indisponíveis.</p> : null}
     </Card>
   </>
 }

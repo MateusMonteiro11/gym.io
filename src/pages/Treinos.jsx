@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AgendarTreinoModal from '../components/AgendarTreinoModal'
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
 import PageHeader from '../components/ui/PageHeader'
+import ContentEntrance from '../components/ui/ContentEntrance'
 import Banner from '../components/ui/Banner'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
@@ -142,8 +143,11 @@ export default function Treinos() {
 
   return (
     <PageLoadingBoundary loading={loading} loadingMessage="Carregando treinos...">
+      <ContentEntrance>
       <PageHeader title="Treinos" subtitle="Gerencie, agende e personalize seus treinos" />
+      </ContentEntrance>
 
+      <ContentEntrance index={1}>
       <Banner
         variant="primary"
         icon="fa-dumbbell"
@@ -156,9 +160,10 @@ export default function Treinos() {
         }
       />
 
-      <section className="mb-12">
+      </ContentEntrance>
+      <ContentEntrance as="section" index={2} className="mb-12">
         <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-muted text-primary dark:bg-slate-800 dark:text-white">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-app-selection text-app-accent">
             <i className="fa-solid fa-layer-group" />
           </span>
           <div>
@@ -177,12 +182,12 @@ export default function Treinos() {
             />
           ))}
         </div>
-      </section>
+      </ContentEntrance>
 
-      <section>
+      <ContentEntrance as="section" index={3}>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-white">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-app-muted text-app-secondary">
               <i className="fa-solid fa-user-pen" />
             </span>
             <div>
@@ -199,11 +204,11 @@ export default function Treinos() {
 
         {meusTreinosLocal.length === 0 ? (
           <Card className={`${ui.cardPadding} text-center`}>
-            <div className={`${ui.emptyIcon} dark:bg-slate-800 dark:text-white`}>
+            <div className={`${ui.emptyIcon}  `}>
               <i className="fa-solid fa-folder-open" />
             </div>
-            <p className="font-semibold text-slate-900">Nenhum treino personalizado ainda</p>
-            <p className="mx-auto mt-2 max-w-sm text-sm text-slate-600">
+            <p className="font-semibold text-app-ink">Nenhum treino personalizado ainda</p>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-app-secondary">
               Crie seu primeiro treino ou duplique um template do sistema.
             </p>
             <Button className="mt-6" onClick={handleCriarTreino}>
@@ -225,7 +230,7 @@ export default function Treinos() {
             ))}
           </div>
         )}
-      </section>
+      </ContentEntrance>
 
       <AgendarTreinoModal
         open={modalAgendamentoOpen}
@@ -266,21 +271,21 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
             setIsOpen(true)
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          className="w-full rounded-xl border border-app-line bg-app-surface px-4 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-app-accent"
         />
         {searchState && (
           <button
             type="button"
             onClick={() => onSearchChange('')}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-white"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-app-secondary hover:text-app-secondary"
           >
-            <i className="fa-solid fa-times text-sm dark:text-white" />
+            <i className="fa-solid fa-times text-sm" />
           </button>
         )}
       </div>
 
       {isOpen && searchState && (
-        <div className="absolute top-full left-0 right-0 z-10 mt-2 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+        <div className="absolute top-full left-0 right-0 z-10 mt-2 max-h-72 overflow-y-auto rounded-xl border border-app-line bg-app-surface shadow-lg">
           {filteredExercises.length > 0 ? (
             <div className="p-2">
               {filteredExercises.map((exercise) => (
@@ -291,18 +296,18 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
                     onSelectExercise(exercise.id_exercicio)
                     setIsOpen(false)
                   }}
-                  className="mb-1 w-full rounded-lg px-3 py-2.5 text-left text-slate-900 transition-colors duration-150 hover:bg-blue-50 dark:text-slate-100 dark:hover:bg-slate-800 last:mb-0"
+                  className="mb-1 w-full rounded-lg px-3 py-2.5 text-left text-app-ink transition-colors duration-150 hover:bg-app-selection last:mb-0"
                 >
                   <p className="font-medium text-sm">{exercise.nome}</p>
                   {exercise.grupo_muscular && (
-                    <p className="text-xs text-slate-500">{exercise.grupo_muscular}</p>
+                    <p className="text-xs text-app-secondary">{exercise.grupo_muscular}</p>
                   )}
                 </button>
               ))}
             </div>
           ) : (
             <div className="p-4 text-center">
-              <p className="text-sm text-slate-500">Nenhum exercício encontrado</p>
+              <p className="text-sm text-app-secondary">Nenhum exercício encontrado</p>
             </div>
           )}
         </div>
@@ -331,18 +336,18 @@ function WorkoutLibraryCard({
         aria-hidden="true"
         className={`workout-library-card__layer pointer-events-none absolute inset-x-3 bottom-0 top-0 rounded-[1.75rem] ${
           isSystem
-            ? 'bg-primary/15 dark:bg-primary/25'
-            : 'bg-slate-200 dark:bg-[#171717]'
+            ? 'bg-app-action/15'
+            : 'bg-app-muted'
         }`}
       />
 
-      <div className="workout-library-card__surface relative z-10 flex min-h-96 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-surface dark:border-white/[0.06] dark:bg-[#080808]">
+      <div className="workout-library-card__surface relative z-10 flex min-h-96 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-app-line/80 bg-app-surface">
         <div className="workout-library-card__header flex shrink-0 gap-2 px-4 py-4">
           <span
             className={`inline-flex min-h-7 items-center rounded-full border px-2 text-[0.625rem] font-semibold uppercase tracking-[0.08em] ${
               isSystem
-                ? 'border-primary/20 bg-primary/10 text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-blue-300'
-                : 'border-slate-200 bg-slate-100 text-slate-700 dark:border-white/[0.08] dark:bg-[#111] dark:text-slate-200'
+                ? 'border-app-accent/20 bg-app-action/10 text-app-accent'
+                : 'border-app-line bg-app-muted text-app-ink'
             }`}
           >
             {typeLabel}
@@ -359,7 +364,7 @@ function WorkoutLibraryCard({
                 onClick={() => navigate(editPath)}
                 title="Editar treino"
                 aria-label={`Editar ${workout.nome}`}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:border-white/[0.08] dark:text-slate-300 dark:hover:bg-[#151515] dark:focus-visible:ring-offset-[#080808]"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-app-line text-app-secondary hover:border-app-accent/30 hover:bg-app-action/10 hover:text-app-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 ring-offset-app-canvas"
               >
                 <i className="fa-solid fa-pen text-xs" aria-hidden="true" />
               </button>
@@ -368,7 +373,7 @@ function WorkoutLibraryCard({
                 onClick={() => onDelete?.(workout)}
                 title="Excluir treino"
                 aria-label={`Excluir ${workout.nome}`}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 dark:border-rose-900/60 dark:text-rose-300 dark:hover:bg-rose-950/40 dark:focus-visible:ring-offset-[#080808]"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-app-danger text-app-danger hover:bg-app-danger-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-danger focus-visible:ring-offset-2 ring-offset-app-canvas"
               >
                 <i className="fa-solid fa-trash-can text-xs" aria-hidden="true" />
               </button>
@@ -377,35 +382,35 @@ function WorkoutLibraryCard({
         </div>
 
         <div className="flex flex-1 flex-col px-5 pb-5 pt-4 sm:pb-6">
-          <span className="workout-library-card__accent mb-5 h-1 w-10 rounded-full bg-primary" aria-hidden="true" />
+          <span className="workout-library-card__accent mb-5 h-1 w-10 rounded-full bg-app-action" aria-hidden="true" />
 
-          <h3 className="line-clamp-2 text-[1.65rem] font-semibold leading-[1.05] tracking-[-0.035em] text-slate-950 dark:text-white sm:text-[1.8rem]">
+          <h3 className="line-clamp-2 text-[1.65rem] font-semibold leading-[1.05] tracking-[-0.035em] text-app-ink sm:text-[1.8rem]">
             {workout.nome}
           </h3>
-          <p className="mt-4 line-clamp-2 min-h-12 text-sm leading-6 text-slate-600 dark:text-slate-300">
+          <p className="mt-4 line-clamp-2 min-h-12 text-sm leading-6 text-app-secondary">
             {workout.descricao || 'Sem descrição'}
           </p>
 
-          <p className="mt-6 text-[0.6875rem] font-medium text-slate-500 dark:text-slate-400">
+          <p className="mt-6 text-[0.6875rem] font-medium text-app-secondary">
             {sectionCount} {sectionCount === 1 ? 'seção' : 'seções'}
-            <span className="mx-2 text-slate-300 dark:text-slate-700" aria-hidden="true">/</span>
+            <span className="mx-2 text-app-secondary" aria-hidden="true">/</span>
             {exerciseCount} {exerciseCount === 1 ? 'exercício' : 'exercícios'}
           </p>
 
           <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-8">
             <Link
               to={viewPath}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-1 text-sm font-semibold text-slate-800 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:text-slate-100 dark:hover:text-blue-300 dark:focus-visible:ring-offset-[#080808]"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-1 text-sm font-semibold text-app-ink hover:text-app-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 ring-offset-app-canvas"
             >
               Visualizar
-              <i className="workout-library-card__arrow fa-solid fa-arrow-right text-xs text-primary" aria-hidden="true" />
+              <i className="workout-library-card__arrow fa-solid fa-arrow-right text-xs text-app-accent" aria-hidden="true" />
             </Link>
 
             {onAgendar ? (
               <button
                 type="button"
                 onClick={() => onAgendar(workout)}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#080808]"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-app-action px-3 py-2 text-sm font-semibold text-white hover:bg-app-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 ring-offset-app-canvas"
               >
                 <i className="fa-solid fa-calendar-plus text-xs" aria-hidden="true" />
                 Agendar
@@ -647,7 +652,7 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
         />
         <div className="space-y-6 p-6 pt-6">
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+            <div className="rounded-2xl border border-app-line bg-app-muted p-6">
               <Label>Nome do treino</Label>
               <Input
                 type="text"
@@ -675,13 +680,13 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
                 )}
               </Button>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Resumo</p>
-              <p className="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-50">{sections.length}</p>
-              <p className="text-sm text-slate-600 dark:text-slate-300">seções adicionadas</p>
+            <div className="rounded-2xl border border-app-line bg-app-muted p-6">
+              <p className="text-xs font-semibold uppercase tracking-wider text-app-secondary">Resumo</p>
+              <p className="mt-3 text-3xl font-bold text-app-ink">{sections.length}</p>
+              <p className="text-sm text-app-secondary">seções adicionadas</p>
               <Button
                 variant="secondary"
-                className="mt-6 w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+                className="mt-6 w-full"
                 onClick={() => {
                   setEditingSection(null)
                   setNewSectionName(`Seção ${sections.length + 1}`)
@@ -697,12 +702,12 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
           {sections.map((section) => (
             <div
               key={section.id_secao}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/20"
+              className="rounded-2xl border border-app-line bg-app-surface p-5 shadow-sm dark:shadow-black/20"
             >
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">{section.nome}</h3>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                  <h3 className="text-lg font-semibold text-app-ink">{section.nome}</h3>
+                  <p className="mt-1 text-sm text-app-secondary">
                     {section.descricao || 'Sem descrição'}
                   </p>
                 </div>
@@ -710,9 +715,9 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
                   <button
                     type="button"
                     onClick={() => handleEditSection(section)}
-                    className={`${ui.btnGhost} text-sm dark:text-slate-100 dark:hover:bg-slate-800`}
+                    className={`${ui.btnGhost} text-sm  `}
                   >
-                    <i className="fa-solid fa-pen dark:text-white" /> Editar
+                    <i className="fa-solid fa-pen" /> Editar
                   </button>
                   <button
                     type="button"
@@ -750,18 +755,18 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
                 {section.treinos_exercicios?.map((item, index) => (
                   <div
                     key={item.id_treino_exercicio}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-3 dark:bg-slate-950/70"
+                    className="flex items-center justify-between gap-3 rounded-xl bg-app-muted p-3"
                   >
                     <div>
-                      <p className="font-medium text-slate-900 dark:text-slate-50">{item.exercicios?.nome}</p>
-                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                      <p className="font-medium text-app-ink">{item.exercicios?.nome}</p>
+                      <p className="text-xs text-app-secondary">
                         {item.series || 4} séries • {item.repeticoes || 12} reps
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveExercise(item.id_treino_exercicio)}
-                      className={`${ui.iconBtn} text-danger hover:bg-danger-muted dark:text-white dark:hover:bg-slate-800`}
+                      className={`${ui.iconBtn} text-app-danger hover:bg-app-danger-muted  `}
                       aria-label="Remover exercício"
                     >
                       <i className="fa-solid fa-trash text-white" />
@@ -772,8 +777,8 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
             </div>
           ))}
         </div>
-        <div className="border-t border-slate-100 p-4 flex justify-end dark:border-slate-700/70">
-          <Button variant="secondary" onClick={onClose} className="dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800">
+        <div className="border-t border-app-line p-4 flex justify-end">
+          <Button variant="secondary" onClick={onClose} className="">
             Fechar
           </Button>
         </div>

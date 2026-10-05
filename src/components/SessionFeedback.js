@@ -10,8 +10,8 @@ export default function SessionFeedback({ erro, aviso, onClose }) {
   if (!mensagem) return null
 
   const cores = erro
-    ? 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950 dark:text-red-200'
-    : 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950 dark:text-amber-200'
+    ? 'border-app-danger bg-app-danger-muted text-app-danger'
+    : 'border-app-warning bg-app-warning-muted text-app-warning'
 
   return createElement(
     'div',

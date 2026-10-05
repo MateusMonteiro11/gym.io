@@ -17,16 +17,16 @@ function NotificationItem({ notification, onDismiss, reduceMotion }) {
         role={isUrgent ? 'alert' : 'status'}
         aria-live={isUrgent ? 'assertive' : 'polite'}
         aria-atomic="true"
-        className="pointer-events-none flex min-h-[4.875rem] items-center gap-4 rounded-xl border border-slate-200 bg-white px-[1.125rem] py-3.5 shadow-card dark:border-white/[0.08] dark:bg-[#0b0d0c] dark:shadow-[0_14px_36px_-22px_rgba(0,0,0,0.9)]"
+        className="pointer-events-none flex min-h-[4.875rem] items-center gap-4 rounded-xl border border-slate-200 app:border-app-line bg-white app:bg-app-surface px-[1.125rem] py-3.5 shadow-card dark:border-white/[0.08] dark:bg-[#0b0d0c] dark:shadow-[0_14px_36px_-22px_rgba(0,0,0,0.9)]"
       >
         <div className="min-w-0 flex-1">
           {notification.title && (
-            <p className="text-[15px] font-semibold leading-5 text-slate-900 dark:text-slate-100">
+            <p className="text-[15px] font-semibold leading-5 text-slate-900 app:text-app-ink dark:text-slate-100">
               {notification.title}
             </p>
           )}
           {notification.message && (
-            <p className="mt-1 break-words text-[13px] leading-[1.125rem] text-slate-500 dark:text-blue-300/60">
+            <p className="mt-1 break-words text-[13px] leading-[1.125rem] text-slate-500 app:text-app-secondary dark:text-blue-300/60">
               {notification.message}
             </p>
           )}
@@ -36,7 +36,7 @@ function NotificationItem({ notification, onDismiss, reduceMotion }) {
           type="button"
           onClick={() => onDismiss(notification.id)}
           aria-label={`Fechar notificação${notification.title ? `: ${notification.title}` : ''}`}
-          className="pointer-events-auto -mr-1 flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 transition-colors duration-200 hover:bg-slate-100 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:text-slate-500 dark:hover:bg-white/[0.05] dark:hover:text-blue-300"
+          className="pointer-events-auto -mr-1 flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 app:text-app-secondary transition-colors duration-200 hover:bg-slate-100 app:hover:bg-app-muted hover:text-primary app:hover:text-app-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 app:focus-visible:ring-app-accent dark:text-slate-500 dark:hover:bg-white/[0.05] dark:hover:text-blue-300"
         >
           <i aria-hidden="true" className="fa-solid fa-xmark text-base" />
         </button>

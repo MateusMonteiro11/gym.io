@@ -148,15 +148,15 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
     <Modal open={open} onClose={onClose} size="lg">
       <ModalHeader title="Meu Perfil" onClose={onClose} />
 
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-app-line">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex flex-col items-center justify-center gap-1.5 sm:flex-row sm:gap-2 flex-1 px-6 py-4 text-sm font-medium transition-colors duration-200 border-b-2 ${
               activeTab === tab.id
-                ? 'border-primary text-primary'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-app-accent text-app-accent'
+                : 'border-transparent text-app-secondary hover:text-app-ink'
             }`}
           >
             <i className={`fa-solid ${tab.icon} text-base`} />
@@ -184,7 +184,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
           <div className="space-y-6">
             <div className="flex flex-col items-center">
               <div className="mb-4">
-                <div className="h-24 w-24 rounded-full bg-primary-muted flex items-center justify-center text-4xl text-primary overflow-hidden">
+                <div className="h-24 w-24 rounded-full bg-app-selection flex items-center justify-center text-4xl text-app-accent overflow-hidden">
                   {fotoPreview ? (
                     <img
                       src={fotoPreview}
@@ -192,7 +192,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
                       className="h-full w-full object-cover"
                       onError={(event) => {
                         event.currentTarget.style.display = 'none'
-                        event.currentTarget.parentElement?.classList?.add('bg-slate-200')
+                        event.currentTarget.parentElement?.classList?.add('bg-app-muted')
                       }}
                     />
                   ) : (
@@ -208,7 +208,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
                   className="hidden"
                   disabled={salvando}
                 />
-                <span className={`inline-flex items-center gap-2 text-sm text-primary font-medium hover:text-primary-hover transition-colors ${salvando ? 'opacity-50' : ''}`}>
+                <span className={`inline-flex items-center gap-2 text-sm text-app-accent font-medium hover:text-app-action-hover transition-colors ${salvando ? 'opacity-50' : ''}`}>
                   <i className="fa-solid fa-camera" />
                   Alterar foto
                 </span>
@@ -277,20 +277,20 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-slate-900 truncate">
+                          <h4 className="font-semibold text-app-ink truncate">
                             {treino.treinos?.nome || 'Treino'}
                           </h4>
-                          <p className="text-sm text-slate-600 mt-1">
+                          <p className="text-sm text-app-secondary mt-1">
                             <i className="fa-solid fa-calendar mr-2" />
                             {formatDatePtBr(treino.data_execucao)} às {formatTimePtBr(treino.data_execucao)}
                           </p>
-                          <p className="text-sm text-slate-600 mt-1">
+                          <p className="text-sm text-app-secondary mt-1">
                             <i className="fa-solid fa-clock mr-2" />
                             {formatDuracao(treino.duracao_segundos || 0)}
                           </p>
                         </div>
                         <div className="flex flex-col items-end gap-2 text-sm">
-                          <span className="inline-flex items-center gap-1 bg-primary-muted text-primary px-2.5 py-1 rounded-lg">
+                          <span className="inline-flex items-center gap-1 bg-app-selection text-app-accent px-2.5 py-1 rounded-lg">
                             <i className="fa-solid fa-dumbbell" />
                             {treino.total_series || 0} séries
                           </span>
@@ -305,7 +305,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
                 <div className={ui.emptyIcon}>
                   <i className="fa-solid fa-history" />
                 </div>
-                <p className="text-slate-600 text-sm">Nenhum treino registrado ainda</p>
+                <p className="text-app-secondary text-sm">Nenhum treino registrado ainda</p>
               </div>
             )}
           </div>
@@ -317,41 +317,41 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
             <div className="grid grid-cols-2 gap-4">
               <div className={ui.card}>
                 <div className="p-6">
-                  <p className="text-sm text-slate-600 mb-2">
+                  <p className="text-sm text-app-secondary mb-2">
                     <i className="fa-solid fa-dumbbell mr-2" />
                     Total de Treinos
                   </p>
-                  <p className="text-3xl font-bold text-primary">{estatisticas.totalTreinos}</p>
+                  <p className="text-3xl font-bold text-app-accent">{estatisticas.totalTreinos}</p>
                 </div>
               </div>
 
               <div className={ui.card}>
                 <div className="p-6">
-                  <p className="text-sm text-slate-600 mb-2">
+                  <p className="text-sm text-app-secondary mb-2">
                     <i className="fa-solid fa-fire mr-2" />
                     Total de Séries
                   </p>
-                  <p className="text-3xl font-bold text-primary">{estatisticas.totalExercicios}</p>
+                  <p className="text-3xl font-bold text-app-accent">{estatisticas.totalExercicios}</p>
                 </div>
               </div>
 
               <div className={ui.card}>
                 <div className="p-6">
-                  <p className="text-sm text-slate-600 mb-2">
+                  <p className="text-sm text-app-secondary mb-2">
                     <i className="fa-solid fa-hourglass-end mr-2" />
                     Duração Média
                   </p>
-                  <p className="text-2xl font-bold text-primary">{estatisticas.duracaoMedia}</p>
+                  <p className="text-2xl font-bold text-app-accent">{estatisticas.duracaoMedia}</p>
                 </div>
               </div>
 
               <div className={ui.card}>
                 <div className="p-6">
-                  <p className="text-sm text-slate-600 mb-2">
+                  <p className="text-sm text-app-secondary mb-2">
                     <i className="fa-solid fa-calendar-week mr-2" />
                     Dias Esta Semana
                   </p>
-                  <p className="text-3xl font-bold text-primary">{estatisticas.diasSemanais}</p>
+                  <p className="text-3xl font-bold text-app-accent">{estatisticas.diasSemanais}</p>
                 </div>
               </div>
             </div>

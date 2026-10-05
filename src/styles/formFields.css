@@ -1,0 +1,45 @@
+/* One quiet boundary for text fields throughout public and authenticated pages.
+   Keyboard focus remains separate from the resting border. */
+:root {
+  --field-radius: 8px;
+  --field-border: #d4d5dc;
+  --field-border-hover: #b3b6c0;
+  --field-focus: #1457f7;
+  --field-error: #b42335;
+}
+
+:root.dark {
+  --field-border: #3f3f46;
+  --field-border-hover: #60606b;
+  --field-focus: #729aff;
+  --field-error: #ff9aa7;
+}
+
+/* Exclude non-text controls, including the hidden profile upload. Unlayered
+   rules intentionally replace the assorted radius, ring and shadow utilities. */
+:root :is(input, textarea, select):where(:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='hidden'], [type='button'], [type='submit'], [type='reset'], [type='image'])) {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--field-border);
+  border-radius: var(--field-radius);
+  box-shadow: none;
+  outline: none;
+}
+
+:root :is(input, textarea, select):where(:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='hidden'], [type='button'], [type='submit'], [type='reset'], [type='image'])):hover:where(:not(:disabled)) {
+  border-color: var(--field-border-hover);
+}
+
+:root :is(input, textarea, select):where(:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='hidden'], [type='button'], [type='submit'], [type='reset'], [type='image'])):focus {
+  border-color: var(--field-focus);
+}
+
+:root :is(input, textarea, select):where(:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='hidden'], [type='button'], [type='submit'], [type='reset'], [type='image'])):focus-visible {
+  outline: 2px solid var(--field-focus);
+  outline-offset: 2px;
+}
+
+:root :is(input, textarea, select):where(:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='hidden'], [type='button'], [type='submit'], [type='reset'], [type='image']))[aria-invalid='true'] {
+  border-color: var(--field-error);
+}
+
