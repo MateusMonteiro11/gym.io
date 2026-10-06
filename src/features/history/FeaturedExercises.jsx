@@ -1,5 +1,3 @@
-import { Dumbbell } from 'lucide-react'
-
 import Card from '../../components/ui/Card.jsx'
 import { ui } from '../../styles/theme.js'
 import { numberLabel } from './historyModel.js'
@@ -11,8 +9,8 @@ function ExerciseList({ items, kind, partial }) {
     ? 'Presença em treinos concluídos'
     : 'Maior registro por exercício'
   const emptyCopy = isFrequency
-    ? 'Nenhum exercício concluído neste período.'
-    : 'Nenhuma carga concluída foi registrada neste período.'
+    ? 'Nenhum exercício concluído no período'
+    : 'Nenhuma carga registrada no período'
 
   return (
     <Card as="article" hover={false} className="w-full min-w-0 p-4 sm:p-6">
@@ -53,8 +51,7 @@ function ExerciseList({ items, kind, partial }) {
         </ol>
       ) : (
         <div className="flex min-h-32 flex-col items-center justify-center px-4 py-6 text-center">
-          <Dumbbell size={22} className="text-app-secondary" aria-hidden="true" />
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-app-secondary">{emptyCopy}</p>
+          <p className="max-w-sm text-sm leading-relaxed text-app-secondary">{emptyCopy}</p>
         </div>
       )}
 
