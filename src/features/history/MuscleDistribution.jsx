@@ -6,6 +6,7 @@ import Card from '../../components/ui/Card.jsx'
 import Disclosure from '../../components/ui/Disclosure.jsx'
 import { ui } from '../../styles/theme.js'
 import { numberLabel } from './historyModel.js'
+import ChartDataTable from './ChartDataTable.jsx'
 
 function percentageLabel(value) {
   return `${numberLabel(value, value < 10 ? 1 : 0)}%`
@@ -50,13 +51,24 @@ export function CategoryBreakdown({ items, selectedId, onSelect }) {
       openLabel="Ocultar categorias"
       className="history-category-more mt-4"
       buttonClassName="text-xs text-app-secondary"
-      contentClassName="history-values-table"
+      contentClassName="history-values-content"
     >
-      <table>
-        <caption className="history-sr-only">Categorias adicionais da distribuição muscular</caption>
-        <thead><tr><th>Categoria</th><th>Aparições</th><th>Participação</th></tr></thead>
-        <tbody>{additional.map((item) => <tr key={item.id}><td>{item.name}</td><td>{numberLabel(item.count)}</td><td>{percentageLabel(item.percentage)}</td></tr>)}</tbody>
-      </table>
+      <ChartDataTable
+        label="Categorias adicionais da distribuição muscular"
+        columns={[
+          { key: 'category', label: 'Categoria' },
+          { key: 'count', label: 'Aparições', numeric: true },
+          { key: 'percentage', label: 'Participação', numeric: true, primary: true },
+        ]}
+        rows={additional.map((item) => ({
+          id: item.id,
+          cells: {
+            category: { value: item.name },
+            count: { value: numberLabel(item.count) },
+            percentage: { value: percentageLabel(item.percentage) },
+          },
+        }))}
+      />
     </Disclosure>}
   </>
 }
@@ -68,7 +80,7 @@ export default function MuscleDistribution({ distribution }) {
   }, [distribution.items, selectedId])
   const selected = useMemo(() => distribution.items.find((item) => item.id === selectedId) || distribution.items[0] || null, [distribution.items, selectedId])
 
-  return <Card as="section" hover={false} className="flex min-w-0 flex-col p-5 sm:p-6 xl:col-span-2" aria-labelledby="history-muscle-title">
+  return <Card as="section" hover={false} className="flex min-w-0 flex-col p-4 sm:p-6 xl:col-span-2" aria-labelledby="history-muscle-title">
     <div className="mb-6">
       <div><h2 id="history-muscle-title" className={ui.sectionTitle}>Distribuição muscular</h2><p className={ui.sectionSubtitle}>Presença dos exercícios concluídos no período.</p></div>
     </div>

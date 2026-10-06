@@ -38,8 +38,40 @@
 .history-tooltip strong { display: block; margin: 4px 0; font-size: 18px; font-weight: 650; }
 .history-tooltip strong small { font-size: 11px; font-weight: 500; }
 .history-values { margin-top: 9px; color: var(--history-muted); font-size: 11px; }
-.history-values > button { margin-left: -12px; }
-.history-values-table { max-height: 290px; margin-top: 8px; overflow: auto; border-top: 1px solid var(--history-border); scrollbar-color: var(--history-border) transparent; }
+.history-values > button { margin-left: 0; }
+.history-values-content { margin-top: 8px; }
+.history-data { container: history-data / inline-size; }
+.history-data, .history-data-frame, .history-data-scroll { width: 100%; max-width: 100%; min-width: 0; }
+.history-data-frame { overflow: hidden; border: 1px solid var(--history-border); border-radius: 12px; background: var(--history-surface); }
+.history-data-scroll { max-height: 290px; overflow: auto; scrollbar-color: var(--app-control) transparent; }
+.history-data-scroll:focus-visible { outline-offset: -2px; }
+.history-data-notes { margin: 8px 0 0; padding: 0; list-style: none; color: var(--history-muted); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.history-data-notes li + li { margin-top: 4px; }
+.history-data-table { width: 100%; max-width: 100%; min-width: 0; border-collapse: separate; border-spacing: 0; color: var(--history-text); font-size: 13px; line-height: 1.5; text-align: left; font-variant-numeric: tabular-nums; }
+.history-data-table th, .history-data-table td { padding: 12px; vertical-align: top; }
+.history-data-table tr > :first-child { width: 46%; overflow-wrap: anywhere; }
+.history-data-table[data-column-count='2'] tr > :first-child { width: 62%; }
+.history-data-table thead th { position: sticky; top: 0; z-index: 1; border-bottom: 1px solid var(--history-border); background: var(--history-surface); color: var(--history-muted); font-size: 11px; font-weight: 500; overflow-wrap: anywhere; }
+.history-data-table tbody th { font-weight: 500; }
+.history-data-table tbody td { font-weight: 500; }
+.history-data-table tbody tr { transition: background-color 160ms ease-out; }
+.history-data-table tbody tr:hover { background: var(--history-raised); }
+.history-data-table .is-numeric { text-align: right; }
+.history-data-table .is-numeric .history-data-value { white-space: nowrap; }
+.history-data-table .is-primary { color: var(--history-chart-blue); font-weight: 600; }
+.history-data-table small { display: block; margin-top: 3px; color: var(--history-muted); font-size: 10px; font-weight: 400; line-height: 1.5; }
+.history-data-table .history-data-empty { color: var(--history-muted); font-weight: 400; }
+@container history-data (max-width: 360px) {
+  .history-data-table { table-layout: fixed; }
+  .history-data-table th, .history-data-table td { padding: 10px 8px; overflow-wrap: anywhere; }
+  .history-data-table tr > :first-child { width: 40%; hyphens: auto; }
+  .history-data-table[data-column-count='2'] tr > :first-child { width: 60%; }
+  .history-data-table .is-numeric .history-data-value { white-space: normal; }
+}
+@container history-data (max-width: 280px) {
+  .history-data-table th, .history-data-table td { padding-inline: 6px; }
+  .history-data-table thead th.is-numeric { padding-left: 2px; }
+}
 .history-chart-description { margin-top: 12px !important; color: var(--history-muted); font-size: 11px; line-height: 1.7; }
 .history-chart-empty { min-height: 250px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 9px; text-align: center; }
 .history-chart-empty.is-compact { min-height: 170px; padding: 20px 12px; }
@@ -194,11 +226,6 @@
 .history-workout-set-value { min-width: 0; color: var(--history-text); font-size: 10px; font-weight: 570; white-space: nowrap; }
 .history-workout-set-value small, .history-set-status > span { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .history-set-status { grid-area: status; display: inline-flex; align-items: center; justify-self: end; gap: 5px; width: fit-content; color: var(--history-muted); font-size: 10px; }
-.history-page table { width: 100%; border-collapse: collapse; color: var(--history-text); font-size: 12px; text-align: left; }
-.history-page th { padding: 10px 12px; border-bottom: 1px solid var(--history-border); background: var(--history-wash); color: var(--history-muted); font-size: 10px; font-weight: 520; }
-.history-page td { padding: 9px 12px; border-bottom: 1px solid var(--history-border); white-space: nowrap; }
-.history-page tr:last-child td { border-bottom: 0; }
-.history-page td small { display: block; color: var(--history-muted); font-size: 9px; }
 .history-set-status.is-complete { color: var(--history-success); }
 .history-set-status.is-incomplete { color: var(--history-danger); }
 .history-detail-footnote { margin-top: 22px !important; color: var(--history-muted); font-size: 10px; line-height: 1.7; }
@@ -237,8 +264,6 @@
   .history-detail-metrics > div, .history-exercise-summary > div { min-width: 0; padding: 2px 10px; }
   .history-detail-metrics dd, .history-exercise-summary dd { font-size: clamp(18px, 4.8vw, 24px); }
   .history-detail-section-heading { margin-top: 34px; }
-  .history-page table { font-size: 11px; }
-  .history-page th, .history-page td { padding-inline: 9px; }
   .history-progression-chart { margin-top: 20px; padding: 20px; }
   .history-progress-sessions { padding-top: 34px; }
   .history-progress-sessions button { grid-template-columns: minmax(0, 1fr) auto 16px; gap: 10px; }
@@ -251,8 +276,11 @@
   .history-detail-metrics > div, .history-exercise-summary > div { padding: 2px 6px; }
   .history-detail-metrics dt, .history-exercise-summary dt { font-size: 9px; line-height: 1.35; }
   .history-detail-metrics dd, .history-exercise-summary dd { margin-top: 5px; font-size: clamp(17px, 5.3vw, 22px); }
-  .history-progression-chart { padding: 16px 14px; }
   .history-progress-sessions button { grid-template-columns: minmax(0, 1fr) auto 16px; gap: 8px; padding: 12px; }
+}
+
+@media (max-width: 639px) {
+  .history-progression-chart { padding: 16px; }
 }
 
 @media (min-width: 640px) {
@@ -286,6 +314,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .history-data-table tbody tr { transition: none; }
   .history-page button { transition: none; }
   .history-exercise-timeline-node, .history-exercise-evolution svg { transition: none; }
 }

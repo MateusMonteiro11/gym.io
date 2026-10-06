@@ -16,7 +16,7 @@ export default function TrainingRhythm({ data, metric, onMetricChange }) {
   const reduceMotion = useReducedMotion()
   const options = Object.entries(TREND_METRICS).map(([value, option]) => ({ value, label: option.label }))
 
-  return <Card as="section" hover={false} className="min-w-0 overflow-hidden p-5 sm:p-6 xl:col-span-3" aria-labelledby="history-trend-title">
+  return <Card as="section" hover={false} className="min-w-0 overflow-hidden p-4 sm:p-6 xl:col-span-3" aria-labelledby="history-trend-title">
     <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h2 id="history-trend-title" className={ui.sectionTitle}>Ritmo de treino</h2>

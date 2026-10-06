@@ -1,6 +1,7 @@
 import { Area, CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { ChartNoAxesCombined } from 'lucide-react'
 import Disclosure from '../../components/ui/Disclosure.jsx'
+import ChartDataTable from './ChartDataTable.jsx'
 import {
   compactNumberLabel,
   getTrendMetricValue,
@@ -82,12 +83,31 @@ export function OverviewTrendChart({ data, metric }) {
       label="Ver dados do gráfico"
       openLabel="Ocultar dados do gráfico"
       className="history-values"
-      contentClassName="history-values-table"
+      contentClassName="history-values-content"
     >
-      <table><caption className="history-sr-only">Dados de {variable.label.toLowerCase()} por período</caption><thead><tr><th>Período</th><th>{variable.label}</th><th>Treinos</th></tr></thead><tbody>{data.map((point) => {
-        const value = getTrendMetricValue(point, metric)
-        return <tr key={point.key}><td>{point.label}{point.isPartial && <small>Período parcial</small>}</td><td>{metricValue(value, metric)}{!metricReliable(point, metric) && <small>Dados parciais</small>}</td><td>{point.workouts}</td></tr>
-      })}</tbody></table>
+      <ChartDataTable
+        label={`Dados de ${variable.label.toLowerCase()} por período`}
+        notes={data.filter((point) => point.isPartial).map((point) => ({
+          id: point.key,
+          text: `Período parcial: ${point.label}`,
+        }))}
+        columns={[
+          { key: 'period', label: 'Período' },
+          { key: 'metric', label: variable.label, numeric: true, primary: true },
+          ...(metric === 'workouts' ? [] : [{ key: 'workouts', label: 'Treinos', numeric: true }]),
+        ]}
+        rows={data.map((point) => ({
+          id: point.key,
+          cells: {
+            period: { value: point.label },
+            metric: {
+              value: metricValue(getTrendMetricValue(point, metric), metric),
+              note: !metricReliable(point, metric) ? 'Dados parciais' : null,
+            },
+            workouts: { value: numberLabel(point.workouts) },
+          },
+        }))}
+      />
     </Disclosure>
   </>
 }
@@ -138,9 +158,28 @@ export function ExerciseTrendChart({ points }) {
       label="Ver registros do gráfico"
       openLabel="Ocultar registros do gráfico"
       className="history-values"
-      contentClassName="history-values-table"
+      contentClassName="history-values-content"
     >
-      <table><caption className="history-sr-only">Registros de carga</caption><thead><tr><th>Sessão</th><th>Carga</th><th>Repetições</th></tr></thead><tbody>{points.map((point) => <tr key={point.sessionId}><td>{new Date(point.timestamp).toLocaleDateString('pt-BR')}<small>{timeLabel(new Date(point.timestamp))}</small></td><td>{numberLabel(point.value, 2)}{point.value != null && ' kg'}{point.partial && <small>Parcial</small>}</td><td>{numberLabel(point.reps)}</td></tr>)}</tbody></table>{!points.length && <p>Sem registros neste período.</p>}
+      <ChartDataTable
+        label="Registros de carga"
+        emptyMessage="Sem registros neste período."
+        columns={[
+          { key: 'session', label: 'Sessão' },
+          { key: 'load', label: 'Carga', numeric: true, primary: true },
+          { key: 'reps', label: 'Repetições', numeric: true },
+        ]}
+        rows={points.map((point) => ({
+          id: point.sessionId,
+          cells: {
+            session: { value: new Date(point.timestamp).toLocaleDateString('pt-BR'), note: timeLabel(new Date(point.timestamp)) },
+            load: {
+              value: `${numberLabel(point.value, 2)}${point.value != null ? ' kg' : ''}`,
+              note: point.partial ? 'Parcial' : null,
+            },
+            reps: { value: numberLabel(point.reps) },
+          },
+        }))}
+      />
     </Disclosure>
   </>
 }
