@@ -176,7 +176,7 @@ export function HeroSection() {
         </motion.div>
       </div>
       <motion.div
-        className="hero-session-data"
+        className="hero-session-data hidden md:block"
         aria-label="Sessão em curso: Supino reto, série 4 de 5, 30 quilos, 10 repetições, descanso de 42 segundos, carga anterior de 10 quilos."
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

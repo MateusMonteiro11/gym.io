@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, Play } from 'lucide-react'
+import { ArrowRight, Play } from 'lucide-react'
 import Button from '../ui/Button'
+import CarouselNavigation from '../ui/CarouselNavigation'
+import useHorizontalCarousel from '../../hooks/useHorizontalCarousel'
 import WorkoutCard from './WorkoutCard'
 
 const categories = [
@@ -26,18 +28,16 @@ export default function WorkoutCatalog({
       ? initialSelection.category
       : groupedWorkouts.usuario.length > 0 ? 'usuario' : 'sistema'
   ))
-  const [navigation, setNavigation] = useState({ previous: false, next: false })
-  const railRef = useRef(null)
   const sectionRef = useRef(null)
   const tabRefs = useRef([])
   const restoreRef = useRef(initialSelection)
   const visibleWorkouts = groupedWorkouts[category]
   const currentCategory = categories.find((item) => item.id === category)
+  const { railRef, navigation, scrollCards, updateNavigation } = useHorizontalCarousel(`${category}:${visibleWorkouts.map((workout) => workout.id_treino).join(',')}`)
 
   useEffect(() => {
     const rail = railRef.current
     if (!rail) {
-      setNavigation({ previous: false, next: false })
       const frame = requestAnimationFrame(() => {
         if (restoreRef.current) sectionRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' })
         restoreRef.current = null
@@ -61,25 +61,8 @@ export default function WorkoutCatalog({
       updateNavigation()
     })
 
-    function updateNavigation() {
-      const previous = rail.scrollLeft > 2
-      const next = rail.scrollWidth - rail.clientWidth - rail.scrollLeft > 2
-      setNavigation((current) => (
-        current.previous === previous && current.next === next ? current : { previous, next }
-      ))
-    }
-
-    updateNavigation()
-    rail.addEventListener('scroll', updateNavigation, { passive: true })
-    const observer = new ResizeObserver(updateNavigation)
-    observer.observe(rail)
-    if (rail.firstElementChild) observer.observe(rail.firstElementChild)
-    return () => {
-      cancelAnimationFrame(frame)
-      rail.removeEventListener('scroll', updateNavigation)
-      observer.disconnect()
-    }
-  }, [category, visibleWorkouts])
+    return () => cancelAnimationFrame(frame)
+  }, [category, visibleWorkouts, railRef, updateNavigation])
 
   function handleTabKeyDown(event, index) {
     let nextIndex
@@ -92,14 +75,6 @@ export default function WorkoutCatalog({
     event.preventDefault()
     setCategory(categories[nextIndex].id)
     tabRefs.current[nextIndex]?.focus()
-  }
-
-  function scrollCards(direction) {
-    const rail = railRef.current
-    if (!rail?.firstElementChild) return
-    const step = rail.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(rail).columnGap)
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    rail.scrollBy({ left: direction * step, behavior: reducedMotion ? 'instant' : 'smooth' })
   }
 
   return (
@@ -146,21 +121,7 @@ export default function WorkoutCatalog({
             </button>
           ))}
         </div>
-        <div className="flex gap-2" aria-label="Navegação dos treinos">
-          {[-1, 1].map((direction) => (
-            <button
-              key={direction}
-              type="button"
-              aria-label={direction < 0 ? 'Treino anterior' : 'Próximo treino'}
-              aria-controls={`catalog-panel-${category}`}
-              disabled={direction < 0 ? !navigation.previous : !navigation.next}
-              onClick={() => scrollCards(direction)}
-              className={`flex h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface text-app-ink transition-colors hover:bg-app-muted disabled:cursor-default disabled:opacity-35     ${focusRing}`}
-            >
-              {direction < 0 ? <ArrowLeft size={18} aria-hidden="true" /> : <ArrowRight size={18} aria-hidden="true" />}
-            </button>
-          ))}
-        </div>
+        <CarouselNavigation navigation={navigation} onNavigate={scrollCards} controlsId={`catalog-panel-${category}`} />
       </div>
 
       {categories.map((item) => (

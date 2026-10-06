@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import ContentEntrance from '../../components/ui/ContentEntrance.jsx'
 import { ArrowRight, Dumbbell } from 'lucide-react'
 
-import Card from '../../components/ui/Card.jsx'
+import HistoryCard from './HistoryCard.jsx'
 import { ui } from '../../styles/theme.js'
 import FeaturedExercises from './FeaturedExercises.jsx'
 import { ExerciseProgression, HistoryError, HistoryNotFound, HistorySkeleton, WorkoutDetail } from './HistoryDetail.jsx'
@@ -34,7 +34,7 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
   const workoutId = searchParams.get('workout')
   const exerciseId = searchParams.get('exercise')
   const view = exerciseId ? 'exercise' : workoutId ? 'workout' : 'overview'
-  const listPosition = useRef({ scroll: 0, id: null })
+  const listPosition = useRef({ scroll: 0, id: null, horizontal: 0 })
   const exercisePosition = useRef({ scroll: 0, id: null })
   const progressionPosition = useRef({ scroll: 0, id: null })
   const openingWorkoutFromExercise = useRef(false)
@@ -118,7 +118,7 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
       progressionPosition.current = { scroll: window.scrollY, id: button.id }
       openingWorkoutFromExercise.current = true
     } else if (button) {
-      listPosition.current = { scroll: window.scrollY, id: button.id }
+      listPosition.current = { scroll: window.scrollY, id: button.id, horizontal: button.closest('#history-recent-rail')?.scrollLeft || 0 }
     }
     const next = workoutHistoryParams(searchParams, period, id)
     navigate({ pathname: location.pathname, search: `?${next}` }, { state: { historyParent: parent } })
@@ -154,30 +154,30 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
   if (view === 'exercise' && detail.status === 'error') return <div className="history-page mx-auto max-w-4xl pb-16"><HistoryError detail onRetry={detail.retry} /></div>
   if (view === 'exercise' && !exercise) return <div className="history-page mx-auto max-w-4xl pb-16"><HistoryNotFound kind="exercise" onBack={() => replaceWithParent('workout')} /></div>
 
-  if (view === 'exercise') return <div className="history-page mx-auto max-w-4xl pb-16"><ExerciseProgression session={selected} exercise={exercise} sessions={visible} sets={visibleSets} onBack={() => goBack('workout')} onWorkoutSelect={(id, button) => openWorkout(id, button, 'exercise')} backRef={backRef} /></div>
+  if (view === 'exercise') return <div className="history-page mx-auto max-w-4xl pb-16"><ExerciseProgression session={selected} exercise={exercise} sessions={visible} sets={visibleSets} period={period} onBack={() => goBack('workout')} onWorkoutSelect={(id, button) => openWorkout(id, button, 'exercise')} backRef={backRef} /></div>
   if (view === 'workout') return <div className="history-page mx-auto max-w-4xl pb-16"><WorkoutDetail session={selected} resource={detail} onBack={() => goBack(location.state?.historyParent === 'exercise' ? 'exercise' : 'overview')} backLabel={location.state?.historyParent === 'exercise' ? 'Voltar à evolução' : 'Voltar ao histórico'} onExercise={openExercise} backRef={backRef} /></div>
 
   if (!allSessions.length) return <div className="history-page mx-auto max-w-6xl pb-16">
     <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></ContentEntrance>
     <ContentEntrance index={1}>
-      <Card hover={false} className="mt-6 flex flex-col items-center px-6 py-12 text-center sm:py-14">
+      <HistoryCard className="history-onboarding mt-6 flex flex-col items-center text-center">
         <Dumbbell size={26} className="mx-auto text-app-secondary" aria-hidden="true" />
         <div className="mt-5 flex w-full flex-col items-center gap-3 text-center">
           <h2 className="text-xl font-semibold text-app-ink">Ainda não há treinos no seu histórico.</h2>
           <p className="w-full max-w-lg text-center text-sm leading-relaxed text-app-secondary">Finalize seu primeiro treino para começar a acompanhar sua evolução.</p>
         </div>
         <Link to="/treinar" className={`${ui.btnPrimary} mt-8 min-h-11`}>Começar treino<ArrowRight size={16} aria-hidden="true" /></Link>
-      </Card>
+      </HistoryCard>
     </ContentEntrance>
   </div>
 
   return <div className="history-page mx-auto max-w-6xl pb-16">
     <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></ContentEntrance>
-    <ContentEntrance index={1} className="mt-6 grid min-w-0 grid-cols-1 items-start gap-6 xl:grid-cols-5">
-      <TrainingRhythm data={trend} metric={trendMetric} onMetricChange={setTrendMetric} />
+    <ContentEntrance index={1} className="history-feature-grid history-section">
+      <FeaturedExercises data={featuredExercises} />
       <MuscleDistribution distribution={categoryDistribution} />
     </ContentEntrance>
-    <ContentEntrance index={2} className="mt-16 sm:mt-20"><FeaturedExercises data={featuredExercises} /></ContentEntrance>
-    <ContentEntrance index={3} className="mt-16 sm:mt-20"><WorkoutHistory sessions={recentSessions} allSessions={allSessions} onSelect={openWorkout} /></ContentEntrance>
+    <ContentEntrance index={2} className="history-section"><TrainingRhythm data={trend} metric={trendMetric} onMetricChange={setTrendMetric} /></ContentEntrance>
+    <ContentEntrance index={3} className="history-section"><WorkoutHistory sessions={recentSessions} allSessions={allSessions} onSelect={openWorkout} initialScrollLeft={listPosition.current.horizontal} /></ContentEntrance>
   </div>
 }

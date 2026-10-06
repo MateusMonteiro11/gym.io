@@ -293,7 +293,7 @@ export default function Sidebar() {
               type="button"
               onClick={handleLogoutConfirm}
               disabled={loggingOut}
-              className="inline-flex justify-center rounded-lg bg-app-neutral-action px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-app-neutral-action disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex justify-center rounded-lg bg-app-neutral-action px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-app-neutral-action dark:bg-app-danger-action dark:enabled:hover:bg-app-danger-hover dark:enabled:active:bg-[color-mix(in_srgb,var(--app-danger-hover)_85%,var(--app-surface))] dark:focus-visible:outline-none dark:focus-visible:ring-2 dark:focus-visible:ring-app-danger dark:focus-visible:ring-offset-2 dark:focus-visible:ring-offset-app-surface disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loggingOut ? <ActionLoading label="Saindo..." inverse /> : 'Confirmar saída'}
             </button>
