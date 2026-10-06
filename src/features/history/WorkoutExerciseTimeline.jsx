@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { ArrowRight, Check, CircleHelp, Minus } from 'lucide-react'
 
-import Card from '../../components/ui/Card.jsx'
+import HistoryCard from './HistoryCard.jsx'
+import { ui } from '../../styles/theme.js'
 import Disclosure from '../../components/ui/Disclosure.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { numberLabel, timeLabel } from './historyModel.js'
@@ -34,28 +35,27 @@ function WorkoutSetItem({ set }) {
 }
 
 function WorkoutSetList({ exercise }) {
-  return <ol className="history-workout-set-list" aria-label={`Séries de ${exercise.name}`}>
+  return <ol className="history-workout-set-list" role="list" aria-label={`Séries de ${exercise.name}`}>
     {exercise.sets.map((set, index) => <WorkoutSetItem key={set.id ?? `${exercise.key}:set:${index}`} set={set} />)}
   </ol>
 }
 
-function WorkoutExerciseTimelineItem({ exercise, index, onExercise }) {
-  const [open, setOpen] = useState(false)
+function WorkoutExerciseTimelineItem({ exercise, index, onExercise, open, active, onOpenChange }) {
   const headingId = `history-exercise-card-title-${index}`
   const setCount = `${exercise.sets.length} ${exercise.sets.length === 1 ? 'série' : 'séries'}`
 
-  return <li className="history-exercise-timeline-item" data-expanded={open || undefined}>
+  return <li className="history-exercise-timeline-item" data-expanded={open || undefined} data-active={active || undefined}>
     <span className="history-exercise-timeline-rail" aria-hidden="true" />
-    <span className="history-exercise-timeline-node" aria-hidden="true">{index + 1}</span>
+    <span className="history-exercise-timeline-node" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
     <span className="history-exercise-timeline-connector" aria-hidden="true" />
-    <Card as="article" hover={false} className="history-exercise-card" aria-labelledby={headingId}>
+    <HistoryCard as="article" density="compact" className="history-exercise-card" aria-labelledby={headingId}>
       <div className="history-exercise-card-header">
         <h3 id={headingId}>{exercise.name}</h3>
         <p>{setCount}{exercise.date && ` · ${timeLabel(exercise.date)}`}</p>
         <button
           type="button"
           id={`history-exercise-${exercise.exerciseId}-${index}`}
-          className="history-exercise-evolution"
+          className={`${ui.btnGhost} history-exercise-evolution`}
           onClick={(event) => onExercise(exercise.exerciseId, event.currentTarget)}
         >
           Ver evolução
@@ -66,14 +66,14 @@ function WorkoutExerciseTimelineItem({ exercise, index, onExercise }) {
         label="Ver detalhes das séries"
         openLabel="Ocultar detalhes das séries"
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={onOpenChange}
         className="history-exercise-disclosure"
         buttonClassName="history-exercise-disclosure-button"
         contentClassName="history-exercise-disclosure-content"
       >
         <WorkoutSetList exercise={exercise} />
       </Disclosure>
-    </Card>
+    </HistoryCard>
   </li>
 }
 
@@ -83,23 +83,31 @@ export function WorkoutExerciseTimelineSkeleton() {
       <span className="history-exercise-timeline-rail" />
       <span className="history-exercise-timeline-node" />
       <span className="history-exercise-timeline-connector" />
-      <Card hover={false} className="history-exercise-card">
+      <HistoryCard density="compact" className="history-exercise-card">
         <Skeleton className="h-4 w-2/3 rounded-full" />
         <Skeleton className="mt-3 h-3 w-28 rounded-full" />
         <Skeleton className="mt-5 h-11 w-full rounded-xl" />
-      </Card>
+      </HistoryCard>
     </div>)}
   </div>
 }
 
 export default function WorkoutExerciseTimeline({ exercises, onExercise }) {
-  return <ol className="history-exercise-timeline">
+  const [opened, setOpened] = useState([])
+  const activeKey = opened.filter((key) => exercises.some((exercise) => exercise.key === key)).at(-1)
+  function changeOpen(key, open) {
+    setOpened((current) => open ? [...current.filter((item) => item !== key), key] : current.filter((item) => item !== key))
+  }
+  return <ol className="history-exercise-timeline" role="list">
     {exercises.map((exercise, index) => (
       <WorkoutExerciseTimelineItem
         exercise={exercise}
         index={index}
         key={exercise.key}
         onExercise={onExercise}
+        open={opened.includes(exercise.key)}
+        active={activeKey === exercise.key}
+        onOpenChange={(open) => changeOpen(exercise.key, open)}
       />
     ))}
   </ol>

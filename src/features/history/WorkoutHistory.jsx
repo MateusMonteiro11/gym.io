@@ -1,7 +1,11 @@
-import { ArrowRight, ChevronRight, Dumbbell } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Dumbbell } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useLayoutEffect } from 'react'
+import CarouselNavigation from '../../components/ui/CarouselNavigation.jsx'
+import useHorizontalCarousel from '../../hooks/useHorizontalCarousel.js'
+import HistoryMetricValue from './HistoryMetricValue.jsx'
 
-import Card from '../../components/ui/Card.jsx'
+import HistoryCard from './HistoryCard.jsx'
 import { ui } from '../../styles/theme.js'
 import { durationLabel, numberLabel, sessionMetrics, timeLabel } from './historyModel.js'
 
@@ -16,32 +20,34 @@ function workoutDateLabel(date) {
   return `${dateLabel} · ${timeLabel(date)}`
 }
 
-function WorkoutCard({ session, onSelect }) {
+function WorkoutCard({ session, index, onSelect }) {
   const metrics = sessionMetrics(session)
   const exerciseLabel = metrics.exercises === 1 ? 'exercício' : 'exercícios'
   const setLabel = metrics.sets === 1 ? 'série' : 'séries'
 
   return (
-    <Card
+    <HistoryCard
       as="article"
-      hover={false}
-      className="group h-full overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-app-accent/30 hover:shadow-card-hover focus-within:-translate-y-0.5 focus-within:border-app-accent/30 focus-within:shadow-card-hover"
+      density="compact"
+      tone={index % 2 === 1 ? 'accent' : 'neutral'}
+      className="history-workout-card"
     >
       <button
         type="button"
         id={`history-session-${session.id}`}
         onClick={(event) => onSelect(session.id, event.currentTarget)}
-        className="flex min-h-40 w-full items-center gap-4 p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-app-accent sm:p-6"
+        className="history-workout-button"
       >
-        <span className="min-w-0 flex-1">
-          <strong className="line-clamp-2 block text-lg font-semibold leading-snug tracking-tight text-app-ink">
+        <span className="history-workout-top">
+          <span className="history-workout-date">{workoutDateLabel(session.date)}</span>
+          <span className="history-workout-arrow"><ArrowUpRight size={22} aria-hidden="true" /></span>
+        </span>
+        <span className="history-workout-base">
+          <strong className="history-workout-name">
             {session.name}
           </strong>
-          <small className="mt-1.5 block text-xs text-app-secondary">
-            {workoutDateLabel(session.date)}
-          </small>
-          <span className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-app-secondary">
-            <span>{durationLabel(session.duration)}</span>
+          <HistoryMetricValue className="history-workout-duration" value={durationLabel(session.duration)} />
+          <span className="history-workout-metadata">
             <span>
               {numberLabel(metrics.exercises)} {exerciseLabel}{!metrics.reliability.exercises ? ' · parcial' : ''}
             </span>
@@ -49,18 +55,22 @@ function WorkoutCard({ session, onSelect }) {
               {numberLabel(metrics.sets)} {setLabel}{!metrics.reliability.sets ? ' · parcial' : ''}
             </span>
           </span>
-        </span>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-muted text-app-secondary transition-colors duration-200 group-hover:bg-app-selection group-hover:text-app-accent group-focus-within:bg-app-selection group-focus-within:text-app-accent">
-          <ChevronRight size={18} className="transition-transform duration-200 group-hover:translate-x-0.5 group-focus-within:translate-x-0.5" aria-hidden="true" />
+          <span className="history-workout-cta">Ver treino</span>
         </span>
       </button>
-    </Card>
+    </HistoryCard>
   )
 }
 
-export default function WorkoutHistory({ sessions, allSessions, onSelect }) {
+export default function WorkoutHistory({ sessions, allSessions, onSelect, initialScrollLeft = 0 }) {
   const hasHistory = allSessions.length > 0
   const hasRecentSessions = sessions.length > 0
+  const itemsKey = sessions.map((session) => session.id).join(',')
+  const { railRef, navigation, scrollCards, updateNavigation } = useHorizontalCarousel(itemsKey)
+  useLayoutEffect(() => {
+    railRef.current?.scrollTo({ left: initialScrollLeft, behavior: 'instant' })
+    updateNavigation()
+  }, [itemsKey, initialScrollLeft, railRef, updateNavigation])
 
   return (
     <section aria-labelledby="history-sessions-title">
@@ -69,26 +79,26 @@ export default function WorkoutHistory({ sessions, allSessions, onSelect }) {
           <h2 id="history-sessions-title" className={ui.sectionTitle}>Histórico de treinos</h2>
           <p className={ui.sectionSubtitle}>
             {hasRecentSessions
-              ? 'Revise suas sessões concluídas e abra os detalhes do treino. Exibimos até os 12 treinos mais recentes.'
+              ? 'Até 12 treinos recentes, independentemente do período da análise. Abra uma sessão para ver os detalhes.'
               : 'Revise suas sessões concluídas e abra os detalhes do treino.'}
           </p>
         </div>
         {hasRecentSessions ? (
-          <span className="shrink-0 text-sm text-app-secondary">
+          <div className="flex shrink-0 flex-wrap items-center gap-4"><span className="text-sm text-app-secondary">
             {numberLabel(sessions.length)} {sessions.length === 1 ? 'treino recente' : 'treinos recentes'}
-          </span>
+          </span><CarouselNavigation navigation={navigation} onNavigate={scrollCards} controlsId="history-recent-rail" label="Navegação dos treinos recentes" /></div>
         ) : null}
       </div>
 
       {!sessions.length ? (
-        <Card hover={false} className="px-6 py-10 text-center">
+        <HistoryCard className="history-onboarding text-center">
           <Dumbbell size={24} className="mx-auto text-app-secondary" aria-hidden="true" />
           <h3 className="mt-4 text-lg font-semibold text-app-ink">
-            {hasHistory ? 'Nenhum treino nos últimos 30 dias.' : 'Seu histórico começa no próximo treino.'}
+            {hasHistory ? 'Nenhum treino recente disponível.' : 'Seu histórico começa no próximo treino.'}
           </h3>
           <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-app-secondary">
             {hasHistory
-              ? 'Selecione Total para consultar sessões mais antigas.'
+              ? 'Atualize o histórico para tentar carregar suas sessões novamente.'
               : 'Finalize seu primeiro treino para começar a acompanhar sua evolução.'}
           </p>
           {!hasHistory ? (
@@ -96,12 +106,12 @@ export default function WorkoutHistory({ sessions, allSessions, onSelect }) {
               Começar treino <ArrowRight size={16} aria-hidden="true" />
             </Link>
           ) : null}
-        </Card>
+        </HistoryCard>
       ) : (
-        <ol className="grid gap-4 xl:grid-cols-2">
-          {sessions.map((session) => (
+        <ol ref={railRef} id="history-recent-rail" className="training-rail history-workout-rail" role="list" aria-label="Treinos recentes">
+          {sessions.map((session, index) => (
             <li key={session.id} className="min-w-0">
-              <WorkoutCard session={session} onSelect={onSelect} />
+              <WorkoutCard session={session} index={index} onSelect={onSelect} />
             </li>
           ))}
         </ol>

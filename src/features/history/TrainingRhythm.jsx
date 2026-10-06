@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
-import Card from '../../components/ui/Card.jsx'
+import HistoryCard from './HistoryCard.jsx'
 import SegmentedControl from '../../components/ui/SegmentedControl.jsx'
 import { ui } from '../../styles/theme.js'
 import { OverviewTrendChart } from './HistoryCharts.jsx'
@@ -16,8 +16,8 @@ export default function TrainingRhythm({ data, metric, onMetricChange }) {
   const reduceMotion = useReducedMotion()
   const options = Object.entries(TREND_METRICS).map(([value, option]) => ({ value, label: option.label }))
 
-  return <Card as="section" hover={false} className="min-w-0 overflow-hidden p-4 sm:p-6 xl:col-span-3" aria-labelledby="history-trend-title">
-    <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+  return <HistoryCard as="section" className="history-rhythm" aria-labelledby="history-trend-title">
+    <div className="history-chart-heading">
       <div>
         <h2 id="history-trend-title" className={ui.sectionTitle}>Ritmo de treino</h2>
         <p className={ui.sectionSubtitle}>{DESCRIPTIONS[metric]}</p>
@@ -28,7 +28,7 @@ export default function TrainingRhythm({ data, metric, onMetricChange }) {
         onChange={onMetricChange}
         ariaLabel="Métrica do ritmo de treino"
         layoutId="history-trend-indicator"
-        className="w-full [&>button]:flex-1 lg:w-auto"
+        className="history-trend-selector"
       />
     </div>
     <AnimatePresence mode="wait" initial={false}>
@@ -41,5 +41,5 @@ export default function TrainingRhythm({ data, metric, onMetricChange }) {
         transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: 'easeOut' }}
       ><OverviewTrendChart data={data} metric={metric} /></motion.div>
     </AnimatePresence>
-  </Card>
+  </HistoryCard>
 }

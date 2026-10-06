@@ -1,4 +1,5 @@
-import { Area, CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { useState } from 'react'
 import { ChartNoAxesCombined } from 'lucide-react'
 import Disclosure from '../../components/ui/Disclosure.jsx'
 import ChartDataTable from './ChartDataTable.jsx'
@@ -30,17 +31,26 @@ function metricReliable(point, metric) {
   return point.reliability.workouts
 }
 
+function responsiveTicks(timestamps, width) {
+  const dates = [...new Set(timestamps)]
+  const count = width < 480 ? 3 : width < 800 ? 4 : 6
+  if (dates.length <= count) return dates
+  return Array.from({ length: count }, (_, index) => dates[Math.round(index * (dates.length - 1) / (count - 1))])
+}
+
 function TrendTooltip({ active, payload, metric }) {
   const point = payload?.find((item) => item.payload)?.payload
   if (!active || !point) return null
   return <div className="history-tooltip" role="status">
     <span>{point.label}</span>
     <strong>{metricValue(point.value, metric)}</strong>
-    <small>{point.workouts} {point.workouts === 1 ? 'treino' : 'treinos'}{point.isPartial ? ' · período parcial' : ''}{point.partialData ? ' · dados parciais' : ''}</small>
+    <small>{point.workouts} {point.workouts === 1 ? 'treino' : 'treinos'}{point.partialData ? ' · dados parciais' : ''}</small>
   </div>
 }
 
 export function OverviewTrendChart({ data, metric }) {
+  const [chartWidth, setChartWidth] = useState(0)
+  const compact = chartWidth < 640
   const variable = TREND_METRICS[metric]
   const chartData = data.map((point) => {
     const value = getTrendMetricValue(point, metric)
@@ -53,27 +63,16 @@ export function OverviewTrendChart({ data, metric }) {
   })
   const hasTrend = hasSufficientTrendData(data, metric)
   const knownPoint = [...data].reverse().find((point) => isTrendBucketPopulated(point, metric)) || null
-  const firstObservedPoint = chartData.find((point) => point.chartValue != null) || null
-  const durationOriginGuide = metric === 'duration'
-    && firstObservedPoint
-    && firstObservedPoint.timestamp !== chartData[0]?.timestamp
-    ? [
-        { x: chartData[0].timestamp, y: 0 },
-        { x: firstObservedPoint.timestamp, y: firstObservedPoint.chartValue },
-      ]
-    : null
-  const tickEvery = Math.max(1, Math.ceil(chartData.length / 6))
-  const ticks = chartData.filter((_, index) => index === chartData.length - 1 || index % tickEvery === 0).map((point) => point.timestamp)
+  const ticks = responsiveTicks(chartData.map((point) => point.timestamp), chartWidth)
 
   return <>
-    {hasTrend ? <div className="history-primary-chart" aria-label={`${variable.label} por período. Use Tab e as setas no gráfico para consultar os pontos.${durationOriginGuide ? ' O trecho pontilhado parte da origem e conduz ao primeiro intervalo com duração registrada.' : ''}`}>
-      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-        <ComposedChart data={chartData} accessibilityLayer margin={{ top: 18, right: 8, bottom: 0, left: -18 }}>
+    {hasTrend ? <div className="history-primary-chart" aria-label={`${variable.label} por período. Use Tab e as setas no gráfico para consultar os pontos.`}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} onResize={setChartWidth}>
+        <ComposedChart data={chartData} accessibilityLayer margin={{ top: 18, right: compact ? 4 : 12, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--history-grid)" />
-          <XAxis dataKey="timestamp" type="number" scale="time" domain={['dataMin', 'dataMax']} ticks={ticks} interval="preserveStartEnd" minTickGap={18} axisLine={false} tickLine={false} tick={{ fill: 'var(--history-muted)', fontSize: 11 }} tickMargin={12} tickFormatter={(value) => chartData.find((point) => point.timestamp === value)?.label || ''} />
-          <YAxis domain={[0, 'auto']} allowDecimals={metric !== 'workouts'} axisLine={false} tickLine={false} tick={{ fill: 'var(--history-muted)', fontSize: 11 }} tickFormatter={(value) => axisValue(metric === 'duration' ? value * 60 : value, metric)} width={66} />
+          <XAxis dataKey="timestamp" type="number" scale="time" domain={['dataMin', 'dataMax']} ticks={ticks} padding={{ left: compact ? 8 : 12, right: compact ? 8 : 12 }} interval="preserveStartEnd" minTickGap={18} axisLine={false} tickLine={false} tick={{ fill: 'var(--history-muted)', fontSize: 12 }} tickMargin={12} tickFormatter={(value) => chartWidth < 480 ? shortDate(new Date(value)) : chartData.find((point) => point.timestamp === value)?.label || ''} />
+          <YAxis domain={[0, 'auto']} allowDecimals={metric !== 'workouts'} axisLine={false} tickLine={false} tickSize={compact ? 0 : 6} tickMargin={2} tick={{ fill: 'var(--history-muted)', fontSize: 12 }} tickFormatter={(value) => axisValue(metric === 'duration' ? value * 60 : value, metric)} width="auto" />
           <Tooltip trigger="click" content={<TrendTooltip metric={metric} />} cursor={{ stroke: 'var(--history-muted)', strokeDasharray: '3 5' }} />
-          {durationOriginGuide ? <ReferenceLine segment={durationOriginGuide} stroke="var(--history-chart-blue)" strokeWidth={3} strokeOpacity={0.42} strokeDasharray="5 5" /> : null}
           <Area type="monotone" dataKey="chartValue" fill="var(--history-chart-fill)" stroke="none" connectNulls={false} isAnimationActive={false} tooltipType="none" />
           <Line type="monotone" dataKey="chartValue" name={variable.label} stroke="var(--history-chart-blue)" strokeWidth={3} connectNulls={false} dot={{ r: 3.5, fill: 'var(--history-surface)', stroke: 'var(--history-chart-blue)', strokeWidth: 2 }} activeDot={{ r: 5.5, fill: 'var(--history-chart-blue)', stroke: 'var(--history-surface)', strokeWidth: 2 }} isAnimationActive={false} />
         </ComposedChart>
@@ -87,10 +86,6 @@ export function OverviewTrendChart({ data, metric }) {
     >
       <ChartDataTable
         label={`Dados de ${variable.label.toLowerCase()} por período`}
-        notes={data.filter((point) => point.isPartial).map((point) => ({
-          id: point.key,
-          text: `Período parcial: ${point.label}`,
-        }))}
         columns={[
           { key: 'period', label: 'Período' },
           { key: 'metric', label: variable.label, numeric: true, primary: true },
@@ -133,20 +128,21 @@ function loadDomain(points) {
 }
 
 export function ExerciseTrendChart({ points }) {
+  const [chartWidth, setChartWidth] = useState(0)
   const chartKey = points.map((point) => `${point.sessionId}/${point.timestamp}/${point.value}/${point.reps}/${point.partial}`).join('|')
   const valid = points.filter((point) => point.value != null)
   const dates = valid.map((point) => point.timestamp)
   const domain = dates.length > 1 ? [dates[0], dates.at(-1)] : [dates[0] ?? 0, (dates[0] ?? 0) + 1]
-  const ticks = dates.filter((_, index) => dates.length <= 6 || index === dates.length - 1 || index % Math.ceil((dates.length - 1) / 5) === 0)
+  const ticks = responsiveTicks(dates, chartWidth)
   const sameDay = dates.length > 1 && new Date(dates[0]).toDateString() === new Date(dates.at(-1)).toDateString()
 
   return <>
     {valid.length >= 2 ? <div className="history-exercise-chart" aria-label="Maior carga registrada por sessão. Use Tab e as setas no gráfico para consultar os pontos.">
-      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-        <ComposedChart key={chartKey} data={valid} accessibilityLayer margin={{ top: 18, right: 10, bottom: 0, left: -14 }}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} onResize={setChartWidth}>
+        <ComposedChart key={chartKey} data={valid} accessibilityLayer margin={{ top: 18, right: 12, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--history-grid)" />
-          <XAxis dataKey="timestamp" type="number" scale="time" domain={domain} ticks={ticks} axisLine={false} tickLine={false} tick={{ fill: 'var(--history-muted)', fontSize: 11 }} tickMargin={12} minTickGap={12} tickFormatter={(value) => sameDay ? timeLabel(new Date(value)) : shortDate(new Date(value))} />
-          <YAxis domain={loadDomain(valid)} allowDecimals axisLine={false} tickLine={false} tick={{ fill: 'var(--history-muted)', fontSize: 11 }} tickFormatter={(value) => compactNumberLabel(value)} width={62} />
+          <XAxis dataKey="timestamp" type="number" scale="time" domain={domain} ticks={ticks} padding={{ left: 12, right: 12 }} axisLine={false} tickLine={false} tick={{ fill: 'var(--history-muted)', fontSize: 12 }} tickMargin={12} minTickGap={12} tickFormatter={(value) => sameDay ? timeLabel(new Date(value)) : shortDate(new Date(value))} />
+          <YAxis domain={loadDomain(valid)} allowDecimals axisLine={false} tickLine={false} tick={{ fill: 'var(--history-muted)', fontSize: 12 }} tickFormatter={(value) => compactNumberLabel(value)} width="auto" />
           <Tooltip trigger="click" defaultIndex={valid.length - 1} content={<EvolutionTooltip />} cursor={{ stroke: 'var(--history-muted)', strokeDasharray: '3 5' }} />
           <Area type="monotone" dataKey="value" fill="var(--history-chart-fill)" stroke="none" isAnimationActive={false} tooltipType="none" />
           <Line type="monotone" dataKey="value" name="Carga" stroke="var(--history-chart-blue)" strokeWidth={3} dot={valid.length <= 80 ? { r: 4, fill: 'var(--history-surface)', stroke: 'var(--history-chart-blue)', strokeWidth: 2.25 } : false} activeDot={{ r: 6, fill: 'var(--history-chart-blue)', stroke: 'var(--history-surface)', strokeWidth: 2 }} isAnimationActive={false} />
