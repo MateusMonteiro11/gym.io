@@ -80,7 +80,7 @@ export default function MuscleDistribution({ distribution }) {
   }, [distribution.items, selectedId])
   const selected = useMemo(() => distribution.items.find((item) => item.id === selectedId) || distribution.items[0] || null, [distribution.items, selectedId])
 
-  return <Card as="section" hover={false} className="flex min-w-0 flex-col p-5 sm:p-6 xl:col-span-2" aria-labelledby="history-muscle-title">
+  return <Card as="section" hover={false} className="flex min-w-0 flex-col p-4 sm:p-6 xl:col-span-2" aria-labelledby="history-muscle-title">
     <div className="mb-6">
       <div><h2 id="history-muscle-title" className={ui.sectionTitle}>Distribuição muscular</h2><p className={ui.sectionSubtitle}>Presença dos exercícios concluídos no período.</p></div>
     </div>

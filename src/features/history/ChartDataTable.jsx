@@ -3,7 +3,7 @@ import { useId } from 'react'
 export default function ChartDataTable({ label, columns, rows, emptyMessage, notes = [] }) {
   const notesId = `chart-data-notes-${useId().replace(/[^a-z0-9_-]/gi, '')}`
 
-  return <div>
+  return <div className="history-data">
     <div className="history-data-frame">
       <div className="history-data-scroll" role="region" aria-label={label} tabIndex={0}>
         <table className="history-data-table" data-column-count={columns.length} aria-describedby={notes.length ? notesId : undefined}>
