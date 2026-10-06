@@ -59,6 +59,8 @@
 .history-metric-week .history-value-unit { display: block; margin-top: 4px; white-space: normal; }
 .history-metric-week .history-metric-context { display: block; font-weight: 400; }
 .history-metric-exercises { background: var(--history-raised); }
+.history-metric-exercises dl { align-items: start; }
+.history-metric-exercises .history-metric-context { display: block; font-weight: 400; }
 .history-partial-note { margin: 16px 0 0; color: var(--history-muted); font-size: 12px; line-height: 1.65; }
 .history-feature-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 24px; }
 .history-section { margin-top: 40px; }

@@ -80,8 +80,7 @@ export default function HistoryOverview({ stats, period, onPeriodChange, onRefre
         <HistoryCard as="article" className={`history-metric history-metric-exercises ${numberLabel(stats.exercises).length > 7 ? 'history-value-long' : ''}`}>
           <div className="history-metric-top"><span>No período</span><Layers3 size={26} aria-hidden="true" /></div>
           <div className="history-metric-base">
-            <dl><dt>Exercícios realizados</dt><dd><AnimatedValue identity={`${period}-exercises-${stats.exercises}`}><HistoryMetricValue value={numberLabel(stats.exercises)} /></AnimatedValue></dd></dl>
-            <p className="history-metric-context">Execuções no período</p>
+            <dl><dt>Exercícios realizados<span className="history-metric-context">Execuções no período</span></dt><dd><AnimatedValue identity={`${period}-exercises-${stats.exercises}`}><HistoryMetricValue value={numberLabel(stats.exercises)} /></AnimatedValue></dd></dl>
             {!stats.reliability.exercises && <small className="history-metric-note">Dados parciais</small>}
           </div>
         </HistoryCard>
