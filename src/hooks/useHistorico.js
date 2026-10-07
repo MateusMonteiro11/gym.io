@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { listarHistoricos } from '../services/historico/historicoTreinosService'
 import { parseDateTime } from '../utils/dateUtils'
+import { formatAverageWorkoutDuration } from '../utils/workoutDuration.js'
 import { logError } from '../utils/errorMessages'
 
 export function useHistorico(idUsuario) {
@@ -95,13 +96,10 @@ export function useHistorico(idUsuario) {
 
     const mediaSegundos =
       totalTreinos > 0
-        ? Math.round(duracaoTotal / totalTreinos)
+        ? duracaoTotal / totalTreinos
         : 0
 
-    const duracaoMedia =
-      mediaSegundos >= 60
-        ? `${(mediaSegundos / 60).toFixed(1)} min`
-        : `${mediaSegundos}s`
+    const duracaoMedia = formatAverageWorkoutDuration(mediaSegundos)
 
     const diasSemanais = new Set(
 

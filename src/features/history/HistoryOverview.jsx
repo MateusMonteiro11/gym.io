@@ -6,7 +6,8 @@ import HistoryMetricValue from './HistoryMetricValue.jsx'
 import PageHeader from '../../components/ui/PageHeader.jsx'
 import SegmentedControl from '../../components/ui/SegmentedControl.jsx'
 import { ui } from '../../styles/theme.js'
-import { durationLabel, numberLabel, PERIODS } from './historyModel.js'
+import { numberLabel, PERIODS } from './historyModel.js'
+import { formatAverageWorkoutDuration } from '../../utils/workoutDuration.js'
 
 function AnimatedValue({ identity, children }) {
   const reduceMotion = useReducedMotion()
@@ -65,7 +66,7 @@ export default function HistoryOverview({ stats, period, onPeriodChange, onRefre
           <div className="history-metric-top"><span>Por sessão</span><Clock3 size={26} aria-hidden="true" /></div>
           <div className="history-metric-base">
             <dl><dt>Duração média</dt><dd><AnimatedValue identity={`${period}-duration-${stats.averageDuration}`}>
-              <HistoryMetricValue value={durationLabel(stats.workouts ? stats.averageDuration : null)} />
+              <HistoryMetricValue value={formatAverageWorkoutDuration(stats.workouts ? stats.averageDuration : null)} />
             </AnimatedValue></dd></dl>
             {!stats.workouts && <p className="history-metric-context">Sem treinos no período</p>}
             {!stats.reliability.averageDuration && <small className="history-metric-note">Dados parciais</small>}
