@@ -4,7 +4,6 @@ node_modules
 # production
 dist
 tests
-supabase
 docs
 
 # environment variables
@@ -36,3 +35,11 @@ coverage
 # temporary files
 *.tmp
 *.temp
+
+# Disposable Push Foundation runtime and server-only local credentials
+supabase/.runtime/
+supabase/.temp/
+supabase/.branches/
+supabase/functions/push-compat-spike/
+supabase/functions/push-integration/
+.env*.local

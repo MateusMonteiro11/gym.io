@@ -1,0 +1,8 @@
+{
+  "lock": "deno.lock",
+  "compilerOptions": { "strict": true, "checkJs": false },
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.106.0",
+    "web-push": "npm:web-push@3.6.7"
+  }
+}

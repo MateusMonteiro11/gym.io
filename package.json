@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:push": "vite --mode push --host 127.0.0.1",
     "test": "node --test",
+    "test:push:local": "powershell -NoProfile -File supabase/testing/run-local.ps1",
     "build": "vite build",
     "preview": "vite preview"
   },

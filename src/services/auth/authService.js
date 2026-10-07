@@ -1,6 +1,8 @@
 import { supabase, setAuthStoragePreference } from '../../lib/supabase'
 import { setRememberMe, setLastEmail, clearSessionPreferences, getRememberMe } from '../../utils/sessionStorage'
 import { getUserFriendlyErrorMessage, logError } from '../../utils/errorMessages'
+import { pushService } from '../push/pushService'
+import { logoutWithPushCleanup } from './logoutLifecycle.js'
 
 const LOGIN_ATTEMPTS_KEY = 'gym_io_login_attempts'
 const LOGIN_LOCKOUT_KEY = 'gym_io_login_lockout_until'
@@ -180,18 +182,16 @@ export async function cadastrar({
 // Logout
 
 export async function logout() {
-
-  const { error } =
-    await supabase.auth.signOut()
-
-  if (error) {
+  try {
+    return await logoutWithPushCleanup({
+      cleanup: pushService.disable,
+      signOut: () => supabase.auth.signOut(),
+      onSignedOut: () => { clearSessionPreferences(); setAuthStoragePreference(false) },
+    })
+  } catch (error) {
     logError(error, '[AuthService] Logout failed')
     throw new Error(getUserFriendlyErrorMessage(error))
   }
-
-  // Clear session preferences on logout
-  clearSessionPreferences()
-  setAuthStoragePreference(false)
 }
 
 // Resetar senha

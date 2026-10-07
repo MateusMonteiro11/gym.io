@@ -13,6 +13,7 @@ import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 import { validateProfileImageFile } from '../utils/imageUtils'
 import { Skeleton, SkeletonList } from './ui/Skeleton'
 import ActionLoading from './ui/ActionLoading'
+import PushNotificationSettings from './PushNotificationSettings'
 
 export default function UserProfileModal({ open, onClose, onUpdate }) {
   const { usuario } = useAuth()
@@ -133,6 +134,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
     { id: 'profile', label: 'Perfil', icon: 'fa-user' },
     { id: 'history', label: 'Histórico', icon: 'fa-history' },
     { id: 'stats', label: 'Estatísticas', icon: 'fa-chart-bar' },
+    { id: 'notifications', label: 'Notificações', icon: 'fa-bell' },
   ]
 
   const formatDuracao = (segundos) => {
@@ -153,7 +155,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center justify-center gap-1.5 sm:flex-row sm:gap-2 flex-1 px-6 py-4 text-sm font-medium transition-colors duration-200 border-b-2 ${
+            className={`flex flex-col items-center justify-center gap-1.5 sm:flex-row sm:gap-2 flex-1 min-w-0 px-2 sm:px-4 py-4 text-xs sm:text-sm font-medium transition-colors duration-200 border-b-2 ${
               activeTab === tab.id
                 ? 'border-app-accent text-app-accent'
                 : 'border-transparent text-app-secondary hover:text-app-ink'
@@ -166,6 +168,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
       </div>
 
       <div className="p-6">
+        {activeTab === 'notifications' && <PushNotificationSettings />}
         {/* Profile */}
         {activeTab === 'profile' && (carregandoUsuario ? (
           <div className="space-y-6" role="status" aria-label="Carregando perfil...">

@@ -24,7 +24,7 @@ export default function Sidebar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { usuario, loading: authLoading } = useAuth()
-  const { alert } = useUi()
+  const { alert, notify } = useUi()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
@@ -94,7 +94,10 @@ export default function Sidebar() {
   const handleLogoutConfirm = async () => {
     try {
       setLoggingOut(true)
-      await logout()
+      const result = await logout()
+      if (result?.warnings?.length) {
+        notify({ title: 'Conta desconectada', message: 'A limpeza das notificações foi parcial. Algum vínculo pode continuar no navegador ou backend; a contenção local foi tentada.', type: 'warning', duration: 0 })
+      }
       navigate('/login')
     } catch (err) {
       console.error('Erro ao sair:', err)

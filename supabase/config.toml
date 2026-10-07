@@ -1,0 +1,52 @@
+# Local-only development. Legacy baseline is reconstructed by testing/bootstrap.
+project_id = "gymio-push-foundation-local"
+
+[api]
+enabled = true
+port = 55431
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 55432
+shadow_port = 55430
+major_version = 17
+
+[db.migrations]
+# The recovered history is not a complete baseline. Bootstrap explicitly locally.
+enabled = false
+
+[db.seed]
+enabled = false
+
+[studio]
+enabled = false
+
+[local_smtp]
+enabled = false
+
+[storage]
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173/**"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[edge_runtime]
+enabled = true
+# Default development policy; isolates each request without changing CPU limits.
+policy = "oneshot"
+
+[analytics]
+enabled = false
+
+[functions.push-test]
+verify_jwt = true
