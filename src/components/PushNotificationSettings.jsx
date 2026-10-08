@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Button from './ui/Button'
 import { usePushNotifications } from '../hooks/usePushNotifications'
+import { pushTestMessage } from '../services/push/pushResults.js'
 
 const messages = {
   unsupported: 'Este navegador não oferece Web Push neste contexto.',
@@ -20,9 +21,7 @@ export default function PushNotificationSettings() {
     const result = await operation()
     if (result?.warnings?.includes('rotated_subscription_cleanup_failed')) setFeedback('Este navegador foi ativado, mas não foi possível remover o vínculo anterior no backend.')
     else if (result?.warnings?.length) setFeedback('Limpeza parcial: algum vínculo pode continuar no backend ou no navegador. A contenção local foi tentada; você pode tentar desativar novamente.')
-    else if (result?.result === 'sent') setFeedback('O serviço de Push aceitou o envio. Confira a notificação no dispositivo.')
-    else if (result?.result === 'expired') setFeedback('A subscription expirou. Desative e ative novamente neste navegador.')
-    else if (result?.result) setFeedback('O envio não pôde ser concluído agora. Tente novamente mais tarde.')
+    else if (result?.result) setFeedback(pushTestMessage(result.result))
   }
   const unconfigured = push.error === 'push_not_configured'
   return (

@@ -167,6 +167,43 @@ begin
     raise exception 'unsafe executor attributes';
   end if;
   if exists(select 1 from pg_catalog.pg_class where relowner=v_role) then raise exception 'executor owns relation'; end if;
+  -- Effective privileges include PUBLIC, inherited ACLs and column-only grants.
+  -- Only these official views retain baseline SELECT inherited from PUBLIC.
+  -- Name alone is insufficient: require view type, extension membership/owner,
+  -- PUBLIC's table SELECT and no explicit executor relation/column ACL.
+  with official_stats as (
+    select c.oid from pg_catalog.pg_class c
+    join pg_catalog.pg_depend d on d.classid='pg_catalog.pg_class'::regclass and d.objid=c.oid
+      and d.refclassid='pg_catalog.pg_extension'::regclass and d.deptype='e'
+    join pg_catalog.pg_extension e on e.oid=d.refobjid
+    where c.oid in (to_regclass('extensions.pg_stat_statements'),to_regclass('extensions.pg_stat_statements_info'))
+      and c.relkind='v' and c.relnamespace='extensions'::regnamespace
+      and e.extname='pg_stat_statements' and e.extnamespace=c.relnamespace and e.extowner=c.relowner
+      and exists(select 1 from pg_catalog.aclexplode(coalesce(c.relacl,pg_catalog.acldefault('r',c.relowner))) a
+        where a.grantee=0 and a.privilege_type='SELECT' and not a.is_grantable)
+      and not exists(select 1 from pg_catalog.aclexplode(c.relacl) a where a.grantee=v_role)
+      and not exists(select 1 from pg_catalog.pg_attribute col cross join lateral pg_catalog.aclexplode(col.attacl) a
+        where col.attrelid=c.oid and a.grantee=v_role)
+  )
+  select format('%I.%I (%s)', n.nspname, c.relname, p.priv) into v_problem
+  from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+  cross join (values('SELECT'),('INSERT'),('UPDATE'),('DELETE'),('TRUNCATE'),('REFERENCES'),('TRIGGER'),('MAINTAIN')) p(priv)
+  where c.relkind in ('r','p','v','m','f')
+    and n.nspname not in ('pg_catalog','information_schema')
+    and n.nspname !~ '^pg_(toast|temp)(_|$)'
+    and ((c.oid <> 'public.push_subscriptions'::regclass
+      and not (p.priv='SELECT' and c.oid in (select oid from official_stats)) and
+      (has_table_privilege(v_role,c.oid,p.priv) or case when p.priv in ('SELECT','INSERT','UPDATE','REFERENCES')
+        then has_any_column_privilege(v_role,c.oid,p.priv) else false end))
+      or (c.oid = 'public.push_subscriptions'::regclass and p.priv in ('TRUNCATE','REFERENCES','TRIGGER','MAINTAIN')
+        and (has_table_privilege(v_role,c.oid,p.priv) or case when p.priv = 'REFERENCES'
+          then has_any_column_privilege(v_role,c.oid,p.priv) else false end)))
+  order by n.nspname,c.relname,p.priv limit 1;
+  if v_problem is not null then raise exception 'push executor relation allowlist violation: %', v_problem; end if;
+  if exists(select 1 from (values('SELECT'),('INSERT'),('UPDATE'),('DELETE')) p(priv)
+    where not has_table_privilege(v_role,'public.push_subscriptions',p.priv)) then
+    raise exception 'push executor required CRUD missing';
+  end if;
   if not exists(select 1 from pg_catalog.pg_class where oid='public.push_subscriptions'::regclass
     and relowner='postgres'::regrole and relrowsecurity and relforcerowsecurity) then raise exception 'push RLS/owner invalid'; end if;
   if (select count(*) from pg_catalog.pg_constraint where conrelid='public.push_subscriptions'::regclass

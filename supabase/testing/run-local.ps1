@@ -111,7 +111,11 @@ try {
         if (-not $pushCache.Existed -and (Test-Path -LiteralPath $pushCachePath)) { Remove-Item -LiteralPath $pushCachePath -Recurse -Force }
       }
       if ($pushHadCliTemp -and -not $pushHadStartSecrets -and (Test-Path -LiteralPath 'supabase/.temp/start-secrets')) {
-        Remove-Item -LiteralPath (Join-Path $pushRoot 'supabase/.temp/start-secrets')
+        # CLI 2.120 creates a directory here, not a single file.
+        $pushSecretCache = (Resolve-Path -LiteralPath (Join-Path $pushRoot 'supabase/.temp/start-secrets')).Path
+        $pushExpectedTemp = [IO.Path]::GetFullPath((Join-Path $pushRoot 'supabase/.temp')) + [IO.Path]::DirectorySeparatorChar
+        if (-not $pushSecretCache.StartsWith($pushExpectedTemp, [StringComparison]::OrdinalIgnoreCase)) { throw 'Unsafe start-secrets cleanup path' }
+        Remove-Item -LiteralPath $pushSecretCache -Recurse -Force
       }
     }
     if ($pushServeRoot -and (Test-Path -LiteralPath (Join-Path $pushServeRoot '.owner'))) {

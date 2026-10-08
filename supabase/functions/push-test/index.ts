@@ -3,8 +3,9 @@ import { createPushHandler } from '../_shared/pushHandler.js'
 import { createPushRepository } from '../_shared/pushRepository.js'
 import webpush from 'npm:web-push@3.6.7'
 import { createWebPushTransport } from '../_shared/pushTransport.js'
+import { createPushAdminClient } from '../_shared/pushAdminClient.js'
 
-const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false, autoRefreshToken: false } })
+const { client: admin } = createPushAdminClient({ createClient, env: (name: string) => Deno.env.get(name) })
 
 // Compatibility proved on CLI-served edge-runtime 1.77.4 / Deno 2.1.4.
 const sendPush = createWebPushTransport({

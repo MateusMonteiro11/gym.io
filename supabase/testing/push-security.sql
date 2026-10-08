@@ -11,6 +11,17 @@ insert into auth.users(id, email) values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
 select pg_temp.check_true(not has_schema_privilege('gymio_push_executor','auth','USAGE'), 'no Auth usage');
 select pg_temp.check_true(not has_schema_privilege('gymio_push_executor','auth','CREATE'), 'no Auth create');
 select pg_temp.check_true(not (select rolbypassrls from pg_roles where rolname='gymio_push_executor'), 'no bypassrls');
+select pg_temp.check_true((select count(*)=2 from pg_class c join pg_depend d on d.objid=c.oid
+  and d.classid='pg_class'::regclass and d.refclassid='pg_extension'::regclass and d.deptype='e'
+  join pg_extension e on e.oid=d.refobjid where c.oid in ('extensions.pg_stat_statements'::regclass,'extensions.pg_stat_statements_info'::regclass)
+  and c.relkind='v' and e.extname='pg_stat_statements' and e.extnamespace=c.relnamespace and e.extowner=c.relowner), 'official stats view identities');
+select pg_temp.check_true(not exists(select 1 from pg_class c cross join lateral aclexplode(c.relacl) a
+  where c.oid in ('extensions.pg_stat_statements'::regclass,'extensions.pg_stat_statements_info'::regclass)
+  and a.grantee='gymio_push_executor'::regrole), 'no explicit stats grant to executor');
+select pg_temp.check_true(not exists(select 1 from pg_class c cross join (values('INSERT'),('UPDATE'),('DELETE'),('TRUNCATE'),('REFERENCES'),('TRIGGER'),('MAINTAIN')) p(priv)
+  where c.oid in ('extensions.pg_stat_statements'::regclass,'extensions.pg_stat_statements_info'::regclass)
+  and (has_table_privilege('gymio_push_executor',c.oid,p.priv) or case when p.priv in ('INSERT','UPDATE','REFERENCES')
+    then has_any_column_privilege('gymio_push_executor',c.oid,p.priv) else false end)), 'stats views SELECT only');
 select pg_temp.check_true((select count(*)=3 from pg_constraint where conrelid='public.push_subscriptions'::regclass and contype='c'), 'checks');
 select pg_temp.check_true((select count(*)=3 from pg_index where indrelid='public.push_subscriptions'::regclass), 'indexes');
 

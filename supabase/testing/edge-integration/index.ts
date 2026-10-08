@@ -1,13 +1,14 @@
 // Disposable local harness. Fixed test groups keep each request within runtime limits.
 import { createClient } from 'npm:@supabase/supabase-js@2.106.0'
-import { createPushHandler, TEST_PAYLOAD } from '../_shared/pushHandler.js'
+import { createPushHandler, TEST_PAYLOAD, validatePushEndpoint } from '../_shared/pushHandler.js'
 import { createPushRepository } from '../_shared/pushRepository.js'
 import { createWebPushTransport } from '../_shared/pushTransport.js'
+import { createPushAdminClient } from '../_shared/pushAdminClient.js'
 
 const url = Deno.env.get('SUPABASE_URL')!
 const host = new URL(url)
 if (host.protocol !== 'http:' || !['kong', 'localhost', '127.0.0.1'].includes(host.hostname)) throw new Error('local_harness_only')
-const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false, autoRefreshToken: false } })
+const { client: admin } = createPushAdminClient({ createClient, env: (name: string) => Deno.env.get(name) })
 const tokenA = Deno.env.get('PUSH_TEST_A_JWT')!
 const tokenB = Deno.env.get('PUSH_TEST_B_JWT')!
 const a = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: `Bearer ${tokenA}` } }, auth: { persistSession: false, autoRefreshToken: false } })
@@ -18,7 +19,7 @@ const authenticate = async (jwt: string) => {
 }
 const check = (condition: unknown, label: string) => { if (!condition) throw new Error(label) }
 const b64 = (v: Uint8Array) => btoa(String.fromCharCode(...v)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-const groups = ['core', 'transport', 'expiration', 'temporary', 'timeout', 'concurrency', 'refresh']
+const groups = ['core', 'transport', 'expiration', 'temporary', 'timeout', 'concurrency', 'refresh', 'credentials']
 
 Deno.serve(async (request) => {
   const ids: string[] = []
@@ -52,16 +53,53 @@ Deno.serve(async (request) => {
       }, allowedOrigins: ['http://localhost:5173'] })
     const verified: string[] = []
     const success = create(async () => 201)
-    if (group === 'core') {
+    if (group === 'credentials') {
       const id = await register(group)
+      for (const modern of [true, false]) {
+        let adminRequests = 0
+        let callerJWTs = 0
+        const env = (name: string) => name === 'SUPABASE_SECRET_KEYS'
+          ? (modern ? JSON.stringify({ default: Deno.env.get('PUSH_TEST_SECRET_KEY') }) : undefined) : Deno.env.get(name)
+        const { client, credentialKind } = createPushAdminClient({ createClient, env,
+          fetchImpl: async (input: any, init: any) => {
+            const headers = new Headers(init.headers)
+            check(!/^Bearer sb_secret_/i.test(headers.get('authorization') ?? ''), 'secret_not_bearer')
+            if (new URL(String(input)).pathname.startsWith('/auth/')) {
+              check(headers.get('authorization') === `Bearer ${tokenA}`, 'caller_jwt_preserved'); callerJWTs++
+            } else {
+              check(Boolean(headers.get('apikey')), 'admin_apikey'); adminRequests++
+            }
+            return fetch(input, init)
+          } })
+        check(credentialKind === (modern ? 'secret_key' : 'legacy_service_role'), 'credential_selection')
+        const { data, error } = await client.auth.getUser(tokenA)
+        check(!error && data.user?.id === userA.id, 'credential_auth')
+        check(Boolean(await createPushRepository(client).get(userA.id, id)), 'credential_admin_select')
+        check(callerJWTs === 1 && adminRequests === 1, 'credential_requests')
+        verified.push(modern ? 'modern_secret_key' : 'legacy_service_role')
+      }
+      verified.push('secret_not_bearer')
+    } else if (group === 'core') {
+      const id = await register(group)
+      const forbiddenOrigin = requestFor(id)
+      forbiddenOrigin.headers.set('origin', 'https://untrusted.local.invalid')
+      check((await success(forbiddenOrigin)).status === 403 && sends === 0, 'CORS')
+      const options = await success(new Request('http://localhost/push-test', { method: 'OPTIONS', headers: { origin: 'http://localhost:5173' } }))
+      check(options.status === 204 && options.headers.get('access-control-allow-origin') === 'http://localhost:5173', 'CORS_preflight')
+      for (const destination of ['http://fcm.googleapis.com/path', 'https://127.0.0.1/path', 'https://fcm.googleapis.com.evil.invalid/path',
+        'https://user:password@fcm.googleapis.com/path', 'https://fcm.googleapis.com:8443/path', 'https://fcm.googleapis.com/path#fragment']) {
+        check(!validatePushEndpoint(destination), 'SSRF')
+      }
       check((await success(requestFor(id, null))).status === 401, 'no_jwt')
       check((await success(requestFor(id, 'invalid-jwt'))).status === 401, 'invalid_jwt')
       check((await success(requestFor(id, tokenB))).status === 404, 'other_user')
       check((await success(requestFor(id, tokenA, { id_usuario: userA.id }))).status === 400, 'arbitrary_identity')
+      check((await success(requestFor(id, tokenA, { endpoint: 'https://untrusted.local.invalid/' }))).status === 400, 'arbitrary_endpoint')
+      check((await success(requestFor(id, tokenA, { payload: {} }))).status === 400, 'arbitrary_payload')
       check((await success(requestFor(id))).status === 200, 'success')
       check((await success(requestFor(id))).status === 429, 'rate_limit')
       check(sends === 1, 'single_send')
-      verified.push('JWT', 'ownership', 'payload', 'success', 'rate_limit')
+      verified.push('JWT', 'ownership', 'payload', 'success', 'rate_limit', 'CORS', 'SSRF')
     } else if (group === 'transport' || group === 'timeout') {
       const { default: webpush } = await import('npm:web-push@3.6.7')
       const vapid = { publicKey: Deno.env.get('VAPID_PUBLIC_KEY')!, privateKey: Deno.env.get('VAPID_PRIVATE_KEY')!, subject: Deno.env.get('VAPID_SUBJECT')! }

@@ -135,3 +135,56 @@ test('Auth signOut errors retain existing failure behavior', async () => {
   const error = new Error('auth_failure')
   await assert.rejects(logoutWithPushCleanup({ cleanup: async () => ({}), signOut: async () => ({ error }) }), (value) => value === error)
 })
+
+test('inspection and explicit activation lookups time out, abort and never retry or create a subscription', async () => {
+  for (const operation of ['inspect', 'enable']) {
+    const p = ports('granted'); await p.controller.enable()
+    const previousSubscriptions = p.calls.filter((call) => call === 'subscribe').length
+    let calls = 0; let signal
+    p.api.lookup = (_endpoint, incoming) => { calls++; signal = incoming; return new Promise(() => {}) }
+    await assert.rejects(p.controller[operation](), /push_timeout/)
+    assert.equal(calls, 1); assert.equal(signal.aborted, true)
+    assert.equal(p.calls.filter((call) => call === 'subscribe').length, previousSubscriptions)
+    assert.ok(!p.calls.includes('permission') && !p.calls.includes('unsubscribe'))
+  }
+})
+
+test('registration timeout aborts once and rolls back the freshly created native subscription', async () => {
+  const p = ports('granted')
+  let calls = 0; let signal
+  p.api.register = (_value, incoming) => { calls++; signal = incoming; return new Promise(() => {}) }
+  await assert.rejects(p.controller.enable(), /push_timeout/)
+  assert.equal(calls, 1); assert.equal(signal.aborted, true)
+  assert.equal(p.calls.filter((call) => call === 'unsubscribe').length, 1)
+  assert.equal((await p.controller.inspect()).subscriptionId, null)
+})
+
+test('failed rollback is contained locally and cannot leave enable pending', async () => {
+  const p = ports('granted')
+  p.api.register = async () => { throw new Error('offline') }
+  p.subscription.unsubscribe = () => new Promise(() => {})
+  await assert.rejects(p.controller.enable(), /offline/)
+  assert.ok(p.calls.includes('unregister'))
+  assert.equal((await p.controller.inspect()).status, 'unsubscribed')
+})
+
+test('test request times out with AbortSignal and makes exactly one attempt', async () => {
+  const p = ports('granted')
+  let calls = 0; let signal
+  p.api.sendTest = (id, incoming) => { assert.equal(id, 'own-id'); calls++; signal = incoming; return new Promise(() => {}) }
+  await assert.rejects(p.controller.sendTest('own-id'), /push_timeout/)
+  assert.equal(calls, 1); assert.equal(signal.aborted, true)
+})
+
+test('rotated remote removal timeout reports partial cleanup without discarding the new subscription', async () => {
+  const p = ports('granted'); await p.controller.enable()
+  p.subscription.options.applicationServerKey = new Uint8Array(65)
+  p.api.register = async () => 'new-own-id'
+  let signal; let calls = 0
+  p.api.remove = (id, incoming) => { assert.equal(id, 'own-id'); signal = incoming; calls++; return new Promise(() => {}) }
+  const result = await p.controller.enable()
+  assert.equal(result.subscriptionId, 'new-own-id')
+  assert.deepEqual(result.warnings, ['rotated_subscription_cleanup_failed'])
+  assert.equal(signal.aborted, true); assert.equal(calls, 1)
+  assert.equal(p.calls.filter((call) => call === 'unsubscribe').length, 1)
+})

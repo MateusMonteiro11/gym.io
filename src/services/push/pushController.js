@@ -3,6 +3,7 @@ import { bounded, detectPushSupport, normalizeSubscription, permissionState, PUS
 // Browser and API are small injectable ports; no JWT or privileged credential is retained.
 export function createPushController({ browser, api, publicKey, timeoutMs = 10000 }) {
   let epoch = 0
+  const remote = (operation) => bounded(operation, timeoutMs)
   const optOut = (disabled) => {
     try { if (disabled) browser.localStorage?.setItem(PUSH_OPT_OUT_KEY, '1'); else browser.localStorage?.removeItem(PUSH_OPT_OUT_KEY) } catch { /* storage is optional */ }
   }
@@ -19,7 +20,7 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
     const registration = await ownRegistration()
     const subscription = await registration?.pushManager.getSubscription()
     const subscriptionId = subscription && permission === 'granted' && !disabled()
-      ? await api.lookup(subscription.endpoint) : null
+      ? await remote((signal) => api.lookup(subscription.endpoint, signal)) : null
     return { status: permissionState(permission, Boolean(subscriptionId), disabled() || Boolean(subscription)), permission, subscriptionId }
   }
   const enable = async () => {
@@ -46,7 +47,7 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
     let subscription = await registration.pushManager.getSubscription()
     let oldId = null
     if (subscription) {
-      oldId = await api.lookup(subscription.endpoint)
+      oldId = await remote((signal) => api.lookup(subscription.endpoint, signal))
       const expected = vapidPublicKeyToBytes(publicKey)
       const existing = subscription.options?.applicationServerKey
       const sameKey = existing && new Uint8Array(existing).length === expected.length && new Uint8Array(existing).every((v, i) => v === expected[i])
@@ -60,16 +61,22 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
       if (activation !== epoch) throw new Error('activation_cancelled')
       if (!subscription) { subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidPublicKeyToBytes(publicKey) }); created = true }
       if (activation !== epoch) throw new Error('activation_cancelled')
-      const subscriptionId = await api.register(normalizeSubscription(subscription))
+      const subscriptionId = await remote((signal) => api.register(normalizeSubscription(subscription), signal))
       const warnings = []
       if (oldId && oldId !== subscriptionId) {
-        try { await api.remove(oldId) } catch { warnings.push('rotated_subscription_cleanup_failed') }
+        try { await remote((signal) => api.remove(oldId, signal)) } catch { warnings.push('rotated_subscription_cleanup_failed') }
       }
-      if (activation !== epoch) { await api.remove(subscriptionId); throw new Error('activation_cancelled') }
+      if (activation !== epoch) { await remote((signal) => api.remove(subscriptionId, signal)); throw new Error('activation_cancelled') }
       optOut(false)
       return { status: 'subscribed', permission, subscriptionId, warnings }
     } catch (error) {
-      if (created) { try { await subscription.unsubscribe() } catch { /* surface original failure */ } }
+      if (created) {
+        try { if (!await bounded(() => subscription.unsubscribe(), timeoutMs)) throw new Error('unsubscribe_failed') }
+        catch {
+          optOut(true)
+          try { await bounded(() => registration.unregister(), timeoutMs) } catch { /* best-effort containment */ }
+        }
+      }
       throw error
     }
   }
@@ -97,5 +104,5 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
     }
     return { status: 'unsubscribed', permission: browser.Notification.permission, subscriptionId: null, warnings }
   }
-  return { inspect, enable, disable, sendTest: (id) => api.sendTest(id) }
+  return { inspect, enable, disable, sendTest: (id) => remote((signal) => api.sendTest(id, signal)) }
 }

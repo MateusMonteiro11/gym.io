@@ -1,120 +1,146 @@
-# Gym.io V3.2-A — relatório A–L
+# Gym.io V3.2-A — rodada de correções, relatório A–L
 
-Validação concluída em 07/10/2026, branch `gym.io-v3.2`. Evidências sanitizadas; nenhuma credencial incluída. A matriz foi executada em stack nova, após as correções de reprodutibilidade do harness.
+08/10/2026. Branch `gym.io-v3.2`, HEAD `104a00b052f02cdb4d8c2d596de823bb18f82d82`, um commit à frente de main. Worktree inicialmente limpo. As alterações desta rodada permanecem locais e sem novo commit.
 
-## A. Arquivos criados/alterados
+A primeira execução parou na nova assertion: `push executor relation allowlist violation: extensions.pg_stat_statements (SELECT)`. Após explicação, o usuário autorizou exclusivamente a exceção de auditoria para SELECT via PUBLIC nas duas views oficiais de estatísticas, sem novo GRANT. A execução seguinte passou integralmente em uma stack nova. Nenhum grant histórico foi alterado.
 
-- Frontend: `src/services/push/{pushUtils,pushController,pushService}.js`, `src/hooks/usePushNotifications.js`, `src/components/PushNotificationSettings.jsx`, `src/components/UserProfileModal.jsx`, `src/components/Sidebar.jsx`, `src/services/auth/{authService,logoutLifecycle}.js`.
-- Service Worker/PWA: `public/push-sw.js`, `public/manifest.webmanifest`, PNGs `public/push-icon-{192,512}.png`, derivados de `public/favicon_old.png`; referência ao manifest e cor em `index.html`.
-- Migration aditiva criada pelo CLI: `supabase/migrations/20261007215944_push_foundation.sql`. SHA-256: `1fe175d92b2e6286e50faed00b09646bfb1e6c50a2e0f9c0d7289e7f7cfccf75`.
-- Edge: `supabase/functions/push-test/index.ts`, `_shared/{pushHandler,pushRepository,pushTransport}.js`, `deno.json`, `deno.lock`.
-- Testes: `src/services/push/{push,worker}.test.js`, `_shared/{pushHandler,pushTransport}.test.js`; `supabase/testing/{legacy-baseline.sql,push-security.sql,local-tests.mjs,frontend-security.mjs,run-local.ps1}`, `testing/{compat-spike,edge-integration}/index.ts`.
-- Configuração/documentação: `supabase/config.toml`, scripts em `package.json`, proteção de secrets em `vite.config.js`, exclusões adicionais em `.gitignore`, `PUSH_FOUNDATION.md` e este relatório.
+## A. Classificação dos achados
 
-A remoção preexistente de `supabase` do `.gitignore` foi preservada. Os artefatos históricos em `supabase/`, `.env` e `package-lock.json` não foram editados. Não houve instalação de dependências frontend.
+| Achado | Classificação | Evidência e tratamento |
+| --- | --- | --- |
+| Propagação dos resultados | Procede | `functions.invoke` retorna FunctionsHttpError em HTTP não-2xx; o serviço descartava seu resultado seguro. Agora decodifica somente o contrato conhecido. |
+| Executor privilege allowlist | Procede | Faltava auditoria geral de relações/colunas. O baseline de estatísticas foi reconhecido com exceção exata autorizada; demais relações/privilégios permanecem fail-closed. |
+| Timeouts frontend | Procede | Cleanup de logout já era bounded; lookup, register e envio de teste não eram uniformemente limitados. Agora as chamadas remotas recebem limite e AbortSignal. |
+| Secret key moderna | Parcialmente procede | Service role legado continua válido. Suporte moderno simples foi implementado e validado em unitários, Deno e Auth/Data API locais reais; sem configuração remota. |
 
-## B. Arquitetura
+## B. Arquivos alterados
 
-Clique explícito → permission → worker dedicado → PushSubscription → RPC autenticada → persistência. A Edge Function valida o JWT, seleciona uma subscription do usuário, gera Web Push criptografado e envia. O worker aceita somente o teste fixo e abre `/dashboard`.
+18 arquivos, incluindo cinco adições:
 
-As RPCs evitam entregar endpoints/chaves ao browser por leitura da tabela. Os GUCs de identidade são fornecidos pela fronteira HTTP após validação criptográfica, não por parâmetros do cliente. Session V2 continua como autoridade do treino.
+- `PUSH_FOUNDATION.md`
+- `PUSH_FOUNDATION_VALIDATION.md`
+- `src/components/PushNotificationSettings.jsx`
+- `src/hooks/usePushNotifications.js`
+- `src/services/push/push.test.js`
+- `src/services/push/pushController.js`
+- `src/services/push/pushService.js`
+- `src/services/push/invokePushTest.js` — novo
+- `src/services/push/pushResults.js` — novo
+- `src/services/push/pushResults.test.js` — novo
+- `supabase/functions/push-test/index.ts`
+- `supabase/functions/_shared/pushAdminClient.js` — novo
+- `supabase/functions/_shared/pushAdminClient.test.js` — novo
+- `supabase/migrations/20261007215944_push_foundation.sql`
+- `supabase/testing/edge-integration/index.ts`
+- `supabase/testing/local-tests.mjs`
+- `supabase/testing/push-security.sql`
+- `supabase/testing/run-local.ps1`
 
-## C. Persistência
+Não houve alteração de dependências/lockfiles, `.gitignore`, `.env`, migrations históricas, fixture legada, Session V2, Exercise Memory, worker, manifest ou CONTRACT. Nenhuma segunda migration foi criada.
 
-`public.push_subscriptions` contém UUID próprio, FK `id_usuario → auth.users` com cascade, endpoint, `p256dh`, `auth`, timestamps backend e `last_test_requested_at`. Sem metadata de device/browser.
+## C. Result mapping
 
-Endpoint globalmente único, índice por usuário, checks de comprimento/HTTPS/providers e Base64URL. RLS habilitada e forçada. Registro repetido preserva ID/owner; múltiplos devices são permitidos; colisão com outra conta é rejeitada. Remoção própria é idempotente. Rotação explícita remove o vínculo anterior quando possível e apresenta aviso quando essa limpeza falha.
+Sucesso usa `data`; HTTP error usa exclusivamente a Response de `FunctionsHttpError.context`. O decoder exige JSON, objeto com uma única propriedade `result`, código string conhecido e status correspondente. Em erro HTTP, leitura limitada a 1 KiB, cancelável pelo AbortSignal. Unknown/malformed/extra fields/transport viram somente `push_test_failed`, sem cause/context bruto.
 
-## D. Segurança
+| Resultado seguro | HTTP | Efeito na UI |
+| --- | --- | --- |
+| sent | 200 | Informa aceitação do envio; não confirma recebimento. |
+| expired | 200 | Limpa ID próprio, marca desativado e pede ativação explícita. |
+| subscription_changed | 200 | Limpa ID, informa alteração e pede reativação. |
+| rate_limited | 429 | Pede espera; preserva ID. |
+| temporarily_unavailable | 503 | Informa indisponibilidade; preserva ID. |
+| provider_not_supported | 422 | Informa incompatibilidade do serviço de Push. |
+| subscription_not_found | 404 | Limpa ID e pede ativação explícita. |
+| invalid_request | 400 | Mensagem local de falha da solicitação. |
+| authentication_required | 401 | Solicita novo login. |
+| origin_not_allowed | 403 | Informa indisponibilidade neste ambiente. |
+| method_not_allowed | 405 | Mensagem local de falha neste ambiente. |
 
-Executor `gymio_push_executor`: NOLOGIN, NOINHERIT, NOBYPASSRLS, sem privilégios administrativos ou membership de outras roles. Wrappers públicos DEFINER, implementações privadas INVOKER, `search_path` vazio. Schema privado inacessível à Data API.
+Textos fixos locais. Endpoint, keys, JWT, headers, stack e mensagens de provider/Supabase não entram na UI. Testes usam o SDK instalado real com transporte sintético, incluindo coerção de array para código, códigos desconhecidos e stream parado.
 
-Helper próprio de JWT GUC, sem `auth.uid()`. Assertions passaram para ausência de USAGE/CREATE efetivos em `auth`, acesso a tabelas/sequences de Auth e referências `auth.*` em funções executadas pelo executor. Nenhuma ACL histórica foi alterada para satisfazê-las.
+## D. Hardening do executor
 
-`PUBLIC`, `anon` e `authenticated` não possuem leitura/DML direto. Só três RPCs são concedidas a `authenticated`. Service role fica exclusivamente no sender; sua tabela concede SELECT/DELETE e UPDATE apenas do throttle timestamp. Autorização por ID e usuário permanece explícita.
+A allowlist autoriza SELECT/INSERT/UPDATE/DELETE em `public.push_subscriptions` e, somente na auditoria, SELECT herdado de PUBLIC exatamente nas duas views abaixo. Audita relações r/p/v/m/f de todos os schemas não sistêmicos; inclui ACL efetiva via PUBLIC e privilégios apenas de coluna para SELECT/INSERT/UPDATE/REFERENCES. Também rejeita TRUNCATE/REFERENCES/TRIGGER/MAINTAIN em Push e exige os quatro privilégios necessários. Exclusões sistêmicas: pg_catalog, information_schema, pg_toast/pg_temp e suas variantes.
 
-VAPID privado/service role ausentes do cliente e do bundle. Verificação HTTP real confirmou 403 para arquivos de secrets, incluindo variação de maiúsculas no Windows. Só a chave VAPID pública chega ao frontend.
+Resultado inicial: SELECT em `extensions.pg_stat_statements` abortou a transação Push. O SQL original da imagem oficial concede SELECT dessas duas views a PUBLIC. A exceção posteriormente autorizada exige OIDs dos nomes qualificados `extensions.pg_stat_statements` e `extensions.pg_stat_statements_info`, tipo view, vínculo pg_depend com a extensão oficial pg_stat_statements, schema/owner coincidentes, SELECT de tabela a PUBLIC sem grant option e ausência de ACL direta de relação/coluna ao executor.
 
-## E. Frontend
+NOINHERIT não elimina privilégios concedidos a PUBLIC. Não foi executado REVOKE de PUBLIC nem GRANT novo nessas views ao executor. INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER/MAINTAIN continuam proibidos. Não existe SELECT genérico ou exceção por schema extensions. Nenhum grant histórico ou baseline foi adaptado. Testes SQL passaram para identidade das views, ausência de grants diretos ao executor e ausência de escrita nelas.
 
-Aba Notificações com ativação, teste e desativação. Estados `unsupported`, `default`, `granted`, `denied`, `subscribed`, `unsubscribed`, `error` e operação em andamento.
+Sete testes negativos com as assertions reais da migration passaram: SELECT de tabela legada; SELECT/INSERT/UPDATE/REFERENCES de coluna legada; TRUNCATE de Push; REFERENCES de coluna Push. Os privilégios deliberadamente injetados nessas fixtures locais foram revertidos por transação ao falhar; nenhum foi persistido. O baseline real foi auditado antes e depois de cada fixture. Nenhum GRANT foi adicionado às views de estatísticas, inclusive nos testes.
 
-Inspeção não pede permission nem cria subscriptions. Permission somente no clique. Registro mal sucedido cancela subscription recém-criada. Logout tenta remoção remota/unsubscribe com limites, coleta falhas, marca desativação e tenta conter somente o worker dedicado. `signOut()` é chamado mesmo com falhas remotas, locais, simultâneas ou timeout. Erros próprios do Auth mantêm seu tratamento. Não há fila com JWT nem reativação automática.
+## E. Timeout/rede
 
-## F. Service Worker
+Limite de 10 segundos por chamada remota: inspect/lookup, lookup de ativação, register, remoção do ID anterior, remoção após ativação cancelada e sendTest. SDK RPC recebe `abortSignal`; Functions invoke recebe `signal`. Sem retry automático.
 
-Somente `push` e `notificationclick`. Envelope estrito v1/type test, título Gym.io, corpo “Notificações de treino ativadas.” e destino `/dashboard`. Payload inválido ou destino diferente é rejeitado. Clique fecha a notificação e navega/foca uma janela da mesma origem ou abre o destino fixo. Sem cache offline ou ações de treino.
+Registro falho/expirado desfaz somente subscription nativa recém-criada. Rollback malsucedido marca opt-out e tenta desregistrar somente o worker dedicado. Remoção anterior malsucedida preserva a subscription nova e produz aviso. O hook libera busy em finally e rejeita efeitos de uma conta anterior.
 
-## G. Edge Function e spike
+Cleanup/logout conserva signOut mesmo em erro remoto/local/simultâneo/timeout. APIs locais de consulta/subscription não ganharam timeouts indiscriminados; limites em rollback/contenção evitam operação pendente. Resposta perdida após commit não permite prometer exclusão remota; contenção é best-effort.
 
-`push-test`: somente POST `{ subscription_id }`; `verify_jwt = true`; `auth.getUser(jwt)` antes de consultas administrativas. Registro inexistente/alheio tem o mesmo resultado. Claims de identidade, endpoint ou conteúdo arbitrários são rejeitados.
+## F. Credencial administrativa
 
-Throttle atômico de 30 segundos, TTL 60 segundos, timeout 10 segundos, redirect proibido, HTTPS/default port e hosts exatos FCM/Mozilla/Apple. 404/410 exclui somente a versão enviada pertencente ao usuário; refresh concorrente impede a exclusão. Falhas temporárias preservam o registro, sem retry automático. Resposta sanitizada de aceitação não confirma recebimento.
+Novo helper prefere `SUPABASE_SECRET_KEYS` JSON com chave `default`; sem default moderno, usa `SUPABASE_SERVICE_ROLE_KEY`. JSON/default inválido falha fechado, sem fallback silencioso. Nenhum secret remoto foi criado ou alterado.
 
-Spike obrigatório executado via CLI + Docker no runtime real: Edge Runtime **1.77.4**, Deno compatível **2.1.4**, V8 **11.6.189.12**, TypeScript **5.1.6**. `web-push@3.6.7` importou e gerou POST com corpo criptografado de **219 bytes**, `aes128gcm` e autorização VAPID presente. **Nenhuma requisição transmitida**. Só depois disso foi integrado o transporte e fixado o lockfile.
+Fetch do cliente administrativo mantém apikey e remove qualquer `Authorization: Bearer sb_secret_...` gerado pelo SDK. Preserva o Bearer JWT explícito de `auth.getUser(jwt)` e proíbe redirects/destino fora da origem Supabase configurada. Autenticação do usuário continua por JWT, antes das consultas administrativas.
 
-Integração posterior comprovou a composição desse mesmo transporte com Auth/banco reais e fetch falso, além do timeout. Não há opção de mock nem bypass de Auth exposta em `push-test`.
+Unitários comprovaram headers com o SDK real, preferência, fallback e fail-closed. O grupo `credentials` passou no Edge Runtime real com Auth/Data API locais: ambas as credenciais validaram o JWT do usuário e selecionaram o registro por ID/owner; a secret nunca apareceu como Bearer. Referências: [secrets de runtime](https://supabase.com/docs/guides/functions/secrets), [API keys](https://supabase.com/docs/guides/getting-started/api-keys).
 
-## H. Testes executados
+## G. Segurança preservada
 
-| Camada | Evidência/resultados |
+Inspeção estática e unitários confirmam `verify_jwt = true`, `auth.getUser(jwt)` antes do acesso administrativo, request apenas `{ subscription_id }`, ID + usuário autenticado em seleção/claim/cleanup, RLS forçada, helper JWT GUC sem Auth e executor NOLOGIN/NOINHERIT/NOBYPASSRLS. Schema privado permanece inacessível à Data API; nenhuma ACL histórica foi adaptada.
+
+Providers exatos FCM/Mozilla/Apple; HTTPS/default port, sem credenciais/fragmento, redirect proibido, TTL 60 e timeout 10 segundos preservados. 404/410 usa snapshot do proprietário e preserva refresh concorrente. Payload fixo e worker sem treino intactos. Unitários cobrem SSRF, CORS, concorrência e falhas temporárias.
+
+Credenciais sintéticas permaneceram em runtime ignorado e foram removidas. Bundle/Vite HTTP foram verificados sem revelar secrets. A aprovação SQL/Data API/Edge decorre também da matriz real isolada executada, separada das evidências estáticas/unitárias.
+
+## H. Testes
+
+| Verificação | Resultado desta rodada |
 | --- | --- |
-| Unitários | `npm test`: **28 passaram, 0 falharam**. VAPID, normalização, suporte, permission, lifecycle/rotação, rollback, logout com falhas/timeouts, worker, handler e transporte. |
-| SQL | Bootstrap novo + EXPAND e Memory completos/intactos + Push/assertions; usuários A/B, checks/índices, múltiplos devices, idempotência, ownership, cascade, grants/RLS, GUC legado/JSON/ausente/inválido, Auth inacessível e DML/anon bloqueados: **passou**. |
-| Data API real | JWT ausente/inválido, A/B, registro concorrente/idempotente, lookup próprio, remoção idempotente e GET/POST/PATCH/DELETE bloqueados: **passou**. |
-| Edge Runtime real | Sete grupos: core, transporte criptografado, expiração 404/410, falhas temporárias, timeout, concorrência/throttle/cooldown, refresh concorrente. Auth e banco locais reais; apenas transporte HTTP simulado: **todos passaram**. |
-| Spike real | Import, `generateRequestDetails`, POST/headers/corpo criptografado; **passou**, zero envios. |
-| Banco | `supabase db lint --local --schema public,gymio_private,gymio_push_private --level warning --fail-on error`: **sem erros**. |
-| Types | `deno check push-test/index.ts` em Deno Docker 2.1.4: **passou**. |
-| Build | `npm run build`: **passou**; aviso existente de chunks maiores que 500 kB. |
-| Secrets frontend | Scan de valores privilegiados reais locais no bundle e HTTP Vite com variação de maiúsculas: **passou**. |
-| Whitespace | `git diff --check`: **passou**. |
-| Lint frontend | Não há script/configuração existente de lint frontend. |
-| Manual | Recebimento/clique em browser/provider reais: **pendente**, roteiro localhost em `PUSH_FOUNDATION.md`. |
+| npm test | **51 passaram, 0 falharam, 0 skipped**; 23 testes a mais que o baseline de 28. Resultado final após ajuste de validação estrita de strings. |
+| Bootstrap SQL | **Passou** na execução final: fixture legada + EXPAND e Memory completos/intactos + Push integral e assertions. |
+| SQL security / sete ACL negativos | **Passaram**: constraints/índices, RLS/owners/grants, GUCs legado/JSON/ausente/inválido, Auth inacessível, A/B, lifecycle/cascade, estatísticas oficiais SELECT-only e sete rejeições transacionais. |
+| Data API real A/B | **Passou**: JWT ausente/inválido, múltiplos devices, idempotência, concorrência, ownership e GET/POST/PATCH/DELETE direto bloqueados. |
+| Edge business integration | **8/8 grupos passaram**: core/CORS/SSRF, transporte, expiração 404/410, temporários, timeout, concorrência, refresh e credenciais. Auth/DB reais; transporte falso fixo; zero envios externos. |
+| Spike Edge real | **Passou**: web-push 3.6.7 importado; generateRequestDetails gerou POST, 219 bytes criptografados, aes128gcm, autorização VAPID presente; zero transmissões. |
+| npm run test:push:local | Execução final **passou, exit 0**, após autorização da exceção exata e correção de limpeza. Primeira tentativa interrompida e documentada abaixo. |
+| npm run build | **Passou**, 2933 módulos; aviso existente de chunk acima de 500 kB. |
+| Deno | **Passou**: container Deno 2.1.4, mount Functions read-only, `deno check --frozen push-test/index.ts`. |
+| db lint local public/gymio_private/gymio_push_private | **Passou**: `--local --schema public,gymio_private,gymio_push_private --level warning --fail-on error`; zero erros. |
+| git diff --check | **Passou**; sem staging. |
+| Frontend secrets | **Passou** scan do primeiro build e HTTP real Vite; arquivos .env/runtime e variante Windows de maiúsculas retornaram 403. Depois, build repetido após validação estrita do tipo de result. |
+| PowerShell harness | Parser passou após correção de limpeza. |
+| Lint frontend | Não há script/configuração atual. |
+| Manual browser/provider | **Não executado**; roteiro localhost preparado para o usuário. Aceitação não equivale a entrega. |
 
-`npm run test:push:local` terminou com exit code **0** na execução completa de banco vazio, usando Functions em snapshot temporário estável e política local `oneshot`. As tentativas anteriores tiveram 502 no workspace sincronizado; nenhuma assertion foi relaxada nem teste falho repetido automaticamente. Não se atribui apenas à CPU uma causa que não foi confirmada. A execução final preservou os limites de runtime.
+Docker Server 29.8.1, CLI 2.120.0, Postgres 17.11.0.004. Spike via Edge Runtime 1.77.4 (Deno compatível 2.1.4), V8 11.6.189.12, TypeScript 5.1.6. ID exclusivo gymio-push-foundation-local, portas 55431/55432. Imagem/digest Postgres: `06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108`.
 
-Stack: Docker Server **29.8.1**, CLI **2.120.0**, Postgres **17.11.0.004**, PostgREST **16.4**, Auth **2.197.0**, Kong **2.8.1**. Identificador próprio `gymio-push-foundation-local`, portas 55431/55432, credenciais/usuários/VAPID sintéticos locais.
+A primeira tentativa cumpriu o gate e parou antes dos testes de negócio. A limpeza encontrou `start-secrets` como diretório, embora o harness o tratasse como arquivo. Corrigido para Remove-Item recursivo com validação do caminho absoluto; resíduos daquela execução foram removidos com owner/path checks. Na execução final, cleanup automático terminou sem erro: containers/volumes/rede da tarefa ausentes; snapshot, runtime, credenciais e .env.push.local removidos. .temp preexistente preservado. Sem prune; imagens compartilhadas mantidas.
 
-Digests utilizados:
+## I. Hashes
 
-| Imagem | SHA-256 |
+| Migration | SHA-256 depois |
 | --- | --- |
-| Supabase Postgres 17.11.0.004 | `06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108` |
-| Edge Runtime 1.77.4 | `ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8` |
-| PostgREST 16.4 | `d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df` |
-| GoTrue 2.197.0 | `1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b` |
-| Kong 2.8.1 | `1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d` |
-| Deno 2.1.4 (check/cache) | `3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34` |
+| Auth 20260725194232 | `cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6` |
+| EXPAND 20260821190134 | `6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db` |
+| Exercise Memory 20260823003337 | `7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02` |
+| Push 20261007215944 | `582f93e0d9b61d616c7932aee9b53068828dc988256d6c55a4413eff0d87e387` |
 
-Containers, volumes e rede com o label deste projeto: **zero restantes**. Snapshot temporário, `.runtime`, JWTs, VAPID local e `.env.push.local`: removidos. Processos de serve e Vite encerrados. Imagens baixadas permanecem no cache Docker compartilhado; nenhum prune foi executado.
+Três históricos idênticos antes/depois. Push antes: `1fe175d92b2e6286e50faed00b09646bfb1e6c50a2e0f9c0d7289e7f7cfccf75`; mudou intencionalmente. .env preservado: `c711d3dfcf3e2aa913607172cac95d407408f1ffdb2f4d19669cc5a736b88149`. Não houve restauração automática.
 
-## I. Migrations históricas
+## J. Documentação e Git
 
-Hashes antes/depois idênticos:
+Corrigida a afirmação anterior sobre ausência de commit/push. O HEAD local já contém `104a00b052f02cdb4d8c2d596de823bb18f82d82`; sua presença remota foi informada pela auditoria do usuário. Nenhum novo commit/push/PR/merge/fetch foi feito nesta rodada. Main não foi alterada.
 
-| Migration | SHA-256 |
-| --- | --- |
-| Auth — `20260725194232_auth_email_security.sql` | `cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6` |
-| EXPAND — `20260821190134_workout_session_persistence_expand.sql` | `6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db` |
-| Exercise Memory — `20260823003337_exercise_memory_read.sql` | `7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02` |
-
-`.env` também preservado: `c711d3dfcf3e2aa913607172cac95d407408f1ffdb2f4d19669cc5a736b88149`.
-
-## J. Limitações
-
-Sem scheduler de descanso, notificações orientadas à sessão ou ações de treino/lock screen. CONTRACT permanece em `recovered/`, intacto e não executado. Nenhuma alteração de significado em Session V2 ou Exercise Memory.
-
-Baseline local é fixture reconstruída de suporte por metadados, sem autenticidade histórica nem dados de produção. Auth histórico não foi reaplicado; sua ausência atual de trigger/função continua classificada como **historical drift**. O Postgres local usa o patch escolhido pelo CLI (17.11), diferente do remoto conhecido (17.6); não se afirma reprodução integral de produção.
-
-O recebimento Web Push real e comportamento em plataformas/PWA ainda dependem do teste manual separado. Aceitação pelo provider não equivale a entrega. O scope autorizado requer preparação desse roteiro, não envio externo automatizado.
+Guia atualizado com mapping, timeouts/rollback, credenciais e exceção de auditoria autorizada. Roteiro manual localhost foi preservado/ampliado, sem execução automática. Este relatório substitui o anterior como descrição do estado atual.
 
 ## K. Estado remoto
 
-Nenhuma alteração remota. Consultas remotas exclusivamente de catálogos em transações READ ONLY para a fixture. Sem DDL/DML remoto, RPC de negócio remota, secrets, deployment, migration history, db push ou repair. Sem commit, push, PR ou merge; trabalho local permanece para auditoria. Alterações preexistentes preservadas.
+**Nenhuma operação Supabase remota nesta rodada**, inclusive read-only. Sem DDL/DML remoto, RPC Push remota, deployment, secrets, migration history, db push/repair ou CONTRACT. Estado remoto informado pelo usuário continua sendo o baseline de três migrations, sem V3.2-A aplicada; não foi reconsultado.
+
+Sem scheduler, notificações de sessão, ações de treino, mudanças em Session V2/Memory ou avanço para V3.2-B. Baseline local é fixture reconstruída de suporte; Auth histórico não foi reaplicado, e seu historical drift conhecido não foi corrigido.
 
 ## L. Veredito
 
-**V3.2 PUSH FOUNDATION PRONTA PARA AUDITORIA**
+**V3.2 PUSH FOUNDATION CORRIGIDA E PRONTA PARA TESTE MANUAL**
 
-Matriz obrigatória SQL/Data API/Edge passou no ambiente local isolado. Teste manual permanece explicitamente pendente. V3.2-B exige nova aprovação.
+Matriz SQL/Data API/Edge completa aprovada em stack isolada, com a exceção exata autorizada pelo usuário e grants históricos intactos. Unitários/build/Deno/db lint/diff passaram. Recebimento e clique em browser/provider reais permanecem exclusivamente como teste manual. Nenhum avanço para V3.2-B.

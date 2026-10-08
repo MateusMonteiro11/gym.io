@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase'
 import { createPushController } from './pushController.js'
+import { invokePushTest } from './invokePushTest.js'
 
 async function rpc(name, args, signal) {
   let request = supabase.rpc(name, args)
@@ -15,12 +16,8 @@ export const pushService = createPushController({
   publicKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
   api: {
     lookup: (endpoint, signal) => rpc('consultar_push_subscription', { p_endpoint: endpoint }, signal),
-    register: (value) => rpc('registrar_push_subscription', { p_endpoint: value.endpoint, p_p256dh: value.p256dh, p_auth: value.auth }),
+    register: (value, signal) => rpc('registrar_push_subscription', { p_endpoint: value.endpoint, p_p256dh: value.p256dh, p_auth: value.auth }, signal),
     remove: (id, signal) => rpc('remover_push_subscription', { p_subscription_id: id }, signal),
-    sendTest: async (id) => {
-      const { data, error } = await supabase.functions.invoke('push-test', { body: { subscription_id: id } })
-      if (error) throw new Error('push_test_failed')
-      return data
-    },
+    sendTest: (id, signal) => invokePushTest((name, options) => supabase.functions.invoke(name, options), id, signal),
   },
 })

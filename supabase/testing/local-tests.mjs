@@ -44,7 +44,9 @@ if (stage === 'credentials') {
   }
   const vapid = createECDH('prime256v1'); vapid.generateKeys()
   fs.writeFileSync(path.join(runtime, 'users.json'), JSON.stringify(users))
-  fs.writeFileSync(path.join(runtime, 'edge.env'), `PUSH_ALLOWED_ORIGINS=http://localhost:5173\nPUSH_TEST_A_JWT=${users[0].jwt}\nPUSH_TEST_B_JWT=${users[1].jwt}\nVAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\nVAPID_PRIVATE_KEY=${vapid.getPrivateKey().toString('base64url')}\nVAPID_SUBJECT=mailto:local-test@gym.io\n`)
+  const secret = status.SECRET_KEY ?? status.secret_key
+  assert.ok(secret?.startsWith('sb_secret_'), 'local modern secret key missing')
+  fs.writeFileSync(path.join(runtime, 'edge.env'), `PUSH_ALLOWED_ORIGINS=http://localhost:5173\nPUSH_TEST_A_JWT=${users[0].jwt}\nPUSH_TEST_B_JWT=${users[1].jwt}\nPUSH_TEST_SECRET_KEY=${secret}\nVAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\nVAPID_PRIVATE_KEY=${vapid.getPrivateKey().toString('base64url')}\nVAPID_SUBJECT=mailto:local-test@gym.io\n`)
   // Vite receives only local public values; the existing .env remains untouched.
   fs.writeFileSync('.env.push.local', `VITE_SUPABASE_URL=${apiUrl}\nVITE_SUPABASE_PUBLISHABLE_KEY=${anon}\nVITE_VAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\n`)
   console.log('PASS local synthetic users / isolated credentials (no secret output)')
@@ -66,6 +68,20 @@ if (stage === 'credentials') {
 } else if (stage === 'sql') {
   const result = sql(fs.readFileSync('supabase/testing/push-security.sql', 'utf8'))
   assert.match(result, /ROLLBACK/)
+  const migration = fs.readdirSync('supabase/migrations').find((name) => name.endsWith('_push_foundation.sql'))
+  const assertions = fs.readFileSync(`supabase/migrations/${migration}`, 'utf8').match(/do \$assertions\$[\s\S]*?\$assertions\$;/)?.[0]
+  assert.ok(assertions, 'actual migration assertions')
+  sql(assertions) // Audit real baseline first. Never revoke unexpected real ACLs.
+  for (const grant of ['select on public.usuarios', 'select(nome) on public.usuarios',
+    'insert(nome) on public.usuarios', 'update(nome) on public.usuarios', 'references(nome) on public.usuarios',
+    'truncate on public.push_subscriptions', 'references(endpoint) on public.push_subscriptions']) {
+    // Deliberate negative fixtures live only in a transaction. The failing
+    // connection rolls them back; no historical ACL is repaired or revoked.
+    assert.throws(() => sql(`begin; grant ${grant} to gymio_push_executor;\n${assertions}\nrollback;`),
+      (error) => String(error.stderr).includes('push executor relation allowlist violation'), `reject ${grant}`)
+    sql(assertions)
+  }
+  console.log('PASS executor relation allowlist: real baseline + seven rolled-back negative ACL fixtures')
   console.log('PASS SQL security, ownership, constraints, grants, identity formats and lifecycle')
 } else {
   const [a, b] = JSON.parse(fs.readFileSync(path.join(runtime, 'users.json'), 'utf8'))
@@ -125,7 +141,7 @@ if (stage === 'credentials') {
     }
     assert.equal((await json(`${apiUrl}/functions/v1/push-test`, a.jwt, { subscription_id: '11111111-1111-4111-8111-111111111111' })).status, 404)
     const results = []
-    for (const group of ['core', 'transport', 'expiration', 'temporary', 'timeout', 'concurrency', 'refresh']) {
+    for (const group of ['core', 'transport', 'expiration', 'temporary', 'timeout', 'concurrency', 'refresh', 'credentials']) {
       const result = await json(`${apiUrl}/functions/v1/push-integration`, a.jwt, { group })
       assert.equal(result.status, 200, `real Edge Runtime group ${group}`)
       assert.equal(result.data.passed, true)
@@ -135,7 +151,7 @@ if (stage === 'credentials') {
       console.log(`PASS real Edge Runtime group: ${group}`)
     }
     const verified = [...new Set(results.flatMap((result) => result.verified))]
-    for (const required of ['JWT','ownership','payload','success','rate_limit','encrypted_transport','404','410','temporary_error','transport_timeout','atomic_rate_limit','concurrent_refresh']) assert.ok(verified.includes(required), `required Edge coverage: ${required}`)
+    for (const required of ['JWT','ownership','payload','success','rate_limit','CORS','SSRF','encrypted_transport','404','410','temporary_error','transport_timeout','atomic_rate_limit','concurrent_refresh','modern_secret_key','legacy_service_role','secret_not_bearer']) assert.ok(verified.includes(required), `required Edge coverage: ${required}`)
     const result = { passed: true, runtime: results[0].runtime, externalPushRequests: 0, encryptedBytes: results.find((result) => result.group === 'transport').encryptedBytes, verified }
     fs.writeFileSync(path.join(runtime, 'edge-result.json'), JSON.stringify(result, null, 2))
     console.log(JSON.stringify(result))

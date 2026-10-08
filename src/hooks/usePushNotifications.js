@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from './useAuth'
 import { pushService } from '../services/push/pushService'
+import { runPushOperation } from '../services/push/pushResults.js'
 
 const initial = { status: 'default', permission: 'default', subscriptionId: null, error: null, busy: false }
 export function usePushNotifications() {
@@ -20,15 +21,8 @@ export function usePushNotifications() {
     if (!usuario?.id || pending.current) return null
     const current = generation.current
     pending.current = true
-    setState((value) => ({ ...value, busy: true, error: null }))
     try {
-      const result = await action()
-      if (current === generation.current) setState((value) => ({ ...value, ...result,
-        ...(result?.result === 'expired' ? { status: 'unsubscribed', subscriptionId: null } : {}), busy: false }))
-      return result
-    } catch (error) {
-      if (current === generation.current) setState((value) => ({ ...value, status: 'error', error: error.message === 'push_not_configured' ? error.message : 'push_operation_failed', busy: false }))
-      return null
+      return await runPushOperation({ action, setState, isCurrent: () => current === generation.current })
     } finally { pending.current = false }
   }, [usuario?.id])
   return { ...state, enable: () => run(pushService.enable), disable: () => run(pushService.disable),
