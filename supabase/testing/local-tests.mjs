@@ -20,7 +20,8 @@ const expected = {
   '20260725194232_auth_email_security.sql': 'cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6',
   '20260821190134_workout_session_persistence_expand.sql': '6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db',
   '20260823003337_exercise_memory_read.sql': '7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02',
-  '20261007215944_push_foundation.sql': 'f1212ee8d19d7d8b0a362f1ffc65b403898be433b2d13712b6967b3490e45f04',
+  '20261007215944_push_foundation.sql': '225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823',
+  '20261010183821_workout_notifications.sql': 'c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b',
 }
 for (const [name, hash] of Object.entries(expected)) assert.equal(createHash('sha256').update(fs.readFileSync(`supabase/migrations/${name}`)).digest('hex'), hash, `historical hash ${name}`)
 fs.mkdirSync(runtime, { recursive: true })

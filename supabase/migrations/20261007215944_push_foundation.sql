@@ -175,12 +175,13 @@ begin
   -- SQL ACLs do not prove browser reachability. The separate HTTP gate must
   -- verify effective exposed schemas and audit every callable public wrapper.
   for v_expected in select * from (values
-    ('pg_cron','1.6.4','pg_catalog','cron'), ('pg_net','0.20.4','public','net')
-  ) x(extension_name,version,extension_schema,object_schema)
+    ('pg_cron',array['1.6.4']::text[],'pg_catalog','cron'),
+    ('pg_net',array['0.20.0','0.20.4']::text[],'public','net')
+  ) x(extension_name,versions,extension_schema,object_schema)
   where exists(select 1 from pg_catalog.pg_extension e where e.extname=x.extension_name) loop
     if not exists(select 1 from pg_catalog.pg_extension e
       join pg_catalog.pg_namespace n on n.nspname=v_expected.object_schema
-      where e.extname=v_expected.extension_name and e.extversion=v_expected.version
+      where e.extname=v_expected.extension_name and e.extversion=any(v_expected.versions)
         and e.extowner='supabase_admin'::regrole and n.nspowner=e.extowner
         and e.extnamespace=to_regnamespace(v_expected.extension_schema)) then
       raise exception 'push platform extension identity violation: %', v_expected.extension_name;
@@ -210,8 +211,10 @@ begin
     for v_object in select * from (values
       ('pg_cron','cron.job','r',true,array['SELECT']::text[]),
       ('pg_cron','cron.job_run_details','r',true,array['DELETE','SELECT']::text[]),
-      ('pg_cron','cron.jobid_seq','S',false,array['SELECT']::text[]),
-      ('pg_cron','cron.runid_seq','S',false,array['SELECT']::text[]),
+      -- Audited 17.6 baseline (including remote catalog): no PUBLIC sequence
+      -- ACL. 17.11 retains its separately audited PUBLIC SELECT baseline.
+      ('pg_cron','cron.jobid_seq','S',false,case when pg_catalog.current_setting('server_version_num')='170006' then array[]::text[] else array['SELECT']::text[] end),
+      ('pg_cron','cron.runid_seq','S',false,case when pg_catalog.current_setting('server_version_num')='170006' then array[]::text[] else array['SELECT']::text[] end),
       ('pg_net','net.http_request_queue','r',false,array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]),
       ('pg_net','net._http_response','r',false,array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]),
       ('pg_net','net.http_request_queue_id_seq','S',false,array['SELECT','UPDATE','USAGE']::text[])

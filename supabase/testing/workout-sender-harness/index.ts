@@ -15,6 +15,13 @@ Deno.serve(createWorkoutPushHandler({workerToken:Deno.env.get('GYMIO_WORKOUT_WOR
   generateRequestDetails:webpush.generateRequestDetails.bind(webpush),vapid:{publicKey:Deno.env.get('VAPID_PUBLIC_KEY')!,privateKey:Deno.env.get('VAPID_PRIVATE_KEY')!,subject:Deno.env.get('VAPID_SUBJECT')!},
   fetchImpl:async(_input:string|Request|URL,options:any)=>{
    if(options.redirect!=='error'||options.method!=='POST'||Number(options.headers.TTL)!==60||options.body.byteLength<150)throw Error('transport_contract')
+   const headers=new Headers(options.headers),authorization=headers.get('authorization')??''
+   const match=authorization.match(/^vapid t=([^,]+), ?k=(.+)$/)
+   if(!match||match[2]!==Deno.env.get('VAPID_PUBLIC_KEY')||headers.get('content-encoding')!=='aes128gcm')throw Error('vapid_contract')
+   const decode=(part:string)=>JSON.parse(atob(part.replace(/-/g,'+').replace(/_/g,'/')))
+   const pieces=match[1].split('.'),claims=decode(pieces[1]),jwtHeader=decode(pieces[0])
+   if(jwtHeader.alg!=='ES256'||claims.aud!==new URL(String(_input)).origin||claims.sub!==Deno.env.get('VAPID_SUBJECT')||claims.exp<=Date.now()/1000||claims.exp>Date.now()/1000+86400)throw Error('vapid_claims')
+   if(new TextDecoder().decode(options.body).includes('workout_rest_finished'))throw Error('payload_not_encrypted')
    return new Response(null,{status:201})
   },
  })}
