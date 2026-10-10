@@ -1,0 +1,501 @@
+diff --git a/package.json b/package.json
+index 900702d..8a9ab62 100644
+--- a/package.json
++++ b/package.json
+@@ -6,7 +6,7 @@
+   "type": "module",
+   "scripts": {
+     "dev": "vite",
+-    "dev:push": "vite --mode push --host 127.0.0.1",
++    "dev:push": "vite --mode push --host localhost --strictPort",
+     "test": "node --test",
+     "test:push:local": "powershell -NoProfile -File supabase/testing/run-local.ps1",
+     "build": "vite build",
+diff --git a/public/push-sw.js b/public/push-sw.js
+index 2b3f772..80cbe18 100644
+--- a/public/push-sw.js
++++ b/public/push-sw.js
+@@ -1,4 +1,4 @@
+-/* Push Foundation only: no cache, authentication, workout state or actions. */
++/* Push + workout projections only. No cache, workout mutations or auth data. */
+ const TEST_BODY = 'Notificações de treino ativadas.'
+ function validPayload(value) {
+   return value && value.version === 1 && value.type === 'test' && value.title === 'Gym.io' &&
+@@ -6,24 +6,139 @@ function validPayload(value) {
+     Object.keys(value).every((key) => ['version', 'type', 'title', 'body', 'data'].includes(key)) &&
+     Object.keys(value.data).length === 1
+ }
++const WORKOUT_KEYS = ['version','type','title','body','id_sessao','revisao','id_treino','id_treino_exercicio','proxima_serie','serie_total',
++  'iniciada_em','descanso_iniciado_em','descanso_termina_em','agora_servidor','exercicio','fase','pausada','data']
++const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
++function decimal(value, allowZero=false, max=9223372036854775807n) {
++  return typeof value==='string' && /^(0|[1-9][0-9]*)$/.test(value) && value.length<=19 &&
++    BigInt(value)<=max && (allowZero || value!=='0')
++}
++function stamp(value) { return typeof value==='string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,6})?(?:Z|[+-]\d\d:\d\d)$/.test(value) && Number.isFinite(Date.parse(value)) }
++function validWorkout(value, projection=false) {
++  if (!value || typeof value!=='object' || Array.isArray(value) || Object.keys(value).length!==WORKOUT_KEYS.length ||
++    Object.keys(value).some((key)=>!WORKOUT_KEYS.includes(key)) || value.version!==2 ||
++    value.type!==(projection?'workout_projection':'workout_rest_finished') || !UUID.test(value.id_sessao ?? '') ||
++    !decimal(value.revisao,true) || !decimal(value.id_treino) || !decimal(value.id_treino_exercicio) ||
++    !decimal(value.proxima_serie,false,32767n) || (value.serie_total!==null &&
++      (!decimal(value.serie_total,false,32767n) || BigInt(value.serie_total)<BigInt(value.proxima_serie))) ||
++    !stamp(value.iniciada_em) || !stamp(value.agora_servidor) || Date.parse(value.agora_servidor)<Date.parse(value.iniciada_em) ||
++    typeof value.pausada!=='boolean' || !['descanso','execucao'].includes(value.fase) ||
++    typeof value.exercicio!=='string' || !value.exercicio.trim() || Array.from(value.exercicio).length>80 || /[\u0000-\u001f\u007f]/.test(value.exercicio) ||
++    typeof value.body!=='string' || !value.body || Array.from(value.body).length>160 || /[\u0000-\u001f\u007f]/.test(value.body) ||
++    !value.data || Object.keys(value.data).length!==1 || value.data.url!==`/treinar/${value.id_treino}`) return false
++  if (value.fase==='descanso') {
++    if (!stamp(value.descanso_iniciado_em) || !stamp(value.descanso_termina_em) || Date.parse(value.descanso_termina_em)<Date.parse(value.descanso_iniciado_em)) return false
++  } else if (value.descanso_iniciado_em!==null || value.descanso_termina_em!==null) return false
++  if (!projection) return value.title==='Gym.io · Descanso concluído' && value.fase==='descanso' && !value.pausada && Date.parse(value.agora_servidor)>=Date.parse(value.descanso_termina_em)
++  return value.title===(value.pausada?'Gym.io · Pausado':value.fase==='descanso'?'Gym.io · Descanso':'Gym.io · Treino')
++}
++function restIdentity(value) { return `${value.id_sessao}:${value.id_treino_exercicio}:${value.proxima_serie}:rest_finished` }
++
++// This store contains only receipts, tombstones and projection ordering markers.
++// Session V2 remains authoritative. One readwrite transaction reserves an alert
++// durably before showNotification; a worker restart cannot reserve it again.
++function createWorkoutStore(factory) {
++  let database
++  const open = () => database ??= new Promise((resolve,reject)=>{
++    if (!factory) return reject(new Error('storage_unavailable'))
++    const request=factory.open('gymio-workout-notification-receipts',1)
++    request.onupgradeneeded=()=>request.result.createObjectStore('markers')
++    request.onsuccess=()=>{ const db=request.result; db.onversionchange=()=>db.close(); resolve(db) }
++    request.onerror=()=>reject(new Error('storage_unavailable'))
++    request.onblocked=()=>reject(new Error('storage_unavailable'))
++  })
++  const transaction=async(operation)=>{
++    const db=await open(); return new Promise((resolve,reject)=>{
++      const tx=db.transaction('markers','readwrite');const store=tx.objectStore('markers');let result
++      tx.oncomplete=()=>resolve(result);tx.onabort=tx.onerror=()=>reject(new Error('storage_unavailable'))
++      const get=(key)=>new Promise((done,fail)=>{ const r=store.get(key);r.onsuccess=()=>done(r.result);r.onerror=()=>fail(r.error) })
++      Promise.resolve(operation(store,get)).then((value)=>{result=value},()=>{try{tx.abort()}catch{};reject(new Error('storage_unavailable'))})
++    })
++  }
++  return {
++    decide: (value,alert)=>transaction(async(store,get)=>{
++      const [enabled,closed,current,receipt]=await Promise.all([get('enabled'),get(`closed:${value.id_sessao}`),get('projection'),get(`receipt:${restIdentity(value)}`)])
++      if (enabled===false || closed) return {show:false}
++      let newerSession=false
++      if (current) {
++        if (current.session!==value.id_sessao) {
++          const previous=[current.started,current.session].join(':');const incoming=[new Date(value.iniciada_em).toISOString(),value.id_sessao].join(':')
++          if(incoming<=previous)return {show:false}
++          store.put(true,`closed:${current.session}`);newerSession=true
++        } else if (BigInt(value.revisao)<BigInt(current.revision) ||
++          (value.revisao===current.revision && Date.parse(value.agora_servidor)<current.observed)) return {show:false}
++      }
++      store.put({session:value.id_sessao,started:new Date(value.iniciada_em).toISOString(),revision:value.revisao,observed:Date.parse(value.agora_servidor)},'projection')
++      if(alert&&!receipt)store.put(true,`receipt:${restIdentity(value)}`)
++      return {show:true,alert:alert&&!receipt,closeOthers:newerSession}
++    }),
++    close: (id)=>transaction(async(store)=>{store.put(true,`closed:${id}`)}),
++    disable: (logout)=>transaction(async(store,get)=>{store.put(false,'enabled');const current=await get('projection');if(logout&&current)store.put(true,`closed:${current.session}`)}),
++    enable: ()=>transaction(async(store)=>{store.put(true,'enabled')}),
++  }
++}
++function createWorkoutProcessor({store,registration}) {
++  let queue=Promise.resolve();let disabled=false;let last=null;const closed=new Set()
++  const serialized=(fn)=>{const result=queue.then(fn);queue=result.catch(()=>{});return result}
++  const closeCards=async(except)=>{
++    const cards=await registration.getNotifications?.() ?? []
++    for(const card of cards)if(card.tag?.startsWith('gymio-workout-')&&card.tag!==except)card.close()
++  }
++  return {
++    project: (value,alert=false)=>serialized(async()=>{
++      if(disabled||closed.has(value.id_sessao))return
++      let decision
++      try{decision=await store.decide(value,alert)}catch{
++        // Storage failure can only update a known live projection silently.
++        if(!last||last.id_sessao!==value.id_sessao||BigInt(value.revisao)<BigInt(last.revisao))return
++        decision={show:true,alert:false}
++      }
++      if(!decision.show)return
++      last=value
++      const tag=`gymio-workout-${value.id_sessao}`
++      if(decision.closeOthers)await closeCards(tag)
++      await registration.showNotification(value.title,{body:value.body,icon:'/push-icon-192.png',badge:'/push-icon-192.png',tag,
++        data:{url:`/treinar/${value.id_treino}`,sessionId:value.id_sessao},
++        silent:!decision.alert,renotify:Boolean(decision.alert),...(decision.alert?{vibrate:[200,100,200]}:{})})
++    }),
++    close: (id)=>serialized(async()=>{closed.add(id);try{await store.close(id)}catch{};const cards=await registration.getNotifications?.() ?? [];for(const card of cards)if(card.tag===`gymio-workout-${id}`)card.close()}),
++    disable: (logout)=>serialized(async()=>{disabled=true;if(logout&&last)closed.add(last.id_sessao);try{await store.disable(logout)}catch{};await closeCards()}),
++    enable: ()=>serialized(async()=>{await store.enable();disabled=false}),
++  }
++}
++const workoutProcessor=createWorkoutProcessor({store:createWorkoutStore(self.indexedDB),registration:self.registration})
+ self.addEventListener('push', (event) => {
+   let payload
+   try { payload = event.data?.json() } catch { return }
++  if(validWorkout(payload)) {event.waitUntil(workoutProcessor.project(payload,true));return}
+   if (!validPayload(payload)) return
+   event.waitUntil(self.registration.showNotification(payload.title, {
+     body: payload.body, icon: '/push-icon-192.png', badge: '/push-icon-192.png',
+     tag: 'gymio-push-test', data: { url: '/dashboard' },
+   }))
+ })
++self.addEventListener('message',(event)=>{
++  let origin
++  try{origin=new URL(event.source?.url).origin}catch{return}
++  if(origin!==self.location.origin)return
++  const message=event.data
++  if(message?.type==='gymio_workout_projection'&&validWorkout(message.payload,true))event.waitUntil(workoutProcessor.project(message.payload))
++  else if(message?.type==='gymio_workout_rest_finished'&&validWorkout(message.payload))event.waitUntil(workoutProcessor.project(message.payload,true))
++  else if(message?.type==='gymio_workout_close'&&UUID.test(message.sessionId??''))event.waitUntil(workoutProcessor.close(message.sessionId))
++  else if(message?.type==='gymio_push_disable')event.waitUntil(workoutProcessor.disable(message.reason==='logout'))
++  else if(message?.type==='gymio_push_enable')event.waitUntil(workoutProcessor.enable())
++})
+ self.addEventListener('notificationclick', (event) => {
+   event.notification.close()
+-  if (event.action || event.notification.data?.url !== '/dashboard') return
++  const route=event.notification.data?.url
++  const workoutRoute=typeof route==='string'&&/^\/treinar\/[1-9][0-9]*$/.test(route)&&decimal(route.slice(9))&&UUID.test(event.notification.data?.sessionId??'')
++  if (event.action || (route!=='/dashboard'&&!workoutRoute)) return
+   event.waitUntil((async () => {
+     const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+     const current = windows.find((client) => {
+       try { return new URL(client.url).origin === self.location.origin } catch { return false }
+     })
+-    if (current) { await current.navigate('/dashboard'); await current.focus() }
+-    else await self.clients.openWindow('/dashboard')
++    if (current) { await current.navigate(route); await current.focus() }
++    else await self.clients.openWindow(route)
+   })())
+ })
+diff --git a/src/hooks/useTreinoAtivo.js b/src/hooks/useTreinoAtivo.js
+index 1f186ce..4d5860f 100644
+--- a/src/hooks/useTreinoAtivo.js
++++ b/src/hooks/useTreinoAtivo.js
+@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+ import { useDescansoTimer } from './useDescansoTimer'
+ import { useServerNow } from './useServerNow'
+ import { useWorkoutTimer } from './useWorkoutTimer'
++import { createWorkoutNotificationAdapter } from '../services/push/workoutProjection.js'
++import { workoutNotificationBridge } from '../services/push/workoutNotificationBridge.js'
+ import {
+   classificarReconciliacaoMutacao,
+   criarChaveDescansoExpirado,
+@@ -89,6 +91,9 @@ export function useTreinoAtivo({
+   const [aviso, setAviso] = useState(null)
+ 
+   const sessaoRef = useRef(null)
++  const notificationAdapter = useMemo(() => createWorkoutNotificationAdapter(workoutNotificationBridge), [])
++  const notificationItemsRef = useRef(exercicios)
++  notificationItemsRef.current = exercicios
+   const mutacaoRef = useRef(false)
+   const descansoAutomaticoRef = useRef(null)
+   const finalizacoesProcessadasRef = useRef(new Set())
+@@ -146,11 +151,12 @@ export function useTreinoAtivo({
+       }
+     }
+ 
++    notificationAdapter.accept(sessaoRef.current, proximaSessao, notificationItemsRef.current)
+     sessaoRef.current = proximaSessao
+     setSessao(proximaSessao)
+     if (novasSeries !== undefined) setSeriesConcluidas(novasSeries)
+     return true
+-  }, [])
++  }, [notificationAdapter])
+ 
+   const limparFeedback = useCallback(() => {
+     setErro(null)
+@@ -308,7 +314,7 @@ export function useTreinoAtivo({
+ 
+   const executarMutacao = useCallback(async (
+     mutacao,
+-    { aceitarAusenteAposErroRede = false } = {}
++    { aceitarAusenteAposErroRede = false, sinalizarDescansoVencido = false } = {}
+   ) => {
+     if (mutacaoRef.current) return false
+ 
+@@ -321,7 +327,8 @@ export function useTreinoAtivo({
+ 
+     try {
+       const resposta = await mutacao(atual)
+-      await aplicarRespostaConfirmada(resposta)
++      const aceita = await aplicarRespostaConfirmada(resposta)
++      if (aceita && sinalizarDescansoVencido) notificationAdapter.restFinished(atual, resposta, notificationItemsRef.current)
+       return true
+     } catch (error) {
+       if (ehErroDeTransporte(error)) {
+@@ -346,6 +353,7 @@ export function useTreinoAtivo({
+     limparFeedback,
+     reconciliarMutacaoAposErroRede,
+     tratarErroMutacao,
++    notificationAdapter,
+   ])
+ 
+   useEffect(() => {
+@@ -500,7 +508,7 @@ export function useTreinoAtivo({
+       atual.id_sessao,
+       atual.revisao,
+       false
+-    ))
++    ), { sinalizarDescansoVencido: true })
+   }, [chaveDescansoExpirado, executarMutacao])
+ 
+   const estado = useMemo(() => {
+@@ -626,7 +634,7 @@ export function useTreinoAtivo({
+       atual.id_sessao,
+       atual.revisao,
+       timerDescansoBase.restante > 0
+-    ))
++    ), { sinalizarDescansoVencido: timerDescansoBase.restante <= 0 })
+   }, [executarMutacao, pausado, timerDescansoBase.restante])
+ 
+   const pularDescanso = useCallback(() => {
+diff --git a/src/services/auth/authService.js b/src/services/auth/authService.js
+index a270064..b1b1697 100644
+--- a/src/services/auth/authService.js
++++ b/src/services/auth/authService.js
+@@ -184,7 +184,7 @@ export async function cadastrar({
+ export async function logout() {
+   try {
+     return await logoutWithPushCleanup({
+-      cleanup: pushService.disable,
++      cleanup: () => pushService.disable({ reason: 'logout' }),
+       signOut: () => supabase.auth.signOut(),
+       onSignedOut: () => { clearSessionPreferences(); setAuthStoragePreference(false) },
+     })
+diff --git a/src/services/push/pushService.js b/src/services/push/pushService.js
+index 6707b17..16e5165 100644
+--- a/src/services/push/pushService.js
++++ b/src/services/push/pushService.js
+@@ -1,6 +1,7 @@
+ import { supabase } from '../../lib/supabase'
+ import { createPushController } from './pushController.js'
+ import { invokePushTest } from './invokePushTest.js'
++import { workoutNotificationBridge } from './workoutNotificationBridge.js'
+ 
+ async function rpc(name, args, signal) {
+   let request = supabase.rpc(name, args)
+@@ -11,7 +12,7 @@ async function rpc(name, args, signal) {
+   return data
+ }
+ 
+-export const pushService = createPushController({
++const controller = createPushController({
+   browser: typeof window === 'undefined' ? null : window,
+   publicKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+   api: {
+@@ -21,3 +22,8 @@ export const pushService = createPushController({
+     sendTest: (id, signal) => invokePushTest((name, options) => supabase.functions.invoke(name, options), id, signal),
+   },
+ })
++export const pushService = {
++  ...controller,
++  enable: async()=>{const result=await controller.enable();if(result.status==='subscribed')await workoutNotificationBridge.enable();return result},
++  disable: async({reason}={})=>{await workoutNotificationBridge.disable(reason);return controller.disable()},
++}
+diff --git a/supabase/config.toml b/supabase/config.toml
+index 4a04fb2..856348d 100644
+--- a/supabase/config.toml
++++ b/supabase/config.toml
+@@ -50,3 +50,6 @@ enabled = false
+ 
+ [functions.push-test]
+ verify_jwt = true
++
++[functions.workout-push]
++verify_jwt = false
+diff --git a/supabase/migrations/20261007215944_push_foundation.sql b/supabase/migrations/20261007215944_push_foundation.sql
+index e3c72bb..a263b92 100644
+--- a/supabase/migrations/20261007215944_push_foundation.sql
++++ b/supabase/migrations/20261007215944_push_foundation.sql
+@@ -145,7 +145,9 @@ revoke create on schema public, gymio_push_private from gymio_push_executor;
+ revoke gymio_push_executor from postgres granted by postgres;
+ 
+ do $assertions$
+-declare v_role oid := 'gymio_push_executor'::regrole; v_problem text;
++declare v_role oid := 'gymio_push_executor'::regrole; v_problem text; v_expected record;
++  v_object record; v_public text[]; v_platform_relations oid[] := array[]::oid[];
++  v_platform_sequences oid[] := array[]::oid[];
+ begin
+   if has_schema_privilege(v_role, 'auth', 'USAGE') or has_schema_privilege(v_role, 'auth', 'CREATE')
+     or has_schema_privilege(v_role, 'public', 'CREATE') or has_schema_privilege(v_role, 'gymio_push_private', 'CREATE') then
+@@ -167,6 +169,82 @@ begin
+     raise exception 'unsafe executor attributes';
+   end if;
+   if exists(select 1 from pg_catalog.pg_class where relowner=v_role) then raise exception 'executor owns relation'; end if;
++  -- PLATFORM BASELINE ACL, not a GYM.IO GRANT. These tested extensions grant
++  -- PUBLIC rights independently of this migration. Catalog identity and exact
++  -- PUBLIC privileges are required; a schema/name alone never authorizes them.
++  -- SQL ACLs do not prove browser reachability. The separate HTTP gate must
++  -- verify effective exposed schemas and audit every callable public wrapper.
++  for v_expected in select * from (values
++    ('pg_cron','1.6.4','pg_catalog','cron'), ('pg_net','0.20.4','public','net')
++  ) x(extension_name,version,extension_schema,object_schema)
++  where exists(select 1 from pg_catalog.pg_extension e where e.extname=x.extension_name) loop
++    if not exists(select 1 from pg_catalog.pg_extension e
++      join pg_catalog.pg_namespace n on n.nspname=v_expected.object_schema
++      where e.extname=v_expected.extension_name and e.extversion=v_expected.version
++        and e.extowner='supabase_admin'::regrole and n.nspowner=e.extowner
++        and e.extnamespace=to_regnamespace(v_expected.extension_schema)) then
++      raise exception 'push platform extension identity violation: %', v_expected.extension_name;
++    end if;
++    select coalesce(array_agg(a.privilege_type order by a.privilege_type),array[]::text[]) into v_public
++    from pg_catalog.pg_namespace n cross join lateral pg_catalog.aclexplode(n.nspacl) a
++    where n.nspname=v_expected.object_schema and a.grantee=0;
++    if v_public <> (case when v_expected.extension_name='pg_net' then array['USAGE']::text[] else array[]::text[] end)
++      or exists(select 1 from pg_catalog.pg_namespace n cross join lateral pg_catalog.aclexplode(n.nspacl) a
++        where n.nspname=v_expected.object_schema and (a.grantee=v_role or
++          (a.grantee=0 and (a.is_grantable or a.grantor<>n.nspowner)))) then
++      raise exception 'push platform schema ACL violation: %', v_expected.object_schema;
++    end if;
++    -- Reject explicit executor ACLs even when PUBLIC already supplies the same
++    -- privilege. Include column ACLs, sequences, functions and default ACLs.
++    if exists(select 1 from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
++      cross join lateral pg_catalog.aclexplode(c.relacl) a where n.nspname=v_expected.object_schema and a.grantee=v_role)
++      or exists(select 1 from pg_catalog.pg_attribute col join pg_catalog.pg_class c on c.oid=col.attrelid
++        join pg_catalog.pg_namespace n on n.oid=c.relnamespace cross join lateral pg_catalog.aclexplode(col.attacl) a
++        where n.nspname=v_expected.object_schema and a.grantee=v_role)
++      or exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid=p.pronamespace
++        cross join lateral pg_catalog.aclexplode(p.proacl) a where n.nspname=v_expected.object_schema and a.grantee=v_role)
++      or exists(select 1 from pg_catalog.pg_default_acl d join pg_catalog.pg_namespace n on n.oid=d.defaclnamespace
++        cross join lateral pg_catalog.aclexplode(d.defaclacl) a where n.nspname=v_expected.object_schema and a.grantee=v_role) then
++      raise exception 'push platform direct executor grant violation: %', v_expected.object_schema;
++    end if;
++    for v_object in select * from (values
++      ('pg_cron','cron.job','r',true,array['SELECT']::text[]),
++      ('pg_cron','cron.job_run_details','r',true,array['DELETE','SELECT']::text[]),
++      ('pg_cron','cron.jobid_seq','S',false,array['SELECT']::text[]),
++      ('pg_cron','cron.runid_seq','S',false,array['SELECT']::text[]),
++      ('pg_net','net.http_request_queue','r',false,array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]),
++      ('pg_net','net._http_response','r',false,array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]),
++      ('pg_net','net.http_request_queue_id_seq','S',false,array['SELECT','UPDATE','USAGE']::text[])
++    ) x(extension_name,object_name,kind,rls,privileges) where x.extension_name=v_expected.extension_name loop
++      if not exists(select 1 from pg_catalog.pg_class c
++        join pg_catalog.pg_depend d on d.classid='pg_catalog.pg_class'::regclass and d.objid=c.oid
++          and d.refclassid='pg_catalog.pg_extension'::regclass and d.deptype='e'
++        join pg_catalog.pg_extension e on e.oid=d.refobjid
++        where c.oid=to_regclass(v_object.object_name) and e.extname=v_expected.extension_name
++          and c.relnamespace=to_regnamespace(v_expected.object_schema) and c.relowner=e.extowner
++          and c.relkind::text=v_object.kind and c.relrowsecurity=v_object.rls) then
++        raise exception 'push platform relation identity violation: %', v_object.object_name;
++      end if;
++      select coalesce(array_agg(a.privilege_type order by a.privilege_type),array[]::text[]) into v_public
++      from pg_catalog.pg_class c cross join lateral pg_catalog.aclexplode(c.relacl) a
++      where c.oid=to_regclass(v_object.object_name) and a.grantee=0;
++      if v_public<>v_object.privileges or exists(select 1 from pg_catalog.pg_class c
++        cross join lateral pg_catalog.aclexplode(c.relacl) a where c.oid=to_regclass(v_object.object_name)
++          and a.grantee=0 and (a.is_grantable or a.grantor<>c.relowner))
++        or exists(select 1 from pg_catalog.pg_attribute col cross join lateral pg_catalog.aclexplode(col.attacl) a
++          where col.attrelid=to_regclass(v_object.object_name) and a.grantee=0) then
++        raise exception 'push platform PUBLIC ACL violation: %', v_object.object_name;
++      end if;
++      if v_object.kind='S' then v_platform_sequences:=array_append(v_platform_sequences,to_regclass(v_object.object_name)::oid);
++      else v_platform_relations:=array_append(v_platform_relations,to_regclass(v_object.object_name)::oid); end if;
++    end loop;
++  end loop;
++  if exists(select 1 from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
++    where c.relkind='S' and n.nspname not in ('pg_catalog','information_schema') and n.nspname !~ '^pg_(toast|temp)(_|$)'
++      and c.oid<>all(v_platform_sequences) and (has_sequence_privilege(v_role,c.oid,'USAGE')
++        or has_sequence_privilege(v_role,c.oid,'SELECT') or has_sequence_privilege(v_role,c.oid,'UPDATE'))) then
++    raise exception 'push executor sequence allowlist violation';
++  end if;
+   -- Effective privileges include PUBLIC, inherited ACLs and column-only grants.
+   -- Only these official views retain baseline SELECT inherited from PUBLIC.
+   -- Name alone is insufficient: require view type, extension membership/owner,
+@@ -192,7 +270,8 @@ begin
+     and n.nspname not in ('pg_catalog','information_schema')
+     and n.nspname !~ '^pg_(toast|temp)(_|$)'
+     and ((c.oid <> 'public.push_subscriptions'::regclass
+-      and not (p.priv='SELECT' and c.oid in (select oid from official_stats)) and
++      and not (p.priv='SELECT' and c.oid in (select oid from official_stats))
++      and c.oid<>all(v_platform_relations) and
+       (has_table_privilege(v_role,c.oid,p.priv) or case when p.priv in ('SELECT','INSERT','UPDATE','REFERENCES')
+         then has_any_column_privilege(v_role,c.oid,p.priv) else false end))
+       or (c.oid = 'public.push_subscriptions'::regclass and p.priv in ('TRUNCATE','REFERENCES','TRIGGER','MAINTAIN')
+diff --git a/supabase/testing/edge-integration/index.ts b/supabase/testing/edge-integration/index.ts
+index c311af5..9d4a320 100644
+--- a/supabase/testing/edge-integration/index.ts
++++ b/supabase/testing/edge-integration/index.ts
+@@ -104,7 +104,7 @@ Deno.serve(async (request) => {
+       const { default: webpush } = await import('npm:web-push@3.6.7')
+       const vapid = { publicKey: Deno.env.get('VAPID_PUBLIC_KEY')!, privateKey: Deno.env.get('VAPID_PRIVATE_KEY')!, subject: Deno.env.get('VAPID_SUBJECT')! }
+       const transport = createWebPushTransport({ generateRequestDetails: webpush.generateRequestDetails.bind(webpush), vapid,
+-        fetchImpl: group === 'timeout' ? () => new Promise(() => {}) : async (_destination: string, options: any) => {
++        fetchImpl: group === 'timeout' ? () => new Promise(() => {}) : async (_destination: string | Request | URL, options: any) => {
+           check(options.method === 'POST' && options.redirect === 'error', 'transport_options')
+           check(options.headers.TTL === 60 || options.headers.TTL === '60', 'transport_ttl')
+           check(Boolean(options.headers.Authorization), 'transport_vapid')
+diff --git a/supabase/testing/local-tests.mjs b/supabase/testing/local-tests.mjs
+index 7b2bfbd..46ff53e 100644
+--- a/supabase/testing/local-tests.mjs
++++ b/supabase/testing/local-tests.mjs
+@@ -5,12 +5,22 @@ import assert from 'node:assert/strict'
+ import { createHash, createECDH, randomBytes } from 'node:crypto'
+ import { execFileSync } from 'node:child_process'
+ 
+-const runtime = path.resolve('supabase/.runtime')
+-const container = 'supabase_db_gymio-push-foundation-local'
++// An explicit disposable context lets the same matrix preserve a manual stack.
++const context = process.argv[3] ? JSON.parse(fs.readFileSync(process.argv[3], 'utf8').replace(/^\uFEFF/, '')) : null
++if (context) {
++  assert.ok(['gymio-extension-security-local', 'gymio-workout-push-local'].includes(context.project))
++  assert.equal(context.port, '55441')
++  assert.equal(fs.readFileSync(path.join(context.root, '.owner'), 'utf8').trim(), context.project)
++  assert.ok(path.isAbsolute(context.root) && /^(gymio-extension-gate-|gymio-workout-push-)/.test(path.basename(context.root)))
++}
++const runtime = context ? context.root : path.resolve('supabase/.runtime')
++const container = `supabase_db_${context?.project ?? 'gymio-push-foundation-local'}`
++const frontendEnv = context ? path.join(runtime, 'frontend.env') : '.env.push.local'
+ const expected = {
+   '20260725194232_auth_email_security.sql': 'cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6',
+   '20260821190134_workout_session_persistence_expand.sql': '6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db',
+   '20260823003337_exercise_memory_read.sql': '7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02',
++  '20261007215944_push_foundation.sql': 'f1212ee8d19d7d8b0a362f1ffc65b403898be433b2d13712b6967b3490e45f04',
+ }
+ for (const [name, hash] of Object.entries(expected)) assert.equal(createHash('sha256').update(fs.readFileSync(`supabase/migrations/${name}`)).digest('hex'), hash, `historical hash ${name}`)
+ fs.mkdirSync(runtime, { recursive: true })
+@@ -19,7 +29,7 @@ const sql = (text) => execFileSync('docker', ['exec', '-i', container, 'psql', '
+ const status = JSON.parse(fs.readFileSync(path.join(runtime, 'status.json'), 'utf8').replace(/^\uFEFF/, ''))
+ const apiUrl = status.API_URL ?? status.api_url
+ assert.ok(['localhost', '127.0.0.1'].includes(new URL(apiUrl).hostname), 'local API only')
+-assert.equal(new URL(apiUrl).port, '55431', 'isolated port')
++assert.equal(new URL(apiUrl).port, context?.port ?? '55431', 'isolated port')
+ const anon = status.ANON_KEY ?? status.anon_key
+ assert.ok(anon, 'local anon key missing')
+ const json = async (url, jwt, body, method = 'POST') => {
+@@ -32,7 +42,7 @@ const json = async (url, jwt, body, method = 'POST') => {
+ }
+ 
+ if (stage === 'credentials') {
+-  assert.ok(!fs.existsSync('.env.push.local'), 'preserve existing local env file')
++  assert.ok(!fs.existsSync(frontendEnv), 'preserve existing local env file')
+   const users = []
+   for (const letter of ['a', 'b']) {
+     const password = randomBytes(24).toString('base64url') + 'A1!'
+@@ -48,7 +58,7 @@ if (stage === 'credentials') {
+   assert.ok(secret?.startsWith('sb_secret_'), 'local modern secret key missing')
+   fs.writeFileSync(path.join(runtime, 'edge.env'), `PUSH_ALLOWED_ORIGINS=http://localhost:5173\nPUSH_TEST_A_JWT=${users[0].jwt}\nPUSH_TEST_B_JWT=${users[1].jwt}\nPUSH_TEST_SECRET_KEY=${secret}\nVAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\nVAPID_PRIVATE_KEY=${vapid.getPrivateKey().toString('base64url')}\nVAPID_SUBJECT=mailto:local-test@gym.io\n`)
+   // Vite receives only local public values; the existing .env remains untouched.
+-  fs.writeFileSync('.env.push.local', `VITE_SUPABASE_URL=${apiUrl}\nVITE_SUPABASE_PUBLISHABLE_KEY=${anon}\nVITE_VAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\n`)
++  fs.writeFileSync(frontendEnv, `VITE_SUPABASE_URL=${apiUrl}\nVITE_SUPABASE_PUBLISHABLE_KEY=${anon}\nVITE_VAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\n`)
+   console.log('PASS local synthetic users / isolated credentials (no secret output)')
+ } else if (stage === 'bootstrap') {
+   assert.match(sql("select to_regclass('public.push_subscriptions') is null and to_regclass('public.treino_sessoes') is null as fresh;"), /t/)
+@@ -101,7 +111,8 @@ if (stage === 'credentials') {
+     console.log('PASS local Edge Runtime readiness')
+   } else if (stage === 'spike') {
+     const result = await json(`${apiUrl}/functions/v1/push-compat-spike`, a.jwt, {})
+-    assert.equal(result.status, 200, 'real Edge Runtime compatibility spike')
++    const diagnostic=typeof result.data?.code==='string'&&/^[A-Z_]{1,40}$/.test(result.data.code)?result.data.code:'unknown'
++    assert.equal(result.status, 200, `real Edge Runtime compatibility spike (${diagnostic})`)
+     assert.equal(result.data.imported, true); assert.equal(result.data.method, 'POST'); assert.ok(result.data.encryptedBytes > 150)
+     assert.equal(result.data.contentEncoding, 'aes128gcm'); assert.equal(result.data.hasAuthorization, true); assert.equal(result.data.transmitted, false)
+     fs.writeFileSync(path.join(runtime, 'spike-result.json'), JSON.stringify(result.data, null, 2))
+@@ -132,6 +143,11 @@ if (stage === 'credentials') {
+     assert.ok(concurrent.every((r) => r.status === 200)); assert.equal(concurrent[0].data, concurrent[1].data)
+     for (let i = 0; i < 2; i++) assert.equal((await rpc('remover_push_subscription', a.jwt, { p_subscription_id: id })).status, 204)
+     assert.equal((await rpc('consultar_push_subscription', a.jwt, { p_endpoint: endpoint })).data, null)
++    // Remove exactly the two additional fixtures created by this stage. A later
++    // frozen-recipient matrix must not mistake them for its own test devices.
++    for (const cleanupId of [second.data, concurrent[0].data]) {
++      assert.equal((await rpc('remover_push_subscription', a.jwt, { p_subscription_id: cleanupId })).status, 204)
++    }
+     fs.writeFileSync(path.join(runtime, 'api-result.json'), JSON.stringify({ passed: true, verified: ['JWT', 'multiple_devices', 'idempotence', 'concurrency', 'ownership', 'DML_blocked'] }))
+     console.log('PASS Data API: JWT, multiple devices, idempotence, concurrent registration, ownership and blocked DML')
+   } else if (stage === 'edge') {

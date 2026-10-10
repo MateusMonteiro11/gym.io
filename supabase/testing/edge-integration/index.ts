@@ -104,7 +104,7 @@ Deno.serve(async (request) => {
       const { default: webpush } = await import('npm:web-push@3.6.7')
       const vapid = { publicKey: Deno.env.get('VAPID_PUBLIC_KEY')!, privateKey: Deno.env.get('VAPID_PRIVATE_KEY')!, subject: Deno.env.get('VAPID_SUBJECT')! }
       const transport = createWebPushTransport({ generateRequestDetails: webpush.generateRequestDetails.bind(webpush), vapid,
-        fetchImpl: group === 'timeout' ? () => new Promise(() => {}) : async (_destination: string, options: any) => {
+        fetchImpl: group === 'timeout' ? () => new Promise(() => {}) : async (_destination: string | Request | URL, options: any) => {
           check(options.method === 'POST' && options.redirect === 'error', 'transport_options')
           check(options.headers.TTL === 60 || options.headers.TTL === '60', 'transport_ttl')
           check(Boolean(options.headers.Authorization), 'transport_vapid')

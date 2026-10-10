@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDescansoTimer } from './useDescansoTimer'
 import { useServerNow } from './useServerNow'
 import { useWorkoutTimer } from './useWorkoutTimer'
+import { createWorkoutNotificationAdapter } from '../services/push/workoutProjection.js'
+import { workoutNotificationBridge } from '../services/push/workoutNotificationBridge.js'
 import {
   classificarReconciliacaoMutacao,
   criarChaveDescansoExpirado,
@@ -89,6 +91,9 @@ export function useTreinoAtivo({
   const [aviso, setAviso] = useState(null)
 
   const sessaoRef = useRef(null)
+  const notificationAdapter = useMemo(() => createWorkoutNotificationAdapter(workoutNotificationBridge), [])
+  const notificationItemsRef = useRef(exercicios)
+  notificationItemsRef.current = exercicios
   const mutacaoRef = useRef(false)
   const descansoAutomaticoRef = useRef(null)
   const finalizacoesProcessadasRef = useRef(new Set())
@@ -146,11 +151,12 @@ export function useTreinoAtivo({
       }
     }
 
+    notificationAdapter.accept(sessaoRef.current, proximaSessao, notificationItemsRef.current)
     sessaoRef.current = proximaSessao
     setSessao(proximaSessao)
     if (novasSeries !== undefined) setSeriesConcluidas(novasSeries)
     return true
-  }, [])
+  }, [notificationAdapter])
 
   const limparFeedback = useCallback(() => {
     setErro(null)
@@ -308,7 +314,7 @@ export function useTreinoAtivo({
 
   const executarMutacao = useCallback(async (
     mutacao,
-    { aceitarAusenteAposErroRede = false } = {}
+    { aceitarAusenteAposErroRede = false, sinalizarDescansoVencido = false } = {}
   ) => {
     if (mutacaoRef.current) return false
 
@@ -321,7 +327,8 @@ export function useTreinoAtivo({
 
     try {
       const resposta = await mutacao(atual)
-      await aplicarRespostaConfirmada(resposta)
+      const aceita = await aplicarRespostaConfirmada(resposta)
+      if (aceita && sinalizarDescansoVencido) notificationAdapter.restFinished(atual, resposta, notificationItemsRef.current)
       return true
     } catch (error) {
       if (ehErroDeTransporte(error)) {
@@ -346,6 +353,7 @@ export function useTreinoAtivo({
     limparFeedback,
     reconciliarMutacaoAposErroRede,
     tratarErroMutacao,
+    notificationAdapter,
   ])
 
   useEffect(() => {
@@ -500,7 +508,7 @@ export function useTreinoAtivo({
       atual.id_sessao,
       atual.revisao,
       false
-    ))
+    ), { sinalizarDescansoVencido: true })
   }, [chaveDescansoExpirado, executarMutacao])
 
   const estado = useMemo(() => {
@@ -626,7 +634,7 @@ export function useTreinoAtivo({
       atual.id_sessao,
       atual.revisao,
       timerDescansoBase.restante > 0
-    ))
+    ), { sinalizarDescansoVencido: timerDescansoBase.restante <= 0 })
   }, [executarMutacao, pausado, timerDescansoBase.restante])
 
   const pularDescanso = useCallback(() => {

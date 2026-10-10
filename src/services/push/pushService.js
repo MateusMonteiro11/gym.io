@@ -1,6 +1,7 @@
 import { supabase } from '../../lib/supabase'
 import { createPushController } from './pushController.js'
 import { invokePushTest } from './invokePushTest.js'
+import { workoutNotificationBridge } from './workoutNotificationBridge.js'
 
 async function rpc(name, args, signal) {
   let request = supabase.rpc(name, args)
@@ -11,7 +12,7 @@ async function rpc(name, args, signal) {
   return data
 }
 
-export const pushService = createPushController({
+const controller = createPushController({
   browser: typeof window === 'undefined' ? null : window,
   publicKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
   api: {
@@ -21,3 +22,8 @@ export const pushService = createPushController({
     sendTest: (id, signal) => invokePushTest((name, options) => supabase.functions.invoke(name, options), id, signal),
   },
 })
+export const pushService = {
+  ...controller,
+  enable: async()=>{const result=await controller.enable();if(result.status==='subscribed')await workoutNotificationBridge.enable();return result},
+  disable: async({reason}={})=>{await workoutNotificationBridge.disable(reason);return controller.disable()},
+}

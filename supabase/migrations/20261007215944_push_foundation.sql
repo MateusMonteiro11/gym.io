@@ -145,7 +145,9 @@ revoke create on schema public, gymio_push_private from gymio_push_executor;
 revoke gymio_push_executor from postgres granted by postgres;
 
 do $assertions$
-declare v_role oid := 'gymio_push_executor'::regrole; v_problem text;
+declare v_role oid := 'gymio_push_executor'::regrole; v_problem text; v_expected record;
+  v_object record; v_public text[]; v_platform_relations oid[] := array[]::oid[];
+  v_platform_sequences oid[] := array[]::oid[];
 begin
   if has_schema_privilege(v_role, 'auth', 'USAGE') or has_schema_privilege(v_role, 'auth', 'CREATE')
     or has_schema_privilege(v_role, 'public', 'CREATE') or has_schema_privilege(v_role, 'gymio_push_private', 'CREATE') then
@@ -167,6 +169,82 @@ begin
     raise exception 'unsafe executor attributes';
   end if;
   if exists(select 1 from pg_catalog.pg_class where relowner=v_role) then raise exception 'executor owns relation'; end if;
+  -- PLATFORM BASELINE ACL, not a GYM.IO GRANT. These tested extensions grant
+  -- PUBLIC rights independently of this migration. Catalog identity and exact
+  -- PUBLIC privileges are required; a schema/name alone never authorizes them.
+  -- SQL ACLs do not prove browser reachability. The separate HTTP gate must
+  -- verify effective exposed schemas and audit every callable public wrapper.
+  for v_expected in select * from (values
+    ('pg_cron','1.6.4','pg_catalog','cron'), ('pg_net','0.20.4','public','net')
+  ) x(extension_name,version,extension_schema,object_schema)
+  where exists(select 1 from pg_catalog.pg_extension e where e.extname=x.extension_name) loop
+    if not exists(select 1 from pg_catalog.pg_extension e
+      join pg_catalog.pg_namespace n on n.nspname=v_expected.object_schema
+      where e.extname=v_expected.extension_name and e.extversion=v_expected.version
+        and e.extowner='supabase_admin'::regrole and n.nspowner=e.extowner
+        and e.extnamespace=to_regnamespace(v_expected.extension_schema)) then
+      raise exception 'push platform extension identity violation: %', v_expected.extension_name;
+    end if;
+    select coalesce(array_agg(a.privilege_type order by a.privilege_type),array[]::text[]) into v_public
+    from pg_catalog.pg_namespace n cross join lateral pg_catalog.aclexplode(n.nspacl) a
+    where n.nspname=v_expected.object_schema and a.grantee=0;
+    if v_public <> (case when v_expected.extension_name='pg_net' then array['USAGE']::text[] else array[]::text[] end)
+      or exists(select 1 from pg_catalog.pg_namespace n cross join lateral pg_catalog.aclexplode(n.nspacl) a
+        where n.nspname=v_expected.object_schema and (a.grantee=v_role or
+          (a.grantee=0 and (a.is_grantable or a.grantor<>n.nspowner)))) then
+      raise exception 'push platform schema ACL violation: %', v_expected.object_schema;
+    end if;
+    -- Reject explicit executor ACLs even when PUBLIC already supplies the same
+    -- privilege. Include column ACLs, sequences, functions and default ACLs.
+    if exists(select 1 from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+      cross join lateral pg_catalog.aclexplode(c.relacl) a where n.nspname=v_expected.object_schema and a.grantee=v_role)
+      or exists(select 1 from pg_catalog.pg_attribute col join pg_catalog.pg_class c on c.oid=col.attrelid
+        join pg_catalog.pg_namespace n on n.oid=c.relnamespace cross join lateral pg_catalog.aclexplode(col.attacl) a
+        where n.nspname=v_expected.object_schema and a.grantee=v_role)
+      or exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid=p.pronamespace
+        cross join lateral pg_catalog.aclexplode(p.proacl) a where n.nspname=v_expected.object_schema and a.grantee=v_role)
+      or exists(select 1 from pg_catalog.pg_default_acl d join pg_catalog.pg_namespace n on n.oid=d.defaclnamespace
+        cross join lateral pg_catalog.aclexplode(d.defaclacl) a where n.nspname=v_expected.object_schema and a.grantee=v_role) then
+      raise exception 'push platform direct executor grant violation: %', v_expected.object_schema;
+    end if;
+    for v_object in select * from (values
+      ('pg_cron','cron.job','r',true,array['SELECT']::text[]),
+      ('pg_cron','cron.job_run_details','r',true,array['DELETE','SELECT']::text[]),
+      ('pg_cron','cron.jobid_seq','S',false,array['SELECT']::text[]),
+      ('pg_cron','cron.runid_seq','S',false,array['SELECT']::text[]),
+      ('pg_net','net.http_request_queue','r',false,array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]),
+      ('pg_net','net._http_response','r',false,array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]),
+      ('pg_net','net.http_request_queue_id_seq','S',false,array['SELECT','UPDATE','USAGE']::text[])
+    ) x(extension_name,object_name,kind,rls,privileges) where x.extension_name=v_expected.extension_name loop
+      if not exists(select 1 from pg_catalog.pg_class c
+        join pg_catalog.pg_depend d on d.classid='pg_catalog.pg_class'::regclass and d.objid=c.oid
+          and d.refclassid='pg_catalog.pg_extension'::regclass and d.deptype='e'
+        join pg_catalog.pg_extension e on e.oid=d.refobjid
+        where c.oid=to_regclass(v_object.object_name) and e.extname=v_expected.extension_name
+          and c.relnamespace=to_regnamespace(v_expected.object_schema) and c.relowner=e.extowner
+          and c.relkind::text=v_object.kind and c.relrowsecurity=v_object.rls) then
+        raise exception 'push platform relation identity violation: %', v_object.object_name;
+      end if;
+      select coalesce(array_agg(a.privilege_type order by a.privilege_type),array[]::text[]) into v_public
+      from pg_catalog.pg_class c cross join lateral pg_catalog.aclexplode(c.relacl) a
+      where c.oid=to_regclass(v_object.object_name) and a.grantee=0;
+      if v_public<>v_object.privileges or exists(select 1 from pg_catalog.pg_class c
+        cross join lateral pg_catalog.aclexplode(c.relacl) a where c.oid=to_regclass(v_object.object_name)
+          and a.grantee=0 and (a.is_grantable or a.grantor<>c.relowner))
+        or exists(select 1 from pg_catalog.pg_attribute col cross join lateral pg_catalog.aclexplode(col.attacl) a
+          where col.attrelid=to_regclass(v_object.object_name) and a.grantee=0) then
+        raise exception 'push platform PUBLIC ACL violation: %', v_object.object_name;
+      end if;
+      if v_object.kind='S' then v_platform_sequences:=array_append(v_platform_sequences,to_regclass(v_object.object_name)::oid);
+      else v_platform_relations:=array_append(v_platform_relations,to_regclass(v_object.object_name)::oid); end if;
+    end loop;
+  end loop;
+  if exists(select 1 from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+    where c.relkind='S' and n.nspname not in ('pg_catalog','information_schema') and n.nspname !~ '^pg_(toast|temp)(_|$)'
+      and c.oid<>all(v_platform_sequences) and (has_sequence_privilege(v_role,c.oid,'USAGE')
+        or has_sequence_privilege(v_role,c.oid,'SELECT') or has_sequence_privilege(v_role,c.oid,'UPDATE'))) then
+    raise exception 'push executor sequence allowlist violation';
+  end if;
   -- Effective privileges include PUBLIC, inherited ACLs and column-only grants.
   -- Only these official views retain baseline SELECT inherited from PUBLIC.
   -- Name alone is insufficient: require view type, extension membership/owner,
@@ -192,7 +270,8 @@ begin
     and n.nspname not in ('pg_catalog','information_schema')
     and n.nspname !~ '^pg_(toast|temp)(_|$)'
     and ((c.oid <> 'public.push_subscriptions'::regclass
-      and not (p.priv='SELECT' and c.oid in (select oid from official_stats)) and
+      and not (p.priv='SELECT' and c.oid in (select oid from official_stats))
+      and c.oid<>all(v_platform_relations) and
       (has_table_privilege(v_role,c.oid,p.priv) or case when p.priv in ('SELECT','INSERT','UPDATE','REFERENCES')
         then has_any_column_privilege(v_role,c.oid,p.priv) else false end))
       or (c.oid = 'public.push_subscriptions'::regclass and p.priv in ('TRUNCATE','REFERENCES','TRIGGER','MAINTAIN')

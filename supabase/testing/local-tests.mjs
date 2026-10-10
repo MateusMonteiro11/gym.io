@@ -5,12 +5,22 @@ import assert from 'node:assert/strict'
 import { createHash, createECDH, randomBytes } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 
-const runtime = path.resolve('supabase/.runtime')
-const container = 'supabase_db_gymio-push-foundation-local'
+// An explicit disposable context lets the same matrix preserve a manual stack.
+const context = process.argv[3] ? JSON.parse(fs.readFileSync(process.argv[3], 'utf8').replace(/^\uFEFF/, '')) : null
+if (context) {
+  assert.ok(['gymio-extension-security-local', 'gymio-workout-push-local'].includes(context.project))
+  assert.equal(context.port, '55441')
+  assert.equal(fs.readFileSync(path.join(context.root, '.owner'), 'utf8').trim(), context.project)
+  assert.ok(path.isAbsolute(context.root) && /^(gymio-extension-gate-|gymio-workout-push-)/.test(path.basename(context.root)))
+}
+const runtime = context ? context.root : path.resolve('supabase/.runtime')
+const container = `supabase_db_${context?.project ?? 'gymio-push-foundation-local'}`
+const frontendEnv = context ? path.join(runtime, 'frontend.env') : '.env.push.local'
 const expected = {
   '20260725194232_auth_email_security.sql': 'cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6',
   '20260821190134_workout_session_persistence_expand.sql': '6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db',
   '20260823003337_exercise_memory_read.sql': '7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02',
+  '20261007215944_push_foundation.sql': 'f1212ee8d19d7d8b0a362f1ffc65b403898be433b2d13712b6967b3490e45f04',
 }
 for (const [name, hash] of Object.entries(expected)) assert.equal(createHash('sha256').update(fs.readFileSync(`supabase/migrations/${name}`)).digest('hex'), hash, `historical hash ${name}`)
 fs.mkdirSync(runtime, { recursive: true })
@@ -19,7 +29,7 @@ const sql = (text) => execFileSync('docker', ['exec', '-i', container, 'psql', '
 const status = JSON.parse(fs.readFileSync(path.join(runtime, 'status.json'), 'utf8').replace(/^\uFEFF/, ''))
 const apiUrl = status.API_URL ?? status.api_url
 assert.ok(['localhost', '127.0.0.1'].includes(new URL(apiUrl).hostname), 'local API only')
-assert.equal(new URL(apiUrl).port, '55431', 'isolated port')
+assert.equal(new URL(apiUrl).port, context?.port ?? '55431', 'isolated port')
 const anon = status.ANON_KEY ?? status.anon_key
 assert.ok(anon, 'local anon key missing')
 const json = async (url, jwt, body, method = 'POST') => {
@@ -32,7 +42,7 @@ const json = async (url, jwt, body, method = 'POST') => {
 }
 
 if (stage === 'credentials') {
-  assert.ok(!fs.existsSync('.env.push.local'), 'preserve existing local env file')
+  assert.ok(!fs.existsSync(frontendEnv), 'preserve existing local env file')
   const users = []
   for (const letter of ['a', 'b']) {
     const password = randomBytes(24).toString('base64url') + 'A1!'
@@ -48,7 +58,7 @@ if (stage === 'credentials') {
   assert.ok(secret?.startsWith('sb_secret_'), 'local modern secret key missing')
   fs.writeFileSync(path.join(runtime, 'edge.env'), `PUSH_ALLOWED_ORIGINS=http://localhost:5173\nPUSH_TEST_A_JWT=${users[0].jwt}\nPUSH_TEST_B_JWT=${users[1].jwt}\nPUSH_TEST_SECRET_KEY=${secret}\nVAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\nVAPID_PRIVATE_KEY=${vapid.getPrivateKey().toString('base64url')}\nVAPID_SUBJECT=mailto:local-test@gym.io\n`)
   // Vite receives only local public values; the existing .env remains untouched.
-  fs.writeFileSync('.env.push.local', `VITE_SUPABASE_URL=${apiUrl}\nVITE_SUPABASE_PUBLISHABLE_KEY=${anon}\nVITE_VAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\n`)
+  fs.writeFileSync(frontendEnv, `VITE_SUPABASE_URL=${apiUrl}\nVITE_SUPABASE_PUBLISHABLE_KEY=${anon}\nVITE_VAPID_PUBLIC_KEY=${vapid.getPublicKey().toString('base64url')}\n`)
   console.log('PASS local synthetic users / isolated credentials (no secret output)')
 } else if (stage === 'bootstrap') {
   assert.match(sql("select to_regclass('public.push_subscriptions') is null and to_regclass('public.treino_sessoes') is null as fresh;"), /t/)
@@ -101,7 +111,8 @@ if (stage === 'credentials') {
     console.log('PASS local Edge Runtime readiness')
   } else if (stage === 'spike') {
     const result = await json(`${apiUrl}/functions/v1/push-compat-spike`, a.jwt, {})
-    assert.equal(result.status, 200, 'real Edge Runtime compatibility spike')
+    const diagnostic=typeof result.data?.code==='string'&&/^[A-Z_]{1,40}$/.test(result.data.code)?result.data.code:'unknown'
+    assert.equal(result.status, 200, `real Edge Runtime compatibility spike (${diagnostic})`)
     assert.equal(result.data.imported, true); assert.equal(result.data.method, 'POST'); assert.ok(result.data.encryptedBytes > 150)
     assert.equal(result.data.contentEncoding, 'aes128gcm'); assert.equal(result.data.hasAuthorization, true); assert.equal(result.data.transmitted, false)
     fs.writeFileSync(path.join(runtime, 'spike-result.json'), JSON.stringify(result.data, null, 2))
@@ -132,6 +143,11 @@ if (stage === 'credentials') {
     assert.ok(concurrent.every((r) => r.status === 200)); assert.equal(concurrent[0].data, concurrent[1].data)
     for (let i = 0; i < 2; i++) assert.equal((await rpc('remover_push_subscription', a.jwt, { p_subscription_id: id })).status, 204)
     assert.equal((await rpc('consultar_push_subscription', a.jwt, { p_endpoint: endpoint })).data, null)
+    // Remove exactly the two additional fixtures created by this stage. A later
+    // frozen-recipient matrix must not mistake them for its own test devices.
+    for (const cleanupId of [second.data, concurrent[0].data]) {
+      assert.equal((await rpc('remover_push_subscription', a.jwt, { p_subscription_id: cleanupId })).status, 204)
+    }
     fs.writeFileSync(path.join(runtime, 'api-result.json'), JSON.stringify({ passed: true, verified: ['JWT', 'multiple_devices', 'idempotence', 'concurrency', 'ownership', 'DML_blocked'] }))
     console.log('PASS Data API: JWT, multiple devices, idempotence, concurrent registration, ownership and blocked DML')
   } else if (stage === 'edge') {

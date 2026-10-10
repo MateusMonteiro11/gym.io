@@ -184,7 +184,7 @@ export async function cadastrar({
 export async function logout() {
   try {
     return await logoutWithPushCleanup({
-      cleanup: pushService.disable,
+      cleanup: () => pushService.disable({ reason: 'logout' }),
       signOut: () => supabase.auth.signOut(),
       onSignedOut: () => { clearSessionPreferences(); setAuthStoragePreference(false) },
     })

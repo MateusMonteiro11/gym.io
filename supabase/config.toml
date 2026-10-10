@@ -50,3 +50,6 @@ enabled = false
 
 [functions.push-test]
 verify_jwt = true
+
+[functions.workout-push]
+verify_jwt = false
