@@ -40,13 +40,26 @@ export function buildConfirmedRestSignal(before,after,items=[]) {
     body:trim(`${value.exercicio} · Série ${value.proxima_serie}${value.serie_total?'/'+value.serie_total:''}`,160),fase:'descanso',pausada:false,
     descanso_iniciado_em:before.descanso_iniciado_em,descanso_termina_em:before.descanso_termina_em}
 }
-export function createWorkoutNotificationAdapter(bridge) {
+export function createWorkoutNotificationAdapter(bridge,issueControls) {
+  let epoch=0
   const safe=(operation)=>{try{Promise.resolve(operation()).catch(()=>{})}catch{/* notification failure never affects the workout */}}
   return {
     accept: (previous,confirmed,items)=>{
+      const version=++epoch
       try {
       if(previous?.id_sessao&&(!confirmed||confirmed.status!=='ativa'||confirmed.id_sessao!==previous.id_sessao))safe(()=>bridge.close(previous.id_sessao))
-      const payload=buildWorkoutProjection(confirmed,items);if(payload)safe(()=>bridge.project(payload))
+      const payload=buildWorkoutProjection(confirmed,items)
+      if(payload) {
+        if(issueControls&&payload.fase==='descanso')safe(async()=>{
+          let controls
+          try{controls=await issueControls(payload)}catch{/* silent fallback */}
+          if(version!==epoch)return
+          // Keep the existing card until unchanged can inspect its Notification.data.
+          if(controls?.version===3)await bridge.controls(controls)
+          else await bridge.project(payload)
+        })
+        else safe(()=>bridge.project(payload))
+      }
       } catch { /* best-effort projection */ }
     },
     restFinished: (before,after,items)=>{try{const payload=buildConfirmedRestSignal(before,after,items);if(payload)safe(()=>bridge.restFinished(payload))}catch{}},

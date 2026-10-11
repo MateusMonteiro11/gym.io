@@ -17,6 +17,7 @@ export function createWorkoutNotificationBridge(browser) {
     }catch{return false}
   }
   return {
+    controls:(payload)=>send({type:'gymio_workout_controls',payload}),
     project:(payload)=>send({type:'gymio_workout_projection',payload}),
     restFinished:(payload)=>send({type:'gymio_workout_rest_finished',payload}),
     close:(sessionId)=>send({type:'gymio_workout_close',sessionId},true),

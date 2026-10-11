@@ -5,6 +5,7 @@ import { useServerNow } from './useServerNow'
 import { useWorkoutTimer } from './useWorkoutTimer'
 import { createWorkoutNotificationAdapter } from '../services/push/workoutProjection.js'
 import { workoutNotificationBridge } from '../services/push/workoutNotificationBridge.js'
+import { issueWorkoutControls } from '../services/push/workoutControlsService.js'
 import {
   classificarReconciliacaoMutacao,
   criarChaveDescansoExpirado,
@@ -91,7 +92,7 @@ export function useTreinoAtivo({
   const [aviso, setAviso] = useState(null)
 
   const sessaoRef = useRef(null)
-  const notificationAdapter = useMemo(() => createWorkoutNotificationAdapter(workoutNotificationBridge), [])
+  const notificationAdapter = useMemo(() => createWorkoutNotificationAdapter(workoutNotificationBridge, issueWorkoutControls), [])
   const notificationItemsRef = useRef(exercicios)
   notificationItemsRef.current = exercicios
   const mutacaoRef = useRef(false)
