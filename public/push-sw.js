@@ -37,6 +37,10 @@ function restIdentity(value) { return `${value.id_sessao}:${value.id_treino_exer
 const CONTROL_KEYS=['generation_id','expires_at','eligible_state','controls_status','controls']
 const CAPABILITY=/^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/
 const ACTION_LABELS={rest_add_15:'+15s',rest_skip:'Pular',rest_pause:'Pausar',rest_resume:'Retomar',rest_continue:'Continuar'}
+function supportedMaxActions() {
+  const value=typeof Notification==='undefined'?undefined:Notification.maxActions
+  return Number.isInteger(value)&&value>0?value:0
+}
 function withoutControls(value) {
   const base={...value,version:2,type:'workout_projection'}
   for(const key of CONTROL_KEYS)delete base[key]
@@ -164,9 +168,10 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
       }
       last=display
       if(decision.closeOthers)await closeCards(tag)
+      const actions=display.version===3?display.controls.slice(0,supportedMaxActions()).map((control)=>({action:control.action,title:ACTION_LABELS[control.action]})):[]
       await registration.showNotification(display.title,{body:display.body,icon:'/push-icon-192.png',badge:'/push-icon-192.png',tag,
         data:{url:`/treinar/${display.id_treino}`,sessionId:display.id_sessao,...(display.version===3?{projection:display}:{})},
-        ...(display.version===3?{actions:display.controls.slice(0,typeof Notification!=='undefined'?Notification.maxActions??2:2).map((control)=>({action:control.action,title:ACTION_LABELS[control.action]}))}:{}),
+        ...(actions.length?{actions}:{}),
         silent:!decision.alert,renotify:Boolean(decision.alert),...(decision.alert?{vibrate:[200,100,200]}:{})})
   }
   const closeGeneration=async(id)=>{
@@ -231,12 +236,13 @@ self.addEventListener('notificationclick', (event) => {
   const route=event.notification.data?.url
   const workoutRoute=typeof route==='string'&&/^\/treinar\/[1-9][0-9]*$/.test(route)&&decimal(route.slice(9))&&UUID.test(event.notification.data?.sessionId??'')
   if (event.action || (route!=='/dashboard'&&!workoutRoute)) return
+  const destination=workoutRoute&&supportedMaxActions()===0?`${route}?from=push`:route
   event.waitUntil((async () => {
     const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
     const current = windows.find((client) => {
       try { return new URL(client.url).origin === self.location.origin } catch { return false }
     })
-    if (current) { await current.navigate(route); await current.focus() }
-    else await self.clients.openWindow(route)
+    if (current) { await current.navigate(destination); await current.focus() }
+    else await self.clients.openWindow(destination)
   })())
 })

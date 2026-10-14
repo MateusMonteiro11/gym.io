@@ -20,6 +20,7 @@ export default function WorkoutTimer({
   proximaSerie,
   onAdicionarTempo,
   onPularDescanso,
+  restControls,
 }) {
   const reducedMotion = useReducedMotion()
   const finalizado = status === 'finalizado'
@@ -81,6 +82,7 @@ export default function WorkoutTimer({
             </p>
           )}
 
+          {restControls ?? <>
           <div className="mt-5 grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -111,6 +113,7 @@ export default function WorkoutTimer({
             <i className="fa-solid fa-forward" />
             Pular descanso
           </button>
+          </>}
         </>
       )}
 

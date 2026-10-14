@@ -7,6 +7,7 @@ import WorkoutHeader from '../components/WorkoutHeader'
 import CurrentExerciseCard from '../components/CurrentExerciseCard'
 import WorkoutProgress from '../components/WorkoutProgress'
 import WorkoutTimer from '../components/WorkoutTimer'
+import WorkoutQuickControls from '../components/WorkoutQuickControls.js'
 import WorkoutActions from '../components/WorkoutActions'
 import WorkoutInfo from '../components/WorkoutInfo'
 import PreWorkoutModal from '../components/PreWorkoutModal'
@@ -18,6 +19,8 @@ import { useAuth } from '../hooks/useAuth'
 import { buscarTreinoCompleto } from '../services/treinos/treinosService'
 
 import { useTreinoAtivo } from '../hooks/useTreinoAtivo'
+import { useQuickWorkoutControls } from '../hooks/useQuickWorkoutControls.js'
+import { isPushEntry } from '../services/push/quickWorkoutControls.js'
 import { ordemSecaoParaApresentacao } from '../hooks/treinoSessaoControllerUtils'
 import { logError } from '../utils/errorMessages'
 
@@ -87,6 +90,16 @@ export default function TreinoPlayer() {
 
   })
 
+  const fromPush = isPushEntry(location.search)
+  const quickControls = useQuickWorkoutControls({
+    fromPush, userId: usuario?.id, workoutId: id, scopeKey: location.key,
+    player: treinoAtivo,
+  })
+  const salvando = treinoAtivo.salvando || quickControls.busy
+  const feedbackControle = quickControls.feedback
+    ? [treinoAtivo.erro || treinoAtivo.aviso, quickControls.feedback].filter(Boolean).join(' ')
+    : treinoAtivo.erro
+
   if (loading || !usuario?.id) {
     return <PageLoadingBoundary loading loadingMessage="Carregando treino..." />
   }
@@ -131,13 +144,13 @@ export default function TreinoPlayer() {
           nomeTreino={treino.nome}
           status={treinoAtivo.status}
           onSair={treinoAtivo.cancelarTreino}
-          salvando={treinoAtivo.salvando}
+          salvando={salvando}
         />
 
         <SessionFeedback
-          erro={treinoAtivo.erro}
+          erro={feedbackControle}
           aviso={treinoAtivo.aviso}
-          onClose={treinoAtivo.limparFeedback}
+          onClose={() => { treinoAtivo.limparFeedback(); quickControls.clearFeedback() }}
         />
 
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3 lg:items-start lg:gap-6">
@@ -160,7 +173,7 @@ export default function TreinoPlayer() {
               status={treinoAtivo.status}
               tempoDescanso={treinoAtivo.tempoDescanso}
               onConcluirSerie={treinoAtivo.concluirSerie}
-              processando={treinoAtivo.salvando}
+              processando={salvando}
               pausado={treinoAtivo.pausado}
             />
           </div>
@@ -186,13 +199,16 @@ export default function TreinoPlayer() {
               onToggle={treinoAtivo.workoutTimer.toggle}
               onAdicionarTempo={treinoAtivo.descansoTimer.adicionarTempo}
               onPularDescanso={treinoAtivo.pularDescanso}
-              disabled={treinoAtivo.salvando}
+              disabled={salvando}
+              restControls={fromPush ? (quickControls.state ? (
+                <WorkoutQuickControls state={quickControls.state} busy={salvando} onAction={quickControls.execute} />
+              ) : false) : undefined}
             />
 
             <WorkoutActions
                 status={treinoAtivo.status}
                 finalizado={treinoAtivo.finalizado}
-                salvando={treinoAtivo.salvando}
+                salvando={salvando}
                 pausado={treinoAtivo.pausado}
 
                 onIniciar={() => treinoAtivo.iniciarTreino(descansoPadrao)}
@@ -226,7 +242,7 @@ export default function TreinoPlayer() {
             setModalInicialOpen(false)
             navigate('/treinar')
           }}
-          processando={treinoAtivo.salvando}
+          processando={salvando}
           onStart={async (descanso) => {
             const iniciou = await treinoAtivo.iniciarTreino(descanso)
             if (iniciou) setModalInicialOpen(false)
@@ -235,7 +251,7 @@ export default function TreinoPlayer() {
 
         <WorkoutSessionRecoveryModal
           sessao={treinoAtivo.sessaoConflitante}
-          processando={treinoAtivo.salvando}
+          processando={salvando}
           onContinuar={() => {
             navigate(`/treinar/${treinoAtivo.sessaoConflitante.id_treino}`, {
               replace: true,

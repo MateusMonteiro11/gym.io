@@ -32,7 +32,7 @@ function worker(shared={},sendAction=async()=>({result:'stale'})) {
   },closeGeneration:async(g)=>markers.set(`generation:${g}`,true),generationClosed:async(g)=>!!markers.get(`generation:${g}`),
   actionAllowed:async(p)=>{const current=markers.get('projection');return !markers.get('disabled')&&!markers.get(`closed:${p.id_sessao}`)&&!markers.get(`generation:${p.generation_id}`)&&current?.session===p.id_sessao&&current.revision===p.revisao&&current.generation===p.generation_id},
   close:async(s)=>markers.set(`closed:${s}`,true),disable:async()=>markers.set('disabled',true),enable:async()=>markers.delete('disabled')}
-  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(t,f)=>handlers[t]=f},URL})
+  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(t,f)=>handlers[t]=f},URL,Notification:{maxActions:2}})
   vm.runInContext(script,context)
   const processor=vm.runInContext('createWorkoutProcessor',context)({store,registration,sendAction,now:()=>now})
   return {processor,shown,cards,markers,handlers,valid:vm.runInContext('validControls',context)}
