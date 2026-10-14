@@ -41,6 +41,36 @@ function supportedMaxActions() {
   const value=typeof Notification==='undefined'?undefined:Notification.maxActions
   return Number.isInteger(value)&&value>0?value:0
 }
+function exposedNotificationOption(name) {
+  return typeof Notification!=='undefined'&&Boolean(Notification.prototype)&&name in Notification.prototype
+}
+// One visual surface for every validated wire projection. No countdown/state inference.
+function sessionCardPresentation(value,needsRefresh=false) {
+  const series=`${value.proxima_serie}${value.serie_total?`/${value.serie_total}`:''}`
+  let body
+  if(needsRefresh)body='Abra o treino para atualizar'
+  else if(value.pausada)body=`${value.fase==='descanso'?'Descanso':'Treino'} pausado · ${value.exercicio}\nSérie ${series}`
+  else if(value.type==='workout_rest_finished'||value.eligible_state==='rest_finished'||
+    value.fase==='descanso'&&Date.parse(value.agora_servidor)>=Date.parse(value.descanso_termina_em))
+    body=`Descanso concluído\n${value.exercicio} · Série ${series}`
+  else if(value.fase==='descanso') {
+    const deadline=new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(value.descanso_termina_em))
+    body=`${value.exercicio} · Próxima série ${series}\nDescanso até ${deadline}`
+  } else body=`${value.exercicio} · Série ${series}`
+  return {title:'Gym.io · Treino',body:Array.from(body).slice(0,160).join('')}
+}
+function projectionOrder(value) {
+  return {session:value.id_sessao,revision:value.revisao,observed:value.agora_servidor,started:value.iniciada_em}
+}
+function validCardOrder(value) {
+  return value&&UUID.test(value.session??'')&&decimal(value.revision,true)&&stamp(value.observed)&&stamp(value.started)
+}
+function precedesCard(value,existing) {
+  if(value.id_sessao!==existing.session)
+    return `${new Date(value.iniciada_em).toISOString()}:${value.id_sessao}`<=`${new Date(existing.started).toISOString()}:${existing.session}`
+  return BigInt(value.revisao)<BigInt(existing.revision)||
+    value.revisao===existing.revision&&Date.parse(value.agora_servidor)<Date.parse(existing.observed)
+}
 function withoutControls(value) {
   const base={...value,version:2,type:'workout_projection'}
   for(const key of CONTROL_KEYS)delete base[key]
@@ -104,6 +134,7 @@ function createWorkoutStore(factory) {
     })
   }
   return {
+    current: ()=>transaction(async(_store,get)=>get('projection')),
     decide: (value,alert)=>transaction(async(store,get)=>{
       const [enabled,closed,current,receipt,generationClosed]=await Promise.all([get('enabled'),get(`closed:${value.id_sessao}`),get('projection'),get(`receipt:${restIdentity(value)}`),
         value.generation_id?get(`generation:${value.generation_id}`):false])
@@ -128,80 +159,153 @@ function createWorkoutStore(factory) {
       const [enabled,closed,generation,current]=await Promise.all([get('enabled'),get(`closed:${value.id_sessao}`),get(`generation:${value.generation_id}`),get('projection')])
       return enabled!==false&&!closed&&!generation&&current?.session===value.id_sessao&&current.revision===value.revisao&&current.generation===value.generation_id
     }),
-    disable: (logout)=>transaction(async(store,get)=>{store.put(false,'enabled');const current=await get('projection');if(logout&&current)store.put(true,`closed:${current.session}`)}),
+    disable: (_logout)=>transaction(async(store,get)=>{store.put(false,'enabled');const current=await get('projection');if(current)store.put(true,`closed:${current.session}`)}),
     enable: ()=>transaction(async(store)=>{store.put(true,'enabled')}),
   }
 }
 function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction,now=()=>Date.now()}) {
-  let queue=Promise.resolve();let disabled=false;let last=null;const closed=new Set()
-  const closedGenerations=new Set()
+  let queue=Promise.resolve(),disabled=false,last=null,coalescingFailed=false,publicationSequence=0
+  const closed=new Set(),closedGenerations=new Set()
   const serialized=(fn)=>{const result=queue.then(fn);queue=result.catch(()=>{});return result}
-  const closeCards=async(except)=>{
-    const cards=await registration.getNotifications?.() ?? []
-    for(const card of cards)if(card.tag?.startsWith('gymio-workout-')&&card.tag!==except)card.close()
+  const isCard=(card)=>card.tag?.startsWith('gymio-workout-')
+  const enumerate=async(tag)=>{
+    if(typeof registration.getNotifications!=='function')throw new Error('notification_enumeration_unavailable')
+    return registration.getNotifications(tag?{tag}:{})
   }
-  const project=async(value,alert=false)=>{
-      if(disabled||closed.has(value.id_sessao))return
-      if(value.generation_id&&closedGenerations.has(value.generation_id))return
-      let decision,storageAvailable=true
-      try{decision=await store.decide(value,alert)}catch{
-        storageAvailable=false
-        // Storage failure can only update a known live projection silently.
-        if(!last||last.id_sessao!==value.id_sessao||BigInt(value.revisao)<BigInt(last.revisao))return
-        decision={show:true,alert:false}
-      }
-      if(!decision.show)return
-      const tag=`gymio-workout-${value.id_sessao}`
-      let display=value
-      if(value.version===3) {
-        // All checks occur inside this processor's queue, before replacement.
-        if(!storageAvailable||!validControls(value)||Date.parse(value.expires_at)<=now())display=withoutControls(value)
-        else if(value.controls_status==='unchanged') {
-          const cards=await registration.getNotifications?.({tag})??[]
-          const current=cards.find((card)=>card.tag===tag)?.data?.projection
-          if(current&&validControls(current)&&current.controls_status==='emitted'&&current.id_sessao===value.id_sessao&&
-            current.generation_id===value.generation_id&&current.revisao===value.revisao&&current.expires_at===value.expires_at&&
-            Date.parse(current.expires_at)>now()&&!closedGenerations.has(current.generation_id)) {
-            display={...value,controls_status:'emitted',controls:current.controls}
-          } else display=withoutControls(value)
-        }
-      }
-      last=display
-      if(decision.closeOthers)await closeCards(tag)
-      const actions=display.version===3?display.controls.slice(0,supportedMaxActions()).map((control)=>({action:control.action,title:ACTION_LABELS[control.action]})):[]
-      await registration.showNotification(display.title,{body:display.body,icon:'/push-icon-192.png',badge:'/push-icon-192.png',tag,
-        data:{url:`/treinar/${display.id_treino}`,sessionId:display.id_sessao,...(display.version===3?{projection:display}:{})},
-        ...(actions.length?{actions}:{}),
-        silent:!decision.alert,renotify:Boolean(decision.alert),...(decision.alert?{vibrate:[200,100,200]}:{})})
+  const cardOrder=(card)=>{
+    if(validCardOrder(card.data?.publication))return card.data.publication
+    const projection=card.data?.projection
+    if(validControls(projection)||validWorkout(projection,true)||validWorkout(projection))return projectionOrder(projection)
+    return null
   }
-  const closeGeneration=async(id)=>{
-    closedGenerations.add(id);try{await store.closeGeneration?.(id)}catch{}
-    const cards=await registration.getNotifications?.()??[]
-    for(const card of cards)if(card.data?.projection?.generation_id===id)card.close()
+  const context=async(value)=>{
+    const tag=`gymio-workout-${value.id_sessao}`
+    const tagged=await enumerate(tag),cards=await enumerate()
+    for(const card of [...tagged,...cards].filter(isCard)) {
+      const order=cardOrder(card)
+      if(!validCardOrder(order)||precedesCard(value,order))return null
+    }
+    return {cards,tag}
+  }
+  const closeCards=async()=>{
+    try{for(const card of (await enumerate()).filter(isCard))card.close();return true}catch{return false}
+  }
+  // Native coalescing is observed, never inferred from UA or the exposed tag API.
+  const publish=async(value,display,before,alert=false,needsRefresh=false)=>{
+    const {cards,tag}=before,matching=cards.filter(card=>card.tag===tag)
+    const id=`${now()}-${++publicationSequence}-${Math.random().toString(36).slice(2)}`
+    const publication={...projectionOrder(value),id}
+    const actions=!needsRefresh&&display.version===3?display.controls.slice(0,supportedMaxActions()).map(control=>({action:control.action,title:ACTION_LABELS[control.action]})):[]
+    const visual=sessionCardPresentation(display,needsRefresh)
+    try {
+      // unchanged has already copied authorized tokens from the current card.
+      if(matching.length>1)coalescingFailed=true
+      if(coalescingFailed)for(const card of matching)card.close()
+      for(const card of cards.filter(card=>isCard(card)&&card.tag!==tag))card.close()
+      await registration.showNotification(visual.title,{body:visual.body,icon:'/push-icon-192.png',badge:'/push-icon-192.png',tag,
+        data:{url:`/treinar/${value.id_treino}`,sessionId:value.id_sessao,publication,
+          ...(!needsRefresh&&display.version===3?{projection:display}:{})},
+        ...(actions.length?{actions}:{}),silent:!alert,renotify:Boolean(alert&&exposedNotificationOption('renotify')),
+        ...(alert&&exposedNotificationOption('vibrate')?{vibrate:[200,100,200]}:{})})
+    }catch{return {published:false,verified:false}}
+    try {
+      const tagged=await enumerate(tag),after=await enumerate(),fresh=after.find(card=>card.tag===tag&&card.data?.publication?.id===id)
+      if(!fresh)return {published:true,verified:false}
+      // Another actor's newer card must survive; never close it to keep our own.
+      if([...tagged,...after].some(card=>{
+        if(!isCard(card)||card.data?.publication?.id===id)return false
+        const order=cardOrder(card)
+        return !validCardOrder(order)||precedesCard(value,order)
+      })) {
+        fresh.close();return {published:false,verified:false}
+      }
+      if(after.some(card=>card.tag===tag&&card!==fresh))coalescingFailed=true
+      for(const card of after)if(isCard(card)&&card!==fresh)card.close()
+      const remaining=(await enumerate()).filter(isCard)
+      return {published:true,verified:remaining.length===1&&remaining[0].data?.publication?.id===id}
+    }catch{return {published:true,verified:false}}
+  }
+  const project=async(value,requestAlert=false)=>{
+    if(!(validWorkout(value,true)||validWorkout(value)||validControls(value)))return {published:false,verified:false}
+    if(disabled||closed.has(value.id_sessao)||value.generation_id&&closedGenerations.has(value.generation_id))return {published:false,verified:false}
+    let before
+    try{before=await context(value)}catch{return {published:false,verified:false}}
+    if(!before)return {published:false,verified:false}
+    const confirmedEnd=validWorkout(value)||validControls(value)&&value.eligible_state==='rest_finished'
+    const alert=Boolean(requestAlert&&confirmedEnd)
+    let decision,storageAvailable=true
+    try{decision=await store.decide(value,alert)}catch{
+      storageAvailable=false
+      if(!last||last.id_sessao!==value.id_sessao||precedesCard(value,projectionOrder(last)))return {published:false,verified:false}
+      decision={show:true,alert:false}
+    }
+    if(!decision.show)return {published:false,verified:false}
+    let display=value
+    if(value.version===3) {
+      if(!storageAvailable||Date.parse(value.expires_at)<=now())display=withoutControls(value)
+      else if(value.controls_status==='unchanged') {
+        const current=before.cards.find(card=>card.tag===before.tag&&validControls(card.data?.projection)&&
+          card.data.projection.controls_status==='emitted'&&card.data.projection.id_sessao===value.id_sessao&&
+          card.data.projection.generation_id===value.generation_id&&card.data.projection.revisao===value.revisao&&
+          card.data.projection.expires_at===value.expires_at&&Date.parse(card.data.projection.expires_at)>now()&&
+          !closedGenerations.has(card.data.projection.generation_id))?.data.projection
+        display=current?{...value,controls_status:'emitted',controls:current.controls}:withoutControls(value)
+      }
+    }
+    const result=await publish(value,display,before,Boolean(decision.alert))
+    if(result.published)last=display
+    return result
+  }
+  // Generation invalidation removes bearers, not the logical session card.
+  const invalidateGeneration=async(value,refresh)=>{
+    const id=value.generation_id;closedGenerations.add(id)
+    try{await store.closeGeneration?.(id)}catch{}
+    if(last?.generation_id===id)last=withoutControls(last)
+    if(!refresh)return
+    let cards=[]
+    try{
+      cards=await enumerate()
+      const affected=cards.filter(card=>card.data?.projection?.generation_id===id)
+      if(!affected.length)return
+      const before=await context(value)
+      if(before&&!disabled&&!closed.has(value.id_sessao)) {
+        const result=await publish(value,withoutControls(value),before,false,true)
+        if(result.published)return
+      }
+      // No newer/indeterminate card is replaced; remove only invalid-generation cards.
+      for(const card of affected)card.close()
+    }catch{/* no retry and no assumption that the system UI was updated */}
   }
   return {
     project:(value,alert=false)=>serialized(()=>project(value,alert)),
     action:(notification,action)=>serialized(async()=>{
       const value=notification.data?.projection
       if(disabled||!validControls(value)||value.controls_status!=='emitted'||closed.has(value.id_sessao)||closedGenerations.has(value.generation_id))return
-      try{
-        if(store.actionAllowed ? !await store.actionAllowed(value) : await store.generationClosed?.(value.generation_id))return
-      }catch{return}
-      if(Date.parse(value.expires_at)<=now()){await closeGeneration(value.generation_id);return}
-      const control=value.controls.find((control)=>control.action===action);if(!control)return
+      try{if(store.actionAllowed?!await store.actionAllowed(value):await store.generationClosed?.(value.generation_id))return}catch{return}
+      if(Date.parse(value.expires_at)<=now()){await invalidateGeneration(value,true);return}
+      const control=value.controls.find(control=>control.action===action);if(!control)return
       let result
-      try{result=await sendAction(control.capability)}catch{return} // ambiguous: no retry or success assumption
+      try{result=await sendAction(control.capability)}catch{return}
       if(disabled||closed.has(value.id_sessao))return
       if(result.result==='ok') {
         const projection=result.projection
         if(!(validWorkout(projection,true)||validControls(projection))||projection.id_sessao!==value.id_sessao||BigInt(projection.revisao)<=BigInt(value.revisao))return
-        await closeGeneration(value.generation_id)
+        await invalidateGeneration(value,false)
         await project(projection,false)
-      } else if(['stale','expired','already_used','unavailable'].includes(result.result))await closeGeneration(value.generation_id)
+      }else if(['stale','expired','already_used','unavailable'].includes(result.result))await invalidateGeneration(value,true)
     }),
-    close: (id)=>serialized(async()=>{closed.add(id);try{await store.close(id)}catch{};const cards=await registration.getNotifications?.() ?? [];for(const card of cards)if(card.tag===`gymio-workout-${id}`)card.close()}),
-    disable: (logout)=>{disabled=true;return serialized(async()=>{if(logout&&last)closed.add(last.id_sessao);try{await store.disable(logout)}catch{};await closeCards()})},
-    enable: ()=>serialized(async()=>{await store.enable();disabled=false}),
+    close:(id)=>serialized(async()=>{
+      closed.add(id);try{await store.close(id)}catch{}
+      try{for(const card of await enumerate())if(card.tag===`gymio-workout-${id}`)card.close()}catch{}
+    }),
+    disable:(logout)=>{disabled=true;return serialized(async()=>{
+      const ids=new Set(last?[last.id_sessao]:[])
+      try{for(const card of (await enumerate()).filter(isCard)){if(UUID.test(card.data?.sessionId??''))ids.add(card.data.sessionId);card.close()}}catch{}
+      for(const id of ids){closed.add(id);try{await store.close(id)}catch{}}
+      try{await store.disable(logout)}catch{}
+      last=null;await closeCards()
+    })},
+    enable:()=>serialized(async()=>{await store.enable();disabled=false}),
   }
 }
 const workoutProcessor=createWorkoutProcessor({store:createWorkoutStore(self.indexedDB),registration:self.registration})

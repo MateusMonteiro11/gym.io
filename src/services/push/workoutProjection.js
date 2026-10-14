@@ -44,6 +44,7 @@ export function createWorkoutNotificationAdapter(bridge,issueControls) {
   let epoch=0
   const safe=(operation)=>{try{Promise.resolve(operation()).catch(()=>{})}catch{/* notification failure never affects the workout */}}
   return {
+    // Confirmed Session V2 -> update the one session card, never an event feed.
     accept: (previous,confirmed,items)=>{
       const version=++epoch
       try {
@@ -62,6 +63,7 @@ export function createWorkoutNotificationAdapter(bridge,issueControls) {
       }
       } catch { /* best-effort projection */ }
     },
+    // Update that same card with attention only after server-confirmed rest end.
     restFinished: (before,after,items)=>{try{const payload=buildConfirmedRestSignal(before,after,items);if(payload)safe(()=>bridge.restFinished(payload))}catch{}},
   }
 }

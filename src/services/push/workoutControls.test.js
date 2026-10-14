@@ -32,7 +32,7 @@ function worker(shared={},sendAction=async()=>({result:'stale'})) {
   },closeGeneration:async(g)=>markers.set(`generation:${g}`,true),generationClosed:async(g)=>!!markers.get(`generation:${g}`),
   actionAllowed:async(p)=>{const current=markers.get('projection');return !markers.get('disabled')&&!markers.get(`closed:${p.id_sessao}`)&&!markers.get(`generation:${p.generation_id}`)&&current?.session===p.id_sessao&&current.revision===p.revisao&&current.generation===p.generation_id},
   close:async(s)=>markers.set(`closed:${s}`,true),disable:async()=>markers.set('disabled',true),enable:async()=>markers.delete('disabled')}
-  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(t,f)=>handlers[t]=f},URL,Notification:{maxActions:2}})
+  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(t,f)=>handlers[t]=f},URL,Notification:{maxActions:2,prototype:{renotify:false,vibrate:[]}}})
   vm.runInContext(script,context)
   const processor=vm.runInContext('createWorkoutProcessor',context)({store,registration,sendAction,now:()=>now})
   return {processor,shown,cards,markers,handlers,valid:vm.runInContext('validControls',context)}
@@ -86,8 +86,11 @@ test('action sends only bearer, confirms silently, closes generation without ses
   await w.processor.project(unchanged());assert.equal(w.shown.length,2)
   for(const result of ['stale','expired','already_used','unavailable']){
     const stale=worker({},async()=>({result}));await stale.processor.project(payload);await stale.processor.action(stale.cards.at(-1),'rest_skip')
-    assert.equal(stale.cards.at(-1).closed,true);assert.equal(stale.markers.get(`closed:${id}`),undefined)
-    await stale.processor.project(next);assert.equal(stale.shown.length,2)
+    assert.equal(stale.cards.at(-1).closed,false);assert.equal(stale.markers.get(`closed:${id}`),undefined)
+    assert.equal(stale.shown.at(-1).options.body,'Abra o treino para atualizar')
+    assert.equal(stale.cards.at(-1).data.projection,undefined)
+    assert.equal(stale.shown.at(-1).options.actions,undefined)
+    await stale.processor.project(next);assert.equal(stale.shown.length,3)
   }
 })
 test('offline makes one attempt and cannot confirm; logout blocks late action and projection',async()=>{

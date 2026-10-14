@@ -16,7 +16,13 @@ const payload = { ...buildWorkoutProjection(session, [{ id_treino_exercicio: '2'
   controls: ['rest_add_15', 'rest_skip', 'rest_pause'].map((action, i) => ({ action, capability: token(i + 1) })) }
 function worker(notification, windows = []) {
   const handlers = {}, shown = [], opened = [], sent = []
-  const registration = { showNotification: async (title, options) => shown.push({ title, options }) }
+  const cards = []
+  const registration = { getNotifications: async (options = {}) => cards.filter(c => !c.closed && (!options.tag || c.tag === options.tag)),
+    showNotification: async (title, options) => {
+      for (const c of cards) if (c.tag === options.tag) c.closed = true
+      cards.push({ tag: options.tag, data: options.data, closed: false, close() { this.closed = true } })
+      shown.push({ title, options })
+    } }
   const context = vm.createContext({ URL, ...(notification === undefined ? {} : { Notification: notification }),
     self: { registration, location: { origin: 'https://gymio.example' }, addEventListener: (type, cb) => handlers[type] = cb,
       clients: { matchAll: async () => windows, openWindow: async (route) => opened.push(route) } } })

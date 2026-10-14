@@ -12,8 +12,11 @@ const finished={...session,fase:'execucao',revisao:'4',descanso_iniciado_em:null
 const script=fs.readFileSync(new URL('../../../public/push-sw.js',import.meta.url),'utf8')
 function worker(store) {
   const shown=[],cards=[],handlers={},closed=[]
-  const registration={showNotification:async(title,options)=>{shown.push({title,options});cards.push({tag:options.tag,close:()=>closed.push(options.tag)})},getNotifications:async()=>cards}
-  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(type,fn)=>handlers[type]=fn,clients:{matchAll:async()=>[],openWindow:async()=>{}}},URL})
+  const registration={showNotification:async(title,options)=>{
+    for(const card of cards)if(!card.closed&&card.tag===options.tag)card.close()
+    shown.push({title,options});cards.push({tag:options.tag,data:options.data,closed:false,close(){this.closed=true;closed.push(options.tag)}})
+  },getNotifications:async(options={})=>cards.filter(card=>!card.closed&&(!options.tag||card.tag===options.tag))}
+  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(type,fn)=>handlers[type]=fn,clients:{matchAll:async()=>[],openWindow:async()=>{}}},URL,Notification:{prototype:{renotify:false,vibrate:[]}}})
   vm.runInContext(script,context)
   const processor=vm.runInContext('createWorkoutProcessor',context)({store,registration})
   return {processor,shown,closed,handlers,valid:vm.runInContext('validWorkout',context)}
