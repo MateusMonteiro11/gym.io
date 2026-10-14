@@ -1,0 +1,1706 @@
+{
+  "phase": "V3.2-C TEST MATRIX",
+  "verdict": "V3.2-C TEST MATRIX REPROVADA",
+  "runtimeRoot": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-4d6148815afb465d9f16e8d5f695136d",
+  "project": "gymio-workout-actions-local",
+  "ports": {
+    "api": 55451,
+    "db": 55452,
+    "shadow": 55450
+  },
+  "bootstrap": {
+    "order": [
+      "legacy fixture",
+      "20260821190134_workout_session_persistence_expand.sql",
+      "20260823003337_exercise_memory_read.sql",
+      "20261007215944_push_foundation.sql",
+      "20261010183821_workout_notifications.sql"
+    ],
+    "extensions": {
+      "pg_net": "0.20.0",
+      "pg_cron": "1.6.4",
+      "supabase_vault": "0.3.1"
+    },
+    "cronInactive": true,
+    "users": [
+      {
+        "id": "537fb095-eeaa-4fc7-9036-41e55c004492",
+        "email": "actions-a-1791745985349@local.invalid"
+      },
+      {
+        "id": "8af29ae1-5a67-40be-9217-c2f418198e52",
+        "email": "actions-b-1791745986039@local.invalid"
+      }
+    ]
+  },
+  "containers": [
+    {
+      "name": "supabase_edge_runtime_gymio-workout-actions-local",
+      "id": "6f1cd2619802e2efa7efe4e47a7962b1263b8fa48602cb170dd6a6fa056cabc2",
+      "image": "public.ecr.aws/supabase/edge-runtime:v1.77.4",
+      "imageId": "sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8",
+      "digests": [
+        "public.ecr.aws/supabase/edge-runtime@sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8"
+      ],
+      "project": "gymio-workout-actions-local",
+      "workdir": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-4d6148815afb465d9f16e8d5f695136d"
+    },
+    {
+      "name": "supabase_rest_gymio-workout-actions-local",
+      "id": "8381cc4796326ac21ca24a00704e5cfe2b2ff59a78e4fc1b39bf9c915402eed2",
+      "image": "public.ecr.aws/supabase/postgrest:v16.4",
+      "imageId": "sha256:d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df",
+      "digests": [
+        "public.ecr.aws/supabase/postgrest@sha256:d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df"
+      ],
+      "project": "gymio-workout-actions-local",
+      "workdir": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-4d6148815afb465d9f16e8d5f695136d"
+    },
+    {
+      "name": "supabase_realtime_gymio-workout-actions-local",
+      "id": "3f62ca4d7d650826b4bd3837f2503e63362f1ee764bddc96c3538fbf363c6b76",
+      "image": "public.ecr.aws/supabase/realtime:v2.140.10",
+      "imageId": "sha256:f704b3222e3c772610865e016153d606a3f94f0a55a7548a903b3f6d7f3f8270",
+      "digests": [
+        "public.ecr.aws/supabase/realtime@sha256:f704b3222e3c772610865e016153d606a3f94f0a55a7548a903b3f6d7f3f8270"
+      ],
+      "project": "gymio-workout-actions-local",
+      "workdir": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-4d6148815afb465d9f16e8d5f695136d"
+    },
+    {
+      "name": "supabase_auth_gymio-workout-actions-local",
+      "id": "f73c4b53fcc3b51adacd89bb5e3cffce1bf7cf3e9ab85d6f651cfe1e228a31f8",
+      "image": "public.ecr.aws/supabase/gotrue:v2.197.0",
+      "imageId": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+      "digests": [
+        "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+      ],
+      "project": "gymio-workout-actions-local",
+      "workdir": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-4d6148815afb465d9f16e8d5f695136d"
+    },
+    {
+      "name": "supabase_kong_gymio-workout-actions-local",
+      "id": "1811d2bbf170878c873c9e3aaf751760f88dc9b9e810dddf3f1a15a87a4dd0c0",
+      "image": "public.ecr.aws/supabase/kong:2.8.1",
+      "imageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "digests": [
+        "public.ecr.aws/supabase/kong@sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d"
+      ],
+      "project": "gymio-workout-actions-local",
+      "workdir": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-4d6148815afb465d9f16e8d5f695136d"
+    },
+    {
+      "name": "supabase_db_gymio-workout-actions-local",
+      "id": "9d6c762df2dce062958355b4a0147c37f8aca39b6066e21726c6e136c8f4dbb4",
+      "image": "public.ecr.aws/supabase/postgres:17.6.1.113",
+      "imageId": "sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e",
+      "digests": [
+        "public.ecr.aws/supabase/postgres@sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e"
+      ],
+      "project": "gymio-workout-actions-local",
+      "workdir": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-4d6148815afb465d9f16e8d5f695136d"
+    }
+  ],
+  "versions": {
+    "docker": "29.8.1",
+    "postgres": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+    "node": "v22.15.1",
+    "npm": "10.9.2",
+    "cli": "2.120.0",
+    "supabaseJs": "2.106.0",
+    "webPush": "3.6.7",
+    "fakeIndexedDB": "6.2.5",
+    "edge": {
+      "deno": "supabase-edge-runtime-1.77.4 (compatible with Deno v2.1.4)",
+      "v8": "11.6.189.12",
+      "typescript": "5.1.6"
+    },
+    "extensions": [
+      {
+        "name": "pg_cron",
+        "owner": "supabase_admin",
+        "schema": "pg_catalog",
+        "version": "1.6.4"
+      },
+      {
+        "name": "pg_net",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "version": "0.20.0"
+      },
+      {
+        "name": "supabase_vault",
+        "owner": "supabase_admin",
+        "schema": "vault",
+        "version": "0.3.1"
+      }
+    ]
+  },
+  "failure": {
+    "classification": "BLOCKER migration C rejected by PostgreSQL parser",
+    "sqlstate": "42601",
+    "message": "syntax error at end of input",
+    "statement": "do $assert$",
+    "statementLine": 45,
+    "fileLine": 315,
+    "file": "supabase/migrations/20261011021351_workout_notification_actions.sql",
+    "schemaAbsent": true,
+    "functionsAbsent": true,
+    "attempts": 1,
+    "noRepair": true,
+    "doBlockFileLine": 271,
+    "ifCaseFileLine": 314
+  },
+  "cors": {
+    "scope": "diagnostic only after failed strict-CORS assertion; not a passing matrix",
+    "results": [
+      {
+        "label": "GET_allowed",
+        "status": 405,
+        "acao": "*",
+        "acam": null,
+        "result": "unavailable"
+      },
+      {
+        "label": "POST_allowed",
+        "status": 503,
+        "acao": "*",
+        "acam": null,
+        "result": "unavailable"
+      },
+      {
+        "label": "POST_other",
+        "status": 403,
+        "acao": "*",
+        "acam": null,
+        "result": "unavailable"
+      },
+      {
+        "label": "OPTIONS_allowed",
+        "status": 200,
+        "acao": "*",
+        "acam": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT",
+        "result": null
+      },
+      {
+        "label": "OPTIONS_other",
+        "status": 200,
+        "acao": "*",
+        "acam": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT",
+        "result": null
+      }
+    ]
+  },
+  "catalogState": {
+    "cron": [
+      {
+        "name": "gymio-workout-push",
+        "active": false,
+        "schedule": "10 seconds"
+      }
+    ],
+    "users": 2,
+    "Cschema": false,
+    "profiles": 2,
+    "Cfunctions": 0,
+    "outboundRequests": 0,
+    "outboundResponses": 0
+  },
+  "passed": {
+    "npmTests": {
+      "pass": 80,
+      "fail": 0,
+      "skipped": 0
+    },
+    "build": {
+      "pass": true,
+      "warning": "chunk >500 kB",
+      "envDir": "temporary C root",
+      "output": "temporary C root"
+    },
+    "frozenDeno": [
+      "push-test",
+      "workout-push",
+      "workout-action",
+      "actions-integration"
+    ],
+    "indexedDB": [
+      "C current-card/restart/absent-card/logout/no-token",
+      "B cross-worker receipt/restart/logout/terminal/order"
+    ],
+    "Aapi": {
+      "passed": true,
+      "verified": [
+        "JWT",
+        "multiple_devices",
+        "idempotence",
+        "concurrency",
+        "ownership",
+        "DML_blocked"
+      ]
+    },
+    "Aedge": {
+      "passed": true,
+      "runtime": {
+        "deno": "supabase-edge-runtime-1.77.4 (compatible with Deno v2.1.4)",
+        "v8": "11.6.189.12",
+        "typescript": "5.1.6"
+      },
+      "externalPushRequests": 0,
+      "encryptedBytes": 219,
+      "verified": [
+        "JWT",
+        "ownership",
+        "payload",
+        "success",
+        "rate_limit",
+        "CORS",
+        "SSRF",
+        "encrypted_transport",
+        "404",
+        "410",
+        "temporary_error",
+        "transport_timeout",
+        "atomic_rate_limit",
+        "concurrent_refresh",
+        "modern_secret_key",
+        "legacy_service_role",
+        "secret_not_bearer"
+      ]
+    },
+    "AnegativeACLFixtures": 7,
+    "Bapi": {
+      "passed": true,
+      "clientRejections": 33,
+      "negativeFixtures": 9
+    },
+    "extensionGate": {
+      "pass": true,
+      "httpRejections": 22,
+      "reviewedFunctions": 41,
+      "negativeFixtures": 6,
+      "effectiveSchemas": [
+        "public",
+        "graphql_public"
+      ],
+      "counts": {
+        "jobs": 1,
+        "secrets": 2,
+        "requests": 0,
+        "responses": 0
+      },
+      "snapshotSha256": "f91cb98ae39233710b216e2f7c706a7887aa2949f732810fc3d1be6ef763828b"
+    },
+    "libs": {
+      "passed": true,
+      "supabaseJs": "2.106.0",
+      "rpc": true,
+      "abortSignal": true,
+      "functionsInvoke": true,
+      "adminClient": true,
+      "runtime": {
+        "deno": "supabase-edge-runtime-1.77.4 (compatible with Deno v2.1.4)",
+        "v8": "11.6.189.12",
+        "typescript": "5.1.6"
+      },
+      "externalRequests": 0
+    },
+    "spike": {
+      "imported": true,
+      "method": "POST",
+      "encryptedBytes": 219,
+      "contentEncoding": "aes128gcm",
+      "hasAuthorization": true,
+      "runtime": {
+        "deno": "supabase-edge-runtime-1.77.4 (compatible with Deno v2.1.4)",
+        "v8": "11.6.189.12",
+        "typescript": "5.1.6"
+      },
+      "library": "web-push@3.6.7",
+      "transmitted": false
+    },
+    "dbLint": {
+      "scope": "baseline A/B only",
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "blocked": [
+    "all behavioral C SQL and C assertions",
+    "C Data API authorization",
+    "UID same connection and paused-skip atomic rollback",
+    "C concurrency/hash/ownership/siblings/expiry/lifecycle/retention",
+    "real C valid-action/10s SQL timeout Edge",
+    "Bâ†’C exact subscription binding, V3 transport, at-most-once outcomes",
+    "db lint after successful C",
+    "C performance"
+  ],
+  "harnessGaps": [
+    "five-hash built-in guard omits C; six-hash external preflight used",
+    "UID tests omit persistent prior session baseline",
+    "third-user group forbidden by current two-user-only scope",
+    "sender outcomes and transport timeout not fully asserted",
+    "actual-IDB C multiple processors/maxActions variants incomplete"
+  ],
+  "sourceInventory": {
+    "count": 307,
+    "changes": [],
+    "additional": [
+      {
+        "path": ".env",
+        "sha256": "c711d3dfcf3e2aa913607172cac95d407408f1ffdb2f4d19669cc5a736b88149",
+        "scope": "end-only snapshot for ignored artifacts; no secret content emitted"
+      },
+      {
+        "path": ".env.push.local",
+        "sha256": "280e867ea6da7266ca36d21d59a19d3bdca88c7772cc16d89ebe9205bb6f839d",
+        "scope": "end-only snapshot for ignored artifacts; no secret content emitted"
+      },
+      {
+        "path": ".gitignore",
+        "sha256": "29c94b890dcf2ea9f10039f1e22e51fc0d338aea60b2931238ddf3cb303597c8",
+        "scope": "end-only snapshot for ignored artifacts; no secret content emitted"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "eeaa5986c36171a6848a4592cf078920bc663899ab7a33ac551a6c384a51a7b7",
+        "scope": "end-only snapshot for ignored artifacts; no secret content emitted"
+      },
+      {
+        "path": "supabase/functions/deno.lock",
+        "sha256": "bd522a695b634095ad8ce928afccd1b63968cd65dc97f286e05a8086331be1e6",
+        "scope": "end-only snapshot for ignored artifacts; no secret content emitted"
+      },
+      {
+        "path": "supabase/testing/seed-manual-workout.mjs",
+        "sha256": "86f7e4afc2dbe069217fe7e58df4cb28554f30bf9122a8c22b21ebd3aa738c5d",
+        "scope": "end-only snapshot for ignored artifacts; no secret content emitted"
+      }
+    ]
+  },
+  "frozenHashes": {
+    "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+    "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+    "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+    "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+    "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+    "20261011021351_workout_notification_actions.sql": "8bc29435076d232efeaea35837ab84e575fc561cfb597fafeefd3cc300ff5b42"
+  },
+  "externalPushRequests": 0,
+  "remoteOperations": 0,
+  "cleanup": {
+    "pending": false,
+    "project": "gymio-workout-actions-local",
+    "containersRemaining": 0,
+    "volumesRemaining": 0,
+    "networksRemaining": 0,
+    "rootRemoved": true,
+    "secretsRemoved": true,
+    "ownedHelperStopped": true,
+    "protectedContainerCount": 10,
+    "protectedIdsUnchanged": true,
+    "noPrune": true,
+    "imageCachePreserved": true
+  },
+  "sourceBefore": [
+    {
+      "sha256": "8e03c4f08bdb1ba8734d773907d80a164ef1bccc03d03cf8719a66602fa98a21",
+      "path": "vite.config.js"
+    },
+    {
+      "sha256": "14b95599e5dca449bd7efdf5cf240c91dca33418b6beb8e0f4bb0774ecf64e44",
+      "path": "vercel.json"
+    },
+    {
+      "sha256": "4eb5bd01e3be472e67cf1885267005a92f59434de585a59f392973fad74f7081",
+      "path": "tools\\pushPublicConfig.js"
+    },
+    {
+      "sha256": "4432adc978223c02c02c14bb1869e918b30eb7b7c97e99fac56edc6ea9b9459d",
+      "path": "tailwind.config.js"
+    },
+    {
+      "sha256": "eeaa5986c36171a6848a4592cf078920bc663899ab7a33ac551a6c384a51a7b7",
+      "path": "package-lock.json"
+    },
+    {
+      "sha256": "dff3219a411d5ed68ca4f54af605880673583113350d9647c1933c44141ceeb9",
+      "path": "diffv3.2B.diff"
+    },
+    {
+      "sha256": "dc298bd032aca73c6032cf50aec4fe5a2982bf1671dba42849de11f84ca849d1",
+      "path": "index.html"
+    },
+    {
+      "sha256": "5c3900575631ee67d4a47ccc08e488e216964b144a5169316e3704de5d9d28d9",
+      "path": "jsconfig.json"
+    },
+    {
+      "sha256": "724a954ad4a4afa258c4364fcff7076733a9c7a0b64495250c9283457d285706",
+      "path": "PUSH_FOUNDATION.md"
+    },
+    {
+      "sha256": "29c94b890dcf2ea9f10039f1e22e51fc0d338aea60b2931238ddf3cb303597c8",
+      "path": ".gitignore"
+    },
+    {
+      "sha256": "1ab15d83d523698bf2f2e4e9fcdcd00695c2ca8689a1f584bcf5e47f499b60cd",
+      "path": "package.json"
+    },
+    {
+      "sha256": "dc2d5ebf77db450eb8aecd934ab80ca57fd9b070423602cc15e52800e37101ab",
+      "path": "README.md"
+    },
+    {
+      "sha256": "500c7df43620b4dd5d9aefbcce3964043b77e3e71b7224efb44afd2c0b15e727",
+      "path": "PUSH_FOUNDATION_VALIDATION.md"
+    },
+    {
+      "sha256": "1219cf83804a23db98dbfe824981401b6c69d641188e8b78dc67192349390ea7",
+      "path": "public\\push-sw.js"
+    },
+    {
+      "sha256": "1f83c99db393fb90706a7e39288d4426f6ec8970f27736a3e47587f75f81cf46",
+      "path": "public\\push-icon-512.png"
+    },
+    {
+      "sha256": "a272d016ba6f5bbb292caab801274ac790bb4b8f47d92c9c69a387c435e90ac3",
+      "path": "public\\push-icon-192.png"
+    },
+    {
+      "sha256": "40dba16beaf9593ecb53d92f422176d53cb1acf617332870fe2ab6f4875bd962",
+      "path": "public\\preview.png"
+    },
+    {
+      "sha256": "7874076b1fcb5841fb3c0fa089f00e44fe6da49d0e08c92b027e9c93b14898ec",
+      "path": "public\\manifest.webmanifest"
+    },
+    {
+      "sha256": "636c9cd3bd2f19f8bf7fe6a2a9e8e4775c4b184b5df8c17f09be70df84bdea41",
+      "path": "public\\gifs\\triceps_polia_alta.gif"
+    },
+    {
+      "sha256": "6c52e2f0e69cff6d1fafd4b70ab82777785a308c072a1a02f5d4c3b0d9b68763",
+      "path": "public\\gifs\\triceps_maquina.gif"
+    },
+    {
+      "sha256": "79fadca6425bf3c785d9aa035e07d6a0bc066b9730a324b21cd23c80c295870f",
+      "path": "public\\gifs\\triceps_halter.gif"
+    },
+    {
+      "sha256": "8d69fe4502da21aa6d81437156c1e4a9cee8490b6d7b8662e734cac3d73ce670",
+      "path": "public\\gifs\\triceps_cadeira.gif"
+    },
+    {
+      "sha256": "7df3dade4a8bf023b55eb4a5ecbdf310c80ab755854f2a8729597f597ccf8755",
+      "path": "public\\gifs\\supino_reto_maquina.gif"
+    },
+    {
+      "sha256": "50b584cf75b9524184284e245212f35ce6b1240838a7a2f22e98765ec19c8712",
+      "path": "public\\gifs\\supino_reto.gif"
+    },
+    {
+      "sha256": "920f25276b99f41b4dbf834e649235f2442182884ea3d1c1c4280a49dda83b97",
+      "path": "public\\gifs\\supino_polia_alta.gif"
+    },
+    {
+      "sha256": "c4ce59a2a8024750599c5e62d3e71679adf52056e76fb52f3f54ec48827154f6",
+      "path": "public\\gifs\\supino_inclinado.gif"
+    },
+    {
+      "sha256": "9db177e62ac5a82cc85681796f185519d543eb0bd54ec4e494294b2d1930a361",
+      "path": "public\\gifs\\supino_fechado.gif"
+    },
+    {
+      "sha256": "92bc94f9f7b3ebe96612d7741aa7b329cfba46a362478b96fa13d84683e32bb5",
+      "path": "public\\gifs\\serrote_polia_baixa.gif"
+    },
+    {
+      "sha256": "d60ee291537bc0a1279e56fc3c431a7eb56b4a8aac681df649dc0014b0a58f42",
+      "path": "public\\gifs\\serrote_polia_alta.gif"
+    },
+    {
+      "sha256": "6e19f7acd6e04914ce5951fceb7b759616042a79ea4c72e636b45677a2186662",
+      "path": "public\\gifs\\serrote_halteres.gif"
+    },
+    {
+      "sha256": "7d144d695d0a4eec2060fe234f463d3adb212029700ff2f0c0e3512095bef101",
+      "path": "public\\gifs\\rosca_scott_alternada.gif"
+    },
+    {
+      "sha256": "0ca632a0b338d051a0d4bbdf250fb506fd7d5f4fe6ec47539ae01dd9365d5f3e",
+      "path": "public\\gifs\\rosca_polia.gif"
+    },
+    {
+      "sha256": "eb6cfd06307c4a85aecbd79f4388c5321db605058132b83ce921646681396155",
+      "path": "public\\gifs\\rosca_inversa.gif"
+    },
+    {
+      "sha256": "a20f97035ff252f0e4ce5df5fa16cd2cc41ec8d59c1e442e5b8bde70fd0cc25a",
+      "path": "public\\gifs\\rosca_concentrada_unilateral.gif"
+    },
+    {
+      "sha256": "6439a5e78bd7aa237c480ef8926b658f266fe0ad8bb919dd50b5af2a9e940aac",
+      "path": "public\\gifs\\rosca_barra_w.gif"
+    },
+    {
+      "sha256": "453681d64a884b6243f0cd44f19de77ffc4e5773bc80e7afba40277e1bce124a",
+      "path": "public\\gifs\\rosca_alternada.gif"
+    },
+    {
+      "sha256": "298955c37a5939aa1ce670c1a7c72a483fe0797581240d89c7b527253337ecd3",
+      "path": "public\\gifs\\remada_maquina.gif"
+    },
+    {
+      "sha256": "5c4d465dcdf955a5a5b71e37a74bde2506c575219e37deeb49a9363ac0667882",
+      "path": "public\\gifs\\puxada_na_barra.gif"
+    },
+    {
+      "sha256": "bb27c6d9655eeabe854e9089ee77523c8a555592b124ef833283cc8f5c3c4e28",
+      "path": "public\\gifs\\puxada_alta_polia.gif"
+    },
+    {
+      "sha256": "c3674004b208e14a1e9adbfff7bee73cf50bfe8290626961a9f9db8227be5000",
+      "path": "public\\gifs\\polia_biceps.gif"
+    },
+    {
+      "sha256": "bd90cdf34ab68631c65ab34c789691531a5ac74b74242c7fd89f350434d6fb98",
+      "path": "public\\gifs\\panturrilha_sentado.gif"
+    },
+    {
+      "sha256": "e7e7c7000e673b7228edb840817c8a9eaa6ee8d177ca416023744d6ae5e3d7c5",
+      "path": "public\\gifs\\leg_press.gif"
+    },
+    {
+      "sha256": "7aa3a0188e8e186e0efd6ce1b4f471cf7a4b7c46a98472aec11cb64793d606a0",
+      "path": "public\\gifs\\flexora.gif"
+    },
+    {
+      "sha256": "50d060fbd71c2ce211dbfb8f3a0adaf2ddded3e0b40f182f9f8e721ff5ac221a",
+      "path": "public\\gifs\\extenso_triceps_polia.gif"
+    },
+    {
+      "sha256": "46f5ec151cfdece1d7a924ca8637f6138608a4d9f67b515fb140952489f5c638",
+      "path": "public\\gifs\\extensora.gif"
+    },
+    {
+      "sha256": "c11fbd8dd401145606b8e308c89ce6d69a979f8c31f7ef771c9f0540578b2d02",
+      "path": "public\\gifs\\elevao_unilateral_halter.gif"
+    },
+    {
+      "sha256": "86cb47b1f7bb08bc47ff53281d2744ff7e0fef44fe24f18e1141922acdedc5d4",
+      "path": "public\\gifs\\elevao_polia.gif"
+    },
+    {
+      "sha256": "51bc0a8d8950c79fa7f76464d2d1930a8ebd39326474d096be05777aee266def",
+      "path": "public\\gifs\\elevao_pelvica_barra.gif"
+    },
+    {
+      "sha256": "904f9fa8897b8280677737f3c3dccc47b100e4b8c6185b475d4ba7939dcc6cec",
+      "path": "public\\gifs\\elevao_lateral_reversa_cadeira.gif"
+    },
+    {
+      "sha256": "c8cb0ed7348836076f5f8a3a5e9e5fdd27ebd31f2212b57d0c38369639fcc9f9",
+      "path": "public\\gifs\\elevao_lateral_cadeira.gif"
+    },
+    {
+      "sha256": "a77e734a83e56b1078fbb5f980b3e4a06bcfef5c017594e4cde88b9f9ed58b65",
+      "path": "public\\gifs\\elevao_frontal_reversa_cadeira.gif"
+    },
+    {
+      "sha256": "a71491ec1a7f6caaaaf803954a5045dfdfbb1f2a79f10bb5fbf90b117db64a89",
+      "path": "public\\gifs\\elevao_frontal_alternado.gif"
+    },
+    {
+      "sha256": "f1d4c751ae4d44dbd8a7780409400ec02d69a448aab33bf6418456f9eff6f97e",
+      "path": "public\\gifs\\crucifixo_inverso.gif"
+    },
+    {
+      "sha256": "670e5c7d9e8a44420e089cde363668bc7d1059867da22ec6d489196406fcc421",
+      "path": "public\\gifs\\crucifixo_declinado.gif"
+    },
+    {
+      "sha256": "6228b20fc7665ca751a416be13db6910427c8ed5159b0dc907b432c02a79a861",
+      "path": "public\\gifs\\agachamento_livre_barra.gif"
+    },
+    {
+      "sha256": "24d6aca78135ec9b9b4ccdf4a475edca298c307f34cf4ddf3ed3baa18f9fc2d0",
+      "path": "public\\gifs\\agachamento_bulgaro.gif"
+    },
+    {
+      "sha256": "20bf4262de50a1ba321cb2564fd4f2a50fa96b1985a924aa6f72dbd8cc6b1043",
+      "path": "public\\gifs\\abdutora.gif"
+    },
+    {
+      "sha256": "1f83c99db393fb90706a7e39288d4426f6ec8970f27736a3e47587f75f81cf46",
+      "path": "public\\favicon_old.png"
+    },
+    {
+      "sha256": "e083f08efcbf027f5ef22eb66910f70779aa2ae8c297c1fd3a98c1138f314bc2",
+      "path": "public\\favicon.svg"
+    },
+    {
+      "sha256": "a478c0586a9a33cffbb10aed1c35466cae46a528e07c34c539360eb9b0eb680a",
+      "path": "public\\apple-touch-icon.png"
+    },
+    {
+      "sha256": "70afeee13ec438ed49226b38d28ef5fc7c4b81d86a067692ed047fa477fd231b",
+      "path": "supabase\\testing\\WORKOUT_NOTIFICATION_ACTIONS.md"
+    },
+    {
+      "sha256": "ec5c2657c511dc15ce4c45b6e78c7fb7d916c4d7c6a62c8fe4efb2475f2fcc19",
+      "path": "supabase\\testing\\WORKOUT_NOTIFICATIONS.md"
+    },
+    {
+      "sha256": "a4e203bf8f2458dace7c632dcd78333104d6707af22ea8d9546157520190eb05",
+      "path": "src\\assets\\images\\mateus_profile.jpeg"
+    },
+    {
+      "sha256": "87c1a3e433c52b24ce164df37e01a245c6b3be6c31b5918e643322768253ba4d",
+      "path": "src\\assets\\images\\logo_blue.png"
+    },
+    {
+      "sha256": "727cc9a76b745c950dc90b558ebb1fd524e064100e74749d38534efdadaf4761",
+      "path": "src\\assets\\images\\auth-intro-640.webp"
+    },
+    {
+      "sha256": "b1f65bb2a86a6b0671292b4ffb14d7c4a94bce9f59b1aaa3142257534a0bf8cf",
+      "path": "src\\assets\\images\\auth-intro-1024.webp"
+    },
+    {
+      "sha256": "9d2bde58374790ca74eb98e5d02b1dc5b3beba067dfaef1f816b88b2b74e4a1c",
+      "path": "src\\App.jsx"
+    },
+    {
+      "sha256": "046a7a7590788fffd9a3416cbce40ce3f70d4168ff1e0ea9104b3909ef41ba20",
+      "path": "supabase\\functions\\_shared\\workoutPushRepository.js"
+    },
+    {
+      "sha256": "87babf68a84548bca45d794ea6aa2abba54c17a9cca7b6adfea45adae10dc163",
+      "path": "supabase\\functions\\_shared\\workoutPushHandler.test.js"
+    },
+    {
+      "sha256": "207ffdf45fdde5d0a3b5dee83d2a6e658936da9caf148e0f627a2421d02a4eca",
+      "path": "supabase\\functions\\_shared\\workoutPushHandler.js"
+    },
+    {
+      "sha256": "d6adeb297eaaf093d468fca6af95ca97516db1c65477015a2f914d77652f265f",
+      "path": "supabase\\functions\\_shared\\workoutActionRepository.js"
+    },
+    {
+      "sha256": "152c05e5a2a23cfec43848035707abde826b67bd41cc27589297ab05eaf64f15",
+      "path": "supabase\\functions\\_shared\\workoutActionHandler.js"
+    },
+    {
+      "sha256": "6d1a9b84beaa29f926a8d4a7db93d8a5a665ea1065fc742ccb26ed44983f138c",
+      "path": "supabase\\functions\\_shared\\workoutAction.test.js"
+    },
+    {
+      "sha256": "2b6970f4ca5345f583c120e776ff5e6fe6c06e6b0736dcbb50ba96c3297688a6",
+      "path": "supabase\\functions\\_shared\\pushTransport.test.js"
+    },
+    {
+      "sha256": "97099ebcbce2fccea2a3f2f6e59bc395946ef8119ec4f21513a63bdd6b8a7834",
+      "path": "supabase\\functions\\_shared\\pushTransport.js"
+    },
+    {
+      "sha256": "deb686cc18b16b1ac13f0f336129565dbf9c9c15d481808b62807ad467c5cfb6",
+      "path": "supabase\\functions\\_shared\\pushRepository.js"
+    },
+    {
+      "sha256": "603147ca49c655b2c79e81b7255e94a5d2c905817b721fd10080f63c2960f2e4",
+      "path": "supabase\\functions\\_shared\\pushHandler.test.js"
+    },
+    {
+      "sha256": "8bee4268ec5059f25add7e87afe2acd63f369ce33bd9194dbb711a7eed1b38ca",
+      "path": "supabase\\functions\\_shared\\pushHandler.js"
+    },
+    {
+      "sha256": "f593ef14ef286427602fb39187d23913964e4b5d5a56c33c8641c1e500bbd87a",
+      "path": "supabase\\functions\\_shared\\pushAdminClient.test.js"
+    },
+    {
+      "sha256": "c816e68589c86a158e68ae1cb1378d1be48489b7ac4242ee64f03cdccdf1bc88",
+      "path": "supabase\\functions\\_shared\\pushAdminClient.js"
+    },
+    {
+      "sha256": "c2755a1694c924b3e7100aeb62ad9303b08207db4be4c23b13c7de014e3e9997",
+      "path": "src\\utils\\workoutDuration.js"
+    },
+    {
+      "sha256": "cb7cb7a8055679f0f739a934b78d79032fbf1aa749753ee4e2925bb217f2836f",
+      "path": "src\\utils\\treinoUtils.js"
+    },
+    {
+      "sha256": "3673694c7b3f854cb6a1a16bf375a66d0df404e44703c83f5e417299722e94d2",
+      "path": "src\\utils\\trainingDiscovery.js"
+    },
+    {
+      "sha256": "6f7c4a10b8874d4dafb45be158f4e4a61518f9a3e95d9944b77b5aa5c4aae709",
+      "path": "src\\utils\\sessionStorage.js"
+    },
+    {
+      "sha256": "254be4aa6a355ed8fe37c433f04bb71926395a09791c414b7c3809cf4985b2cf",
+      "path": "src\\lib\\supabase.js"
+    },
+    {
+      "sha256": "541856fc6d7e657a02b8f7e549318b27f9d092a5c18788fa94f71f7447029c27",
+      "path": "src\\utils\\memoriaExercicioUtils.js"
+    },
+    {
+      "sha256": "139f4c0d060094b0546d009fec7b25a0d03f0d5ac57a77ce695e9467a8445ae5",
+      "path": "src\\utils\\imageUtils.js"
+    },
+    {
+      "sha256": "e78ea081eae63ad8aeb89336b7e7bb3c9e81d69cf1ae49def3e319fc5fef3ffe",
+      "path": "supabase\\testing\\workout-sender-harness\\index.ts"
+    },
+    {
+      "sha256": "4df348dc89818184dcf5e3511879a1cec7cf1f4d336ad0f7afeba609b45a7149",
+      "path": "src\\utils\\errorMessages.js"
+    },
+    {
+      "sha256": "995279ec9dc3f6190583ae502fd2f3884826e2be801fee2c50f7ed77f1fdf050",
+      "path": "supabase\\testing\\workout-secrets.mjs"
+    },
+    {
+      "sha256": "22b3b2087dcab57a3d4005274b5fdf5a761ca7be2d1303d4b59b817a6222e54a",
+      "path": "supabase\\testing\\workout-performance.mjs"
+    },
+    {
+      "sha256": "e8e5294dd4a8ef517146bee739aa81be4daea872bdd84037272ba98fd96b6291",
+      "path": "supabase\\testing\\workout-local-tests.mjs"
+    },
+    {
+      "sha256": "1ef93bc04973aed80297afc394cf7e84b1ef9f0a46a69a624a64bc0486307d76",
+      "path": "supabase\\testing\\workout-frontend-security.mjs"
+    },
+    {
+      "sha256": "ed57c56b65756cd16de7946da591db893b236c9cfdb878f42512a1d131ff11e2",
+      "path": "supabase\\testing\\workout-edge-tests.mjs"
+    },
+    {
+      "sha256": "563e44ecc30130b7cf766430258e249aedd11ca0ad909431cc623ccbc01720c0",
+      "path": "src\\utils\\dateUtils.js"
+    },
+    {
+      "sha256": "d11323fcaee5615f6b811327b07385550b2decc5c8926cd91f621b25d4f9d662",
+      "path": "src\\layouts\\DashboardLayout.jsx"
+    },
+    {
+      "sha256": "c06d36819c4ef453e4b82067aac4ef791d5d9c098a17a6da70de3390ab21cdda",
+      "path": "src\\utils\\dashboardInsights.js"
+    },
+    {
+      "sha256": "0cb93fe691799ae50cb312d0c5488041c717b87707671adaf067cca4ebc6ea08",
+      "path": "supabase\\functions\\workout-push\\index.ts"
+    },
+    {
+      "sha256": "b312a760c371afe4987b59d588cc2af5b929ce602bfb879dab680e6699c5f352",
+      "path": "src\\utils\\currentExerciseFormState.js"
+    },
+    {
+      "sha256": "a89b2ad55fbbc4a7a8e819186726f844ed8c34bf81ec3f78a14020eb5253e636",
+      "path": "supabase\\testing\\workout-edge-integration\\index.ts"
+    },
+    {
+      "sha256": "85ed6455e8b4664d932f267ad566999d31398cbc7b8c3c63f255e0c57653c33a",
+      "path": "supabase\\testing\\workout-dispatch.mjs"
+    },
+    {
+      "sha256": "f75bfaada62ae5b451ce583d97474f87cb50629ffc8e2efd528b52100422892e",
+      "path": "supabase\\testing\\workout-data-api.mjs"
+    },
+    {
+      "sha256": "5030f80feb723f3a10e3a50e5d701eaa1d0008596d2233ea345c1f74905aaf03",
+      "path": "supabase\\testing\\workout-context.mjs"
+    },
+    {
+      "sha256": "c981603a5e4e554af0de8984df1951a91074fcba80cddf2c83ba954a86637f14",
+      "path": "supabase\\testing\\workout-apply.mjs"
+    },
+    {
+      "sha256": "05f0b2aa8fbedc6a1397f2ca3148fa654e3da37c60c719298a72f61d62576f95",
+      "path": "supabase\\testing\\worker-indexeddb.mjs"
+    },
+    {
+      "sha256": "86f7e4afc2dbe069217fe7e58df4cb28554f30bf9122a8c22b21ebd3aa738c5d",
+      "path": "supabase\\testing\\seed-manual-workout.mjs"
+    },
+    {
+      "sha256": "a91811271375480d230db4e88aa715849297419e20ff3a410dd04b2416e330b4",
+      "path": "supabase\\testing\\scheduler-spike.mjs"
+    },
+    {
+      "sha256": "e81793fd5caad0e647dfb115d77e7e4e24e14fbd55f359c37b78eec363a01948",
+      "path": "supabase\\testing\\runtime-secrets-audit.mjs"
+    },
+    {
+      "sha256": "074379fddcc2c7e63f242b304d6b497704df21982b091dc51ef735f02035f13b",
+      "path": "supabase\\testing\\runtime-libs.mjs"
+    },
+    {
+      "sha256": "2286ff71262ec53875d1dcde577968a05563b0ae0dae13c57a23ec3ced5f27a6",
+      "path": "supabase\\testing\\runtime-libs\\index.ts"
+    },
+    {
+      "sha256": "e2ae6a620cbc64a9f23432ffd9e42eaad804f9f831404c8a3e1abfeda772ea38",
+      "path": "supabase\\testing\\runtime-compare.mjs"
+    },
+    {
+      "sha256": "c937bfb237cb466ddbe29868a9024d9aa215589c9acb7d4bb5afcb4cba333c05",
+      "path": "supabase\\testing\\runtime-catalog.mjs"
+    },
+    {
+      "sha256": "2ccd0765ae76573d20b1abeb0d0f3013397c0f991e2fb575cf0eeae27272a711",
+      "path": "supabase\\testing\\run-workout-local.ps1"
+    },
+    {
+      "sha256": "95359c02f0a0efa4158c62dfeb678ceeffa2195704782c39925ecb5ecf60e14f",
+      "path": "supabase\\testing\\run-workout-actions-matrix.ps1"
+    },
+    {
+      "sha256": "fb9a0011b0960f46d005219eb2f82a7be6d49aba3a2751419743389a5d10f277",
+      "path": "supabase\\testing\\run-local.ps1"
+    },
+    {
+      "sha256": "ffdd24a9225671c27cbf1d8b61f4f780b5d5a5bf487dc19c2c9e80129ace54a0",
+      "path": "supabase\\testing\\run-extension-gate.ps1"
+    },
+    {
+      "sha256": "bae6f5c522c70ab853abca1e79babe5cde0cf820947d7dc16cd6231d581ecb66",
+      "path": "supabase\\testing\\push-security.sql"
+    },
+    {
+      "sha256": "96b6310f863ec1ba0276d0b8df952bb8daa7e2b040ae63029ad5040712a36b57",
+      "path": "supabase\\testing\\local-tests.mjs"
+    },
+    {
+      "sha256": "dc422c5067908d90e96dff346f69c59acbcf703113bd1a1d3b47f0a50669d9a1",
+      "path": "supabase\\testing\\legacy-baseline.sql"
+    },
+    {
+      "sha256": "c3946199be2c34934d7c99d3a48edd4bdebdf5f96b8e01ef40655efc86978334",
+      "path": "supabase\\testing\\frontend-security.mjs"
+    },
+    {
+      "sha256": "8afc4933de3a78f7775e7a2d298524695c0f13c12a51d38eb41b32f9f5c7f03d",
+      "path": "supabase\\testing\\extension-gate.mjs"
+    },
+    {
+      "sha256": "84ae5f34f1e2fd170e5ff5714d836d887704d68575a10f34577e4a355b7698cd",
+      "path": "supabase\\functions\\workout-action\\index.ts"
+    },
+    {
+      "sha256": "97728e31b50fd7ccf8dda2eb28f7e56a25a06a1acebb38eeefdb5c3de75c4239",
+      "path": "src\\hooks\\useWorkoutTimer.js"
+    },
+    {
+      "sha256": "e78ee19830c86483c7b2219923da92293c3950f35e5daa063664b3deffea4960",
+      "path": "src\\hooks\\useTreinoAtivo.js"
+    },
+    {
+      "sha256": "8f63d9e79a43d8d8d3ce4daa1e5c0892ca8271a71f241f2e90382970fd4b6d86",
+      "path": "src\\hooks\\useTreino.js"
+    },
+    {
+      "sha256": "68f8e6faa0ffe4f4d76b0cb9bea179909322ec98bb665bfd42466226716f9038",
+      "path": "src\\hooks\\useServerNow.js"
+    },
+    {
+      "sha256": "ec4414c586e1708a1ce0ff1ba4ef0cff55bc90f290a8b28085b81b0056be30bd",
+      "path": "src\\hooks\\usePushNotifications.js"
+    },
+    {
+      "sha256": "d441367fa0cf8e1901cc9efaf5b629d3095f37784f0d490a77b309dcf26820e7",
+      "path": "src\\hooks\\useHorizontalCarousel.js"
+    },
+    {
+      "sha256": "5931fe5d20bedd240c6628b35cf2b26a46f39cfe3d84ca6dccfbcbc82bde585c",
+      "path": "src\\hooks\\useHistorico.js"
+    },
+    {
+      "sha256": "2be0ad99d2a94ea774172c27f7fd0609556352bf72546c13c718d77848ec8e0b",
+      "path": "src\\hooks\\useDescansoTimer.js"
+    },
+    {
+      "sha256": "2c7554b5f0a7411be5608b094b23dd20c502bf88aa7d5564be70c72650134788",
+      "path": "src\\hooks\\useAuth.js"
+    },
+    {
+      "sha256": "499acc1fd6e2746a2e293a5badce3261b683647bebd7b08fb32186bd01f60902",
+      "path": "src\\hooks\\useAgendamentos.js"
+    },
+    {
+      "sha256": "a527a3662ccaf64056a6e4abd83ed543d460da2678fdfab628ec3d7d4ff98d82",
+      "path": "src\\hooks\\treinoSessaoControllerUtils.js"
+    },
+    {
+      "sha256": "0bcc30c0992fd828f0e34bea68a8aaa7b5f2fe677655df225c200b9f2f074fdf",
+      "path": "src\\styles\\theme.js"
+    },
+    {
+      "sha256": "11b7e9bd40edbc14c06fe32a684319e1432eb6a782007cc4b69586f2df032a00",
+      "path": "src\\styles\\layout.js"
+    },
+    {
+      "sha256": "4d751334d57f49ea827928a265baae570c62797a1e5d16bed6cafa9d36d49ad9",
+      "path": "supabase\\testing\\edge-integration\\index.ts"
+    },
+    {
+      "sha256": "65884cfe8384a9e450d1e5d4fdfb80ac0ed14a82eabcf20e718957117500fb7f",
+      "path": "src\\styles\\index.css"
+    },
+    {
+      "sha256": "311ac86eb8940f4993fff17ac828b66dc4f7dc344d183543ead00c1bce4a722a",
+      "path": "src\\styles\\formFields.css"
+    },
+    {
+      "sha256": "35914958660026242f292e1504367c831fc84c4fd7e62733664ae91ecc0e1214",
+      "path": "src\\styles\\appTheme.css"
+    },
+    {
+      "sha256": "9be60ad7445fee0303bf50814d99b0eced1f2cace46140cd3186985ea0de4e64",
+      "path": "supabase\\functions\\push-test\\index.ts"
+    },
+    {
+      "sha256": "bd522a695b634095ad8ce928afccd1b63968cd65dc97f286e05a8086331be1e6",
+      "path": "supabase\\functions\\deno.lock"
+    },
+    {
+      "sha256": "8b9a3171d4310dadf175fc812ec39fb63eb35dc90a13caed5faeb522c9fbcacb",
+      "path": "supabase\\functions\\deno.json"
+    },
+    {
+      "sha256": "0a18c0481258d094c2887a44cbd244567448e99f4cce37e9957d2628769b18f2",
+      "path": "supabase\\config.toml"
+    },
+    {
+      "sha256": "b341cd5ee989e4aeb8f3a11856fa1fc28cc01641d95175ff03c01820326de690",
+      "path": "supabase\\testing\\actions-edge-fixture.sql"
+    },
+    {
+      "sha256": "70a714f25143a26be57c0d1e4fc53a8548feed20bd4cb26283301429ffedec3d",
+      "path": "supabase\\testing\\actions-data-api.mjs"
+    },
+    {
+      "sha256": "50bad408175e4213161cab3fa79885a4f215410c50127309a9ed8ec302986e77",
+      "path": "supabase\\testing\\actions-context.mjs"
+    },
+    {
+      "sha256": "53cf66320107fb4129cbea44694bbf9b8223bec7e359e4453e752aa87fb0eaf3",
+      "path": "supabase\\testing\\actions-apply.mjs"
+    },
+    {
+      "sha256": "4f069e564a60cf5454cc6c4c33c88fb011788a7874eb2811800b33277eeed580",
+      "path": "supabase\\testing\\compat-spike\\index.ts"
+    },
+    {
+      "sha256": "073ac28dd6f71be4f3f263ca81c634976f9eb1a3f4645c118a3ce84d6a1b6623",
+      "path": "supabase\\testing\\actions-local-tests.mjs"
+    },
+    {
+      "sha256": "3635dd77e5b06263197968b6ddd50f459c5fbbc0eea0fad2903e4d730df10325",
+      "path": "supabase\\testing\\actions-inventory.json"
+    },
+    {
+      "sha256": "5d298e03a0fd9a8cbadac8a50acb6c7e6600d9af758b06b6a74e59d820a5617b",
+      "path": "supabase\\testing\\actions-indexeddb.mjs"
+    },
+    {
+      "sha256": "3b756e9da26544254273dd09ff02d8b1bce558bb3cce5df38124888dd516e52c",
+      "path": "supabase\\testing\\actions-fixture.mjs"
+    },
+    {
+      "sha256": "9ffcf4e4329a93d27b52640bea9a8d871167a7e9b838d30c5415f91fe0aefd7b",
+      "path": "supabase\\testing\\actions-edge-tests.mjs"
+    },
+    {
+      "sha256": "b76a600ce81d278c25ce06a00bdceb157c15ef3cdd7de5c7661522bcdcc2ce17",
+      "path": "supabase\\recovered\\WORKOUT_SESSION_V2_CONTRACT.md"
+    },
+    {
+      "sha256": "896e1b1ac0d127912c3a506fb3e39096872680e6f2e5d20be6c0eec6b0268ebd",
+      "path": "supabase\\recovered\\RECOVERY_NOTES.md"
+    },
+    {
+      "sha256": "58ce064c1518f5b17d84dc054b317ac802bbddd6994853c4b4c20f9b1c5492ee",
+      "path": "supabase\\recovered\\20260820181015_workout_session_persistence_contract_RECOVERED_DO_NOT_APPLY.sql"
+    },
+    {
+      "sha256": "3e377f1c5d634ecb3cb462b32693b36b992c22f500a41994f52814e6aee92952",
+      "path": "src\\features\\publicSite\\TermsAndPrivacyModal.jsx"
+    },
+    {
+      "sha256": "afc37c5c0a3a8b979bf7b3045db7bcbce6c8207c236166d5be1912b630d7e894",
+      "path": "src\\features\\publicSite\\publicSite.css"
+    },
+    {
+      "sha256": "5df3a28c6b4f6de784be5db8c0b484c04018ebf282dd99fea767891156c9ead0",
+      "path": "src\\features\\publicSite\\PublicHashLink.jsx"
+    },
+    {
+      "sha256": "0dc54a5d59092b33738f4b23bb60419b45873c4f6e0599b610e0a47129c02948",
+      "path": "src\\features\\publicSite\\publicContent.js"
+    },
+    {
+      "sha256": "14661d734546a022c205be2995311da070fa0402ee34e5cddf70a2c876d16e5d",
+      "path": "src\\features\\publicSite\\legalDocuments.js"
+    },
+    {
+      "sha256": "dd7aa4f91d9cbd4da6c6b4f97086d71217d0bce934e72c1d1a2c7fa0a332786e",
+      "path": "src\\features\\publicSite\\LegalDocumentContent.jsx"
+    },
+    {
+      "sha256": "149875358ef4371dc7b3d1ae8fcde3aa78bef5e0eb2f47800e7e600ded40c41d",
+      "path": "src\\features\\publicSite\\LandingHeader.jsx"
+    },
+    {
+      "sha256": "1658f87b4b8f4c70fcfa6b60e65504e212f4cfef47292fd5a18d31ea26f0bc98",
+      "path": "src\\features\\publicSite\\InstitutionalFooter.jsx"
+    },
+    {
+      "sha256": "6325422f2a6879add1df08e3dd9083b40c76ba8009ce0a2ab9f86c1c9e287723",
+      "path": "src\\features\\publicSite\\hashNavigation.js"
+    },
+    {
+      "sha256": "43a16518005a2b93353a08b2bd73ab5e5612fec650e1baa173c6fa2d5ddcdfd5",
+      "path": "src\\services\\usuarios\\usuariosService.js"
+    },
+    {
+      "sha256": "3f778586347e1ee6152cc86ce890eda8440f2d1d96b60cfcd3dd0b980e3741d5",
+      "path": "supabase\\testing\\actions-edge-integration\\index.ts"
+    },
+    {
+      "sha256": "8bc29435076d232efeaea35837ab84e575fc561cfb597fafeefd3cc300ff5b42",
+      "path": "supabase\\migrations\\20261011021351_workout_notification_actions.sql"
+    },
+    {
+      "sha256": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+      "path": "supabase\\migrations\\20261010183821_workout_notifications.sql"
+    },
+    {
+      "sha256": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+      "path": "supabase\\migrations\\20261007215944_push_foundation.sql"
+    },
+    {
+      "sha256": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+      "path": "supabase\\migrations\\20260823003337_exercise_memory_read.sql"
+    },
+    {
+      "sha256": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+      "path": "supabase\\migrations\\20260821190134_workout_session_persistence_expand.sql"
+    },
+    {
+      "sha256": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+      "path": "supabase\\migrations\\20260725194232_auth_email_security.sql"
+    },
+    {
+      "sha256": "8898ec0afe6d66e4d1c7ecb3b9dfff5308f4454bd3e08de1fbaac76eafc2f12d",
+      "path": "src\\services\\treino_ativo\\treinoSessaoService.js"
+    },
+    {
+      "sha256": "579d6c506b1183add0ab335d6ff2624e0e6fbf215a7d1dc51c8204b7c78c5c94",
+      "path": "src\\contexts\\UiContext.jsx"
+    },
+    {
+      "sha256": "6bad21b93f9a611d41a22f4f53ae1dda9430455058153d389a95261ff82c7b4f",
+      "path": "src\\contexts\\ThemeContext.jsx"
+    },
+    {
+      "sha256": "a723f02c7cb092386dd6e22d2f1db00d9bc5dfe26e00a56a50802469a4cc9f5d",
+      "path": "src\\contexts\\AuthContext.jsx"
+    },
+    {
+      "sha256": "ea3216300640592e78f4ef90afdcc23e00d790f8b53f8fc7fc433c740ae9e811",
+      "path": "src\\features\\landing\\landing.css"
+    },
+    {
+      "sha256": "409eaa1669fe3f00a9de36d351ce4f498ffcdb457852d5cd4738fd5a243e81d0",
+      "path": "src\\services\\treinos\\treinosService.js"
+    },
+    {
+      "sha256": "bf9f1a4d082d67bfba5ad6d767bf4754eaf20a4c78ce8bcccbe41611ff47fb42",
+      "path": "src\\services\\treinos\\treinosExerciciosService.js"
+    },
+    {
+      "sha256": "e75a8b90a081be82638a4e72e28aef713656f0a46b5c71da0e2d5f68c59c020b",
+      "path": "src\\services\\treinos\\secoesService.js"
+    },
+    {
+      "sha256": "3fcddf3fde2784420623082478f0d24709c004db1e5b7af08b940631b28cf822",
+      "path": "src\\components\\WorkoutTimer.jsx"
+    },
+    {
+      "sha256": "5eb0433364d3088a88837bf734a90e4a0220755bae29bf199bdab70c76d4acec",
+      "path": "src\\components\\WorkoutSessionRecoveryModal.jsx"
+    },
+    {
+      "sha256": "180923b29bff1a31ce3f25ded37b57107d75b976d6403985a156e0cac7ce8460",
+      "path": "src\\components\\WorkoutProgress.jsx"
+    },
+    {
+      "sha256": "0f2d8fd02e3324a735b519b7d80baca8fc7c7098824bc07e89be92d5cfe26dd1",
+      "path": "src\\components\\WorkoutInfo.jsx"
+    },
+    {
+      "sha256": "408f130b1fc3790cd0b0b5c3ec4807de1fd64009e4df27949d1c3db4771691c5",
+      "path": "src\\components\\WorkoutHeader.jsx"
+    },
+    {
+      "sha256": "8cfefd1f7fecade2528e1b3cc4687a4b4b59843418000e4e8a964a72445cdf4a",
+      "path": "src\\components\\WorkoutActions.jsx"
+    },
+    {
+      "sha256": "9b8cc00fa54601126a5ca65aa74fbcf1ad7a9e0c4c5f61a7b07a7c98540689e2",
+      "path": "src\\components\\UserProfileModal.jsx"
+    },
+    {
+      "sha256": "e3cecbc0bc44ac260c9c0ddcf201abf3cdc5899d6a6eab6ffe9c9e47274ccd98",
+      "path": "src\\features\\history\\WorkoutHistory.jsx"
+    },
+    {
+      "sha256": "6be6ea0ec22b210719bfad3545b3b71a94a5899d1da0f84e1636b60bcf0b1091",
+      "path": "src\\features\\history\\WorkoutExerciseTimeline.jsx"
+    },
+    {
+      "sha256": "6d788ff57b97a99ab9c0493d5571c09af9f82333a43f5087bdaae0863acacab0",
+      "path": "src\\features\\history\\useHistoryData.js"
+    },
+    {
+      "sha256": "ecdc0e44bf0d95e6ce16a61a3777ac01b94c44cca5c8863b5521b83653b8874d",
+      "path": "src\\features\\history\\TrainingRhythm.jsx"
+    },
+    {
+      "sha256": "b1c7cc987740bf605a957c0de9fcb8c3c5c0f7e3009b50666d251b1399444765",
+      "path": "src\\features\\history\\MuscleDistribution.jsx"
+    },
+    {
+      "sha256": "9ee399c507a6cf380f0b1a3b1f6ae9c7eb7633c5f4e16f72997e61dc50011f69",
+      "path": "src\\features\\history\\HistoryView.jsx"
+    },
+    {
+      "sha256": "ed9ce818899e5ccfd6e7958942598bd77d4aab1edec1271eb8efae2ed9108703",
+      "path": "src\\features\\history\\historyRepository.js"
+    },
+    {
+      "sha256": "4e8a6ab9c788d5b48909b057810c0645c540b140e39d9667af0a9d73687827e7",
+      "path": "src\\features\\history\\HistoryOverview.jsx"
+    },
+    {
+      "sha256": "87abca18d189fc1f52c0ffcd14ecc9ffac3ad59e8698adcac0858c445dcda4be",
+      "path": "src\\features\\history\\historyNavigation.js"
+    },
+    {
+      "sha256": "32fb08e41fe5d3365171eaf4d87f24d9daa0392d904914e9120ff853d5a654f8",
+      "path": "src\\features\\history\\historyModel.js"
+    },
+    {
+      "sha256": "ab6e404f15ba121f95e5bb9354922cfbaa9c8aa2bf31de8c034ad0866d4eea5e",
+      "path": "src\\features\\history\\HistoryMetricValue.jsx"
+    },
+    {
+      "sha256": "ac7a379ca258e2b7147afdfd94f433798e3ebaf983b43fbc72ab2ca3b6f9091e",
+      "path": "src\\features\\history\\HistoryDetail.jsx"
+    },
+    {
+      "sha256": "c06e9ea340b3087327d842ff88da2aab9d292975a0c3529c886c23ddc5c3ef00",
+      "path": "src\\features\\history\\HistoryCharts.jsx"
+    },
+    {
+      "sha256": "d6501747b8e09710ce39f28e859fb3d2f9160fa080fb69f42c6b692757e7e4bd",
+      "path": "src\\features\\history\\HistoryCard.jsx"
+    },
+    {
+      "sha256": "4c1e8dec7b58ce4a236b05f20484ed4877c6452f5dd27dafff038bcf2e2c2ec2",
+      "path": "src\\features\\history\\history.css"
+    },
+    {
+      "sha256": "c29b6bc360fbf57f0e37cbf38b5747f57a31628a507fec4fbf30a7697bbbbdcb",
+      "path": "src\\features\\history\\FeaturedExercises.jsx"
+    },
+    {
+      "sha256": "9a06e7f06ff5f5b54e82634d52b74d8558003f6bcdd1e9936d48a3983aace17d",
+      "path": "src\\features\\history\\ChartDataTable.jsx"
+    },
+    {
+      "sha256": "816a6c4569df529a2a59b8d7c64d4f4eac04b8d89498818f5e513b0dc481f1fb",
+      "path": "src\\services\\push\\workoutProjection.js"
+    },
+    {
+      "sha256": "d73bb535decf1c1bcd2456cb5c445cdea2a1f746a62c2adf3848b5f9c65f484e",
+      "path": "src\\services\\push\\workoutNotificationBridge.js"
+    },
+    {
+      "sha256": "f7b0d20768abfca1e412dd67e7d5321e63ce8657115095b978184b71408cc8ed",
+      "path": "src\\services\\push\\workoutControlsService.js"
+    },
+    {
+      "sha256": "b614ad4ab509402f347547ed6dc18ac97275046ff7daffc3b7bdc4548727842e",
+      "path": "src\\services\\push\\workoutControlsClient.js"
+    },
+    {
+      "sha256": "1e353b7250a5024fc9aa5448dd3168ae09b164631d3707e2ed804cc0a817d796",
+      "path": "src\\services\\push\\workoutControls.test.js"
+    },
+    {
+      "sha256": "e7e9deb854ffe82056416403462ee65fcf97bb36b17edf35f11033829b5c41ef",
+      "path": "src\\services\\push\\workout.test.js"
+    },
+    {
+      "sha256": "6d5f1b2bdefb229c3e328f32ec773d289ebcc6b8f025646678fd656ac1676bcb",
+      "path": "src\\services\\push\\worker.test.js"
+    },
+    {
+      "sha256": "d44f86ebb20851aecbf5d78499047407b091e6689b49b5a77a7c86cafc054075",
+      "path": "src\\services\\push\\pushUtils.js"
+    },
+    {
+      "sha256": "d288d20e2457c8496535ffa2f89e3bbae842e30c5da85544c280c506c9a9a4fa",
+      "path": "src\\services\\push\\pushService.js"
+    },
+    {
+      "sha256": "63eaa5c8fdefabb61f9b902b5c21ffe3437384d51fa6afe8b04f6fc2aa8960fc",
+      "path": "src\\services\\push\\pushResults.test.js"
+    },
+    {
+      "sha256": "2e4c387d227f9988fcd5356a6df5371d5471da8fd4797663f4baa1e3d6b0eebb",
+      "path": "src\\services\\push\\pushResults.js"
+    },
+    {
+      "sha256": "8af62a94196c35fb3afa97eec1ea34cc0d9ca9b4f0efbdc2321feb1d0fbc7c9b",
+      "path": "src\\services\\push\\pushController.js"
+    },
+    {
+      "sha256": "e983b93445c4713c4c89782aed0c6b23fca01b882327a3bb982a4be09831586f",
+      "path": "src\\services\\push\\push.test.js"
+    },
+    {
+      "sha256": "4163a9f1f5e8b1e14142113c0402204bc478905c7b597c1ffbd193bd3da87e36",
+      "path": "src\\services\\push\\invokePushTest.js"
+    },
+    {
+      "sha256": "6cb2532e783667114accc89db5ede417d4bb7fcec81042f4f73c9b313fca993c",
+      "path": "src\\pages\\TreinosVisualizar.jsx"
+    },
+    {
+      "sha256": "d46ab1425190174338596625768aeb543269f6d500ef4033db05d17eeab4cafd",
+      "path": "src\\pages\\TreinosEditar.jsx"
+    },
+    {
+      "sha256": "7b7b171d2b5224e0f7741277dc5c8827cc75668c5f8216251fa41fe2ff739095",
+      "path": "src\\components\\ui\\ThemeToggle.jsx"
+    },
+    {
+      "sha256": "f67af863f4e8a4eaef8bd494603ae74f124f3eb39eb8866a3640c666585ac489",
+      "path": "src\\components\\ui\\Skeleton.jsx"
+    },
+    {
+      "sha256": "85fb1e1b839c2f6c9a926fdc0343323b62418ab318264a0f0c2c078d1a07bbc7",
+      "path": "src\\components\\ui\\SegmentedControl.jsx"
+    },
+    {
+      "sha256": "520f3c1fd1afbb793ed2be7052f8c0557d45e12dad9d9223fc6aa7446f6cbbb1",
+      "path": "src\\components\\ui\\PageLoadingBoundary.jsx"
+    },
+    {
+      "sha256": "84d47e7490421662be58d22082a83a2b77eb37b8d9c98098bbe9ec804b58bfc1",
+      "path": "src\\components\\ui\\PageHeader.jsx"
+    },
+    {
+      "sha256": "3b726433f738a267a7404befe6785ff5baf15a19b99e6357e3440d0ce8208e34",
+      "path": "src\\components\\ui\\NotificationCenter.jsx"
+    },
+    {
+      "sha256": "612dc136e4e659004685f093fd4c9993b5986c2ef1cdd751b3e6115909c261f4",
+      "path": "src\\components\\ui\\ModalHeader.jsx"
+    },
+    {
+      "sha256": "bbe494a0af1a303caa11fdb0bfb40a840d539628bad785302fd2136f1427d6ee",
+      "path": "src\\components\\ui\\Modal.jsx"
+    },
+    {
+      "sha256": "f5f587be2e35ce36d34f6587f1b1424d0d2ceba79c686bd947230210e7df611a",
+      "path": "src\\components\\ui\\loadingVariants.js"
+    },
+    {
+      "sha256": "6776286551dea5cd6288f4b5efa22741de8e5fb2f5bd8377de4b7e67d8956539",
+      "path": "src\\components\\ui\\LoadingState.jsx"
+    },
+    {
+      "sha256": "97f142eece76a2013471f3cea9dc3c055187bdaa25eb556cf7ac3243e5c04bb2",
+      "path": "src\\components\\ui\\LoadingSpinner.jsx"
+    },
+    {
+      "sha256": "87307c2c665c5fafe95a185660f8e65c80689adcf5bd98febe7adbc333d175f2",
+      "path": "src\\components\\ui\\Input.jsx"
+    },
+    {
+      "sha256": "76905449c4d4bc84556830548347b72e477dfc6caa7d1be2e9126b29808a17ec",
+      "path": "src\\components\\ui\\FieldError.jsx"
+    },
+    {
+      "sha256": "b0dfde2116548ae1e16b8b6890b8b1cdac4f1ce8f8f06329877e9b403ee606a4",
+      "path": "src\\components\\ui\\Disclosure.jsx"
+    },
+    {
+      "sha256": "16b3ed12762a2acf31c0e8a22ae6bfa1f779a7b7db84f0115a811d7f81eb5130",
+      "path": "src\\components\\ui\\ContentEntrance.jsx"
+    },
+    {
+      "sha256": "9935191b3a6a32e19871b685a7a8a265dfda2f3ca584da3c744a8a3e6e12aae3",
+      "path": "src\\components\\ui\\CarouselNavigation.jsx"
+    },
+    {
+      "sha256": "5cce5872ff932086fb862e2bb3fab4768114786c8d7dc1e34b73b3095c731743",
+      "path": "src\\components\\ui\\Card.jsx"
+    },
+    {
+      "sha256": "7134f4e008acd22b84284210ca6f5a945ce133abbebd24f53aed3c984fcc6374",
+      "path": "src\\components\\ui\\Button.jsx"
+    },
+    {
+      "sha256": "821318fe934c93c359b195a1aaed0876b6c39ada8516e06674488f5669b80a99",
+      "path": "src\\components\\ui\\Banner.jsx"
+    },
+    {
+      "sha256": "a004c6e49a39c8518458e01022cd27c1b6be17e84dcdc83339d219660d362f1d",
+      "path": "src\\components\\ui\\appMotion.js"
+    },
+    {
+      "sha256": "6e202c1b96cf366c0488a760a0c58f2395e52921a38fe6dc304c83f0655ac198",
+      "path": "src\\components\\ui\\ActionLoading.jsx"
+    },
+    {
+      "sha256": "bd05edbeb782a29fb9a274dae717498058284695f12e606775ddbaf675167a3b",
+      "path": "src\\features\\auth\\useGoogleAuth.js"
+    },
+    {
+      "sha256": "20f9dc9629048fd3f335efa4e2ea40e7c5bcefc5d44df5333844e0fd75a39fc1",
+      "path": "src\\features\\auth\\useAuthFeedback.js"
+    },
+    {
+      "sha256": "c54fbdf15a0fb93a4281ef9e9a988a4cb22cc0761c155144d57207d00e68f274",
+      "path": "src\\features\\auth\\SocialAuth.jsx"
+    },
+    {
+      "sha256": "60b062f5098627ea770dd05a1c0cf5f89e76b811d826fbfecb36822f9a0b8d79",
+      "path": "src\\features\\auth\\AuthShell.jsx"
+    },
+    {
+      "sha256": "fa58634d703d76e9a0473493fd4bb1fff7c45e85f0a51e527306ac432e0a96fa",
+      "path": "src\\features\\auth\\authMotion.js"
+    },
+    {
+      "sha256": "7bfe038fdc4f048f7997e8f04ee9718e018be339b282b2e7509694f685bc3102",
+      "path": "src\\features\\auth\\AuthIllustration.jsx"
+    },
+    {
+      "sha256": "bf8b01056de6fb2138686aa2634c7d9d752df6b4585fbff95b7618747643fd28",
+      "path": "src\\features\\auth\\AuthHero.jsx"
+    },
+    {
+      "sha256": "96398682281634f1fd8f6017973e8ab04d28f0672fd02aaddbe6be487d97cab4",
+      "path": "src\\features\\auth\\AuthField.jsx"
+    },
+    {
+      "sha256": "3d7911243d5c2a4fbb884c37a4a85123445ec7287711797fe84fa4a2630d720b",
+      "path": "src\\features\\auth\\AuthCard.jsx"
+    },
+    {
+      "sha256": "6436193a4b86765f1489dc528b89bfb941907ca90005ae2905add1ea83d5ddf8",
+      "path": "src\\features\\auth\\auth.css"
+    },
+    {
+      "sha256": "8e396f24852e552a33f5457475e4c42ff803820aed8a3493706fc515dd47ef32",
+      "path": "src\\features\\landing\\three\\ribbonChapters.js"
+    },
+    {
+      "sha256": "1eb66505c8190ccd5d3571b0b1f246e5e75d2be93929a08cbf28483f844a88ef",
+      "path": "src\\features\\landing\\three\\ribbonBootstrap.js"
+    },
+    {
+      "sha256": "5d33ca8e34cdbe764167ee20e254f4e5b011d85268d97f368b5b4218952bfea0",
+      "path": "src\\features\\landing\\three\\MotionSpineScene.jsx"
+    },
+    {
+      "sha256": "443ca0393a5609afb74f90612e043b1112a1e0c554be04bab2b0ee8c8887f52d",
+      "path": "src\\pages\\Treinos.jsx"
+    },
+    {
+      "sha256": "c84a6cfd6d7c36d5c40a5ac4b3f38d07442735832f14ceee28fd79f6d9355748",
+      "path": "src\\pages\\TreinoPlayer.jsx"
+    },
+    {
+      "sha256": "345cf33ce20a6c85e8d8a1f2898aa11cd5b49ef8db0a0581ea19ae4c1bfa2386",
+      "path": "src\\pages\\Treinar.jsx"
+    },
+    {
+      "sha256": "4c9fd765a47d44fb4ba2ca45746a1747e6112318b71be7ec02fa815b67e156a3",
+      "path": "src\\pages\\RouteError.jsx"
+    },
+    {
+      "sha256": "262735412cca7ae9d8eef8e048752a0afceac0e43d413c5132a95f48e72fc1c5",
+      "path": "src\\pages\\RedefinirSenha.jsx"
+    },
+    {
+      "sha256": "a4c00cddec7702b2a4051da609450a5cac6a05fd37f5da67109ae94ce1c5e0e1",
+      "path": "src\\pages\\Login.jsx"
+    },
+    {
+      "sha256": "ec33978f53572c06bb09e3e9ffe00b888902265aecce06c82cd69ffecbe18edf",
+      "path": "src\\pages\\LegalPage.jsx"
+    },
+    {
+      "sha256": "0ada1e7875ddea92203f799eb37a128013b103b4593162894fc7716220b57364",
+      "path": "src\\pages\\LandingPage.jsx"
+    },
+    {
+      "sha256": "8ec77dc872f54642734076edcd80c9771a0b15533eb5ae925bcf294e8c45ffdb",
+      "path": "src\\pages\\Historico.jsx"
+    },
+    {
+      "sha256": "b032424ab275e562a926563c5e7c6db22323e4c1ce20236d7638f581b7d1c561",
+      "path": "src\\pages\\Dashboard.jsx"
+    },
+    {
+      "sha256": "ca631528447fb930c23c5bae32992eddb3420bbe1427526d71f572bf8f6180c2",
+      "path": "src\\pages\\Cadastro.jsx"
+    },
+    {
+      "sha256": "4bf4f1ea843629382efe5d250bcef9a23d4e76e13085125fdd2cb7ba7aadde0b",
+      "path": "src\\main.jsx"
+    },
+    {
+      "sha256": "472fcc223ee9a2516eb9e013f45fbdadda262e96c760f5fb068fca7adfa1762c",
+      "path": "src\\components\\training\\WorkoutWeekSelector.jsx"
+    },
+    {
+      "sha256": "12a231a7d5b9ba0b44a1f15c9808006b1427fe49fbe16319037230b5f6ce36ca",
+      "path": "src\\components\\training\\WorkoutCatalog.jsx"
+    },
+    {
+      "sha256": "f9c6386adfa86f96d76be8d6e3581144219338b3a0ab20b9c2a81351702e6a11",
+      "path": "src\\components\\training\\WorkoutCard.jsx"
+    },
+    {
+      "sha256": "1cab58350d5d0a963f342de28dd7770f2c4467efac98451fa6f1c76752cccaf0",
+      "path": "src\\components\\training\\ScheduledWorkoutDeck.jsx"
+    },
+    {
+      "sha256": "7d44f1b76533578a38017cdcbb88d2639b0dc78cd17b9c8215fff89fa9cb890a",
+      "path": "src\\components\\Sidebar.jsx"
+    },
+    {
+      "sha256": "38f2d2ec9664468c58bb54c15d51788747206b3e0fd0025132326a2be38c4982",
+      "path": "src\\components\\SessionFeedback.js"
+    },
+    {
+      "sha256": "9fb38ac3d260e85cdd903617439f8df03e67f9462c560c4e6b3dcf90c5a9b000",
+      "path": "src\\components\\PushNotificationSettings.jsx"
+    },
+    {
+      "sha256": "0b70b6f17618cbcb78ae1e4fc48114f13ad4620eee84b6e1355f513a2fa543e7",
+      "path": "src\\components\\PreWorkoutModal.jsx"
+    },
+    {
+      "sha256": "2cd1c89045235c8e88c9e1571f28c0520e613595917706f81f72750656a46c5e",
+      "path": "src\\components\\HistoricoMonth.jsx"
+    },
+    {
+      "sha256": "acee3a2189f24f9eaf3da4b7e1d280d318e3ddb3183cb5ceb741c63447b96569",
+      "path": "src\\components\\HistoricoHeader.jsx"
+    },
+    {
+      "sha256": "0cdb6523a1b646281abc4b882d566e94e5d46d52067dbb388b1d3e355154db1b",
+      "path": "src\\components\\HistoricoEmpty.jsx"
+    },
+    {
+      "sha256": "f588b65f032601b24ec08131b180e3636ea19cb0da130d21760a810ad6c9a482",
+      "path": "src\\features\\landing\\sections\\LandingSections.jsx"
+    },
+    {
+      "sha256": "955a39f33dc938a71fe1660acc1ad1a415e9ffe83a99fa77aefc061beec40dbd",
+      "path": "src\\features\\landing\\LandingLoadingState.jsx"
+    },
+    {
+      "sha256": "814190e1f9fa31ef4b134e43fc7708093f28cc4285e912e8ea4269d731bcfced",
+      "path": "src\\features\\landing\\LandingExperience.jsx"
+    },
+    {
+      "sha256": "f9010de14448f8fe190086b8032b35baff8e2aba9434093a05b49933aef880e3",
+      "path": "src\\features\\landing\\three\\ribbonGeometry.js"
+    },
+    {
+      "sha256": "358110b400152822fd3f72ccd06a8ee15f1c0cc51adc8f2102a6bfefa524e56a",
+      "path": "src\\features\\landing\\three\\ribbonEffects.js"
+    },
+    {
+      "sha256": "d7c16cc83fca5357e3388fdf0c8cef0ed0cfdcb6581bbe06162759d0a9bf7069",
+      "path": "src\\features\\landing\\three\\ribbonDataAnchors.js"
+    },
+    {
+      "sha256": "12b0449993aab19550ce7681da45dbfbf2f0b28c367f483a7e2cc6b86ca8d494",
+      "path": "src\\features\\landing\\three\\ribbonIntro.js"
+    },
+    {
+      "sha256": "138b1ca27723542f46020d9e1e3fbaa59069d807456dbb7fd30b0984a1989939",
+      "path": "src\\features\\landing\\three\\ribbonLayout.js"
+    },
+    {
+      "sha256": "aad333e81f901be5f4aa94f0ad696f158e297d6fc1169c4e62881e3a3853e317",
+      "path": "src\\components\\HistoricoCard.jsx"
+    },
+    {
+      "sha256": "7aa2fa4b35d6e4def6aebe68c79b42b066005be5fef28fa6f809b90e160bde9d",
+      "path": "src\\services\\memoria_exercicios\\memoriaExerciciosService.js"
+    },
+    {
+      "sha256": "853e5db2bc69d2b1f61945f07804c6698c782fcbdfd2cad56cdb2f71a5ee50b0",
+      "path": "src\\components\\dashboard\\WorkoutConsistencyHeatmap.jsx"
+    },
+    {
+      "sha256": "002245952e02b57bb97f96e8aa4bc0999bee02a085353160d4279973ce79ccab",
+      "path": "src\\components\\dashboard\\DashboardQuickMetric.jsx"
+    },
+    {
+      "sha256": "5f34b267b66acd32264e5b33a375e162152beff6598a7bfe66d14b8d8cec0183",
+      "path": "src\\components\\dashboard\\DashboardNextWorkoutCard.jsx"
+    },
+    {
+      "sha256": "3452f3af3c965936601e0f30cf625bab48c859b802572fc10735d7d619949dfa",
+      "path": "src\\components\\dashboard\\DashboardMomentumCard.jsx"
+    },
+    {
+      "sha256": "f72fc6d322ff4260789deca8474e48ff901c3f1a25105f8c4b6e94a494599a8e",
+      "path": "src\\components\\CurrentExerciseCard.jsx"
+    },
+    {
+      "sha256": "969ef90ce3c31617f528a9f0f77656ac2143229f489dfc2b5dd09864897d204a",
+      "path": "src\\components\\AgendarTreinoModal.jsx"
+    },
+    {
+      "sha256": "d635dc60e04ff25d406bdcb457923dde5bb836a241a82c8eecb0f84e62d97c95",
+      "path": "src\\routes\\RouteScrollReset.js"
+    },
+    {
+      "sha256": "4e4801413bcbf21ccaeae2642f455695b0a5ce6cad61da22424f23edb7db83aa",
+      "path": "src\\routes\\routeScroll.js"
+    },
+    {
+      "sha256": "af34e88e2a0f1823cf40b42bcacaf6841c2453ed21f63a67361ce0321ba8371d",
+      "path": "src\\routes\\PrivateRoute.jsx"
+    },
+    {
+      "sha256": "e2a9eafc3fb443211d0ce1e00223c3564df42935d621500c32bd3690432e7997",
+      "path": "src\\routes\\AppRoutes.jsx"
+    },
+    {
+      "sha256": "6aeef1a05f26caecb7b262cab1fe8ee7d1e566eabf1983d067a729e359a7a221",
+      "path": "src\\services\\auth\\logoutLifecycle.js"
+    },
+    {
+      "sha256": "0f8b47f7340b7849d1ef37ad2924acd2beb8d97b6e6aad82599a48feedc70335",
+      "path": "src\\services\\auth\\authService.js"
+    },
+    {
+      "sha256": "557f09c120d5f17e8596139bcb6aaa6e451731421341cfb13b5e37d59706d4ec",
+      "path": "src\\features\\landing\\three\\useRibbonScrollSync.js"
+    },
+    {
+      "sha256": "a1326f6652232abbd9d8d069491a8a031ba268eb8fbb638286a66f61799fc01a",
+      "path": "src\\features\\landing\\three\\ribbonTimeline.js"
+    },
+    {
+      "sha256": "a9742d300f3a4e3b3f419b8d7b66624487a347cc874b943281aaa851f5c69223",
+      "path": "src\\features\\landing\\three\\ribbonProfiles.js"
+    },
+    {
+      "sha256": "b2ea87618999a3ca1b8c74edf41583552e545d6b9f170305c603068472e3f3aa",
+      "path": "src\\features\\landing\\three\\ribbonPath.js"
+    },
+    {
+      "sha256": "ec3a96aee00ed8446894980ab428596b0f7da9013e0ccb7611bae9bdfc7c8a0b",
+      "path": "src\\services\\exercicios\\exerciciosService.js"
+    },
+    {
+      "sha256": "394c497a1290bddb83e6ee6a238b0a0003bb403ca07ceeb3056a198f8bdb30db",
+      "path": "src\\services\\historico\\historicoTreinosService.js"
+    },
+    {
+      "sha256": "06282f8b4a1d9a12baf45d723fb19227d7cf07ebe8fd115e50995d3185ed4bab",
+      "path": "src\\services\\agendamentos\\agendamentosService.js"
+    }
+  ],
+  "gateway": {
+    "container": "supabase_kong_gymio-workout-actions-local",
+    "configPath": "/home/kong/kong.yml",
+    "configContainsCorsPlugin": true,
+    "corsPluginCount": 17,
+    "explicitWildcardOrigins": false,
+    "corsDefaultConfigurationOnly": true
+  },
+  "head": "cf953d2bb234f4050ad50f6ef19b5b94a5df975e",
+  "branch": "gym.io-v3.2",
+  "createdAt": "2026-10-11T19:24:16.102Z",
+  "temporaryAdapters": {
+    "gate": {
+      "source": "supabase/testing/extension-gate.mjs",
+      "changes": [
+        "exact C project/port/root entry guards",
+        "C project enables existing B source inventory"
+      ],
+      "auditBodyUnchanged": true
+    },
+    "A": {
+      "source": "supabase/testing/local-tests.mjs",
+      "changes": [
+        "exact C project/port/root entry guards"
+      ],
+      "testBodiesUnchanged": true
+    },
+    "Bapi": {
+      "source": "supabase/testing/workout-data-api.mjs",
+      "bodyUnchanged": true,
+      "context": "temporary reexport of original actionsContext"
+    },
+    "catalog": {
+      "changes": [
+        "exact C project/port/root entry guards"
+      ]
+    }
+  },
+  "denoCompiler": {
+    "version": "2.1.4",
+    "digest": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34"
+  },
+  "matrixLogSanitized": "node:internal/errors:983\r\n  const err = new Error(message);\r\n              ^\r\n\r\nError: Command failed: docker exec -i supabase_db_gymio-workout-actions-local psql -U postgres -d postgres -X -qAt -v ON_ERROR_STOP=1\r\nERROR:  syntax error at end of input\r\nLINE 45:       when 'function' then (select jsonb_build_array(pg_get_...\r\n                              ^\r\n\r\n    at genericNodeError (node:internal/errors:983:15)\r\n    at wrappedFn (node:internal/errors:537:14)\r\n    at checkExecSyncError (node:child_process:882:11)\r\n    at execFileSync (node:child_process:918:15)\r\n    at sql (file:///C:/Users/mateu/OneDrive/Documentos/gym.io/supabase/testing/actions-context.mjs:39:22)\r\n    at file:///C:/Users/mateu/OneDrive/Documentos/gym.io/supabase/testing/actions-apply.mjs:8:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5) {\r\n  status: 3,\r\n  signal: null,\r\n  output: [\r\n    null,\r\n    '',\r\n    'ERROR:  syntax error at end of input\\n' +\r\n      \"LINE 45:       when 'function' then (select jsonb_build_array(pg_get_...\\n\" +\r\n      '                              ^\\n'\r\n  ],\r\n  pid: 19924,\r\n  stdout: '',\r\n  stderr: 'ERROR:  syntax error at end of input\\n' +\r\n    \"LINE 45:       when 'function' then (select jsonb_build_array(pg_get_...\\n\" +\r\n    '                              ^\\n'\r\n}\r\n\r\nNode.js v22.15.1\r\nC application failed; stop without repair\r\nNo C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io\\supabase\\testing\\run-workout-actions-matrix.ps1:12 caractere:27\r\n+ ... ASTEXITCODE -ne 0){throw 'C application failed; stop without repair'}\r\n+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : OperationStopped: (C application f... without repair:String) [], RuntimeException\r\n    + FullyQualifiedErrorId : C application failed; stop without repair\r\n \r\n",
+  "boundaryFailure": {
+    "classification": "strict HTTP CORS mismatch against local gateway",
+    "status": 405,
+    "actualAllowOrigin": "*",
+    "expectedAllowOrigin": "http://localhost:5173",
+    "case": "GET with allowed Origin",
+    "groupStopped": true
+  },
+  "scopeDeviation": {
+    "stage": "independent A SQL regression",
+    "fixture": "supabase/testing/push-security.sql:10",
+    "description": "Two additional synthetic auth.users rows were inserted inside the rollback-only transaction. This violates the two-user-only restriction during execution despite no persistence.",
+    "additionalTransientUsers": 2,
+    "transactionRolledBack": true,
+    "persistedExtraUsers": 0,
+    "finalAuthUsers": 2,
+    "finalProfiles": 2
+  },
+  "finalChecks": {
+    "allSixFrozenHashesMatch": true,
+    "productionSourceChanges": [],
+    "gitDiffCheck": true,
+    "onlyRepositoryAdditions": [
+      "supabase/testing/WORKOUT_ACTIONS_TEST_MATRIX_RESULT.md",
+      "supabase/testing/actions-test-matrix-result.json"
+    ],
+    "ignoredEnvSnapshots": "end-only; no before/after equality claim"
+  }
+}

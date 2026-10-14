@@ -1,0 +1,23 @@
+{
+  "project": "gymio-workout-actions-local",
+  "protectedContainerCount": 10,
+  "completedAt": "2026-10-13T00:36:37.8896898Z",
+  "removedContainerIds": [
+    "02025774dc6b1122b88019c602289ae417e0d5dff6c2a6758e803200ec82e4c4",
+    "1a2631a0afc1b66deb118c921b9479c2105d389b6ec140cd38f70108b1d4370c",
+    "60add77aae42d7469466ae461b0f8e1d480aff70246d575acce5294a5a9b4447",
+    "de7e8265054c77e5fa93badb35dc671c45cc9682ac102a07877f539b578a630a",
+    "fc48a25fb957234b6dff9a14ec2a6d0c61e3445dc80f43cc618c60b15647b768"
+  ],
+  "removed": {
+    "containers": true,
+    "runtime": true,
+    "volumes": true,
+    "network": true
+  },
+  "noPrune": true,
+  "cliCwd": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-7bfed995de8a491988d371fca20e37e1",
+  "completed": true,
+  "preservedA_B": true,
+  "runtimeRoot": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-7bfed995de8a491988d371fca20e37e1"
+}

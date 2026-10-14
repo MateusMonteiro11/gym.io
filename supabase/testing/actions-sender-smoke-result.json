@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "scope": "no-network two-subscription PostgreSQL sender smoke; not the complete matrix",
+  "image": "public.ecr.aws/supabase/postgres:17.6.1.113",
+  "cHash": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca",
+  "support": [],
+  "stages": [
+    "exact PostgreSQL with official config and TCP readiness",
+    "fixture -> EXPAND -> Memory -> Foundation A -> Notifications B -> corrected C"
+  ],
+  "externalRequests": 0,
+  "imageId": "sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e",
+  "digests": [
+    "public.ecr.aws/supabase/postgres@sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e"
+  ],
+  "serverVersion": "17.6",
+  "preload": "pg_cron,pg_net,pg_stat_statements",
+  "verified": [
+    {
+      "subscription_id": "87fed41f-736f-48a1-9dbb-44da71363a6e",
+      "jsonb": true,
+      "b_title_preserved": true,
+      "b_body_preserved": true,
+      "c_projection": true,
+      "exact_capability_binding": true,
+      "attempted_before_any_transport": true
+    },
+    {
+      "subscription_id": "fa16f438-d2f0-458e-a992-c321cab5ef8b",
+      "jsonb": true,
+      "b_title_preserved": true,
+      "b_body_preserved": true,
+      "c_projection": true,
+      "exact_capability_binding": true,
+      "attempted_before_any_transport": true
+    }
+  ],
+  "noCrossSubscriptionBearer": true,
+  "network": "none",
+  "cleanup": "exact owned no-network container removed; tmpfs data and guarded temporary root/secrets removed; A/B untouched"
+}

@@ -1,0 +1,3443 @@
+{
+  "phase": "V3.2-C MATRIX CLOSURE GATE",
+  "collectedAt": "2026-10-13T07:10:45.560Z",
+  "project": "gymio-workout-actions-local",
+  "runtimeRoot": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-d4500f82d7524db0a715b1641c74a828",
+  "ports": {
+    "api": 55451,
+    "db": 55452,
+    "shadow": 55450
+  },
+  "hashes": {
+    "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+    "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+    "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+    "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+    "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+    "20261011021351_workout_notification_actions.sql": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca"
+  },
+  "versions": {
+    "node": "v22.15.1",
+    "supabaseCLI": "2.120.0",
+    "postgresImage": "public.ecr.aws/supabase/postgres:17.6.1.113",
+    "postgres": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+    "extensions": {
+      "pg_net": "0.20.0",
+      "pg_cron": "1.6.4",
+      "supabase_vault": "0.3.1"
+    }
+  },
+  "ownedAtCollect": [
+    {
+      "id": "75623b8edb743789063c9584204d75a67bdb20efe5a726ac2fceabffb4dcca25",
+      "name": "/supabase_edge_runtime_gymio-workout-actions-local",
+      "image": "public.ecr.aws/supabase/edge-runtime:v1.77.4",
+      "imageId": "sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8",
+      "volumes": [
+        "supabase_edge_runtime_gymio-workout-actions-local"
+      ],
+      "networks": [
+        "supabase_network_gymio-workout-actions-local"
+      ]
+    },
+    {
+      "id": "385b909206d96ccda38f574a5314163eb02c16888f25e94f5170b663f925f6ce",
+      "name": "/supabase_rest_gymio-workout-actions-local",
+      "image": "public.ecr.aws/supabase/postgrest:v16.4",
+      "imageId": "sha256:d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df",
+      "volumes": [],
+      "networks": [
+        "supabase_network_gymio-workout-actions-local"
+      ]
+    },
+    {
+      "id": "285a8a16463431356d9551cf0be12d4fcfbba3509fc9f97bdb1d96a18ae82521",
+      "name": "/supabase_auth_gymio-workout-actions-local",
+      "image": "public.ecr.aws/supabase/gotrue:v2.197.0",
+      "imageId": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+      "volumes": [],
+      "networks": [
+        "supabase_network_gymio-workout-actions-local"
+      ]
+    },
+    {
+      "id": "80c19e133c806429482c96475fdb7f6352b0123a4a639661e4050c91a74f88af",
+      "name": "/supabase_kong_gymio-workout-actions-local",
+      "image": "public.ecr.aws/supabase/kong:2.8.1",
+      "imageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "volumes": [],
+      "networks": [
+        "supabase_network_gymio-workout-actions-local"
+      ]
+    },
+    {
+      "id": "c0004f847be5af9e9f15ea1fb3bab660bbe65d44c34779b2cdc4ee9ae503351e",
+      "name": "/supabase_db_gymio-workout-actions-local",
+      "image": "public.ecr.aws/supabase/postgres:17.6.1.113",
+      "imageId": "sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e",
+      "volumes": [
+        "supabase_db_gymio-workout-actions-local"
+      ],
+      "networks": [
+        "supabase_network_gymio-workout-actions-local"
+      ]
+    }
+  ],
+  "createdResources": {
+    "project": "gymio-workout-actions-local",
+    "root": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-d4500f82d7524db0a715b1641c74a828",
+    "containers": [
+      {
+        "id": "de562d96e44bdf2fbd614f7235b8f0f1c1c962c382940a107586737830f2ab9f",
+        "name": "/supabase_edge_runtime_gymio-workout-actions-local",
+        "image": "public.ecr.aws/supabase/edge-runtime:v1.77.4",
+        "imageId": "sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8",
+        "digests": [
+          "public.ecr.aws/supabase/edge-runtime@sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8"
+        ],
+        "ports": {}
+      },
+      {
+        "id": "385b909206d96ccda38f574a5314163eb02c16888f25e94f5170b663f925f6ce",
+        "name": "/supabase_rest_gymio-workout-actions-local",
+        "image": "public.ecr.aws/supabase/postgrest:v16.4",
+        "imageId": "sha256:d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df",
+        "digests": [
+          "public.ecr.aws/supabase/postgrest@sha256:d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df"
+        ],
+        "ports": {
+          "3000/tcp": null
+        }
+      },
+      {
+        "id": "285a8a16463431356d9551cf0be12d4fcfbba3509fc9f97bdb1d96a18ae82521",
+        "name": "/supabase_auth_gymio-workout-actions-local",
+        "image": "public.ecr.aws/supabase/gotrue:v2.197.0",
+        "imageId": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+        "digests": [
+          "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+        ],
+        "ports": {
+          "9999/tcp": null
+        }
+      },
+      {
+        "id": "80c19e133c806429482c96475fdb7f6352b0123a4a639661e4050c91a74f88af",
+        "name": "/supabase_kong_gymio-workout-actions-local",
+        "image": "public.ecr.aws/supabase/kong:2.8.1",
+        "imageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "digests": [
+          "public.ecr.aws/supabase/kong@sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d"
+        ],
+        "ports": {
+          "8000/tcp": [
+            {
+              "HostIp": "0.0.0.0",
+              "HostPort": "55451"
+            },
+            {
+              "HostIp": "::",
+              "HostPort": "55451"
+            }
+          ]
+        }
+      },
+      {
+        "id": "c0004f847be5af9e9f15ea1fb3bab660bbe65d44c34779b2cdc4ee9ae503351e",
+        "name": "/supabase_db_gymio-workout-actions-local",
+        "image": "public.ecr.aws/supabase/postgres:17.6.1.113",
+        "imageId": "sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e",
+        "digests": [
+          "public.ecr.aws/supabase/postgres@sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e"
+        ],
+        "ports": {
+          "5432/tcp": [
+            {
+              "HostIp": "0.0.0.0",
+              "HostPort": "55452"
+            },
+            {
+              "HostIp": "::",
+              "HostPort": "55452"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "runtime": {
+    "project": "gymio-workout-actions-local",
+    "runtimeRoot": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-d4500f82d7524db0a715b1641c74a828",
+    "bootstrap": [
+      "legacy fixture",
+      "EXPAND",
+      "Memory",
+      "Foundation A",
+      "Notifications B",
+      "Extension Security Gate",
+      "Actions C"
+    ],
+    "postgresImage": "public.ecr.aws/supabase/postgres:17.6.1.113",
+    "extensions": {
+      "pg_net": "0.20.0",
+      "pg_cron": "1.6.4",
+      "supabase_vault": "0.3.1"
+    },
+    "hashes": {
+      "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+      "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+      "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+      "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+      "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+      "20261011021351_workout_notification_actions.sql": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca"
+    },
+    "cAppliedUnmodified": true,
+    "smoke": {
+      "tables": 2,
+      "profiles": 2,
+      "auth_users": 2,
+      "active_jobs": 0,
+      "schema_loaded": true,
+      "public_wrappers": 3
+    },
+    "authHistoricalExecuted": false,
+    "contractExecuted": false,
+    "remoteOperations": 0,
+    "providerSafety": {
+      "globalJobInitiallyInactive": true,
+      "dispatchUrlAbsentBeforeFakeTransport": true,
+      "dispatchUrlProvisionedOnlyAtOriginalInstallStage": true,
+      "workerTokenServerOnly": true,
+      "productionFunctionEntryPreservedUntilOriginalInstallStage": true
+    }
+  },
+  "thirdEvidence": {
+    "file": "supabase/testing/actions-third-test-matrix-result.json",
+    "sha256": "cf14102daae706debc4da492378bf46c802f21c59c7d4ed431158e0a1524f758",
+    "functionalEvidence": {
+      "sender-smoke": true,
+      "application": true,
+      "extension-before": true,
+      "extension-after": true,
+      "sql-C": true,
+      "data-api-C": true,
+      "edge-C": true,
+      "idb-C": true,
+      "idb-B": true,
+      "npmtest": true,
+      "build": true,
+      "deno-frozen": true,
+      "performance": true
+    },
+    "sqlGroups": 37,
+    "edgeGroups": 16,
+    "sourceUnmodifiedSinceThird": true,
+    "fullCMatrixRepeated": false,
+    "originalVerdict": "V3.2-C TEST MATRIX REPROVADA",
+    "originalReportPreserved": true
+  },
+  "originalRegression": {
+    "passed": true,
+    "execution": "original 12 stages in one continuous invocation",
+    "started_at": "2026-10-13T02:04:05.485Z",
+    "finished_at": "2026-10-13T02:16:36.416Z",
+    "process_timeouts": {
+      "global_timeout_ms": null,
+      "per_stage_timeout_ms": null,
+      "changed": false
+    },
+    "buffer_limit_characters_per_stream": 16777216,
+    "results": [
+      {
+        "stage": "A ready",
+        "ordinal": 1,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/local-tests.mjs",
+          "ready",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-01-a-ready.json",
+        "stdout_file": "regression-step-01-a-ready.stdout.log",
+        "stderr_file": "regression-step-01-a-ready.stderr.log",
+        "started_at": "2026-10-13T02:04:08.922Z",
+        "finished_at": "2026-10-13T02:04:22.069Z",
+        "elapsed_ms": 13147.098,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 4036,
+        "stdout": "PASS local Edge Runtime readiness\n",
+        "stderr": "",
+        "combined_output": "PASS local Edge Runtime readiness\n\n[STDERR]\n",
+        "stdout_characters": 34,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:04:21.990Z",
+        "pass_labels": [
+          "PASS local Edge Runtime readiness"
+        ],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "A spike",
+        "ordinal": 2,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/local-tests.mjs",
+          "spike",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-02-a-spike.json",
+        "stdout_file": "regression-step-02-a-spike.stdout.log",
+        "stderr_file": "regression-step-02-a-spike.stderr.log",
+        "started_at": "2026-10-13T02:04:29.014Z",
+        "finished_at": "2026-10-13T02:04:39.014Z",
+        "elapsed_ms": 9999.809,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 18452,
+        "stdout": "{\"imported\":true,\"method\":\"POST\",\"encryptedBytes\":219,\"contentEncoding\":\"aes128gcm\",\"hasAuthorization\":true,\"runtime\":{\"deno\":\"[REDACTED_OPAQUE].77.4 (compatible with Deno v2.1.4)\",\"v8\":\"11.6.189.12\",\"typescript\":\"5.1.6\"},\"library\":\"web-push@3.6.7\",\"transmitted\":false}\n",
+        "stderr": "",
+        "combined_output": "{\"imported\":true,\"method\":\"POST\",\"encryptedBytes\":219,\"contentEncoding\":\"aes128gcm\",\"hasAuthorization\":true,\"runtime\":{\"deno\":\"[REDACTED_OPAQUE].77.4 (compatible with Deno v2.1.4)\",\"v8\":\"11.6.189.12\",\"typescript\":\"5.1.6\"},\"library\":\"web-push@3.6.7\",\"transmitted\":false}\n\n[STDERR]\n",
+        "stdout_characters": 276,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:04:38.998Z",
+        "pass_labels": [],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "A sql",
+        "ordinal": 3,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/local-tests.mjs",
+          "sql",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-03-a-sql.json",
+        "stdout_file": "regression-step-03-a-sql.stdout.log",
+        "stderr_file": "regression-step-03-a-sql.stderr.log",
+        "started_at": "2026-10-13T02:04:42.883Z",
+        "finished_at": "2026-10-13T02:05:17.436Z",
+        "elapsed_ms": 34552.589,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 18732,
+        "stdout": "PASS executor relation allowlist: real baseline + seven rolled-back negative ACL fixtures\nPASS SQL security, ownership, constraints, grants, identity formats and lifecycle\n",
+        "stderr": "ERROR:  push executor relation allowlist violation: public.usuarios (SELECT)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (SELECT)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (INSERT)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (UPDATE)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (REFERENCES)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.push_subscriptions (TRUNCATE)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.push_subscriptions (REFERENCES)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\n",
+        "combined_output": "PASS executor relation allowlist: real baseline + seven rolled-back negative ACL fixtures\nPASS SQL security, ownership, constraints, grants, identity formats and lifecycle\n\n[STDERR]\nERROR:  push executor relation allowlist violation: public.usuarios (SELECT)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (SELECT)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (INSERT)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (UPDATE)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.usuarios (REFERENCES)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.push_subscriptions (TRUNCATE)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\nERROR:  push executor relation allowlist violation: public.push_subscriptions (REFERENCES)\nCONTEXT:  PL/pgSQL function inline_code_block line 138 at RAISE\n",
+        "stdout_characters": 172,
+        "stderr_characters": 1017,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:05:17.417Z",
+        "pass_labels": [
+          "PASS executor relation allowlist: real baseline + seven rolled-back negative ACL fixtures",
+          "PASS SQL security, ownership, constraints, grants, identity formats and lifecycle"
+        ],
+        "assertion_failure": false,
+        "sql_failure": true
+      },
+      {
+        "stage": "A data-api",
+        "ordinal": 4,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/local-tests.mjs",
+          "data-api",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-04-a-data-api.json",
+        "stdout_file": "regression-step-04-a-data-api.stdout.log",
+        "stderr_file": "regression-step-04-a-data-api.stderr.log",
+        "started_at": "2026-10-13T02:05:24.224Z",
+        "finished_at": "2026-10-13T02:05:35.331Z",
+        "elapsed_ms": 11106.715,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 16832,
+        "stdout": "PASS Data API: JWT, multiple devices, idempotence, concurrent registration, ownership and blocked DML\n",
+        "stderr": "",
+        "combined_output": "PASS Data API: JWT, multiple devices, idempotence, concurrent registration, ownership and blocked DML\n\n[STDERR]\n",
+        "stdout_characters": 102,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:05:35.319Z",
+        "pass_labels": [
+          "PASS Data API: JWT, multiple devices, idempotence, concurrent registration, ownership and blocked DML"
+        ],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "A edge",
+        "ordinal": 5,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/local-tests.mjs",
+          "edge",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-05-a-edge.json",
+        "stdout_file": "regression-step-05-a-edge.stdout.log",
+        "stderr_file": "regression-step-05-a-edge.stderr.log",
+        "started_at": "2026-10-13T02:05:42.219Z",
+        "finished_at": "2026-10-13T02:06:13.666Z",
+        "elapsed_ms": 31447.48,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 14856,
+        "stdout": "PASS real Edge Runtime group: core\nPASS real Edge Runtime group: transport\nPASS real Edge Runtime group: expiration\nPASS real Edge Runtime group: temporary\nPASS real Edge Runtime group: timeout\nPASS real Edge Runtime group: concurrency\nPASS real Edge Runtime group: refresh\nPASS real Edge Runtime group: credentials\n{\"passed\":true,\"runtime\":{\"deno\":\"[REDACTED_OPAQUE].77.4 (compatible with Deno v2.1.4)\",\"v8\":\"11.6.189.12\",\"typescript\":\"5.1.6\"},\"externalPushRequests\":0,\"encryptedBytes\":219,\"verified\":[\"JWT\",\"ownership\",\"payload\",\"success\",\"rate_limit\",\"CORS\",\"SSRF\",\"encrypted_transport\",\"404\",\"410\",\"temporary_error\",\"transport_timeout\",\"atomic_rate_limit\",\"concurrent_refresh\",\"modern_secret_key\",\"legacy_service_role\",\"secret_not_bearer\"]}\n",
+        "stderr": "",
+        "combined_output": "PASS real Edge Runtime group: core\nPASS real Edge Runtime group: transport\nPASS real Edge Runtime group: expiration\nPASS real Edge Runtime group: temporary\nPASS real Edge Runtime group: timeout\nPASS real Edge Runtime group: concurrency\nPASS real Edge Runtime group: refresh\nPASS real Edge Runtime group: credentials\n{\"passed\":true,\"runtime\":{\"deno\":\"[REDACTED_OPAQUE].77.4 (compatible with Deno v2.1.4)\",\"v8\":\"11.6.189.12\",\"typescript\":\"5.1.6\"},\"externalPushRequests\":0,\"encryptedBytes\":219,\"verified\":[\"JWT\",\"ownership\",\"payload\",\"success\",\"rate_limit\",\"CORS\",\"SSRF\",\"encrypted_transport\",\"404\",\"410\",\"temporary_error\",\"transport_timeout\",\"atomic_rate_limit\",\"concurrent_refresh\",\"modern_secret_key\",\"legacy_service_role\",\"secret_not_bearer\"]}\n\n[STDERR]\n",
+        "stdout_characters": 751,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:06:13.659Z",
+        "pass_labels": [
+          "PASS real Edge Runtime group: core",
+          "PASS real Edge Runtime group: transport",
+          "PASS real Edge Runtime group: expiration",
+          "PASS real Edge Runtime group: temporary",
+          "PASS real Edge Runtime group: timeout",
+          "PASS real Edge Runtime group: concurrency",
+          "PASS real Edge Runtime group: refresh",
+          "PASS real Edge Runtime group: credentials"
+        ],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "B SQL",
+        "ordinal": 6,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/workout-local-tests.mjs",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-06-b-sql.json",
+        "stdout_file": "regression-step-06-b-sql.stdout.log",
+        "stderr_file": "regression-step-06-b-sql.stderr.log",
+        "started_at": "2026-10-13T02:06:18.338Z",
+        "finished_at": "2026-10-13T02:13:00.345Z",
+        "elapsed_ms": 402007.308,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 17596,
+        "stdout": "PASS SQL B: real pause/resume: old deadline blocked; both timestamps shifted; new expiry exactly once\nPASS SQL B: physical unique, frozen zero recipients, next rest gets later subscription\nPASS SQL B: multiple devices and ownership isolation; canonical server payload\nPASS SQL B: deadline +15 preserves event, releases unattempted claim, waits; attempted never repeats\nPASS SQL B: skip before or after capture makes unattempted work stale\nPASS SQL B: finalize before or after capture makes unattempted work stale\nPASS SQL B: cancel before or after capture makes unattempted work stale\nPASS SQL B: advance before or after capture makes unattempted work stale\nPASS SQL B: pause after capture defers existing claim, resume refreshes snapshots\nPASS SQL B: stale revision fails closed\nPASS SQL B: subscription removed before claim cascades and prevents begin\nPASS SQL B: subscription removed after claim cascades and prevents begin\nPASS SQL B: auth user removal cascades delivery and outbox atomically\nPASS SQL B: two schedulers and two senders cannot duplicate physical events or claims\nWaiting for the actual PostgreSQL 60-second lease; no timestamp rewriting.\nPASS SQL B: real 60-second lease: crash before attempt reclaimed; crash after attempt never reclaimed\nPASS SQL B: 404/410 snapshot-safe cleanup and concurrent key refresh\nPASS SQL B: retention removes only old terminal inactive/absent events, preserves active dedup\nPASS SQL B: idle tick and repeated capture produce zero Session/countdown writes\n",
+        "stderr": "",
+        "combined_output": "PASS SQL B: real pause/resume: old deadline blocked; both timestamps shifted; new expiry exactly once\nPASS SQL B: physical unique, frozen zero recipients, next rest gets later subscription\nPASS SQL B: multiple devices and ownership isolation; canonical server payload\nPASS SQL B: deadline +15 preserves event, releases unattempted claim, waits; attempted never repeats\nPASS SQL B: skip before or after capture makes unattempted work stale\nPASS SQL B: finalize before or after capture makes unattempted work stale\nPASS SQL B: cancel before or after capture makes unattempted work stale\nPASS SQL B: advance before or after capture makes unattempted work stale\nPASS SQL B: pause after capture defers existing claim, resume refreshes snapshots\nPASS SQL B: stale revision fails closed\nPASS SQL B: subscription removed before claim cascades and prevents begin\nPASS SQL B: subscription removed after claim cascades and prevents begin\nPASS SQL B: auth user removal cascades delivery and outbox atomically\nPASS SQL B: two schedulers and two senders cannot duplicate physical events or claims\nWaiting for the actual PostgreSQL 60-second lease; no timestamp rewriting.\nPASS SQL B: real 60-second lease: crash before attempt reclaimed; crash after attempt never reclaimed\nPASS SQL B: 404/410 snapshot-safe cleanup and concurrent key refresh\nPASS SQL B: retention removes only old terminal inactive/absent events, preserves active dedup\nPASS SQL B: idle tick and repeated capture produce zero Session/countdown writes\n\n[STDERR]\n",
+        "stdout_characters": 1505,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:13:00.338Z",
+        "pass_labels": [
+          "PASS SQL B: physical unique, frozen zero recipients, next rest gets later subscription",
+          "PASS SQL B: skip before or after capture makes unattempted work stale",
+          "PASS SQL B: finalize before or after capture makes unattempted work stale",
+          "PASS SQL B: cancel before or after capture makes unattempted work stale",
+          "PASS SQL B: advance before or after capture makes unattempted work stale",
+          "PASS SQL B: pause after capture defers existing claim, resume refreshes snapshots",
+          "PASS SQL B: stale revision fails closed",
+          "PASS SQL B: subscription removed before claim cascades and prevents begin",
+          "PASS SQL B: subscription removed after claim cascades and prevents begin",
+          "PASS SQL B: auth user removal cascades delivery and outbox atomically",
+          "PASS SQL B: two schedulers and two senders cannot duplicate physical events or claims",
+          "PASS SQL B: 404/410 snapshot-safe cleanup and concurrent key refresh",
+          "PASS SQL B: retention removes only old terminal inactive/absent events, preserves active dedup",
+          "PASS SQL B: idle tick and repeated capture produce zero Session/countdown writes"
+        ],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "B Data API",
+        "ordinal": 7,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/workout-data-api.mjs",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-07-b-data-api.json",
+        "stdout_file": "regression-step-07-b-data-api.stdout.log",
+        "stderr_file": "regression-step-07-b-data-api.stderr.log",
+        "started_at": "2026-10-13T02:13:02.618Z",
+        "finished_at": "2026-10-13T02:13:14.192Z",
+        "elapsed_ms": 11574.361,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 2172,
+        "stdout": "PASS B Data API: 33 client RPC/direct-DML rejections; 9 rolled-back negative assertion fixtures\n",
+        "stderr": "",
+        "combined_output": "PASS B Data API: 33 client RPC/direct-DML rejections; 9 rolled-back negative assertion fixtures\n\n[STDERR]\n",
+        "stdout_characters": 96,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:13:14.170Z",
+        "pass_labels": [],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "B Edge",
+        "ordinal": 8,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/workout-edge-tests.mjs",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-08-b-edge.json",
+        "stdout_file": "regression-step-08-b-edge.stdout.log",
+        "stderr_file": "regression-step-08-b-edge.stderr.log",
+        "started_at": "2026-10-13T02:13:16.582Z",
+        "finished_at": "2026-10-13T02:15:08.079Z",
+        "elapsed_ms": 111496.115,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 18720,
+        "stdout": "PASS real Edge B: boundary\nPASS real Edge B: batch\nPASS real Edge B: 404\nPASS real Edge B: 410\nPASS real Edge B: refresh\nPASS real Edge B: timeout\nPASS real Edge B: temporary\nPASS real Edge B: partial\nPASS real Edge B: removed\nPASS real Edge B: after_claim\nPASS real Edge B: crash_before\nPASS real Edge B: crash_after\nPASS real Edge B: stale\nPASS real Edge B: zero\nPASS real Edge B: concurrent\nPASS real Edge B: actual Auth logout after completed subscription RPC cleanup -> zero attempts\n",
+        "stderr": "",
+        "combined_output": "PASS real Edge B: boundary\nPASS real Edge B: batch\nPASS real Edge B: 404\nPASS real Edge B: 410\nPASS real Edge B: refresh\nPASS real Edge B: timeout\nPASS real Edge B: temporary\nPASS real Edge B: partial\nPASS real Edge B: removed\nPASS real Edge B: after_claim\nPASS real Edge B: crash_before\nPASS real Edge B: crash_after\nPASS real Edge B: stale\nPASS real Edge B: zero\nPASS real Edge B: concurrent\nPASS real Edge B: actual Auth logout after completed subscription RPC cleanup -> zero attempts\n\n[STDERR]\n",
+        "stdout_characters": 489,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:15:08.072Z",
+        "pass_labels": [
+          "PASS real Edge B: boundary",
+          "PASS real Edge B: batch",
+          "PASS real Edge B: 404",
+          "PASS real Edge B: 410",
+          "PASS real Edge B: refresh",
+          "PASS real Edge B: timeout",
+          "PASS real Edge B: temporary",
+          "PASS real Edge B: partial",
+          "PASS real Edge B: removed",
+          "PASS real Edge B: after_claim",
+          "PASS real Edge B: crash_before",
+          "PASS real Edge B: crash_after",
+          "PASS real Edge B: stale",
+          "PASS real Edge B: zero",
+          "PASS real Edge B: concurrent"
+        ],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "B performance",
+        "ordinal": 9,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/workout-performance.mjs",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-09-b-performance.json",
+        "stdout_file": "regression-step-09-b-performance.stdout.log",
+        "stderr_file": "regression-step-09-b-performance.stderr.log",
+        "started_at": "2026-10-13T02:15:10.153Z",
+        "finished_at": "2026-10-13T02:15:18.478Z",
+        "elapsed_ms": 8324.912,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 3876,
+        "stdout": "{\"passed\":true,\"idleServerMs\":{\"min\":4.827,\"max\":23.283,\"mean\":7.937799999999998},\"writes\":{\"sessionWrites\":0,\"notificationWrites\":0},\"indexPlan\":{\"Plan\":{\"Node Type\":\"Limit\",\"Parallel Aware\":false,\"Async Capable\":false,\"Startup Cost\":1.01,\"Total Cost\":1.01,\"Plan Rows\":1,\"Plan Width\":16,\"Actual Startup Time\":0.048,\"Actual Total Time\":0.049,\"Actual Rows\":0,\"Actual Loops\":1,\"Shared Hit Blocks\":4,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0,\"Plans\":[{\"Node Type\":\"Sort\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Startup Cost\":1.01,\"Total Cost\":1.01,\"Plan Rows\":1,\"Plan Width\":16,\"Actual Startup Time\":0.046,\"Actual Total Time\":0.047,\"Actual Rows\":0,\"Actual Loops\":1,\"Sort Key\":[\"id_sessao\"],\"Sort Method\":\"quicksort\",\"Sort Space Used\":25,\"Sort Space Type\":\"Memory\",\"Shared Hit Blocks\":4,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0,\"Plans\":[{\"Node Type\":\"Seq Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Relation Name\":\"treino_sessoes\",\"Alias\":\"treino_sessoes\",\"Startup Cost\":0,\"Total Cost\":1,\"Plan Rows\":1,\"Plan Width\":16,\"Actual Startup Time\":0.019,\"Actual Total Time\":0.019,\"Actual Rows\":0,\"Actual Loops\":1,\"Filter\":\"((pausada_em IS NULL) AND (status = 'ativa'::text) AND (fase = 'descanso'::text) AND (descanso_termina_em <= clock_timestamp()))\",\"Rows Removed by Filter\":0,\"Shared Hit Blocks\":1,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0}]}]},\"Planning\":{\"Shared Hit Blocks\":209,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0},\"Planning Time\":0.753,\"Triggers\":[],\"Execution Time\":0.139},\"fullServerMs\":41.817,\"fullWrites\":{\"events\":100,\"deliveries\":100,\"sessionWrites\":0},\"progress\":{\"allEvents\":1000,\"allDeliveries\":1000},\"populatedIndexPlan\":{\"Plan\":{\"Node Type\":\"Limit\",\"Parallel Aware\":false,\"Async Capable\":false,\"Startup Cost\":0.28,\"Total Cost\":41.41,\"Plan Rows\":100,\"Plan Width\":16,\"Actual Startup Time\":0.085,\"Actual Total Time\":0.178,\"Actual Rows\":100,\"Actual Loops\":1,\"Shared Hit Blocks\":96,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0,\"Plans\":[{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"treino_sessoes_pkey\",\"Relation Name\":\"treino_sessoes\",\"Alias\":\"treino_sessoes\",\"Startup Cost\":0.28,\"Total Cost\":137.24,\"Plan Rows\":333,\"Plan Width\":16,\"Actual Startup Time\":0.083,\"Actual Total Time\":0.167,\"Actual Rows\":100,\"Actual Loops\":1,\"Filter\":\"((pausada_em IS NULL) AND (status = 'ativa'::text) AND (fase = 'descanso'::text) AND (descanso_termina_em <= clock_timestamp()))\",\"Rows Removed by Filter\":0,\"Shared Hit Blocks\":96,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0}]},\"Planning\":{\"Shared Hit Blocks\":0,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0},\"Planning Time\":0.26,\"Triggers\":[],\"Execution Time\":0.22},\"fixtureRolledBack\":true}\n",
+        "stderr": "",
+        "combined_output": "{\"passed\":true,\"idleServerMs\":{\"min\":4.827,\"max\":23.283,\"mean\":7.937799999999998},\"writes\":{\"sessionWrites\":0,\"notificationWrites\":0},\"indexPlan\":{\"Plan\":{\"Node Type\":\"Limit\",\"Parallel Aware\":false,\"Async Capable\":false,\"Startup Cost\":1.01,\"Total Cost\":1.01,\"Plan Rows\":1,\"Plan Width\":16,\"Actual Startup Time\":0.048,\"Actual Total Time\":0.049,\"Actual Rows\":0,\"Actual Loops\":1,\"Shared Hit Blocks\":4,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0,\"Plans\":[{\"Node Type\":\"Sort\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Startup Cost\":1.01,\"Total Cost\":1.01,\"Plan Rows\":1,\"Plan Width\":16,\"Actual Startup Time\":0.046,\"Actual Total Time\":0.047,\"Actual Rows\":0,\"Actual Loops\":1,\"Sort Key\":[\"id_sessao\"],\"Sort Method\":\"quicksort\",\"Sort Space Used\":25,\"Sort Space Type\":\"Memory\",\"Shared Hit Blocks\":4,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0,\"Plans\":[{\"Node Type\":\"Seq Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Relation Name\":\"treino_sessoes\",\"Alias\":\"treino_sessoes\",\"Startup Cost\":0,\"Total Cost\":1,\"Plan Rows\":1,\"Plan Width\":16,\"Actual Startup Time\":0.019,\"Actual Total Time\":0.019,\"Actual Rows\":0,\"Actual Loops\":1,\"Filter\":\"((pausada_em IS NULL) AND (status = 'ativa'::text) AND (fase = 'descanso'::text) AND (descanso_termina_em <= clock_timestamp()))\",\"Rows Removed by Filter\":0,\"Shared Hit Blocks\":1,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0}]}]},\"Planning\":{\"Shared Hit Blocks\":209,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0},\"Planning Time\":0.753,\"Triggers\":[],\"Execution Time\":0.139},\"fullServerMs\":41.817,\"fullWrites\":{\"events\":100,\"deliveries\":100,\"sessionWrites\":0},\"progress\":{\"allEvents\":1000,\"allDeliveries\":1000},\"populatedIndexPlan\":{\"Plan\":{\"Node Type\":\"Limit\",\"Parallel Aware\":false,\"Async Capable\":false,\"Startup Cost\":0.28,\"Total Cost\":41.41,\"Plan Rows\":100,\"Plan Width\":16,\"Actual Startup Time\":0.085,\"Actual Total Time\":0.178,\"Actual Rows\":100,\"Actual Loops\":1,\"Shared Hit Blocks\":96,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0,\"Plans\":[{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"treino_sessoes_pkey\",\"Relation Name\":\"treino_sessoes\",\"Alias\":\"treino_sessoes\",\"Startup Cost\":0.28,\"Total Cost\":137.24,\"Plan Rows\":333,\"Plan Width\":16,\"Actual Startup Time\":0.083,\"Actual Total Time\":0.167,\"Actual Rows\":100,\"Actual Loops\":1,\"Filter\":\"((pausada_em IS NULL) AND (status = 'ativa'::text) AND (fase = 'descanso'::text) AND (descanso_termina_em <= clock_timestamp()))\",\"Rows Removed by Filter\":0,\"Shared Hit Blocks\":96,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0}]},\"Planning\":{\"Shared Hit Blocks\":0,\"Shared Read Blocks\":0,\"Shared Dirtied Blocks\":0,\"Shared Written Blocks\":0,\"Local Hit Blocks\":0,\"Local Read Blocks\":0,\"Local Dirtied Blocks\":0,\"Local Written Blocks\":0,\"Temp Read Blocks\":0,\"Temp Written Blocks\":0},\"Planning Time\":0.26,\"Triggers\":[],\"Execution Time\":0.22},\"fixtureRolledBack\":true}\n\n[STDERR]\n",
+        "stdout_characters": 3991,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:15:18.470Z",
+        "pass_labels": [],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "B scheduler",
+        "ordinal": 10,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/scheduler-spike.mjs",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-10-b-scheduler.json",
+        "stdout_file": "regression-step-10-b-scheduler.stdout.log",
+        "stderr_file": "regression-step-10-b-scheduler.stderr.log",
+        "started_at": "2026-10-13T02:15:20.545Z",
+        "finished_at": "2026-10-13T02:15:58.189Z",
+        "elapsed_ms": 37644.093,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 23736,
+        "stdout": "{\"passed\":true,\"version\":\"1.6.4\",\"schedule\":\"10 seconds\",\"command\":\"select gymio_scheduler_spike.record_tick();\",\"runs\":[{\"id\":1,\"ended_at\":\"2026-10-13T02:15:34.389615+00:00\",\"started_at\":\"2026-10-13T02:15:34.286952+00:00\"},{\"id\":2,\"ended_at\":\"2026-10-13T02:15:44.520474+00:00\",\"started_at\":\"2026-10-13T02:15:44.418235+00:00\"},{\"id\":3,\"ended_at\":\"2026-10-13T02:15:54.556377+00:00\",\"started_at\":\"2026-10-13T02:15:54.453343+00:00\"}],\"intervals\":[10.132,10.035],\"externalRequests\":0}\n",
+        "stderr": "",
+        "combined_output": "{\"passed\":true,\"version\":\"1.6.4\",\"schedule\":\"10 seconds\",\"command\":\"select gymio_scheduler_spike.record_tick();\",\"runs\":[{\"id\":1,\"ended_at\":\"2026-10-13T02:15:34.389615+00:00\",\"started_at\":\"2026-10-13T02:15:34.286952+00:00\"},{\"id\":2,\"ended_at\":\"2026-10-13T02:15:44.520474+00:00\",\"started_at\":\"2026-10-13T02:15:44.418235+00:00\"},{\"id\":3,\"ended_at\":\"2026-10-13T02:15:54.556377+00:00\",\"started_at\":\"2026-10-13T02:15:54.453343+00:00\"}],\"intervals\":[10.132,10.035],\"externalRequests\":0}\n\n[STDERR]\n",
+        "stdout_characters": 481,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:15:58.183Z",
+        "pass_labels": [],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "install sender test transport",
+        "ordinal": 11,
+        "command": [
+          "node",
+          "supabase/testing/actions-reexecution-setup.mjs",
+          "install-sender-harness",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-11-install-sender-test-transport.json",
+        "stdout_file": "regression-step-11-install-sender-test-transport.stdout.log",
+        "stderr_file": "regression-step-11-install-sender-test-transport.stderr.log",
+        "started_at": "2026-10-13T02:16:00.183Z",
+        "finished_at": "2026-10-13T02:16:03.026Z",
+        "elapsed_ms": 2843.617,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 26060,
+        "stdout": "PASS test-only encrypted fake transport installed in C runtime snapshot; production source unchanged\n",
+        "stderr": "",
+        "combined_output": "PASS test-only encrypted fake transport installed in C runtime snapshot; production source unchanged\n\n[STDERR]\n",
+        "stdout_characters": 101,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:16:03.019Z",
+        "pass_labels": [],
+        "assertion_failure": false,
+        "sql_failure": false
+      },
+      {
+        "stage": "B dispatch",
+        "ordinal": 12,
+        "command": [
+          "node",
+          "../../../AppData/Local/Temp/gymio-workout-actions-d4500f82d7524db0a715b1641c74a828/tests/workout-dispatch.mjs",
+          "<owned-local-context>"
+        ],
+        "cwd": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io",
+        "environment": "inherited process environment; no override",
+        "windows_hide": true,
+        "shell": false,
+        "passed": true,
+        "exact_A_B_auth_profiles_restored": true,
+        "evidence_file": "regression-step-12-b-dispatch.json",
+        "stdout_file": "regression-step-12-b-dispatch.stdout.log",
+        "stderr_file": "regression-step-12-b-dispatch.stderr.log",
+        "started_at": "2026-10-13T02:16:05.639Z",
+        "finished_at": "2026-10-13T02:16:31.161Z",
+        "elapsed_ms": 25523.293,
+        "exit_code": 0,
+        "signal": null,
+        "timed_out": false,
+        "timeout_ms": null,
+        "termination_reason": "completed",
+        "requested_signal": null,
+        "pid": 6656,
+        "stdout": "PASS real global cron -> conditional pg_net -> header-authenticated Edge -> accepted fake provider; zero external Push requests\n",
+        "stderr": "",
+        "combined_output": "PASS real global cron -> conditional pg_net -> header-authenticated Edge -> accepted fake provider; zero external Push requests\n\n[STDERR]\n",
+        "stdout_characters": 128,
+        "stderr_characters": 0,
+        "buffer_limit_characters": 16777216,
+        "spawn_error_code": null,
+        "exit_observed_at": "2026-10-13T02:16:31.154Z",
+        "pass_labels": [],
+        "assertion_failure": false,
+        "sql_failure": false
+      }
+    ],
+    "sources": {
+      "local-tests.mjs": {
+        "source_sha256": "96b6310f863ec1ba0276d0b8df952bb8daa7e2b040ae63029ad5040712a36b57",
+        "body_sha256": "d42a0975498aee6e52798e05f48e519bf2d31e75e9224a16bd5c1ae1bae52fcd",
+        "adapter_sha256": "606f372de1ed5785fca004649b97d3812ac8e04f183fc3d995bdbfc26d79796f",
+        "guard_only": true
+      },
+      "scheduler-spike.mjs": {
+        "source_sha256": "a91811271375480d230db4e88aa715849297419e20ff3a410dd04b2416e330b4",
+        "body_sha256": "d58ed677902cdbebe0bc5c28c09d26e113a9626432e5fc5bd2678041b920e45a",
+        "adapter_sha256": "8edcfd9dc24d4c67e0915d0addef2bbf4901c1fae1a61fc6ad874798da26c1f9",
+        "guard_only": true
+      },
+      "workout-local-tests.mjs": {
+        "source_sha256": "e8e5294dd4a8ef517146bee739aa81be4daea872bdd84037272ba98fd96b6291",
+        "body_sha256": "e8e5294dd4a8ef517146bee739aa81be4daea872bdd84037272ba98fd96b6291",
+        "guard_only": false
+      },
+      "workout-data-api.mjs": {
+        "source_sha256": "f75bfaada62ae5b451ce583d97474f87cb50629ffc8e2efd528b52100422892e",
+        "body_sha256": "f75bfaada62ae5b451ce583d97474f87cb50629ffc8e2efd528b52100422892e",
+        "guard_only": false
+      },
+      "workout-edge-tests.mjs": {
+        "source_sha256": "ed57c56b65756cd16de7946da591db893b236c9cfdb878f42512a1d131ff11e2",
+        "body_sha256": "ed57c56b65756cd16de7946da591db893b236c9cfdb878f42512a1d131ff11e2",
+        "guard_only": false
+      },
+      "workout-performance.mjs": {
+        "source_sha256": "22b3b2087dcab57a3d4005274b5fdf5a761ca7be2d1303d4b59b817a6222e54a",
+        "body_sha256": "22b3b2087dcab57a3d4005274b5fdf5a761ca7be2d1303d4b59b817a6222e54a",
+        "guard_only": false
+      },
+      "workout-dispatch.mjs": {
+        "source_sha256": "85ed6455e8b4664d932f267ad566999d31398cbc7b8c3c63f255e0c57653c33a",
+        "body_sha256": "85ed6455e8b4664d932f267ad566999d31398cbc7b8c3c63f255e0c57653c33a",
+        "guard_only": false
+      }
+    },
+    "edge_sources": {
+      "push-compat-spike": {
+        "source_sha256": "4f069e564a60cf5454cc6c4c33c88fb011788a7874eb2811800b33277eeed580",
+        "adapter_sha256": "4f069e564a60cf5454cc6c4c33c88fb011788a7874eb2811800b33277eeed580",
+        "byte_identical": true
+      },
+      "push-integration": {
+        "source_sha256": "4d751334d57f49ea827928a265baae570c62797a1e5d16bed6cafa9d36d49ad9",
+        "adapter_sha256": "4d751334d57f49ea827928a265baae570c62797a1e5d16bed6cafa9d36d49ad9",
+        "byte_identical": true
+      },
+      "workout-integration": {
+        "source_sha256": "a89b2ad55fbbc4a7a8e819186726f844ed8c34bf81ec3f78a14020eb5253e636",
+        "adapter_sha256": "ae23cee6c58287ed6bbe44d86a2add5ce40b693ab92ec35c598ae5ca74ad33f1",
+        "exactly_one_repository_context_import": true,
+        "import_from": "from '../_shared/workoutPushRepository.js'",
+        "import_to": "from '../_shared/actions-b-regression-repository.js'",
+        "all_other_bytes_identical": true
+      },
+      "repository_context_port": {
+        "source_sha256": "536ef017e609e2b074403ee5f848a59a164be509d180946ce5062bc178cd75a6",
+        "byte_identical": true
+      }
+    },
+    "final_baseline": {
+      "passed": true,
+      "six_hashes_and_owned_runtime_verified": true,
+      "exact_A_B_auth_profiles_restored": true,
+      "auth_users": 2,
+      "profiles": 2,
+      "fixture_tables_empty": true,
+      "global_workout_job_inactive": true,
+      "cleanup_policy": "verify only; no automatic data repair"
+    },
+    "failure": null,
+    "auxiliary_user_policy": {
+      "rollback_only": "TRANSIENT ROLLBACK-ONLY TEST FIXTURE",
+      "historical_non_rollback_cleanup": "Explicit human approval: local auxiliary user with proven cleanup; historical test body unchanged"
+    },
+    "identity_baseline": {
+      "auth_users": 2,
+      "profiles": 2,
+      "only_matrix_A_B": true
+    },
+    "externalPushRequests": 0
+  },
+  "runnerDiagnosis": {
+    "scope": "Read-only diagnosis of the original third-matrix regression runner before closure-gate execution",
+    "observed_prior_result": {
+      "b_sql_exit_code": 1,
+      "b_sql_elapsed_ms": 241793.703,
+      "assertion_failure": true,
+      "sql_failure": false,
+      "last_pass_group": "two schedulers and two senders cannot duplicate physical events or claims",
+      "stderr_was_discarded": true,
+      "failing_assertion_location_available": false,
+      "isolated_lease_later_passed": true,
+      "full_body_diagnostic_later_passed": true,
+      "full_body_diagnostic_elapsed_ms": 295125,
+      "original_cause_resolved": false
+    },
+    "runner_before_observability_fix": {
+      "sources_inspected": [
+        "supabase/testing/actions-reexecution-regressions.mjs",
+        "supabase/testing/actions-third-run-stage.mjs",
+        "supabase/testing/actions-third-complete-regressions.mjs"
+      ],
+      "global_process_timeout_ms": null,
+      "per_stage_process_timeout_ms": null,
+      "spawn_timeout_option_present": false,
+      "process_timer_300000_present": false,
+      "conclusion_300000_timeout_caused_prior_failure": "not supported by retained evidence",
+      "per_stream_limit_characters": 16777216,
+      "buffer_limit_action": "child.kill() without preserving termination reason or signal",
+      "stdout": "PASS labels only were retained",
+      "stderr": "discarded except assertion_failure and sql_failure flags",
+      "exit_code": "null was converted to 1",
+      "spawn_error": "converted to generic failure",
+      "signal": "not retained",
+      "cwd": "process.cwd() (workspace)",
+      "environment": "process.env inherited without override",
+      "shell": false,
+      "windows_hide": "not explicitly set",
+      "close_event": "waited for child close",
+      "finally_baseline": "missing at runner level; per-stage identity verification existed"
+    },
+    "authorized_observability_fix": {
+      "global_process_timeout_ms": null,
+      "per_stage_process_timeout_ms": null,
+      "timeout_values_changed": false,
+      "per_stream_limit_characters": 16777216,
+      "direct_spawn_no_shell": true,
+      "windows_hide": true,
+      "retain": [
+        "logical command",
+        "start",
+        "finish",
+        "elapsed",
+        "exit code",
+        "signal",
+        "termination reason",
+        "sanitized stdout",
+        "sanitized stderr"
+      ],
+      "partial_lines_held_until_complete": true,
+      "both_full_streams_redacted_after_close": true,
+      "baseline_finally": "verify exact local A/B identities, empty fixtures, frozen hashes and inactive job; never repair data",
+      "historical_test_assertion_bodies": "unchanged and byte-checked before the single original 12-stage invocation"
+    },
+    "operations_during_diagnosis": {
+      "docker_executed": false,
+      "sql_executed": false,
+      "remote_operations": false
+    }
+  },
+  "sourceAudit": {
+    "passed": true,
+    "head": "cf953d2bb234f4050ad50f6ef19b5b94a5df975e",
+    "branch": "gym.io-v3.2",
+    "baselines": {
+      "third": "supabase/testing/actions-third-inventory-after.json",
+      "closure": "supabase/testing/actions-closure-inventory-before.json",
+      "thirdImmutable": true
+    },
+    "hashes": {
+      "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+      "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+      "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+      "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+      "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+      "20261011021351_workout_notification_actions.sql": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca"
+    },
+    "files": 1134,
+    "categoryCounts": {
+      "PROTECTED SOURCE": 1123,
+      "AUTHORIZED TEST/HARNESS CHANGES": 10,
+      "GENERATED SUPABASE CLI STATE": 1
+    },
+    "exactAuthorizedPaths": [
+      "supabase/testing/WORKOUT_ACTIONS_MATRIX_CLOSURE_GATE.md",
+      "supabase/testing/actions-closure-cleanup-result.json",
+      "supabase/testing/actions-closure-cli-state-proof.json",
+      "supabase/testing/actions-closure-db-lint-result.json",
+      "supabase/testing/actions-closure-evidence.json",
+      "supabase/testing/actions-closure-evidence.mjs",
+      "supabase/testing/actions-closure-inventory-after.json",
+      "supabase/testing/actions-closure-inventory-before.json",
+      "supabase/testing/actions-closure-regressions-result.json",
+      "supabase/testing/actions-closure-runner-diagnosis.json",
+      "supabase/testing/actions-closure-runtime-result.json",
+      "supabase/testing/actions-closure-source-audit-result.json",
+      "supabase/testing/actions-closure-source-audit.mjs",
+      "supabase/testing/actions-closure-test-matrix-result.json",
+      "supabase/testing/actions-reexecution-regressions.mjs",
+      "supabase/testing/actions-reexecution-setup.mjs",
+      "supabase/testing/actions-regression-observer.mjs",
+      "supabase/testing/actions-regression-observer.test.mjs",
+      "supabase/testing/actions-third-matrix-db-lint.mjs"
+    ],
+    "generatedState": {
+      "path": "supabase/.temp/cli-latest",
+      "classification": "GENERATED SUPABASE CLI STATE",
+      "producerVersion": "2.120.0",
+      "value": "v2.120.0",
+      "bytes": 8,
+      "sha256": "2f99ec07bad208b0108748390c2fe80fb0a91b1784a8f7bf1d303efda7deeaee",
+      "notMigration": true,
+      "noSecrets": true,
+      "notConsumedByApplication": true,
+      "doesNotContainRuntimeConfiguration": true
+    },
+    "thirdComparison": {
+      "changes": [
+        {
+          "path": "supabase/testing/actions-reexecution-regressions.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "before": "cfaaa76c7d67e01d54d6498b570e07c8710693f145602ada1e249beca9be9d5a",
+          "after": "99a520dcedec9f499ba040e6e00b9c48ecc0c8b45a47dfcd0bffaa0b70be49cc"
+        },
+        {
+          "path": "supabase/testing/actions-reexecution-setup.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "before": "cdfc80718160d3a6e536a4ba4fdae74b04ead8e5b9a3d7ec328172f2539888b0",
+          "after": "e3e263ddf1ff27b03d77537c248ac66586b3cf4e8da508922607b064f6878bc7"
+        },
+        {
+          "path": "supabase/testing/actions-third-matrix-db-lint.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "before": "1d5aa3e446a3166b239029ecc5d18405914c3e67668697e9710bbf731c6d8cc4",
+          "after": "b79fc20ff0b37a0c1e1e2bff0ca7e60194a22a446d62f6d755fdfb9cee21d9b7"
+        }
+      ],
+      "added": [
+        {
+          "path": "supabase/testing/actions-closure-cli-state-proof.json",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "358d52b1312843dbd9faf443dbb6e10b8ad62f9ead519c9d5430a3d1a7253871"
+        },
+        {
+          "path": "supabase/testing/actions-closure-evidence.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "c2e2d2022939fdc830d9f74bdfbccb9e6f7bbd4f4492bed6acb37faf61f2d231"
+        },
+        {
+          "path": "supabase/testing/actions-closure-inventory-before.json",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "c7587ef05ae140fc9efbe4e6307ff88de5d38894b9193d6e233b7262cdb2dc08"
+        },
+        {
+          "path": "supabase/testing/actions-closure-runner-diagnosis.json",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "780119b04ec830755b444f18700075e936633a9737b05825a6c0d8615d93d73b"
+        },
+        {
+          "path": "supabase/testing/actions-closure-source-audit.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "ca62e56718036563456abfa77b147d837873d732e91d8649ec0c6aec6fcd9481"
+        },
+        {
+          "path": "supabase/testing/actions-regression-observer.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "0a2763f93884fd710e2ac9f74ac7889903a41484fe6bc5f1f899ae01bc31181f"
+        },
+        {
+          "path": "supabase/testing/actions-regression-observer.test.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "ddfd05498a2aeb6d8a844209d16b84c66399945c6c95ef44641fa341b0d5c4c3"
+        }
+      ]
+    },
+    "closureComparison": {
+      "changes": [
+        {
+          "path": "supabase/testing/actions-reexecution-regressions.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "before": "cfaaa76c7d67e01d54d6498b570e07c8710693f145602ada1e249beca9be9d5a",
+          "after": "99a520dcedec9f499ba040e6e00b9c48ecc0c8b45a47dfcd0bffaa0b70be49cc"
+        },
+        {
+          "path": "supabase/testing/actions-reexecution-setup.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "before": "cdfc80718160d3a6e536a4ba4fdae74b04ead8e5b9a3d7ec328172f2539888b0",
+          "after": "e3e263ddf1ff27b03d77537c248ac66586b3cf4e8da508922607b064f6878bc7"
+        },
+        {
+          "path": "supabase/testing/actions-third-matrix-db-lint.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "before": "1d5aa3e446a3166b239029ecc5d18405914c3e67668697e9710bbf731c6d8cc4",
+          "after": "b79fc20ff0b37a0c1e1e2bff0ca7e60194a22a446d62f6d755fdfb9cee21d9b7"
+        }
+      ],
+      "added": [
+        {
+          "path": "supabase/testing/actions-closure-cli-state-proof.json",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "358d52b1312843dbd9faf443dbb6e10b8ad62f9ead519c9d5430a3d1a7253871"
+        },
+        {
+          "path": "supabase/testing/actions-closure-evidence.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "c2e2d2022939fdc830d9f74bdfbccb9e6f7bbd4f4492bed6acb37faf61f2d231"
+        },
+        {
+          "path": "supabase/testing/actions-closure-inventory-before.json",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "c7587ef05ae140fc9efbe4e6307ff88de5d38894b9193d6e233b7262cdb2dc08"
+        },
+        {
+          "path": "supabase/testing/actions-closure-runner-diagnosis.json",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "780119b04ec830755b444f18700075e936633a9737b05825a6c0d8615d93d73b"
+        },
+        {
+          "path": "supabase/testing/actions-closure-source-audit.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "ca62e56718036563456abfa77b147d837873d732e91d8649ec0c6aec6fcd9481"
+        },
+        {
+          "path": "supabase/testing/actions-regression-observer.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "0a2763f93884fd710e2ac9f74ac7889903a41484fe6bc5f1f899ae01bc31181f"
+        },
+        {
+          "path": "supabase/testing/actions-regression-observer.test.mjs",
+          "category": "AUTHORIZED TEST/HARNESS CHANGES",
+          "sha256": "ddfd05498a2aeb6d8a844209d16b84c66399945c6c95ef44641fa341b0d5c4c3"
+        }
+      ]
+    },
+    "tracked": {
+      "files": 307,
+      "exactContentDifferences": [
+        "supabase/migrations/20261011021351_workout_notification_actions.sql",
+        "supabase/testing/actions-context.mjs",
+        "supabase/testing/actions-data-api.mjs",
+        "supabase/testing/actions-edge-fixture.sql",
+        "supabase/testing/actions-edge-integration/index.ts",
+        "supabase/testing/actions-edge-tests.mjs",
+        "supabase/testing/actions-fixture.mjs",
+        "supabase/testing/actions-indexeddb.mjs",
+        "supabase/testing/actions-local-tests.mjs"
+      ],
+      "crlfOnlyDifferences": [
+        ".gitignore",
+        "README.md",
+        "index.html",
+        "jsconfig.json",
+        "package.json",
+        "public/favicon.svg",
+        "src/App.jsx",
+        "src/components/AgendarTreinoModal.jsx",
+        "src/components/CurrentExerciseCard.jsx",
+        "src/components/HistoricoCard.jsx",
+        "src/components/HistoricoEmpty.jsx",
+        "src/components/HistoricoHeader.jsx",
+        "src/components/HistoricoMonth.jsx",
+        "src/components/PreWorkoutModal.jsx",
+        "src/components/SessionFeedback.js",
+        "src/components/Sidebar.jsx",
+        "src/components/UserProfileModal.jsx",
+        "src/components/WorkoutActions.jsx",
+        "src/components/WorkoutHeader.jsx",
+        "src/components/WorkoutInfo.jsx",
+        "src/components/WorkoutProgress.jsx",
+        "src/components/WorkoutSessionRecoveryModal.jsx",
+        "src/components/WorkoutTimer.jsx",
+        "src/components/dashboard/DashboardMomentumCard.jsx",
+        "src/components/dashboard/DashboardNextWorkoutCard.jsx",
+        "src/components/dashboard/DashboardQuickMetric.jsx",
+        "src/components/dashboard/WorkoutConsistencyHeatmap.jsx",
+        "src/components/training/ScheduledWorkoutDeck.jsx",
+        "src/components/training/WorkoutCard.jsx",
+        "src/components/training/WorkoutCatalog.jsx",
+        "src/components/training/WorkoutWeekSelector.jsx",
+        "src/components/ui/ActionLoading.jsx",
+        "src/components/ui/Banner.jsx",
+        "src/components/ui/Button.jsx",
+        "src/components/ui/Card.jsx",
+        "src/components/ui/CarouselNavigation.jsx",
+        "src/components/ui/ContentEntrance.jsx",
+        "src/components/ui/Disclosure.jsx",
+        "src/components/ui/FieldError.jsx",
+        "src/components/ui/Input.jsx",
+        "src/components/ui/LoadingSpinner.jsx",
+        "src/components/ui/LoadingState.jsx",
+        "src/components/ui/Modal.jsx",
+        "src/components/ui/ModalHeader.jsx",
+        "src/components/ui/NotificationCenter.jsx",
+        "src/components/ui/PageHeader.jsx",
+        "src/components/ui/PageLoadingBoundary.jsx",
+        "src/components/ui/SegmentedControl.jsx",
+        "src/components/ui/Skeleton.jsx",
+        "src/components/ui/ThemeToggle.jsx",
+        "src/components/ui/appMotion.js",
+        "src/components/ui/loadingVariants.js",
+        "src/contexts/AuthContext.jsx",
+        "src/contexts/ThemeContext.jsx",
+        "src/contexts/UiContext.jsx",
+        "src/features/auth/AuthCard.jsx",
+        "src/features/auth/AuthField.jsx",
+        "src/features/auth/AuthHero.jsx",
+        "src/features/auth/AuthIllustration.jsx",
+        "src/features/auth/AuthShell.jsx",
+        "src/features/auth/SocialAuth.jsx",
+        "src/features/auth/auth.css",
+        "src/features/auth/authMotion.js",
+        "src/features/auth/useAuthFeedback.js",
+        "src/features/auth/useGoogleAuth.js",
+        "src/features/history/ChartDataTable.jsx",
+        "src/features/history/FeaturedExercises.jsx",
+        "src/features/history/HistoryCard.jsx",
+        "src/features/history/HistoryCharts.jsx",
+        "src/features/history/HistoryDetail.jsx",
+        "src/features/history/HistoryMetricValue.jsx",
+        "src/features/history/HistoryOverview.jsx",
+        "src/features/history/HistoryView.jsx",
+        "src/features/history/MuscleDistribution.jsx",
+        "src/features/history/TrainingRhythm.jsx",
+        "src/features/history/WorkoutExerciseTimeline.jsx",
+        "src/features/history/WorkoutHistory.jsx",
+        "src/features/history/history.css",
+        "src/features/history/historyModel.js",
+        "src/features/history/historyNavigation.js",
+        "src/features/history/historyRepository.js",
+        "src/features/history/useHistoryData.js",
+        "src/features/landing/LandingExperience.jsx",
+        "src/features/landing/LandingLoadingState.jsx",
+        "src/features/landing/landing.css",
+        "src/features/landing/sections/LandingSections.jsx",
+        "src/features/landing/three/MotionSpineScene.jsx",
+        "src/features/landing/three/ribbonBootstrap.js",
+        "src/features/landing/three/ribbonChapters.js",
+        "src/features/landing/three/ribbonDataAnchors.js",
+        "src/features/landing/three/ribbonEffects.js",
+        "src/features/landing/three/ribbonGeometry.js",
+        "src/features/landing/three/ribbonIntro.js",
+        "src/features/landing/three/ribbonLayout.js",
+        "src/features/landing/three/ribbonPath.js",
+        "src/features/landing/three/ribbonProfiles.js",
+        "src/features/landing/three/ribbonTimeline.js",
+        "src/features/landing/three/useRibbonScrollSync.js",
+        "src/features/publicSite/InstitutionalFooter.jsx",
+        "src/features/publicSite/LandingHeader.jsx",
+        "src/features/publicSite/LegalDocumentContent.jsx",
+        "src/features/publicSite/PublicHashLink.jsx",
+        "src/features/publicSite/TermsAndPrivacyModal.jsx",
+        "src/features/publicSite/hashNavigation.js",
+        "src/features/publicSite/legalDocuments.js",
+        "src/features/publicSite/publicContent.js",
+        "src/features/publicSite/publicSite.css",
+        "src/hooks/treinoSessaoControllerUtils.js",
+        "src/hooks/useAgendamentos.js",
+        "src/hooks/useAuth.js",
+        "src/hooks/useDescansoTimer.js",
+        "src/hooks/useHistorico.js",
+        "src/hooks/useHorizontalCarousel.js",
+        "src/hooks/useServerNow.js",
+        "src/hooks/useTreino.js",
+        "src/hooks/useTreinoAtivo.js",
+        "src/hooks/useWorkoutTimer.js",
+        "src/layouts/DashboardLayout.jsx",
+        "src/lib/supabase.js",
+        "src/main.jsx",
+        "src/pages/Cadastro.jsx",
+        "src/pages/Dashboard.jsx",
+        "src/pages/Historico.jsx",
+        "src/pages/LandingPage.jsx",
+        "src/pages/LegalPage.jsx",
+        "src/pages/Login.jsx",
+        "src/pages/RedefinirSenha.jsx",
+        "src/pages/RouteError.jsx",
+        "src/pages/Treinar.jsx",
+        "src/pages/TreinoPlayer.jsx",
+        "src/pages/Treinos.jsx",
+        "src/pages/TreinosEditar.jsx",
+        "src/pages/TreinosVisualizar.jsx",
+        "src/routes/AppRoutes.jsx",
+        "src/routes/PrivateRoute.jsx",
+        "src/routes/RouteScrollReset.js",
+        "src/routes/routeScroll.js",
+        "src/services/agendamentos/agendamentosService.js",
+        "src/services/auth/authService.js",
+        "src/services/exercicios/exerciciosService.js",
+        "src/services/historico/historicoTreinosService.js",
+        "src/services/memoria_exercicios/memoriaExerciciosService.js",
+        "src/services/treino_ativo/treinoSessaoService.js",
+        "src/services/treinos/secoesService.js",
+        "src/services/treinos/treinosExerciciosService.js",
+        "src/services/treinos/treinosService.js",
+        "src/services/usuarios/usuariosService.js",
+        "src/styles/appTheme.css",
+        "src/styles/formFields.css",
+        "src/styles/index.css",
+        "src/styles/layout.js",
+        "src/styles/theme.js",
+        "src/utils/currentExerciseFormState.js",
+        "src/utils/dashboardInsights.js",
+        "src/utils/dateUtils.js",
+        "src/utils/errorMessages.js",
+        "src/utils/imageUtils.js",
+        "src/utils/memoriaExercicioUtils.js",
+        "src/utils/sessionStorage.js",
+        "src/utils/trainingDiscovery.js",
+        "src/utils/treinoUtils.js",
+        "tailwind.config.js",
+        "vercel.json",
+        "vite.config.js"
+      ],
+      "normalized": "CRLF to LF only for nonbinary Git blobs; comparison against third baseline remains byte-exact"
+    },
+    "production": {
+      "verifiedFiles": 257,
+      "byteExactPreserved": true,
+      "frontend": true,
+      "serviceWorker": true,
+      "edgeFunctions": true,
+      "frozenMigrations": true,
+      "ignoredEnvironmentFiles": true,
+      "manualFixture": true
+    },
+    "negativeFixtures": [
+      {
+        "name": "protected source alteration",
+        "rejected": true,
+        "memoryOnly": true,
+        "actualFilesModified": false
+      },
+      {
+        "name": "frozen C hash alteration",
+        "rejected": true,
+        "memoryOnly": true,
+        "actualFilesModified": false
+      },
+      {
+        "name": "unapproved new path",
+        "rejected": true,
+        "memoryOnly": true,
+        "actualFilesModified": false
+      }
+    ],
+    "originalThirdReportsPreserved": true,
+    "dockerOperations": 0,
+    "sqlOperations": 0,
+    "networkOperations": 0
+  },
+  "cliStateProof": {
+    "passed": true,
+    "path": "supabase/.temp/cli-latest",
+    "producerVersion": "2.120.0",
+    "versionOnlyCurrent": true,
+    "approvedExactPathClassification": true,
+    "classification": "GENERATED SUPABASE CLI STATE",
+    "generatedPathAllowlist": [
+      "supabase/.temp/cli-latest"
+    ],
+    "noGenericTempAllowlist": true,
+    "current": {
+      "path": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io\\supabase\\.temp\\cli-latest",
+      "bytes": 8,
+      "content": "v2.120.0",
+      "sha256": "2f99ec07bad208b0108748390c2fe80fb0a91b1784a8f7bf1d303efda7deeaee",
+      "createdAtUtc": "2026-10-08T22:52:07.676Z",
+      "modifiedAtUtc": "2026-10-13T00:30:38.811Z"
+    },
+    "thirdMatrixInventory": {
+      "before": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "after": {
+        "bytes": 8,
+        "sha256": "2f99ec07bad208b0108748390c2fe80fb0a91b1784a8f7bf1d303efda7deeaee"
+      }
+    },
+    "facts": {
+      "installedNpmWrapperVersion": "2.120.0",
+      "installedWindowsBinaryPackageVersion": "2.120.0",
+      "binaryContainsExactProjectCacheWriter": true,
+      "writerUsesLatestReleaseTag": true,
+      "projectCacheWinsOverSupabaseHome": true,
+      "notConsumedByApplication": true,
+      "notMigration": true,
+      "noSecrets": true,
+      "doesNotContainRuntimeConfiguration": true,
+      "fileChangesDoNotModifyApplicationOrDeployedRuntimeConfiguration": true,
+      "productionRuntimeChangesFromCacheFile": false,
+      "contentIsOnlyVersionTag": true,
+      "remoteOperationsDuringThisInvestigation": 0,
+      "cliCommandsDuringThisInvestigation": 0
+    },
+    "sourceProof": {
+      "wrapper": {
+        "file": "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\supabase\\dist\\supabase.js",
+        "sha256": "21d25b4bfb1870db0aaf0963c028b10d0b0b431485f119abd704c1396c7991e6",
+        "binaryResolution": "createRequire @supabase/cli-windows-x64 then bin/supabase.exe; forwards CLI arguments"
+      },
+      "binary": {
+        "file": "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\supabase\\node_modules\\@supabase\\cli-windows-x64\\bin\\supabase.exe",
+        "sha256": "1cbedd6e494581a1c1d90113660113a06798d9967d19c857127b66b8a428e836",
+        "packageFile": "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\supabase\\node_modules\\@supabase\\cli-windows-x64\\package.json",
+        "packageSha256": "02c9fd03d43faed558e934cff8600a70a682436b054f031fb760bcbcbc49140b"
+      },
+      "cacheWriter": {
+        "file": "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\supabase\\node_modules\\@supabase\\cli-windows-x64\\bin\\supabase.exe",
+        "byteOffset": 102406784,
+        "snippet": "E_NOTIFIER\")))return;let u=ZKn(e,n,i(\"SUPABASE_DEBUG\")),s=Rw(r,\"supabase\"),l=(await Eke(s).catch(()=>{return}))?.isDirectory()===!0,t=l?Rw(s,\".temp\"):SLt(e.supabaseHome),o=Rw(t,\"cli-latest\"),c=await Eke(o).catch(()=>{return}),p=c?.isSymbolicLink()!==!0&&await aJn(t),d=p&&c!==void 0&&e.now()<=c.mtime.getTime()+QKn,f;if(!d){let A;if(f=await e.fetchLatestTag().catch((h)=>(A=Error(`Failed to fetch latest release: ${zoe(h)}`),\"\")),p)A=await WKn(t,{recursive:!0,mode:493}).then(()=>rJn(o,f).then(()=>{return},(h)=>Error(`failed to write file: ${zoe(h)}`)),(h)=>Error(`failed to mkdir: ${zoe(h)}`));if(A!==void 0&&u)e.writeStderr(`${gLt(A.message)}\n`)}else f=await ELt(o,\"utf8\").catch((A)=>{if(u)e.writeStderr(`failed to read cli version: ${gLt(zoe(A))}\n`);return\"\"});if(eJn(f,e.currentVersion))e.writeStderr(`${nJn(f,e.currentVersion)}\n`);return{cache:p?l?\"project\":\"user\":\"disabled\",cacheFresh:d}}async function cJn(){let e=process"
+      },
+      "updateNotifierEarlyReturn": {
+        "file": "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\supabase\\node_modules\\@supabase\\cli-windows-x64\\bin\\supabase.exe",
+        "byteOffset": 102406347,
+        "snippet": "0||n.isDirectory()}async function sJn(e){if(HLt(e.env.SUPABASE_NO_UPDATE_NOTIFIER))return;let n=e.cleanShowHelp===!0||cLt(e.args,e.isValueTakingFlagToken),r=n?e.cwd:e.resolvedCwd??oJn(e.cwd,e.args,e.env,e.isValueTakingFlagToken),a=n?{"
+      },
+      "truthValues": {
+        "file": "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\supabase\\node_modules\\@supabase\\cli-windows-x64\\bin\\supabase.exe",
+        "byteOffset": 102408665,
+        "snippet": "_ke=new Set([\"1\",\"t\",\"T\",\"TRUE\",\"true\",\"True\"])});var Xoe,Wb=(e)=>P_e(Xoe,("
+      },
+      "dispatch": {
+        "file": "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\supabase\\node_modules\\@supabase\\cli-windows-x64\\bin\\supabase.exe",
+        "byteOffset": 102408270,
+        "snippet": "resolvedCwd:n.workingDirectory,currentVersion:iu,supabaseHome:ww({join:Rw},process.env,zKn()),now:Date.now,fetchLatestTag:()=>lY(a)(vo({try:r,catch:(u)=>u}).pipe(Yt(\"UpgradeNotice.fetch\"))),writeStderr:(u)=>{process.stderr.write(u)}}));if(i!==void 0)yield*Pe({\"cache.location\":i.cache,\"cache.hit\":i.cacheFresh})}).pipe(Yt(\"UpgradeNotice.check\"),C_e);var LLt=_("
+      },
+      "ttlMs": 36000000,
+      "releaseMetadataTimeoutMs": 800,
+      "disableEnvironment": {
+        "name": "SUPABASE_NO_UPDATE_NOTIFIER",
+        "value": "1",
+        "scope": "subprocess-only",
+        "earlyReturnBeforeEnvFileCacheAndNetwork": true
+      }
+    },
+    "applicationConsumerSearch": {
+      "command": "rg -n --hidden -g !*.test.* cli-latest|supabase/\\.temp|\\.temp/cli-latest",
+      "targets": [
+        "src",
+        "public",
+        "supabase/functions",
+        "vite.config.js",
+        "index.html",
+        "package.json"
+      ],
+      "exitCode": 1,
+      "matches": 0
+    },
+    "knownInvocationMechanism": {
+      "historicalHelper": {
+        "file": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io\\supabase\\testing\\actions-third-matrix-db-lint.mjs",
+        "thirdAfterInventoryMetadata": {
+          "bytes": 5855,
+          "sha256": "1d5aa3e446a3166b239029ecc5d18405914c3e67668697e9710bbf731c6d8cc4"
+        },
+        "closureBeforeInventoryMetadata": {
+          "bytes": 5855,
+          "sha256": "1d5aa3e446a3166b239029ecc5d18405914c3e67668697e9710bbf731c6d8cc4"
+        },
+        "metadataSourceFiles": [
+          "supabase/testing/actions-third-inventory-after.json",
+          "supabase/testing/actions-closure-inventory-before.json"
+        ],
+        "capturedSourceBeforeClosurePatch": {
+          "source": "read-only tool output before the closure helper patch; the earlier full helper read is retained in task history",
+          "line": 22,
+          "text": "const invoke=(args)=>spawnSync(process.execPath,[cliPath,...args],{cwd:process.cwd(),env,windowsHide:true,",
+          "versionCall": "const version=invoke(['--version']);assert.equal(version.status,0);assert.equal(version.stdout.trim(),'2.120.0')"
+        },
+        "historicalByteContentRehashedDuringThisProof": false,
+        "note": "The hashes here are historical inventory metadata, not hashes calculated from the captured source snippet. That earlier inspection explicitly showed workspace process.cwd() and a --version call without --workdir."
+      },
+      "currentClosureHelper": {
+        "file": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io\\supabase\\testing\\actions-third-matrix-db-lint.mjs",
+        "fileSha256": "b79fc20ff0b37a0c1e1e2bff0ca7e60194a22a446d62f6d755fdfb9cee21d9b7",
+        "cliSpawn": {
+          "file": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io\\supabase\\testing\\actions-third-matrix-db-lint.mjs",
+          "line": 22,
+          "text": "const invoke=(args)=>spawnSync(process.execPath,[cliPath,...args],{cwd:root,env,windowsHide:true,"
+        },
+        "versionCall": {
+          "file": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io\\supabase\\testing\\actions-third-matrix-db-lint.mjs",
+          "line": 24,
+          "text": "const version=invoke(['--version']);assert.equal(version.status,0);assert.equal(version.stdout.trim(),'2.120.0')"
+        },
+        "notifierControl": {
+          "file": "C:\\Users\\mateu\\OneDrive\\Documentos\\gym.io\\supabase\\testing\\actions-third-matrix-db-lint.mjs",
+          "line": 19,
+          "text": " SUPABASE_TELEMETRY_DISABLED:'1',SUPABASE_NO_UPDATE_NOTIFIER:'1',DO_NOT_TRACK:'1',NO_COLOR:'1'}"
+        },
+        "controls": {
+          "subprocessCwdIsOwnedRuntime": true,
+          "updateNotifierDisabled": true,
+          "processOnlyEnvironment": true
+        },
+        "note": "The closure-only harness patch now uses cwd:root and SUPABASE_NO_UPDATE_NOTIFIER=1. This current source is separately inspected and hashed; it does not describe the historical third-matrix helper."
+      },
+      "attribution": "Generated CLI update-cache classification is supported by the installed binary writer and version-only file. The exact third-matrix writing invocation is an inference, not a captured actor trace."
+    },
+    "chronology": {
+      "modifiedAtUtc": "2026-10-13T00:30:38.811Z",
+      "thirdCollectedAt": "2026-10-13T00:33:56.458Z",
+      "thirdFinalizedAt": "2026-10-13T00:37:20.692Z",
+      "finalDbLintEvidence": "actions-third-db-lint-after-retry-2.json",
+      "finalDbLintCliElapsedMs": 1977.29,
+      "exactWritingInvocationCaptured": false
+    },
+    "inferences": [
+      "The writer implementation, pinned package version, matching version-only bytes and workspace-cwd version invocation establish this as generated CLI updater state.",
+      "The historical third-matrix lint helper version call is a plausible writer in the recorded interval: its earlier inspected source used workspace process.cwd(), while the current closure helper uses cwd:root. No process/filesystem trace proves the exact writing command.",
+      "The CLI updater may fetch GitHub release metadata when a cached tag is stale. No updater experiment, browsing or remote request was run for this proof. This is tool release metadata, not a Supabase production database or runtime operation."
+    ],
+    "limits": [
+      "No actor/process filesystem audit trace was retained from the third matrix; precise command attribution remains inference.",
+      "The cache is consumed by the CLI updater itself; it is not consumed by the Gym.io application.",
+      "The one-path classification must not exempt any other file under supabase/.temp.",
+      "The historical helper hash is preserved in inventory metadata; the source snippet was captured by an earlier tool read, and its old full bytes are not rehashed here after the closure-only patch."
+    ],
+    "runnerTimeoutObservation": {
+      "originalGateElapsedMs": 283227.711,
+      "originalBSqlStep": {
+        "stage": "B SQL",
+        "passed": false,
+        "elapsed_ms": 241793.703,
+        "exit_code": 1,
+        "pass_labels": [
+          "PASS SQL B: physical unique, frozen zero recipients, next rest gets later subscription",
+          "PASS SQL B: skip before or after capture makes unattempted work stale",
+          "PASS SQL B: finalize before or after capture makes unattempted work stale",
+          "PASS SQL B: cancel before or after capture makes unattempted work stale",
+          "PASS SQL B: advance before or after capture makes unattempted work stale",
+          "PASS SQL B: pause after capture defers existing claim, resume refreshes snapshots",
+          "PASS SQL B: stale revision fails closed",
+          "PASS SQL B: subscription removed before claim cascades and prevents begin",
+          "PASS SQL B: subscription removed after claim cascades and prevents begin",
+          "PASS SQL B: auth user removal cascades delivery and outbox atomically",
+          "PASS SQL B: two schedulers and two senders cannot duplicate physical events or claims"
+        ],
+        "assertion_failure": true,
+        "sql_failure": false,
+        "exact_A_B_auth_profiles_restored": true
+      },
+      "sourceExecutionTimer300000Found": false,
+      "note": "The original stage and regression runners contain output-buffer kill limits but no 300000 ms execution timer. The original B step recorded exit 1 and assertion_failure true after 241793.703 ms; the complementary ~295125 ms result alone does not establish a timeout cause. External tool limits were not preserved, so that possibility is unproven."
+    },
+    "proofCorrectedForConcurrentHarnessPatch": true
+  },
+  "dbLint": {
+    "phase": "after",
+    "attempt": 1,
+    "passed": true,
+    "exit_code": 0,
+    "elapsed_ms": 4911.253,
+    "counts": {
+      "ERROR": 0,
+      "WARN": 5,
+      "INFO": 0
+    },
+    "diagnostics": [
+      {
+        "function": "graphql_public.graphql",
+        "level": "WARNING EXTRA",
+        "message": "unused parameter \"operationName\""
+      },
+      {
+        "function": "graphql_public.graphql",
+        "level": "WARNING EXTRA",
+        "message": "unused parameter \"query\""
+      },
+      {
+        "function": "graphql_public.graphql",
+        "level": "WARNING EXTRA",
+        "message": "unused parameter \"variables\""
+      },
+      {
+        "function": "graphql_public.graphql",
+        "level": "WARNING EXTRA",
+        "message": "unused parameter \"extensions\""
+      },
+      {
+        "function": "gymio_workout_actions_private.issue",
+        "level": "WARNING",
+        "message": "target type is different type than source type"
+      }
+    ],
+    "unclassifiedDiagnostics": [],
+    "schemas": [
+      "public",
+      "graphql_public",
+      "gymio_private",
+      "gymio_push_private",
+      "gymio_workout_push_private",
+      "gymio_workout_actions_private"
+    ],
+    "command": {
+      "cli": "Supabase CLI",
+      "version": "2.120.0",
+      "local": true,
+      "minimumDiagnosticLevel": "warning",
+      "failOn": "error",
+      "linked": false,
+      "dbUrl": false
+    },
+    "infoCoverage": "Pinned CLI --level choices are warning/error; INFO is counted if returned, but CLI does not offer an info diagnostic level.",
+    "hashes": {
+      "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+      "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+      "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+      "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+      "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+      "20261011021351_workout_notification_actions.sql": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca"
+    },
+    "stdout": "{\"results\":[{\"function\":\"graphql_public.graphql\",\"issues\":[{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"operationName\\\"\",\"sqlState\":\"00000\"},{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"query\\\"\",\"sqlState\":\"00000\"},{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"variables\\\"\",\"sqlState\":\"00000\"},{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"extensions\\\"\",\"sqlState\":\"00000\"}]},{\"function\":\"gymio_workout_actions_private.issue\",\"issues\":[{\"level\":\"warning\",\"message\":\"target type is different type than source type\",\"statement\":{\"lineNumber\":\"4\",\"text\":\"statement block\"},\"hint\":\"The input expression type does not have an assignment cast to the target type.\",\"detail\":\"cast \\\"text\\\" value to \\\"jsonb\\\" type\",\"context\":\"during statement block local variable \\\"v_controls\\\" initialization on line 3\",\"sqlState\":\"42804\"}]}],\"message\":\"db lint\"}\n",
+    "stderr": "Connecting to local database...\nLinting schema: public\nLinting schema: graphql_public\nLinting schema: gymio_private\nLinting schema: gymio_push_private\nLinting schema: gymio_workout_push_private\nLinting schema: gymio_workout_actions_private\n",
+    "failure": null,
+    "remoteOperations": 0,
+    "sqlApplied": false,
+    "servicesStarted": false
+  },
+  "extensionGate": {
+    "passed": true,
+    "extensions": {
+      "schemas": [
+        {
+          "owner": "supabase_admin",
+          "nspacl": [
+            "supabase_admin=UC/supabase_admin",
+            "postgres=U*/supabase_admin"
+          ],
+          "nspname": "cron"
+        },
+        {
+          "owner": "supabase_admin",
+          "nspacl": [
+            "supabase_admin=UC/supabase_admin",
+            "=U/supabase_admin",
+            "supabase_functions_admin=U/supabase_admin",
+            "postgres=U/supabase_admin",
+            "anon=U/supabase_admin",
+            "authenticated=U/supabase_admin",
+            "service_role=U/supabase_admin"
+          ],
+          "nspname": "net"
+        },
+        {
+          "owner": "supabase_admin",
+          "nspacl": [
+            "supabase_admin=UC/supabase_admin",
+            "postgres=U*/supabase_admin",
+            "service_role=U/supabase_admin"
+          ],
+          "nspname": "vault"
+        }
+      ],
+      "defaults": [
+        {
+          "type": "S",
+          "owner": "supabase_admin",
+          "schema": "cron",
+          "defaclacl": [
+            "postgres=r*w*U*/supabase_admin"
+          ]
+        },
+        {
+          "type": "f",
+          "owner": "supabase_admin",
+          "schema": "cron",
+          "defaclacl": [
+            "postgres=X*/supabase_admin"
+          ]
+        },
+        {
+          "type": "r",
+          "owner": "supabase_admin",
+          "schema": "cron",
+          "defaclacl": [
+            "postgres=a*r*w*d*D*x*t*m*/supabase_admin"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "cron.job.cron_job_policy",
+          "qual": "(username = CURRENT_USER)",
+          "check": null,
+          "polcmd": "*",
+          "polroles": [
+            "0"
+          ],
+          "polpermissive": true
+        },
+        {
+          "name": "cron.job_run_details.cron_job_run_details_policy",
+          "qual": "(username = CURRENT_USER)",
+          "check": null,
+          "polcmd": "*",
+          "polroles": [
+            "0"
+          ],
+          "polpermissive": true
+        }
+      ],
+      "functions": [
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin"
+          ],
+          "probin": "$libdir/pg_cron",
+          "prosrc": "cron_alter_job",
+          "extension": "pg_cron",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "cron.alter_job(job_id bigint, schedule text, command text, database text, username text, active boolean)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "=X/supabase_admin",
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin"
+          ],
+          "probin": "$libdir/pg_cron",
+          "prosrc": "cron_job_cache_invalidate",
+          "extension": "pg_cron",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "cron.job_cache_invalidate()"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "=X/supabase_admin",
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin"
+          ],
+          "probin": "$libdir/pg_cron",
+          "prosrc": "cron_schedule_named",
+          "extension": "pg_cron",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "cron.schedule(job_name text, schedule text, command text)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "=X/supabase_admin",
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin"
+          ],
+          "probin": "$libdir/pg_cron",
+          "prosrc": "cron_schedule",
+          "extension": "pg_cron",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "cron.schedule(schedule text, command text)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin"
+          ],
+          "probin": "$libdir/pg_cron",
+          "prosrc": "cron_schedule_named",
+          "extension": "pg_cron",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "cron.schedule_in_database(job_name text, schedule text, command text, database text, username text, active boolean)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "=X/supabase_admin",
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin"
+          ],
+          "probin": "$libdir/pg_cron",
+          "prosrc": "cron_unschedule",
+          "extension": "pg_cron",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "cron.unschedule(job_id bigint)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "=X/supabase_admin",
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin"
+          ],
+          "probin": "$libdir/pg_cron",
+          "prosrc": "cron_unschedule_named",
+          "extension": "pg_cron",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "cron.unschedule(job_name text)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": null,
+          "prosrc": "\ndeclare\n    rec net._http_response;\nbegin\n    while rec is null loop\n        select *\n        into rec\n        from net._http_response\n        where id = request_id;\n\n        if rec is null then\n            -- Wait 50 ms before checking again\n            perform pg_sleep(0.05);\n        end if;\n    end loop;\n\n    return true;\nend;\n",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net._await_response(request_id bigint)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": "$libdir/pg_net",
+          "prosrc": "_encode_url_with_params_array",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net._encode_url_with_params_array(url text, params_array text[])"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": null,
+          "prosrc": "\ndeclare\n    rec net._http_response;\n    req_exists boolean;\nbegin\n\n    if not async then\n        perform net._await_response(request_id);\n    end if;\n\n    select *\n    into rec\n    from net._http_response\n    where id = request_id;\n\n    if rec is null or rec.error_msg is not null then\n        -- The request is either still processing or the request_id provided does not exist\n\n        -- TODO: request in progress is indistinguishable from request that doesn't exist\n\n        -- No request matching request_id found\n        return (\n            'ERROR',\n            coalesce(rec.error_msg, 'request matching request_id not found'),\n            null\n        )::net.http_response_result;\n\n    end if;\n\n    -- Return a valid, populated http_response_result\n    return (\n        'SUCCESS',\n        'ok',\n        (\n            rec.status_code,\n            rec.headers,\n            rec.content\n        )::net.http_response\n    )::net.http_response_result;\nend;\n",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net._http_collect_response(request_id bigint, async boolean)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": "$libdir/pg_net",
+          "prosrc": "_urlencode_string",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net._urlencode_string(string character varying)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": null,
+          "prosrc": "\nbegin\n  if not exists (select pid from pg_stat_activity where backend_type ilike '%pg_net%') then\n    raise exception using\n      message = 'the pg_net background worker is not up'\n    , detail  = 'the pg_net background worker is down due to an internal error and cannot process requests'\n    , hint    = 'make sure that you didn''t modify any of pg_net internal tables';\n  end if;\nend\n",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net.check_worker_is_up()"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": null,
+          "prosrc": "\nbegin\n  raise notice 'The net.http_collect_response function is deprecated.';\n  select net._http_collect_response(request_id, async);\nend;\n",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net.http_collect_response(request_id bigint, async boolean)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": null,
+          "prosrc": "\ndeclare\n    request_id bigint;\n    params_array text[];\nbegin\n    select coalesce(array_agg(net._urlencode_string(key) || '=' || net._urlencode_string(value)), '{}')\n    into params_array\n    from jsonb_each_text(params);\n\n    -- Add to the request queue\n    insert into net.http_request_queue(method, url, headers, body, timeout_milliseconds)\n    values (\n        'DELETE',\n        net._encode_url_with_params_array(url, params_array),\n        headers,\n        convert_to(body::text, 'UTF8'),\n        timeout_milliseconds\n    )\n    returning id\n    into request_id;\n\n    perform net.wake();\n\n    return request_id;\nend\n",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net.http_delete(url text, params jsonb, headers jsonb, timeout_milliseconds integer, body jsonb)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin",
+            "supabase_functions_admin=X/supabase_admin",
+            "postgres=X/supabase_admin",
+            "anon=X/supabase_admin",
+            "authenticated=X/supabase_admin",
+            "service_role=X/supabase_admin"
+          ],
+          "probin": null,
+          "prosrc": "\ndeclare\n    request_id bigint;\n    params_array text[];\nbegin\n    select coalesce(array_agg(net._urlencode_string(key) || '=' || net._urlencode_string(value)), '{}')\n    into params_array\n    from jsonb_each_text(params);\n\n    -- Add to the request queue\n    insert into net.http_request_queue(method, url, headers, timeout_milliseconds)\n    values (\n        'GET',\n        net._encode_url_with_params_array(url, params_array),\n        headers,\n        timeout_milliseconds\n    )\n    returning id\n    into request_id;\n\n    perform net.wake();\n\n    return request_id;\nend\n",
+          "extension": "pg_net",
+          "proconfig": [
+            "search_path=net"
+          ],
+          "prosecdef": true,
+          "signature": "net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin",
+            "supabase_functions_admin=X/supabase_admin",
+            "postgres=X/supabase_admin",
+            "anon=X/supabase_admin",
+            "authenticated=X/supabase_admin",
+            "service_role=X/supabase_admin"
+          ],
+          "probin": null,
+          "prosrc": "\ndeclare\n    request_id bigint;\n    params_array text[];\n    content_type text;\nbegin\n\n    -- Exctract the content_type from headers\n    select\n        header_value into content_type\n    from\n        jsonb_each_text(coalesce(headers, '{}'::jsonb)) r(header_name, header_value)\n    where\n        lower(header_name) = 'content-type'\n    limit\n        1;\n\n    -- If the user provided new headers and omitted the content type\n    -- add it back in automatically\n    if content_type is null then\n        select headers || '{\"Content-Type\": \"application/json\"}'::jsonb into headers;\n    end if;\n\n    -- Confirm that the content-type is set as \"application/json\"\n    if content_type <> 'application/json' then\n        raise exception 'Content-Type header must be \"application/json\"';\n    end if;\n\n    select\n        coalesce(array_agg(net._urlencode_string(key) || '=' || net._urlencode_string(value)), '{}')\n    into\n        params_array\n    from\n        jsonb_each_text(params);\n\n    -- Add to the request queue\n    insert into net.http_request_queue(method, url, headers, body, timeout_milliseconds)\n    values (\n        'POST',\n        net._encode_url_with_params_array(url, params_array),\n        headers,\n        convert_to(body::text, 'UTF8'),\n        timeout_milliseconds\n    )\n    returning id\n    into request_id;\n\n    perform net.wake();\n\n    return request_id;\nend\n",
+          "extension": "pg_net",
+          "proconfig": [
+            "search_path=net"
+          ],
+          "prosecdef": true,
+          "signature": "net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": "$libdir/pg_net",
+          "prosrc": "wait_until_running",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net.wait_until_running()"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": "$libdir/pg_net",
+          "prosrc": "wake",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net.wake()"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": null,
+          "probin": "$libdir/pg_net",
+          "prosrc": "worker_restart",
+          "extension": "pg_net",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "net.worker_restart()"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin",
+            "service_role=X/supabase_admin"
+          ],
+          "probin": "$libdir/supabase_vault",
+          "prosrc": "pgsodium_crypto_aead_det_decrypt_by_id",
+          "extension": "supabase_vault",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "vault._crypto_aead_det_decrypt(message bytea, additional bytea, key_id bigint, context bytea, nonce bytea)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin"
+          ],
+          "probin": "$libdir/supabase_vault",
+          "prosrc": "pgsodium_crypto_aead_det_encrypt_by_id",
+          "extension": "supabase_vault",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "vault._crypto_aead_det_encrypt(message bytea, additional bytea, key_id bigint, context bytea, nonce bytea)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin"
+          ],
+          "probin": "$libdir/supabase_vault",
+          "prosrc": "pgsodium_crypto_aead_det_noncegen",
+          "extension": "supabase_vault",
+          "proconfig": null,
+          "prosecdef": false,
+          "signature": "vault._crypto_aead_det_noncegen()"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin",
+            "service_role=X/supabase_admin"
+          ],
+          "probin": null,
+          "prosrc": "\nDECLARE\n  rec record;\nBEGIN\n  INSERT INTO vault.secrets (secret, name, description)\n  VALUES (\n    new_secret,\n    new_name,\n    new_description\n  )\n  RETURNING * INTO rec;\n  UPDATE vault.secrets s\n  SET secret = encode(vault._crypto_aead_det_encrypt(\n    message := convert_to(rec.secret, 'utf8'),\n    additional := convert_to(s.id::text, 'utf8'),\n    key_id := 0,\n    context := 'pgsodium'::bytea,\n    nonce := rec.nonce\n  ), 'base64')\n  WHERE id = rec.id;\n  RETURN rec.id;\nEND\n",
+          "extension": "supabase_vault",
+          "proconfig": [
+            "search_path=\"\""
+          ],
+          "prosecdef": true,
+          "signature": "vault.create_secret(new_secret text, new_name text, new_description text, new_key_id uuid)"
+        },
+        {
+          "owner": "supabase_admin",
+          "proacl": [
+            "supabase_admin=X/supabase_admin",
+            "postgres=X*/supabase_admin",
+            "service_role=X/supabase_admin"
+          ],
+          "probin": null,
+          "prosrc": "\nDECLARE\n  decrypted_secret text := (SELECT decrypted_secret FROM vault.decrypted_secrets WHERE id = secret_id);\nBEGIN\n  UPDATE vault.secrets s\n  SET\n    secret = CASE WHEN new_secret IS NULL THEN s.secret\n                  ELSE encode(vault._crypto_aead_det_encrypt(\n                    message := convert_to(new_secret, 'utf8'),\n                    additional := convert_to(s.id::text, 'utf8'),\n                    key_id := 0,\n                    context := 'pgsodium'::bytea,\n                    nonce := s.nonce\n                  ), 'base64') END,\n    name = coalesce(new_name, s.name),\n    description = coalesce(new_description, s.description),\n    updated_at = now()\n  WHERE s.id = secret_id;\nEND\n",
+          "extension": "supabase_vault",
+          "proconfig": [
+            "search_path=\"\""
+          ],
+          "prosecdef": true,
+          "signature": "vault.update_secret(secret_id uuid, new_secret text, new_name text, new_description text, new_key_id uuid)"
+        }
+      ],
+      "relations": [
+        {
+          "name": "cron.job",
+          "owner": "supabase_admin",
+          "relacl": [
+            "supabase_admin=arwdDxtm/supabase_admin",
+            "=r/supabase_admin",
+            "postgres=r*/supabase_admin"
+          ],
+          "columns": [
+            {
+              "acl": null,
+              "column": "jobid"
+            },
+            {
+              "acl": null,
+              "column": "schedule"
+            },
+            {
+              "acl": null,
+              "column": "command"
+            },
+            {
+              "acl": null,
+              "column": "nodename"
+            },
+            {
+              "acl": null,
+              "column": "nodeport"
+            },
+            {
+              "acl": null,
+              "column": "database"
+            },
+            {
+              "acl": null,
+              "column": "username"
+            },
+            {
+              "acl": null,
+              "column": "active"
+            },
+            {
+              "acl": null,
+              "column": "jobname"
+            }
+          ],
+          "relkind": "r",
+          "extension": "pg_cron",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "cron.job_pkey",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "jobid"
+            }
+          ],
+          "relkind": "i",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "cron.job_run_details",
+          "owner": "supabase_admin",
+          "relacl": [
+            "supabase_admin=arwdDxtm/supabase_admin",
+            "=rd/supabase_admin",
+            "postgres=a*r*w*d*D*x*t*m*/supabase_admin"
+          ],
+          "columns": [
+            {
+              "acl": null,
+              "column": "jobid"
+            },
+            {
+              "acl": null,
+              "column": "runid"
+            },
+            {
+              "acl": null,
+              "column": "job_pid"
+            },
+            {
+              "acl": null,
+              "column": "database"
+            },
+            {
+              "acl": null,
+              "column": "username"
+            },
+            {
+              "acl": null,
+              "column": "command"
+            },
+            {
+              "acl": null,
+              "column": "status"
+            },
+            {
+              "acl": null,
+              "column": "return_message"
+            },
+            {
+              "acl": null,
+              "column": "start_time"
+            },
+            {
+              "acl": null,
+              "column": "end_time"
+            }
+          ],
+          "relkind": "r",
+          "extension": "pg_cron",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "cron.job_run_details_pkey",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "runid"
+            }
+          ],
+          "relkind": "i",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "cron.jobid_seq",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "last_value"
+            },
+            {
+              "acl": null,
+              "column": "log_cnt"
+            },
+            {
+              "acl": null,
+              "column": "is_called"
+            }
+          ],
+          "relkind": "S",
+          "extension": "pg_cron",
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "cron.jobname_username_uniq",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "jobname"
+            },
+            {
+              "acl": null,
+              "column": "username"
+            }
+          ],
+          "relkind": "i",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "cron.runid_seq",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "last_value"
+            },
+            {
+              "acl": null,
+              "column": "log_cnt"
+            },
+            {
+              "acl": null,
+              "column": "is_called"
+            }
+          ],
+          "relkind": "S",
+          "extension": "pg_cron",
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "net._http_response",
+          "owner": "supabase_admin",
+          "relacl": [
+            "supabase_admin=arwdDxtm/supabase_admin",
+            "=arwdDxtm/supabase_admin"
+          ],
+          "columns": [
+            {
+              "acl": null,
+              "column": "id"
+            },
+            {
+              "acl": null,
+              "column": "status_code"
+            },
+            {
+              "acl": null,
+              "column": "content_type"
+            },
+            {
+              "acl": null,
+              "column": "headers"
+            },
+            {
+              "acl": null,
+              "column": "content"
+            },
+            {
+              "acl": null,
+              "column": "timed_out"
+            },
+            {
+              "acl": null,
+              "column": "error_msg"
+            },
+            {
+              "acl": null,
+              "column": "created"
+            }
+          ],
+          "relkind": "r",
+          "extension": "pg_net",
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "net._http_response_created_idx",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "created"
+            }
+          ],
+          "relkind": "i",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "net.http_request_queue",
+          "owner": "supabase_admin",
+          "relacl": [
+            "supabase_admin=arwdDxtm/supabase_admin",
+            "=arwdDxtm/supabase_admin"
+          ],
+          "columns": [
+            {
+              "acl": null,
+              "column": "id"
+            },
+            {
+              "acl": null,
+              "column": "method"
+            },
+            {
+              "acl": null,
+              "column": "url"
+            },
+            {
+              "acl": null,
+              "column": "headers"
+            },
+            {
+              "acl": null,
+              "column": "body"
+            },
+            {
+              "acl": null,
+              "column": "timeout_milliseconds"
+            }
+          ],
+          "relkind": "r",
+          "extension": "pg_net",
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "net.http_request_queue_id_seq",
+          "owner": "supabase_admin",
+          "relacl": [
+            "supabase_admin=rwU/supabase_admin",
+            "=rwU/supabase_admin"
+          ],
+          "columns": [
+            {
+              "acl": null,
+              "column": "last_value"
+            },
+            {
+              "acl": null,
+              "column": "log_cnt"
+            },
+            {
+              "acl": null,
+              "column": "is_called"
+            }
+          ],
+          "relkind": "S",
+          "extension": "pg_net",
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "net.http_response",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "status_code"
+            },
+            {
+              "acl": null,
+              "column": "headers"
+            },
+            {
+              "acl": null,
+              "column": "body"
+            }
+          ],
+          "relkind": "c",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "net.http_response_result",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "status"
+            },
+            {
+              "acl": null,
+              "column": "message"
+            },
+            {
+              "acl": null,
+              "column": "response"
+            }
+          ],
+          "relkind": "c",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "vault.decrypted_secrets",
+          "owner": "supabase_admin",
+          "relacl": [
+            "supabase_admin=arwdDxtm/supabase_admin",
+            "postgres=r*d*D*x*/supabase_admin",
+            "service_role=rd/supabase_admin"
+          ],
+          "columns": [
+            {
+              "acl": null,
+              "column": "id"
+            },
+            {
+              "acl": null,
+              "column": "name"
+            },
+            {
+              "acl": null,
+              "column": "description"
+            },
+            {
+              "acl": null,
+              "column": "secret"
+            },
+            {
+              "acl": null,
+              "column": "decrypted_secret"
+            },
+            {
+              "acl": null,
+              "column": "key_id"
+            },
+            {
+              "acl": null,
+              "column": "nonce"
+            },
+            {
+              "acl": null,
+              "column": "created_at"
+            },
+            {
+              "acl": null,
+              "column": "updated_at"
+            }
+          ],
+          "relkind": "v",
+          "extension": "supabase_vault",
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "vault.secrets",
+          "owner": "supabase_admin",
+          "relacl": [
+            "supabase_admin=arwdDxtm/supabase_admin",
+            "postgres=r*d*D*x*/supabase_admin",
+            "service_role=rd/supabase_admin"
+          ],
+          "columns": [
+            {
+              "acl": null,
+              "column": "id"
+            },
+            {
+              "acl": null,
+              "column": "name"
+            },
+            {
+              "acl": null,
+              "column": "description"
+            },
+            {
+              "acl": null,
+              "column": "secret"
+            },
+            {
+              "acl": null,
+              "column": "key_id"
+            },
+            {
+              "acl": null,
+              "column": "nonce"
+            },
+            {
+              "acl": null,
+              "column": "created_at"
+            },
+            {
+              "acl": null,
+              "column": "updated_at"
+            }
+          ],
+          "relkind": "r",
+          "extension": "supabase_vault",
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "vault.secrets_name_idx",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "name"
+            }
+          ],
+          "relkind": "i",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        },
+        {
+          "name": "vault.secrets_pkey",
+          "owner": "supabase_admin",
+          "relacl": null,
+          "columns": [
+            {
+              "acl": null,
+              "column": "id"
+            }
+          ],
+          "relkind": "i",
+          "extension": null,
+          "relrowsecurity": false,
+          "relforcerowsecurity": false
+        }
+      ],
+      "extensions": [
+        {
+          "owner": "supabase_admin",
+          "schema": "pg_catalog",
+          "extname": "pg_cron",
+          "extversion": "1.6.4"
+        },
+        {
+          "owner": "supabase_admin",
+          "schema": "public",
+          "extname": "pg_net",
+          "extversion": "0.20.0"
+        },
+        {
+          "owner": "supabase_admin",
+          "schema": "vault",
+          "extname": "supabase_vault",
+          "extversion": "0.3.1"
+        }
+      ]
+    },
+    "effectiveSchemas": [
+      "public",
+      "graphql_public"
+    ],
+    "http": [
+      {
+        "role": "anon",
+        "schema": "cron",
+        "resource": "job?select=jobid&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "cron",
+        "resource": "job_run_details?select=jobid&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "net",
+        "resource": "http_request_queue?select=id&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "net",
+        "resource": "_http_response?select=id&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "cron",
+        "resource": "rpc/schedule",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "cron",
+        "resource": "rpc/unschedule",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "net",
+        "resource": "rpc/http_post",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "vault",
+        "resource": "decrypted_secrets?select=id&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "gymio_private",
+        "resource": "rpc/request_uid",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "gymio_push_private",
+        "resource": "rpc/request_uid",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "anon",
+        "schema": "gymio_workout_push_private",
+        "resource": "rpc/tick",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "cron",
+        "resource": "job?select=jobid&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "cron",
+        "resource": "job_run_details?select=jobid&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "net",
+        "resource": "http_request_queue?select=id&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "net",
+        "resource": "_http_response?select=id&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "cron",
+        "resource": "rpc/schedule",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "cron",
+        "resource": "rpc/unschedule",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "net",
+        "resource": "rpc/http_post",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "vault",
+        "resource": "decrypted_secrets?select=id&limit=0",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "gymio_private",
+        "resource": "rpc/request_uid",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "gymio_push_private",
+        "resource": "rpc/request_uid",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "role": "authenticated",
+        "schema": "gymio_workout_push_private",
+        "resource": "rpc/tick",
+        "status": 406,
+        "code": "PGRST106"
+      }
+    ],
+    "acl": [
+      {
+        "role": "anon",
+        "usage": false,
+        "create": false,
+        "schema": "cron"
+      },
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "net"
+      },
+      {
+        "role": "anon",
+        "usage": false,
+        "create": false,
+        "schema": "vault"
+      },
+      {
+        "role": "authenticated",
+        "usage": false,
+        "create": false,
+        "schema": "cron"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "net"
+      },
+      {
+        "role": "authenticated",
+        "usage": false,
+        "create": false,
+        "schema": "vault"
+      },
+      {
+        "role": "gymio_push_executor",
+        "usage": false,
+        "create": false,
+        "schema": "cron"
+      },
+      {
+        "role": "gymio_push_executor",
+        "usage": true,
+        "create": false,
+        "schema": "net"
+      },
+      {
+        "role": "gymio_push_executor",
+        "usage": false,
+        "create": false,
+        "schema": "vault"
+      }
+    ],
+    "wrapperAudit": [
+      {
+        "name": "graphql_public.graphql",
+        "arguments": "\"operationName\" text, query text, variables jsonb, extensions jsonb",
+        "owner": "supabase_admin",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": true,
+        "authenticated": true,
+        "bodyHash": "d2330ee1a8a4e6fbe400b0e12c15a6cff5d26a37c8c499cea45bab56a43d3bcb"
+      },
+      {
+        "name": "gymio_private.ajustar_descanso_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_delta_segundos integer",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "2fa2494227f982331ffdc5673eaac8110efa638e2e813b40d81e8fe129320041"
+      },
+      {
+        "name": "gymio_private.avancar_exercicio_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "8e6340d524b5800c4a9d48f50f57954784288fd6a25c15411a87335976a4159d"
+      },
+      {
+        "name": "gymio_private.cancelar_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "ce66b791e3aba29d84db846c69171c56fe7b247573726e170b82ca5afa7e081a"
+      },
+      {
+        "name": "gymio_private.concluir_treino_serie",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_carga_utilizada numeric, p_repeticoes_feitas integer",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "211b7c278bf91c7c3caec8e1771095d7eb3de030fead3f95e2b045c9516ea3b6"
+      },
+      {
+        "name": "gymio_private.definir_pausa_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_pausar boolean",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "78046769b02da3e709e87ace5abd9874cc0e24e54d08b8738d5d4f0c94cad89d"
+      },
+      {
+        "name": "gymio_private.encerrar_descanso_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_forcar boolean",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "7c5dc360dd3b67b80d296e214a825f95960bf3fcce1cf6a3daca1bc945b25321"
+      },
+      {
+        "name": "gymio_private.finalizar_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "61384fc635fd220ea19de12f4a0bf67fa90a37efb946f5150e021c86eb5f7e18"
+      },
+      {
+        "name": "gymio_private.iniciar_treino_sessao",
+        "arguments": "p_id_treino bigint, p_descanso_padrao_segundos integer",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "487320812425cfb92a1cae7f3d6fb645aa31301a4ed824816996d8e31b2b7e54"
+      },
+      {
+        "name": "gymio_private.itens_ordenados_do_treino",
+        "arguments": "p_id_treino bigint",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "sql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "39c9f93614dceb2b111684fa6afd84dfb3a17dde5bad941f45d25ac8e1b5b503"
+      },
+      {
+        "name": "gymio_private.materializar_finalizacao_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_agora timestamp with time zone",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "29972398428e3ae7c0af2dc8a9334e7349ec7d38e0c8e4a6383417b72dbcb6bb"
+      },
+      {
+        "name": "gymio_private.request_uid",
+        "arguments": "",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "sql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "3081d07be0718c7917038f4833233d76a46233749acba545e2424de519f19f7c"
+      },
+      {
+        "name": "gymio_private.sessao_com_relogio",
+        "arguments": "p_id_sessao uuid",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "sql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "b7da30edf8598eaf10f59381418a39899f02dd539bb176dfdeef927530d75b91"
+      },
+      {
+        "name": "gymio_private.validar_materializacao_final_treino_sessao",
+        "arguments": "p_id_sessao uuid",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "187f618fc8a84e70e807ee4c77764ca973b36e6a7b8fda9ceb9212b751e253c0"
+      },
+      {
+        "name": "gymio_private.validar_revisao",
+        "arguments": "p_revisao_atual bigint, p_revisao_esperada bigint",
+        "owner": "gymio_workout_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "9de459539c3d9c94651d0955cdbe741947bccf16227e4bbea17d1ba8b3f0f78e"
+      },
+      {
+        "name": "gymio_push_private.lookup_impl",
+        "arguments": "p_endpoint text",
+        "owner": "gymio_push_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "7f7434155ab33bed2ba1400e02a7b9189bb34b037cdf308dbd05230703917dc8"
+      },
+      {
+        "name": "gymio_push_private.register_impl",
+        "arguments": "p_endpoint text, p_p256dh text, p_auth text",
+        "owner": "gymio_push_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "094d496a8f6ccfc590eb664fec488de584587c270b4f5bc809d233098f27a5cc"
+      },
+      {
+        "name": "gymio_push_private.remove_impl",
+        "arguments": "p_subscription_id uuid",
+        "owner": "gymio_push_executor",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "e064a2198ba1cb1620ebbd2b0e86f160155f2742ceff6fa89c339ff20a22195c"
+      },
+      {
+        "name": "gymio_push_private.request_uid",
+        "arguments": "",
+        "owner": "gymio_push_executor",
+        "definer": false,
+        "language": "sql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "3081d07be0718c7917038f4833233d76a46233749acba545e2424de519f19f7c"
+      },
+      {
+        "name": "gymio_push_private.touch_updated_at",
+        "arguments": "",
+        "owner": "postgres",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "c207a12c2db57a79b16533cdd96f7e3d670680cfa34eaa793798648f928a1ef3"
+      },
+      {
+        "name": "gymio_workout_push_private.begin_attempt",
+        "arguments": "p_delivery uuid, p_claim uuid",
+        "owner": "postgres",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "c2479cc1abe4bd35cff2235e13e8f35fad6e4ca5b22012d51af15982321220cc"
+      },
+      {
+        "name": "gymio_workout_push_private.capture_events",
+        "arguments": "",
+        "owner": "postgres",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "0c78657dc27aba04635892a3461a5ea3a0156cc8956d80469b82bb5c453261de"
+      },
+      {
+        "name": "gymio_workout_push_private.claim_batch",
+        "arguments": "p_limit integer",
+        "owner": "postgres",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "52bce640963059d0c9d3fbf76f530e149049aa39f165f37513d1c2f4d8122368"
+      },
+      {
+        "name": "gymio_workout_push_private.complete_attempt",
+        "arguments": "p_delivery uuid, p_claim uuid, p_outcome text, p_snapshot jsonb",
+        "owner": "postgres",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "9f53d6315fc7f631e61f1c46e13e3fd07df4e87ddfb4404bbfb016e4f8c5160e"
+      },
+      {
+        "name": "gymio_workout_push_private.prepare_event",
+        "arguments": "p_event uuid, p_wait boolean",
+        "owner": "postgres",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "0367fc5a92a29deb728f7aa06f3ab2eca4577139ef72184a469c6486c9f06595"
+      },
+      {
+        "name": "gymio_workout_push_private.tick",
+        "arguments": "",
+        "owner": "postgres",
+        "definer": false,
+        "language": "plpgsql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "5c1902aabcca6bfefacfdfb29eb84ebc3e74ded57248d10dc8777e763e72113a"
+      },
+      {
+        "name": "public.ajustar_descanso_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_delta_segundos integer",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "d0b942232efab560c6804d469db5e92d7049f1d60cae47938491a53f789b696d"
+      },
+      {
+        "name": "public.avancar_exercicio_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "f8927833c480aa3d7503021458573b04234bb2a71a59b48d5fe571775fb68015"
+      },
+      {
+        "name": "public.buscar_memorias_exercicios",
+        "arguments": "p_ids_exercicios bigint[]",
+        "owner": "postgres",
+        "definer": false,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "0f0de2fd615e1fa6cef1936085ca97dca671d17d19b2471b62d1da39b134804b"
+      },
+      {
+        "name": "public.cancelar_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "20343d9e8f237346f7f4c55978a1d1d8edc6fa613f667c61820b1e6dfd5b0e4e"
+      },
+      {
+        "name": "public.concluir_treino_serie",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_carga_utilizada numeric, p_repeticoes_feitas integer",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "b1738cf9e1c136e4e910834596f8365015ef430bbe19254d0f35c4b5f83a60c3"
+      },
+      {
+        "name": "public.consultar_push_subscription",
+        "arguments": "p_endpoint text",
+        "owner": "gymio_push_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "7096e8016fbc3da42c8559113fa43ccc32b9f211b1f62296d4d9fe33f21ad789"
+      },
+      {
+        "name": "public.definir_pausa_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_pausar boolean",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "bf55f02a24bf92c51309930f27eb3ad2742bc3764abefe6d9d1cffe73f722078"
+      },
+      {
+        "name": "public.encerrar_descanso_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint, p_forcar boolean",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "cfaf84b777caebc5a9fda8f8d1e387063934b56a8a10dc0d9c7043ff00d9f405"
+      },
+      {
+        "name": "public.finalizar_treino_sessao",
+        "arguments": "p_id_sessao uuid, p_revisao_esperada bigint",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "ed03be27dc97ae1db222c49632078c86991875cc379ddd96e2c2db8fd199bd4f"
+      },
+      {
+        "name": "public.iniciar_treino_sessao",
+        "arguments": "p_id_treino bigint, p_descanso_padrao_segundos integer",
+        "owner": "gymio_workout_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "658f70f520d8cbb3b5472d9e1d38a03fa5d636ec9a38094eea803f5c3b7009f4"
+      },
+      {
+        "name": "public.registrar_push_subscription",
+        "arguments": "p_endpoint text, p_p256dh text, p_auth text",
+        "owner": "gymio_push_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "9ba1b104519a4372e855d506a8fd72026ca69f2570a00b9935f7a6ee22386f63"
+      },
+      {
+        "name": "public.remover_push_subscription",
+        "arguments": "p_subscription_id uuid",
+        "owner": "gymio_push_executor",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": true,
+        "bodyHash": "eb5bf3b0bf4eda5ff0a5e98a314ad41b10a3edef213232d0d73753d75956f463"
+      },
+      {
+        "name": "public.workout_push_begin",
+        "arguments": "p_delivery_id uuid, p_claim_token uuid",
+        "owner": "postgres",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "58fd8f5d83d9577fa7ce92084e632a5b5dcac870a505be511be3ab7ec01386bf"
+      },
+      {
+        "name": "public.workout_push_claim",
+        "arguments": "p_limit integer",
+        "owner": "postgres",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "d14bfe39471fcae734d7f609591fed4eaa555dcab9a767fe4e524accac58f833"
+      },
+      {
+        "name": "public.workout_push_complete",
+        "arguments": "p_delivery_id uuid, p_claim_token uuid, p_outcome text, p_snapshot jsonb",
+        "owner": "postgres",
+        "definer": true,
+        "language": "sql",
+        "anon": false,
+        "authenticated": false,
+        "bodyHash": "6acdc85d77f7c0a4884f359bcf17476fe2d3cdaee2b5f4fe671a8b611ba642e7"
+      }
+    ],
+    "negatives": [
+      "explicit select on public.usuarios",
+      "explicit select on cron.job",
+      "cron wrapper",
+      "net wrapper",
+      "effective net exposure",
+      "effective cron exposure"
+    ],
+    "empty": {
+      "jobs": 1,
+      "secrets": 0,
+      "requests": 0,
+      "responses": 0
+    },
+    "externalRequests": 0,
+    "graphql": "official disabled stub audited; enabled resolver is outside this tested baseline"
+  },
+  "scheduler": {
+    "passed": true,
+    "version": "1.6.4",
+    "schedule": "10 seconds",
+    "command": "select gymio_scheduler_spike.record_tick();",
+    "runs": [
+      {
+        "id": 1,
+        "ended_at": "2026-10-13T02:15:34.389615+00:00",
+        "started_at": "2026-10-13T02:15:34.286952+00:00"
+      },
+      {
+        "id": 2,
+        "ended_at": "2026-10-13T02:15:44.520474+00:00",
+        "started_at": "2026-10-13T02:15:44.418235+00:00"
+      },
+      {
+        "id": 3,
+        "ended_at": "2026-10-13T02:15:54.556377+00:00",
+        "started_at": "2026-10-13T02:15:54.453343+00:00"
+      }
+    ],
+    "intervals": [
+      10.132,
+      10.035
+    ],
+    "externalRequests": 0
+  },
+  "bPerformance": {
+    "passed": true,
+    "idleServerMs": {
+      "min": 4.827,
+      "max": 23.283,
+      "mean": 7.937799999999998
+    },
+    "writes": {
+      "sessionWrites": 0,
+      "notificationWrites": 0
+    },
+    "indexPlan": {
+      "Plan": {
+        "Node Type": "Limit",
+        "Parallel Aware": false,
+        "Async Capable": false,
+        "Startup Cost": 1.01,
+        "Total Cost": 1.01,
+        "Plan Rows": 1,
+        "Plan Width": 16,
+        "Actual Startup Time": 0.048,
+        "Actual Total Time": 0.049,
+        "Actual Rows": 0,
+        "Actual Loops": 1,
+        "Shared Hit Blocks": 4,
+        "Shared Read Blocks": 0,
+        "Shared Dirtied Blocks": 0,
+        "Shared Written Blocks": 0,
+        "Local Hit Blocks": 0,
+        "Local Read Blocks": 0,
+        "Local Dirtied Blocks": 0,
+        "Local Written Blocks": 0,
+        "Temp Read Blocks": 0,
+        "Temp Written Blocks": 0,
+        "Plans": [
+          {
+            "Node Type": "Sort",
+            "Parent Relationship": "Outer",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 1.01,
+            "Total Cost": 1.01,
+            "Plan Rows": 1,
+            "Plan Width": 16,
+            "Actual Startup Time": 0.046,
+            "Actual Total Time": 0.047,
+            "Actual Rows": 0,
+            "Actual Loops": 1,
+            "Sort Key": [
+              "id_sessao"
+            ],
+            "Sort Method": "quicksort",
+            "Sort Space Used": 25,
+            "Sort Space Type": "Memory",
+            "Shared Hit Blocks": 4,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Seq Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Relation Name": "treino_sessoes",
+                "Alias": "treino_sessoes",
+                "Startup Cost": 0,
+                "Total Cost": 1,
+                "Plan Rows": 1,
+                "Plan Width": 16,
+                "Actual Startup Time": 0.019,
+                "Actual Total Time": 0.019,
+                "Actual Rows": 0,
+                "Actual Loops": 1,
+                "Filter": "((pausada_em IS NULL) AND (status = 'ativa'::text) AND (fase = 'descanso'::text) AND (descanso_termina_em <= clock_timestamp()))",
+                "Rows Removed by Filter": 0,
+                "Shared Hit Blocks": 1,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              }
+            ]
+          }
+        ]
+      },
+      "Planning": {
+        "Shared Hit Blocks": 209,
+        "Shared Read Blocks": 0,
+        "Shared Dirtied Blocks": 0,
+        "Shared Written Blocks": 0,
+        "Local Hit Blocks": 0,
+        "Local Read Blocks": 0,
+        "Local Dirtied Blocks": 0,
+        "Local Written Blocks": 0,
+        "Temp Read Blocks": 0,
+        "Temp Written Blocks": 0
+      },
+      "Planning Time": 0.753,
+      "Triggers": [],
+      "Execution Time": 0.139
+    },
+    "fullServerMs": 41.817,
+    "fullWrites": {
+      "events": 100,
+      "deliveries": 100,
+      "sessionWrites": 0
+    },
+    "progress": {
+      "allEvents": 1000,
+      "allDeliveries": 1000
+    },
+    "populatedIndexPlan": {
+      "Plan": {
+        "Node Type": "Limit",
+        "Parallel Aware": false,
+        "Async Capable": false,
+        "Startup Cost": 0.28,
+        "Total Cost": 41.41,
+        "Plan Rows": 100,
+        "Plan Width": 16,
+        "Actual Startup Time": 0.085,
+        "Actual Total Time": 0.178,
+        "Actual Rows": 100,
+        "Actual Loops": 1,
+        "Shared Hit Blocks": 96,
+        "Shared Read Blocks": 0,
+        "Shared Dirtied Blocks": 0,
+        "Shared Written Blocks": 0,
+        "Local Hit Blocks": 0,
+        "Local Read Blocks": 0,
+        "Local Dirtied Blocks": 0,
+        "Local Written Blocks": 0,
+        "Temp Read Blocks": 0,
+        "Temp Written Blocks": 0,
+        "Plans": [
+          {
+            "Node Type": "Index Scan",
+            "Parent Relationship": "Outer",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "treino_sessoes_pkey",
+            "Relation Name": "treino_sessoes",
+            "Alias": "treino_sessoes",
+            "Startup Cost": 0.28,
+            "Total Cost": 137.24,
+            "Plan Rows": 333,
+            "Plan Width": 16,
+            "Actual Startup Time": 0.083,
+            "Actual Total Time": 0.167,
+            "Actual Rows": 100,
+            "Actual Loops": 1,
+            "Filter": "((pausada_em IS NULL) AND (status = 'ativa'::text) AND (fase = 'descanso'::text) AND (descanso_termina_em <= clock_timestamp()))",
+            "Rows Removed by Filter": 0,
+            "Shared Hit Blocks": 96,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          }
+        ]
+      },
+      "Planning": {
+        "Shared Hit Blocks": 0,
+        "Shared Read Blocks": 0,
+        "Shared Dirtied Blocks": 0,
+        "Shared Written Blocks": 0,
+        "Local Hit Blocks": 0,
+        "Local Read Blocks": 0,
+        "Local Dirtied Blocks": 0,
+        "Local Written Blocks": 0,
+        "Temp Read Blocks": 0,
+        "Temp Written Blocks": 0
+      },
+      "Planning Time": 0.26,
+      "Triggers": [],
+      "Execution Time": 0.22
+    },
+    "fixtureRolledBack": true
+  },
+  "dispatch": {
+    "passed": true,
+    "pgNetVersion": "0.20.0",
+    "argumentsProbe": {
+      "url": true,
+      "body": true,
+      "headers": true,
+      "timeout": true,
+      "noTokenInUrl": true
+    },
+    "elapsedMs": 13488,
+    "runs": [
+      {
+        "end": "2026-10-13T02:16:24.885424+00:00",
+        "start": "2026-10-13T02:16:24.868776+00:00",
+        "status": "succeeded"
+      }
+    ],
+    "responses": [
+      {
+        "status": 200,
+        "counts": {
+          "failed": 0,
+          "claimed": 1,
+          "expired": 0,
+          "skipped": 0,
+          "accepted": 1,
+          "attempted": 1
+        }
+      }
+    ],
+    "externalPushRequests": 0,
+    "idleDispatched": false
+  },
+  "counts": {
+    "auth.users": 2,
+    "public.usuarios": 2,
+    "public.treinos": 0,
+    "public.exercicios": 0,
+    "public.secoes_treino": 0,
+    "public.treinos_exercicios": 0,
+    "public.treino_sessoes": 0,
+    "public.treino_sessao_series": 0,
+    "public.historico_treinos": 0,
+    "public.historico_exercicios": 0,
+    "public.push_subscriptions": 0,
+    "gymio_workout_push_private.outbox": 0,
+    "gymio_workout_push_private.deliveries": 0,
+    "gymio_workout_actions_private.generations": 0,
+    "gymio_workout_actions_private.capabilities": 0
+  },
+  "jobs": {
+    "active": 0,
+    "c_jobs": 0,
+    "global_job_inactive": true
+  },
+  "blockers": [],
+  "gatesPassed": true,
+  "scope": {
+    "productionCodeChanged": false,
+    "remoteSupabaseOperations": 0,
+    "vercelOperations": 0,
+    "realProviderRequests": 0,
+    "authHistoricalExecuted": false,
+    "contractExecuted": false,
+    "commitPushPRMerge": false,
+    "manualTestStarted": false,
+    "rollout": false,
+    "cliUpdateNotifierDisabled": true,
+    "originalTestBodiesAndAssertionsUnmodified": true
+  },
+  "cleanup": {
+    "completed": false
+  }
+}

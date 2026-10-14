@@ -1,4 +1,4 @@
-// Future matrix only. The preserved B project is deliberately not accepted.
+// Isolated matrix only. The preserved B project is deliberately not accepted.
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
@@ -12,6 +12,7 @@ export const historicalHashes={
   '20260823003337_exercise_memory_read.sql':'7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02',
   '20261007215944_push_foundation.sql':'225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823',
   '20261010183821_workout_notifications.sql':'c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b',
+  '20261011021351_workout_notification_actions.sql':'b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca',
 }
 export function assertActionsHistory() {
   for(const [name,hash] of Object.entries(historicalHashes))assert.equal(createHash('sha256').update(fs.readFileSync(`supabase/migrations/${name}`)).digest('hex'),hash,`STOP historical hash ${name}; no restoration`)

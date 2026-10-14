@@ -252,7 +252,7 @@ begin
     if g.id is null or g.subscription_id<>d.subscription_id or exists(select 1 from gymio_workout_actions_private.capabilities c
       where c.generation_id=g.id and c.subscription_id<>d.subscription_id) then raise exception 'capability delivery binding mismatch'; end if;
     -- Keep B's fixed due-alert title/body and timestamps; add only bound controls.
-    v_attempt:=jsonb_set(v_attempt,'{payload}',v_attempt->'payload'||(v_controls->'projection'-'title'-'body')||
+    v_attempt:=jsonb_set(v_attempt,'{payload}',v_attempt->'payload'||((v_controls -> 'projection') - ARRAY['title', 'body']::text[])||
       jsonb_build_object('title',v_attempt->'payload'->>'title','body',v_attempt->'payload'->>'body'));
   elsif v_controls->>'result' not in ('unchanged','unavailable','stale') then raise exception 'unexpected control issuance';
   end if;
@@ -269,7 +269,7 @@ grant execute on function public.workout_notification_action(text) to service_ro
 grant execute on function public.workout_push_begin_controls(uuid,uuid) to service_role;
 
 do $assert$
-declare p record; c record; r text; f regprocedure; v_actions text[]; v_expression text;
+declare p record; c record; r text; f regprocedure; v_actions text[]; v_expression text; v_current jsonb;
 begin
   if (select nspowner from pg_namespace where nspname='gymio_workout_actions_private')<> 'postgres'::regrole then raise exception 'C schema owner'; end if;
   if not (select rolbypassrls from pg_roles where rolname='postgres') then raise exception 'existing postgres RLS bridge unavailable'; end if;
@@ -311,7 +311,7 @@ begin
     and conname='workout_capability_generation' and confrelid='gymio_workout_actions_private.generations'::regclass and cardinality(conkey)=5 and confdeltype='c') then raise exception 'C composite binding'; end if;
   -- Check the unchanged rows captured before C, including executor attributes.
   for p in select * from gymio_c_historical loop
-    if p.value is distinct from case p.kind
+    select case p.kind
       when 'function' then (select jsonb_build_array(pg_get_functiondef(oid),proowner,proacl) from pg_proc where oid=p.id::oid)
       when 'relation' then (select jsonb_build_array(relowner,relacl,relrowsecurity,relforcerowsecurity) from pg_class where oid=p.id::oid)
       when 'schema' then (select jsonb_build_array(nspowner,nspacl) from pg_namespace where oid=p.id::oid)
@@ -321,7 +321,11 @@ begin
       when 'column' then (select to_jsonb(x) from pg_attribute x where attrelid::text||':'||attnum::text=p.id)
       when 'constraint' then (select to_jsonb(x) from pg_constraint x where oid=p.id::oid)
       when 'index' then (select jsonb_build_array(pg_get_indexdef(indexrelid),to_jsonb(x)) from pg_index x where indexrelid=p.id::oid)
-      when 'default_acl' then (select to_jsonb(x) from pg_default_acl x where oid=p.id::oid) end then raise exception 'historical definition/ACL drift: %',p.kind; end if;
+      when 'default_acl' then (select to_jsonb(x) from pg_default_acl x where oid=p.id::oid)
+    end into v_current;
+    if p.value is distinct from v_current then
+      raise exception 'historical definition/ACL drift: %',p.kind;
+    end if;
   end loop;
   if (select count(*) from pg_auth_members)<>(select count(*)from gymio_c_historical where kind='membership') then raise exception 'historical membership count drift'; end if;
 end $assert$;

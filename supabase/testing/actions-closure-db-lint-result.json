@@ -1,0 +1,72 @@
+{
+  "phase": "after",
+  "attempt": 1,
+  "passed": true,
+  "exit_code": 0,
+  "elapsed_ms": 4911.253,
+  "counts": {
+    "ERROR": 0,
+    "WARN": 5,
+    "INFO": 0
+  },
+  "diagnostics": [
+    {
+      "function": "graphql_public.graphql",
+      "level": "WARNING EXTRA",
+      "message": "unused parameter \"operationName\""
+    },
+    {
+      "function": "graphql_public.graphql",
+      "level": "WARNING EXTRA",
+      "message": "unused parameter \"query\""
+    },
+    {
+      "function": "graphql_public.graphql",
+      "level": "WARNING EXTRA",
+      "message": "unused parameter \"variables\""
+    },
+    {
+      "function": "graphql_public.graphql",
+      "level": "WARNING EXTRA",
+      "message": "unused parameter \"extensions\""
+    },
+    {
+      "function": "gymio_workout_actions_private.issue",
+      "level": "WARNING",
+      "message": "target type is different type than source type"
+    }
+  ],
+  "unclassifiedDiagnostics": [],
+  "schemas": [
+    "public",
+    "graphql_public",
+    "gymio_private",
+    "gymio_push_private",
+    "gymio_workout_push_private",
+    "gymio_workout_actions_private"
+  ],
+  "command": {
+    "cli": "Supabase CLI",
+    "version": "2.120.0",
+    "local": true,
+    "minimumDiagnosticLevel": "warning",
+    "failOn": "error",
+    "linked": false,
+    "dbUrl": false
+  },
+  "infoCoverage": "Pinned CLI --level choices are warning/error; INFO is counted if returned, but CLI does not offer an info diagnostic level.",
+  "hashes": {
+    "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+    "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+    "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+    "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+    "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+    "20261011021351_workout_notification_actions.sql": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca"
+  },
+  "stdout": "{\"results\":[{\"function\":\"graphql_public.graphql\",\"issues\":[{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"operationName\\\"\",\"sqlState\":\"00000\"},{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"query\\\"\",\"sqlState\":\"00000\"},{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"variables\\\"\",\"sqlState\":\"00000\"},{\"level\":\"warning extra\",\"message\":\"unused parameter \\\"extensions\\\"\",\"sqlState\":\"00000\"}]},{\"function\":\"gymio_workout_actions_private.issue\",\"issues\":[{\"level\":\"warning\",\"message\":\"target type is different type than source type\",\"statement\":{\"lineNumber\":\"4\",\"text\":\"statement block\"},\"hint\":\"The input expression type does not have an assignment cast to the target type.\",\"detail\":\"cast \\\"text\\\" value to \\\"jsonb\\\" type\",\"context\":\"during statement block local variable \\\"v_controls\\\" initialization on line 3\",\"sqlState\":\"42804\"}]}],\"message\":\"db lint\"}\n",
+  "stderr": "Connecting to local database...\nLinting schema: public\nLinting schema: graphql_public\nLinting schema: gymio_private\nLinting schema: gymio_push_private\nLinting schema: gymio_workout_push_private\nLinting schema: gymio_workout_actions_private\n",
+  "failure": null,
+  "remoteOperations": 0,
+  "sqlApplied": false,
+  "servicesStarted": false
+}

@@ -1,0 +1,390 @@
+{
+  "passed": true,
+  "head": "cf953d2bb234f4050ad50f6ef19b5b94a5df975e",
+  "branch": "gym.io-v3.2",
+  "baselines": {
+    "third": "supabase/testing/actions-third-inventory-after.json",
+    "closure": "supabase/testing/actions-closure-inventory-before.json",
+    "thirdImmutable": true
+  },
+  "hashes": {
+    "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+    "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+    "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+    "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+    "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+    "20261011021351_workout_notification_actions.sql": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca"
+  },
+  "files": 1134,
+  "categoryCounts": {
+    "PROTECTED SOURCE": 1123,
+    "AUTHORIZED TEST/HARNESS CHANGES": 10,
+    "GENERATED SUPABASE CLI STATE": 1
+  },
+  "exactAuthorizedPaths": [
+    "supabase/testing/WORKOUT_ACTIONS_MATRIX_CLOSURE_GATE.md",
+    "supabase/testing/actions-closure-cleanup-result.json",
+    "supabase/testing/actions-closure-cli-state-proof.json",
+    "supabase/testing/actions-closure-db-lint-result.json",
+    "supabase/testing/actions-closure-evidence.json",
+    "supabase/testing/actions-closure-evidence.mjs",
+    "supabase/testing/actions-closure-inventory-after.json",
+    "supabase/testing/actions-closure-inventory-before.json",
+    "supabase/testing/actions-closure-regressions-result.json",
+    "supabase/testing/actions-closure-runner-diagnosis.json",
+    "supabase/testing/actions-closure-runtime-result.json",
+    "supabase/testing/actions-closure-source-audit-result.json",
+    "supabase/testing/actions-closure-source-audit.mjs",
+    "supabase/testing/actions-closure-test-matrix-result.json",
+    "supabase/testing/actions-reexecution-regressions.mjs",
+    "supabase/testing/actions-reexecution-setup.mjs",
+    "supabase/testing/actions-regression-observer.mjs",
+    "supabase/testing/actions-regression-observer.test.mjs",
+    "supabase/testing/actions-third-matrix-db-lint.mjs"
+  ],
+  "generatedState": {
+    "path": "supabase/.temp/cli-latest",
+    "classification": "GENERATED SUPABASE CLI STATE",
+    "producerVersion": "2.120.0",
+    "value": "v2.120.0",
+    "bytes": 8,
+    "sha256": "2f99ec07bad208b0108748390c2fe80fb0a91b1784a8f7bf1d303efda7deeaee",
+    "notMigration": true,
+    "noSecrets": true,
+    "notConsumedByApplication": true,
+    "doesNotContainRuntimeConfiguration": true
+  },
+  "thirdComparison": {
+    "changes": [
+      {
+        "path": "supabase/testing/actions-reexecution-regressions.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "before": "cfaaa76c7d67e01d54d6498b570e07c8710693f145602ada1e249beca9be9d5a",
+        "after": "99a520dcedec9f499ba040e6e00b9c48ecc0c8b45a47dfcd0bffaa0b70be49cc"
+      },
+      {
+        "path": "supabase/testing/actions-reexecution-setup.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "before": "cdfc80718160d3a6e536a4ba4fdae74b04ead8e5b9a3d7ec328172f2539888b0",
+        "after": "e3e263ddf1ff27b03d77537c248ac66586b3cf4e8da508922607b064f6878bc7"
+      },
+      {
+        "path": "supabase/testing/actions-third-matrix-db-lint.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "before": "1d5aa3e446a3166b239029ecc5d18405914c3e67668697e9710bbf731c6d8cc4",
+        "after": "b79fc20ff0b37a0c1e1e2bff0ca7e60194a22a446d62f6d755fdfb9cee21d9b7"
+      }
+    ],
+    "added": [
+      {
+        "path": "supabase/testing/actions-closure-cli-state-proof.json",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "358d52b1312843dbd9faf443dbb6e10b8ad62f9ead519c9d5430a3d1a7253871"
+      },
+      {
+        "path": "supabase/testing/actions-closure-evidence.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "c2e2d2022939fdc830d9f74bdfbccb9e6f7bbd4f4492bed6acb37faf61f2d231"
+      },
+      {
+        "path": "supabase/testing/actions-closure-inventory-before.json",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "c7587ef05ae140fc9efbe4e6307ff88de5d38894b9193d6e233b7262cdb2dc08"
+      },
+      {
+        "path": "supabase/testing/actions-closure-runner-diagnosis.json",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "780119b04ec830755b444f18700075e936633a9737b05825a6c0d8615d93d73b"
+      },
+      {
+        "path": "supabase/testing/actions-closure-source-audit.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "ca62e56718036563456abfa77b147d837873d732e91d8649ec0c6aec6fcd9481"
+      },
+      {
+        "path": "supabase/testing/actions-regression-observer.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "0a2763f93884fd710e2ac9f74ac7889903a41484fe6bc5f1f899ae01bc31181f"
+      },
+      {
+        "path": "supabase/testing/actions-regression-observer.test.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "ddfd05498a2aeb6d8a844209d16b84c66399945c6c95ef44641fa341b0d5c4c3"
+      }
+    ]
+  },
+  "closureComparison": {
+    "changes": [
+      {
+        "path": "supabase/testing/actions-reexecution-regressions.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "before": "cfaaa76c7d67e01d54d6498b570e07c8710693f145602ada1e249beca9be9d5a",
+        "after": "99a520dcedec9f499ba040e6e00b9c48ecc0c8b45a47dfcd0bffaa0b70be49cc"
+      },
+      {
+        "path": "supabase/testing/actions-reexecution-setup.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "before": "cdfc80718160d3a6e536a4ba4fdae74b04ead8e5b9a3d7ec328172f2539888b0",
+        "after": "e3e263ddf1ff27b03d77537c248ac66586b3cf4e8da508922607b064f6878bc7"
+      },
+      {
+        "path": "supabase/testing/actions-third-matrix-db-lint.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "before": "1d5aa3e446a3166b239029ecc5d18405914c3e67668697e9710bbf731c6d8cc4",
+        "after": "b79fc20ff0b37a0c1e1e2bff0ca7e60194a22a446d62f6d755fdfb9cee21d9b7"
+      }
+    ],
+    "added": [
+      {
+        "path": "supabase/testing/actions-closure-cli-state-proof.json",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "358d52b1312843dbd9faf443dbb6e10b8ad62f9ead519c9d5430a3d1a7253871"
+      },
+      {
+        "path": "supabase/testing/actions-closure-evidence.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "c2e2d2022939fdc830d9f74bdfbccb9e6f7bbd4f4492bed6acb37faf61f2d231"
+      },
+      {
+        "path": "supabase/testing/actions-closure-inventory-before.json",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "c7587ef05ae140fc9efbe4e6307ff88de5d38894b9193d6e233b7262cdb2dc08"
+      },
+      {
+        "path": "supabase/testing/actions-closure-runner-diagnosis.json",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "780119b04ec830755b444f18700075e936633a9737b05825a6c0d8615d93d73b"
+      },
+      {
+        "path": "supabase/testing/actions-closure-source-audit.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "ca62e56718036563456abfa77b147d837873d732e91d8649ec0c6aec6fcd9481"
+      },
+      {
+        "path": "supabase/testing/actions-regression-observer.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "0a2763f93884fd710e2ac9f74ac7889903a41484fe6bc5f1f899ae01bc31181f"
+      },
+      {
+        "path": "supabase/testing/actions-regression-observer.test.mjs",
+        "category": "AUTHORIZED TEST/HARNESS CHANGES",
+        "sha256": "ddfd05498a2aeb6d8a844209d16b84c66399945c6c95ef44641fa341b0d5c4c3"
+      }
+    ]
+  },
+  "tracked": {
+    "files": 307,
+    "exactContentDifferences": [
+      "supabase/migrations/20261011021351_workout_notification_actions.sql",
+      "supabase/testing/actions-context.mjs",
+      "supabase/testing/actions-data-api.mjs",
+      "supabase/testing/actions-edge-fixture.sql",
+      "supabase/testing/actions-edge-integration/index.ts",
+      "supabase/testing/actions-edge-tests.mjs",
+      "supabase/testing/actions-fixture.mjs",
+      "supabase/testing/actions-indexeddb.mjs",
+      "supabase/testing/actions-local-tests.mjs"
+    ],
+    "crlfOnlyDifferences": [
+      ".gitignore",
+      "README.md",
+      "index.html",
+      "jsconfig.json",
+      "package.json",
+      "public/favicon.svg",
+      "src/App.jsx",
+      "src/components/AgendarTreinoModal.jsx",
+      "src/components/CurrentExerciseCard.jsx",
+      "src/components/HistoricoCard.jsx",
+      "src/components/HistoricoEmpty.jsx",
+      "src/components/HistoricoHeader.jsx",
+      "src/components/HistoricoMonth.jsx",
+      "src/components/PreWorkoutModal.jsx",
+      "src/components/SessionFeedback.js",
+      "src/components/Sidebar.jsx",
+      "src/components/UserProfileModal.jsx",
+      "src/components/WorkoutActions.jsx",
+      "src/components/WorkoutHeader.jsx",
+      "src/components/WorkoutInfo.jsx",
+      "src/components/WorkoutProgress.jsx",
+      "src/components/WorkoutSessionRecoveryModal.jsx",
+      "src/components/WorkoutTimer.jsx",
+      "src/components/dashboard/DashboardMomentumCard.jsx",
+      "src/components/dashboard/DashboardNextWorkoutCard.jsx",
+      "src/components/dashboard/DashboardQuickMetric.jsx",
+      "src/components/dashboard/WorkoutConsistencyHeatmap.jsx",
+      "src/components/training/ScheduledWorkoutDeck.jsx",
+      "src/components/training/WorkoutCard.jsx",
+      "src/components/training/WorkoutCatalog.jsx",
+      "src/components/training/WorkoutWeekSelector.jsx",
+      "src/components/ui/ActionLoading.jsx",
+      "src/components/ui/Banner.jsx",
+      "src/components/ui/Button.jsx",
+      "src/components/ui/Card.jsx",
+      "src/components/ui/CarouselNavigation.jsx",
+      "src/components/ui/ContentEntrance.jsx",
+      "src/components/ui/Disclosure.jsx",
+      "src/components/ui/FieldError.jsx",
+      "src/components/ui/Input.jsx",
+      "src/components/ui/LoadingSpinner.jsx",
+      "src/components/ui/LoadingState.jsx",
+      "src/components/ui/Modal.jsx",
+      "src/components/ui/ModalHeader.jsx",
+      "src/components/ui/NotificationCenter.jsx",
+      "src/components/ui/PageHeader.jsx",
+      "src/components/ui/PageLoadingBoundary.jsx",
+      "src/components/ui/SegmentedControl.jsx",
+      "src/components/ui/Skeleton.jsx",
+      "src/components/ui/ThemeToggle.jsx",
+      "src/components/ui/appMotion.js",
+      "src/components/ui/loadingVariants.js",
+      "src/contexts/AuthContext.jsx",
+      "src/contexts/ThemeContext.jsx",
+      "src/contexts/UiContext.jsx",
+      "src/features/auth/AuthCard.jsx",
+      "src/features/auth/AuthField.jsx",
+      "src/features/auth/AuthHero.jsx",
+      "src/features/auth/AuthIllustration.jsx",
+      "src/features/auth/AuthShell.jsx",
+      "src/features/auth/SocialAuth.jsx",
+      "src/features/auth/auth.css",
+      "src/features/auth/authMotion.js",
+      "src/features/auth/useAuthFeedback.js",
+      "src/features/auth/useGoogleAuth.js",
+      "src/features/history/ChartDataTable.jsx",
+      "src/features/history/FeaturedExercises.jsx",
+      "src/features/history/HistoryCard.jsx",
+      "src/features/history/HistoryCharts.jsx",
+      "src/features/history/HistoryDetail.jsx",
+      "src/features/history/HistoryMetricValue.jsx",
+      "src/features/history/HistoryOverview.jsx",
+      "src/features/history/HistoryView.jsx",
+      "src/features/history/MuscleDistribution.jsx",
+      "src/features/history/TrainingRhythm.jsx",
+      "src/features/history/WorkoutExerciseTimeline.jsx",
+      "src/features/history/WorkoutHistory.jsx",
+      "src/features/history/history.css",
+      "src/features/history/historyModel.js",
+      "src/features/history/historyNavigation.js",
+      "src/features/history/historyRepository.js",
+      "src/features/history/useHistoryData.js",
+      "src/features/landing/LandingExperience.jsx",
+      "src/features/landing/LandingLoadingState.jsx",
+      "src/features/landing/landing.css",
+      "src/features/landing/sections/LandingSections.jsx",
+      "src/features/landing/three/MotionSpineScene.jsx",
+      "src/features/landing/three/ribbonBootstrap.js",
+      "src/features/landing/three/ribbonChapters.js",
+      "src/features/landing/three/ribbonDataAnchors.js",
+      "src/features/landing/three/ribbonEffects.js",
+      "src/features/landing/three/ribbonGeometry.js",
+      "src/features/landing/three/ribbonIntro.js",
+      "src/features/landing/three/ribbonLayout.js",
+      "src/features/landing/three/ribbonPath.js",
+      "src/features/landing/three/ribbonProfiles.js",
+      "src/features/landing/three/ribbonTimeline.js",
+      "src/features/landing/three/useRibbonScrollSync.js",
+      "src/features/publicSite/InstitutionalFooter.jsx",
+      "src/features/publicSite/LandingHeader.jsx",
+      "src/features/publicSite/LegalDocumentContent.jsx",
+      "src/features/publicSite/PublicHashLink.jsx",
+      "src/features/publicSite/TermsAndPrivacyModal.jsx",
+      "src/features/publicSite/hashNavigation.js",
+      "src/features/publicSite/legalDocuments.js",
+      "src/features/publicSite/publicContent.js",
+      "src/features/publicSite/publicSite.css",
+      "src/hooks/treinoSessaoControllerUtils.js",
+      "src/hooks/useAgendamentos.js",
+      "src/hooks/useAuth.js",
+      "src/hooks/useDescansoTimer.js",
+      "src/hooks/useHistorico.js",
+      "src/hooks/useHorizontalCarousel.js",
+      "src/hooks/useServerNow.js",
+      "src/hooks/useTreino.js",
+      "src/hooks/useTreinoAtivo.js",
+      "src/hooks/useWorkoutTimer.js",
+      "src/layouts/DashboardLayout.jsx",
+      "src/lib/supabase.js",
+      "src/main.jsx",
+      "src/pages/Cadastro.jsx",
+      "src/pages/Dashboard.jsx",
+      "src/pages/Historico.jsx",
+      "src/pages/LandingPage.jsx",
+      "src/pages/LegalPage.jsx",
+      "src/pages/Login.jsx",
+      "src/pages/RedefinirSenha.jsx",
+      "src/pages/RouteError.jsx",
+      "src/pages/Treinar.jsx",
+      "src/pages/TreinoPlayer.jsx",
+      "src/pages/Treinos.jsx",
+      "src/pages/TreinosEditar.jsx",
+      "src/pages/TreinosVisualizar.jsx",
+      "src/routes/AppRoutes.jsx",
+      "src/routes/PrivateRoute.jsx",
+      "src/routes/RouteScrollReset.js",
+      "src/routes/routeScroll.js",
+      "src/services/agendamentos/agendamentosService.js",
+      "src/services/auth/authService.js",
+      "src/services/exercicios/exerciciosService.js",
+      "src/services/historico/historicoTreinosService.js",
+      "src/services/memoria_exercicios/memoriaExerciciosService.js",
+      "src/services/treino_ativo/treinoSessaoService.js",
+      "src/services/treinos/secoesService.js",
+      "src/services/treinos/treinosExerciciosService.js",
+      "src/services/treinos/treinosService.js",
+      "src/services/usuarios/usuariosService.js",
+      "src/styles/appTheme.css",
+      "src/styles/formFields.css",
+      "src/styles/index.css",
+      "src/styles/layout.js",
+      "src/styles/theme.js",
+      "src/utils/currentExerciseFormState.js",
+      "src/utils/dashboardInsights.js",
+      "src/utils/dateUtils.js",
+      "src/utils/errorMessages.js",
+      "src/utils/imageUtils.js",
+      "src/utils/memoriaExercicioUtils.js",
+      "src/utils/sessionStorage.js",
+      "src/utils/trainingDiscovery.js",
+      "src/utils/treinoUtils.js",
+      "tailwind.config.js",
+      "vercel.json",
+      "vite.config.js"
+    ],
+    "normalized": "CRLF to LF only for nonbinary Git blobs; comparison against third baseline remains byte-exact"
+  },
+  "production": {
+    "verifiedFiles": 257,
+    "byteExactPreserved": true,
+    "frontend": true,
+    "serviceWorker": true,
+    "edgeFunctions": true,
+    "frozenMigrations": true,
+    "ignoredEnvironmentFiles": true,
+    "manualFixture": true
+  },
+  "negativeFixtures": [
+    {
+      "name": "protected source alteration",
+      "rejected": true,
+      "memoryOnly": true,
+      "actualFilesModified": false
+    },
+    {
+      "name": "frozen C hash alteration",
+      "rejected": true,
+      "memoryOnly": true,
+      "actualFilesModified": false
+    },
+    {
+      "name": "unapproved new path",
+      "rejected": true,
+      "memoryOnly": true,
+      "actualFilesModified": false
+    }
+  ],
+  "originalThirdReportsPreserved": true,
+  "dockerOperations": 0,
+  "sqlOperations": 0,
+  "networkOperations": 0
+}

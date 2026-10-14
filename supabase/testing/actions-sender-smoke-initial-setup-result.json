@@ -1,0 +1,18 @@
+{
+  "passed": false,
+  "scope": "no-network two-subscription PostgreSQL sender smoke; not the complete matrix",
+  "image": "public.ecr.aws/supabase/postgres:17.6.1.113",
+  "cHash": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca",
+  "support": [],
+  "stages": [],
+  "externalRequests": 0,
+  "imageId": "sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e",
+  "digests": [
+    "public.ecr.aws/supabase/postgres@sha256:4c39816ce8d9303a3aba1161c842929c73a40c7109a9ef1b644582478e31832e"
+  ],
+  "failure": {
+    "stage": "sender smoke assertion failed",
+    "sqlstate": null
+  },
+  "cleanup": "exact owned no-network container removed; tmpfs data and guarded temporary root/secrets removed; A/B untouched"
+}

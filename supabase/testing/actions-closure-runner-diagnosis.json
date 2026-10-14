@@ -1,0 +1,55 @@
+{
+  "scope": "Read-only diagnosis of the original third-matrix regression runner before closure-gate execution",
+  "observed_prior_result": {
+    "b_sql_exit_code": 1,
+    "b_sql_elapsed_ms": 241793.703,
+    "assertion_failure": true,
+    "sql_failure": false,
+    "last_pass_group": "two schedulers and two senders cannot duplicate physical events or claims",
+    "stderr_was_discarded": true,
+    "failing_assertion_location_available": false,
+    "isolated_lease_later_passed": true,
+    "full_body_diagnostic_later_passed": true,
+    "full_body_diagnostic_elapsed_ms": 295125,
+    "original_cause_resolved": false
+  },
+  "runner_before_observability_fix": {
+    "sources_inspected": [
+      "supabase/testing/actions-reexecution-regressions.mjs",
+      "supabase/testing/actions-third-run-stage.mjs",
+      "supabase/testing/actions-third-complete-regressions.mjs"
+    ],
+    "global_process_timeout_ms": null,
+    "per_stage_process_timeout_ms": null,
+    "spawn_timeout_option_present": false,
+    "process_timer_300000_present": false,
+    "conclusion_300000_timeout_caused_prior_failure": "not supported by retained evidence",
+    "per_stream_limit_characters": 16777216,
+    "buffer_limit_action": "child.kill() without preserving termination reason or signal",
+    "stdout": "PASS labels only were retained",
+    "stderr": "discarded except assertion_failure and sql_failure flags",
+    "exit_code": "null was converted to 1",
+    "spawn_error": "converted to generic failure",
+    "signal": "not retained",
+    "cwd": "process.cwd() (workspace)",
+    "environment": "process.env inherited without override",
+    "shell": false,
+    "windows_hide": "not explicitly set",
+    "close_event": "waited for child close",
+    "finally_baseline": "missing at runner level; per-stage identity verification existed"
+  },
+  "authorized_observability_fix": {
+    "global_process_timeout_ms": null,
+    "per_stage_process_timeout_ms": null,
+    "timeout_values_changed": false,
+    "per_stream_limit_characters": 16777216,
+    "direct_spawn_no_shell": true,
+    "windows_hide": true,
+    "retain": ["logical command", "start", "finish", "elapsed", "exit code", "signal", "termination reason", "sanitized stdout", "sanitized stderr"],
+    "partial_lines_held_until_complete": true,
+    "both_full_streams_redacted_after_close": true,
+    "baseline_finally": "verify exact local A/B identities, empty fixtures, frozen hashes and inactive job; never repair data",
+    "historical_test_assertion_bodies": "unchanged and byte-checked before the single original 12-stage invocation"
+  },
+  "operations_during_diagnosis": {"docker_executed": false, "sql_executed": false, "remote_operations": false}
+}

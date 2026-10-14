@@ -1,0 +1,46 @@
+{
+  "project": "gymio-workout-actions-local",
+  "runtimeRoot": "C:\\Users\\mateu\\AppData\\Local\\Temp\\gymio-workout-actions-d4500f82d7524db0a715b1641c74a828",
+  "bootstrap": [
+    "legacy fixture",
+    "EXPAND",
+    "Memory",
+    "Foundation A",
+    "Notifications B",
+    "Extension Security Gate",
+    "Actions C"
+  ],
+  "postgresImage": "public.ecr.aws/supabase/postgres:17.6.1.113",
+  "extensions": {
+    "pg_net": "0.20.0",
+    "pg_cron": "1.6.4",
+    "supabase_vault": "0.3.1"
+  },
+  "hashes": {
+    "20260725194232_auth_email_security.sql": "cef2b977994e6632caab79bb82b759efc1dcd95b372f26b37141f7aa12eba9d6",
+    "20260821190134_workout_session_persistence_expand.sql": "6388adf59a96219035e262bb1c08765cc599a5f821c30bf7034fc1258ab1a2db",
+    "20260823003337_exercise_memory_read.sql": "7fc9c40a8b2b64fe0b9c24bb979d3393033d31a311b0f91ed5cf51ae917c6e02",
+    "20261007215944_push_foundation.sql": "225b65c65fdfbb81dc631882f71a0fde34a90676fe97473bfdb4b2e3fcbd3823",
+    "20261010183821_workout_notifications.sql": "c9196d2e6ea7606543197c1cfdb673f21a5c94c910c0f6d94a33b4f3d61c755b",
+    "20261011021351_workout_notification_actions.sql": "b045d4c7d4f303093e2d3cb7ec2c6949c32fdc47af0061c3a53d46b61e99dbca"
+  },
+  "cAppliedUnmodified": true,
+  "smoke": {
+    "tables": 2,
+    "profiles": 2,
+    "auth_users": 2,
+    "active_jobs": 0,
+    "schema_loaded": true,
+    "public_wrappers": 3
+  },
+  "authHistoricalExecuted": false,
+  "contractExecuted": false,
+  "remoteOperations": 0,
+  "providerSafety": {
+    "globalJobInitiallyInactive": true,
+    "dispatchUrlAbsentBeforeFakeTransport": true,
+    "dispatchUrlProvisionedOnlyAtOriginalInstallStage": true,
+    "workerTokenServerOnly": true,
+    "productionFunctionEntryPreservedUntilOriginalInstallStage": true
+  }
+}
