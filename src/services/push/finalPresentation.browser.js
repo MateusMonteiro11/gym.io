@@ -45,8 +45,8 @@ export async function runFinalPresentationBrowserChecks(source) {
       await w.processor.lifecycle('start', start)
       const first = reg.live()[0]
       assert(first.title === 'Treino iniciado' && !Object.hasOwn(reg.shown[0].options, 'body'), 'compact start has no body')
-      assert(reg.shown.length === 1 && reg.shown[0].options.silent === true, 'minimal and enhanced start silently')
-      assert(reg.shown[0].options.renotify === false && !Object.hasOwn(reg.shown[0].options, 'vibrate'), 'start requests no renotify or vibration')
+      assert(reg.shown.length === 1 && reg.shown[0].options.silent === false, 'minimal and enhanced start request attention once')
+      assert(reg.shown[0].options.renotify === true && Object.hasOwn(reg.shown[0].options, 'vibrate'), 'start uses optional attention features when exposed')
       for (const frame of sessionSequence()) await w.processor.project(frame.value, frame.alert)
       if (!max) {
         await w.processor.project(controls())

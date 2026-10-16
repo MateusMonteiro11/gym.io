@@ -36,9 +36,9 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   assert.equal(initial.title, 'Treino iniciado')
   assert.equal(Object.hasOwn(w.reg.shown[0].options, 'body'), false)
   assert.equal(w.reg.shown.length, 1)
-  assert.equal(w.reg.shown[0].options.silent, true)
-  assert.equal(w.reg.shown[0].options.renotify, false)
-  assert.equal(Object.hasOwn(w.reg.shown[0].options, 'vibrate'), false)
+  assert.equal(w.reg.shown[0].options.silent, false)
+  assert.equal(w.reg.shown[0].options.renotify, true)
+  assert.deepEqual(w.reg.shown[0].options.vibrate, [200, 100, 200])
   assert.equal(initial.data.projection, undefined); assert.equal(w.reg.shown[0].options.actions, undefined)
   await worker(maxActions, w).processor.lifecycle('start', start())
   assert.equal(w.reg.shown.length, 1, 'recovery cannot duplicate start before completion')
@@ -75,14 +75,34 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   assert.equal(w.reg.shown.filter(card => card.title === 'Treino concluído').length, 1)
 })
 
+test('minimal start requests attention without optional notification features and remains deduplicated', async () => {
+  const w = worker(0, {}, {})
+  await w.processor.lifecycle('start', start())
+  const initial = w.reg.shown[0]
+  assert.equal(initial.title, 'Treino iniciado')
+  assert.equal(Object.hasOwn(initial.options, 'body'), false)
+  assert.equal(initial.options.silent, false)
+  assert.equal(initial.options.renotify, false)
+  assert.equal(Object.hasOwn(initial.options, 'vibrate'), false)
+  await worker(0, w, {}).processor.lifecycle('start', start())
+  assert.equal(w.reg.shown.length, 1)
+})
+
 for (const renotify of [false, true]) for (const vibrate of [false, true]) {
   test(`enhanced attention uses exposed options only: renotify=${renotify}, vibrate=${vibrate}`, async () => {
     const options = { ...(renotify ? { renotify: false } : {}), ...(vibrate ? { vibrate: [] } : {}) }
     const w = worker(3, {}, options)
     await w.processor.lifecycle('start', start())
+    const initial = w.reg.shown[0]
+    assert.equal(initial.title, 'Treino iniciado')
+    assert.equal(Object.hasOwn(initial.options, 'body'), false)
+    assert.equal(initial.options.silent, false)
+    assert.equal(initial.options.renotify, renotify)
+    assert.equal(Object.hasOwn(initial.options, 'vibrate'), vibrate)
+    if (vibrate) assert.deepEqual(initial.options.vibrate, [200, 100, 200])
     // Even a requested alert on a normal projection cannot reserve attention.
     for (const frame of sessionSequence().slice(0, 11)) await w.processor.project(frame.value, true)
-    for (const card of w.reg.shown) {
+    for (const card of w.reg.shown.slice(1)) {
       assert.equal(card.options.silent, true)
       assert.equal(card.options.renotify, false)
       assert.equal(Object.hasOwn(card.options, 'vibrate'), false)
@@ -99,7 +119,7 @@ for (const renotify of [false, true]) for (const vibrate of [false, true]) {
     await dispatch(w, 'push', { data: { json: () => due } })
     const restarted = worker(3, w, options)
     await restarted.processor.project(controls(due), true)
-    assert.equal(w.reg.shown.filter(card => card.options.silent === false).length, 1, 'one alert across local, Push, C and restart')
+    assert.equal(w.reg.shown.filter(card => card.options.silent === false && card.options.data.kind !== 'start').length, 1, 'one rest alert across local, Push, C and restart, separate from start')
     assert.equal([...w.data.markers.keys()].filter(key => key.startsWith('receipt:')).length, 1)
     assert.equal(w.reg.shown.at(-1).options.silent, true)
     assert.equal(w.reg.shown.at(-1).options.renotify, false)
