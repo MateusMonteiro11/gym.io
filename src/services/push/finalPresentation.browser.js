@@ -44,6 +44,8 @@ export async function runFinalPresentationBrowserChecks(source) {
       const w = restart()
       await w.processor.lifecycle('start', start)
       const first = reg.live()[0]
+      assert(reg.shown.length === 1 && reg.shown[0].options.silent === true, 'minimal and enhanced start silently')
+      assert(reg.shown[0].options.renotify === false && !Object.hasOwn(reg.shown[0].options, 'vibrate'), 'start requests no renotify or vibration')
       for (const frame of sessionSequence()) await w.processor.project(frame.value, frame.alert)
       if (!max) {
         await w.processor.project(controls())
@@ -57,6 +59,7 @@ export async function runFinalPresentationBrowserChecks(source) {
       await w.processor.lifecycle('complete', final)
       assert(first.closed, 'terminal lifecycle closes the original start/card')
       assert(reg.live().length === 1 && reg.live()[0].title === 'Treino concluído', 'one terminal notification')
+      assert(reg.shown.at(-1).options.silent === false, 'completion retains attention')
       assert(reg.live()[0].data.url === '/historico?period=all&workout=7', 'exact History destination')
       assert(!reg.shown.at(-1).options.actions && !reg.live()[0].data.projection, 'completion cannot contain controls')
       const next = restart()

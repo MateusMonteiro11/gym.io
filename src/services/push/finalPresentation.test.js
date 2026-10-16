@@ -11,9 +11,9 @@ const source = fs.readFileSync(new URL('../../../public/push-sw.js', import.meta
 const start = () => buildWorkoutLifecycle(baseSession, 'start')
 const finalized = { ...baseSession, status: 'finalizada', revisao: '30', agora_servidor: '2026-10-10T10:10:00Z' }
 const complete = id => buildWorkoutLifecycle(finalized, 'complete', id)
-function worker(maxActions = 0, shared = {}) {
+function worker(maxActions = 0, shared = {}, notificationOptions = { renotify: false, vibrate: [] }) {
   const reg = shared.reg ?? cardRegistration(false), data = shared.data ?? memoryMarkers(), handlers = {}, opened = [], sent = []
-  const context = vm.createContext({ URL, Notification: { maxActions, prototype: { renotify: false, vibrate: [] } },
+  const context = vm.createContext({ URL, Notification: { maxActions, prototype: notificationOptions },
     self: { registration: reg.registration, location: { origin: 'https://gymio.example' }, addEventListener: (type, handler) => handlers[type] = handler,
       clients: { matchAll: async () => shared.windows ?? [], openWindow: async url => opened.push(url) } } })
   vm.runInContext(source, context)
@@ -34,11 +34,19 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   await w.processor.lifecycle('start', start())
   const initial = w.reg.live()[0]
   assert.equal(initial.title, 'Gym.io · Treino iniciado')
+  assert.equal(w.reg.shown.length, 1)
+  assert.equal(w.reg.shown[0].options.silent, true)
+  assert.equal(w.reg.shown[0].options.renotify, false)
+  assert.equal(Object.hasOwn(w.reg.shown[0].options, 'vibrate'), false)
   assert.equal(initial.data.projection, undefined); assert.equal(w.reg.shown[0].options.actions, undefined)
+  await worker(maxActions, w).processor.lifecycle('start', start())
+  assert.equal(w.reg.shown.length, 1, 'recovery cannot duplicate start before completion')
   for (const frame of sessionSequence()) await w.processor.project(frame.value, frame.alert)
   await w.processor.project(controls(sessionSequence()[14].value))
   const shown = w.reg.shown.length
   await dispatch(w, 'push', { data: { json: () => sessionSequence()[11].value } })
+  await dispatch(w, 'push', { data: { json: () => controls(sessionSequence()[11].value) } })
+  await w.processor.project({ ...controls(sessionSequence()[14].value), controls_status: 'unchanged', controls: [] })
   if (!maxActions) {
     assert.equal(shown, 1); assert.equal(w.reg.shown.length, 1)
     assert.equal(w.reg.live()[0], initial)
@@ -54,6 +62,7 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   const terminal = w.reg.live()[0]
   assert.equal(terminal.title, 'Treino concluído')
   assert.equal(terminal.tag, `gymio-workout-complete-${sessionId}`)
+  assert.equal(w.reg.shown.at(-1).options.silent, false)
   assert.equal(terminal.data.url, '/historico?period=all&workout=7')
   assert.equal(terminal.data.projection, undefined); assert.equal(w.reg.shown.at(-1).options.actions, undefined)
   const restarted = worker(maxActions, w)
@@ -62,6 +71,49 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   assert.equal(w.reg.live().length, 1); assert.equal(w.reg.live()[0], terminal)
   assert.equal(w.reg.shown.filter(card => card.title === 'Gym.io · Treino iniciado').length, 1)
   assert.equal(w.reg.shown.filter(card => card.title === 'Treino concluído').length, 1)
+})
+
+for (const renotify of [false, true]) for (const vibrate of [false, true]) {
+  test(`enhanced attention uses exposed options only: renotify=${renotify}, vibrate=${vibrate}`, async () => {
+    const options = { ...(renotify ? { renotify: false } : {}), ...(vibrate ? { vibrate: [] } : {}) }
+    const w = worker(3, {}, options)
+    await w.processor.lifecycle('start', start())
+    // Even a requested alert on a normal projection cannot reserve attention.
+    for (const frame of sessionSequence().slice(0, 11)) await w.processor.project(frame.value, true)
+    for (const card of w.reg.shown) {
+      assert.equal(card.options.silent, true)
+      assert.equal(card.options.renotify, false)
+      assert.equal(Object.hasOwn(card.options, 'vibrate'), false)
+    }
+    assert.equal([...w.data.markers.keys()].some(key => key.startsWith('receipt:')), false)
+    const due = sessionSequence()[11].value
+    await dispatch(w, 'message', { source: { url: 'https://gymio.example/dashboard' },
+      data: { type: 'gymio_workout_rest_finished', payload: due } })
+    const attention = w.reg.shown.at(-1).options
+    assert.equal(attention.silent, false)
+    assert.equal(attention.renotify, renotify)
+    assert.equal(Object.hasOwn(attention, 'vibrate'), vibrate)
+    if (vibrate) assert.deepEqual(attention.vibrate, [200, 100, 200])
+    await dispatch(w, 'push', { data: { json: () => due } })
+    const restarted = worker(3, w, options)
+    await restarted.processor.project(controls(due), true)
+    assert.equal(w.reg.shown.filter(card => card.options.silent === false).length, 1, 'one alert across local, Push, C and restart')
+    assert.equal([...w.data.markers.keys()].filter(key => key.startsWith('receipt:')).length, 1)
+    assert.equal(w.reg.shown.at(-1).options.silent, true)
+    assert.equal(w.reg.shown.at(-1).options.renotify, false)
+    assert.equal(Object.hasOwn(w.reg.shown.at(-1).options, 'vibrate'), false)
+    const card = w.reg.live()[0]
+    await restarted.processor.lifecycle('complete', complete('7'))
+    assert.equal(card.closed, true)
+    assert.equal(w.reg.live().length, 1)
+    assert.equal(w.reg.live()[0].title, 'Treino concluído')
+    assert.equal(w.reg.shown.at(-1).options.silent, false, 'completion does not require vibration support')
+    assert.equal(Object.hasOwn(w.reg.shown.at(-1).options, 'vibrate'), vibrate)
+  })
+}
+
+test('attention policy has no browser sniffing, standalone haptics or audio workaround', () => {
+  assert.doesNotMatch(source, /userAgent|navigator\.platform|navigator\.vibrate|\b(?:iPhone|iPad|Android|Safari|Chrome|WebKit)\b|MediaSession|AudioContext|new Audio\b/)
 })
 
 test('start/completion input validates IDs, status, exact local envelope and no arbitrary URL', async () => {
@@ -211,7 +263,9 @@ test('minimal issuer never reads a subscription or emits controls; fixed UI copy
     assert.equal(await issuer(controls()), null)
   }
   const settings = fs.readFileSync(new URL('../../components/PushNotificationSettings.jsx', import.meta.url), 'utf8')
-  assert.match(settings, /Tela de Início/); assert.match(settings, /No iPhone e iPad/)
+  assert.ok(settings.includes('Para receber notificações no celular, adicione o Gym.io à Tela de Início e abra o aplicativo pelo ícone instalado.'))
+  assert.ok(settings.includes('No iPhone e iPad, as notificações Web são mais limitadas. Durante o treino, controles e alertas de descanso disponíveis em alguns aparelhos Android podem não estar disponíveis no iOS.'))
+  assert.doesNotMatch(settings, /os controles do treino podem não aparecer na tela bloqueada/)
   assert.match(settings, /Este navegador está vinculado à sua conta\./)
-  assert.doesNotMatch(settings, /Enviar teste|homologa|userAgent|capabilities|Service Worker|Notification API/)
+  assert.doesNotMatch(settings, /Enviar teste|homologa|userAgent|capability|Service Worker|Notification API|VAPID|WebKit/)
 })

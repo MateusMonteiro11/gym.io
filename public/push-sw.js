@@ -329,7 +329,7 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
       }catch{return {published:false,verified:false}}
       if(!decision.show||disabled)return {published:false,verified:false}
       const tag=kind==='complete'?`gymio-workout-complete-${value.id_sessao}`:before.tag
-      const result=await publish(value,value,{...before,tag},true,false,kind)
+      const result=await publish(value,value,{...before,tag},kind==='complete',false,kind)
       return result
     }),
     project:(value,alert=false)=>serialized(()=>project(value,alert)),
