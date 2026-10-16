@@ -41,6 +41,22 @@ function supportedMaxActions() {
   const value=typeof Notification==='undefined'?undefined:Notification.maxActions
   return Number.isInteger(value)&&value>0?value:0
 }
+// Local-only lifecycle envelope. Backend V1/V2/V3 payloads stay unchanged.
+const LIFECYCLE_KEYS=['version','type','id_sessao','revisao','id_treino','iniciada_em','agora_servidor']
+function validLifecycle(value,kind) {
+  const keys=kind==='complete'?[...LIFECYCLE_KEYS,'id_historico']:LIFECYCLE_KEYS
+  return value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length===keys.length&&
+    Object.keys(value).every(key=>keys.includes(key))&&value.version===1&&
+    value.type===(kind==='start'?'workout_session_started':'workout_session_completed')&&UUID.test(value.id_sessao??'')&&
+    decimal(value.revisao,true)&&decimal(value.id_treino)&&stamp(value.iniciada_em)&&stamp(value.agora_servidor)&&
+    Date.parse(value.agora_servidor)>=Date.parse(value.iniciada_em)&&
+    (kind!=='complete'||value.id_historico===null||decimal(value.id_historico))
+}
+function validHistoryRoute(route) {
+  if(route==='/historico?period=all')return true
+  const match=typeof route==='string'&&/^\/historico\?period=all&workout=([1-9][0-9]*)$/.exec(route)
+  return Boolean(match&&decimal(match[1]))
+}
 function exposedNotificationOption(name) {
   return typeof Notification!=='undefined'&&Boolean(Notification.prototype)&&name in Notification.prototype
 }
@@ -135,6 +151,19 @@ function createWorkoutStore(factory) {
   }
   return {
     current: ()=>transaction(async(_store,get)=>get('projection')),
+    lifecycle: (kind,value)=>transaction(async(store,get)=>{
+      const [enabled,closed,seen,current]=await Promise.all([get('enabled'),get(`closed:${value.id_sessao}`),get(`${kind}:${value.id_sessao}`),get('projection')])
+      if(enabled===false||closed||seen)return {show:false}
+      if(current) {
+        const order={...current,observed:new Date(current.observed).toISOString()}
+        if(precedesCard(value,order))return {show:false}
+        if(current.session!==value.id_sessao)store.put(true,`closed:${current.session}`)
+      }
+      store.put({...projectionOrder(value),started:new Date(value.iniciada_em).toISOString(),observed:Date.parse(value.agora_servidor),generation:null},'projection')
+      store.put(true,`${kind}:${value.id_sessao}`)
+      if(kind==='complete')store.put(true,`closed:${value.id_sessao}`)
+      return {show:true}
+    }),
     decide: (value,alert)=>transaction(async(store,get)=>{
       const [enabled,closed,current,receipt,generationClosed]=await Promise.all([get('enabled'),get(`closed:${value.id_sessao}`),get('projection'),get(`receipt:${restIdentity(value)}`),
         value.generation_id?get(`generation:${value.generation_id}`):false])
@@ -167,7 +196,8 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
   let queue=Promise.resolve(),disabled=false,last=null,coalescingFailed=false,publicationSequence=0
   const closed=new Set(),closedGenerations=new Set()
   const serialized=(fn)=>{const result=queue.then(fn);queue=result.catch(()=>{});return result}
-  const isCard=(card)=>card.tag?.startsWith('gymio-workout-')
+  const isCard=(card)=>typeof card.tag==='string'&&card.tag.startsWith('gymio-workout-')&&UUID.test(card.tag.slice(14))
+  const isKnown=(card)=>isCard(card)||typeof card.tag==='string'&&card.tag.startsWith('gymio-workout-complete-')&&UUID.test(card.tag.slice(23))
   const enumerate=async(tag)=>{
     if(typeof registration.getNotifications!=='function')throw new Error('notification_enumeration_unavailable')
     return registration.getNotifications(tag?{tag}:{})
@@ -188,22 +218,24 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
     return {cards,tag}
   }
   const closeCards=async()=>{
-    try{for(const card of (await enumerate()).filter(isCard))card.close();return true}catch{return false}
+    try{for(const card of (await enumerate()).filter(isKnown))card.close();return true}catch{return false}
   }
   // Native coalescing is observed, never inferred from UA or the exposed tag API.
-  const publish=async(value,display,before,alert=false,needsRefresh=false)=>{
+  const publish=async(value,display,before,alert=false,needsRefresh=false,lifecycle=null)=>{
     const {cards,tag}=before,matching=cards.filter(card=>card.tag===tag)
     const id=`${now()}-${++publicationSequence}-${Math.random().toString(36).slice(2)}`
     const publication={...projectionOrder(value),id}
     const actions=!needsRefresh&&display.version===3?display.controls.slice(0,supportedMaxActions()).map(control=>({action:control.action,title:ACTION_LABELS[control.action]})):[]
-    const visual=sessionCardPresentation(display,needsRefresh)
+    const visual=lifecycle==='start'?{title:'Gym.io · Treino iniciado',body:'Seu treino começou. Bom treino!'}:
+      lifecycle==='complete'?{title:'Treino concluído',body:'Veja seu progresso no Gym.io.'}:sessionCardPresentation(display,needsRefresh)
+    const url=lifecycle==='complete'?`/historico?period=all${value.id_historico?'&workout='+value.id_historico:''}`:`/treinar/${value.id_treino}`
     try {
       // unchanged has already copied authorized tokens from the current card.
       if(matching.length>1)coalescingFailed=true
       if(coalescingFailed)for(const card of matching)card.close()
       for(const card of cards.filter(card=>isCard(card)&&card.tag!==tag))card.close()
       await registration.showNotification(visual.title,{body:visual.body,icon:'/push-icon-192.png',badge:'/push-icon-192.png',tag,
-        data:{url:`/treinar/${value.id_treino}`,sessionId:value.id_sessao,publication,
+        data:{url,sessionId:value.id_sessao,publication,...(lifecycle?{kind:lifecycle}:{}),
           ...(!needsRefresh&&display.version===3?{projection:display}:{})},
         ...(actions.length?{actions}:{}),silent:!alert,renotify:Boolean(alert&&exposedNotificationOption('renotify')),
         ...(alert&&exposedNotificationOption('vibrate')?{vibrate:[200,100,200]}:{})})
@@ -220,13 +252,16 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
         fresh.close();return {published:false,verified:false}
       }
       if(after.some(card=>card.tag===tag&&card!==fresh))coalescingFailed=true
-      for(const card of after)if(isCard(card)&&card!==fresh)card.close()
-      const remaining=(await enumerate()).filter(isCard)
+      for(const card of after)if((isCard(card)||card.tag===tag)&&card!==fresh)card.close()
+      const remaining=(await enumerate()).filter(card=>isCard(card)||card.tag===tag)
       return {published:true,verified:remaining.length===1&&remaining[0].data?.publication?.id===id}
     }catch{return {published:true,verified:false}}
   }
   const project=async(value,requestAlert=false)=>{
     if(!(validWorkout(value,true)||validWorkout(value)||validControls(value)))return {published:false,verified:false}
+    // Presentation only: minimal platforms never display intermediate updates,
+    // including remote B and C responses, and reserve no rest receipts for them.
+    if(supportedMaxActions()===0)return {published:false,verified:false}
     if(disabled||closed.has(value.id_sessao)||value.generation_id&&closedGenerations.has(value.generation_id))return {published:false,verified:false}
     let before
     try{before=await context(value)}catch{return {published:false,verified:false}}
@@ -277,8 +312,29 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
     }catch{/* no retry and no assumption that the system UI was updated */}
   }
   return {
+    lifecycle:(kind,value)=>serialized(async()=>{
+      if(!['start','complete'].includes(kind)||!validLifecycle(value,kind)||disabled||closed.has(value.id_sessao))return {published:false,verified:false}
+      let before,decision
+      try{
+        // Confirmed terminal containment must survive unavailable visual APIs.
+        // Reservation is at-most-once: a failed/ambiguous show is never retried.
+        if(kind==='complete') {
+          decision=await store.lifecycle(kind,value)
+          if(!decision.show)return {published:false,verified:false}
+          closed.add(value.id_sessao)
+        }
+        before=await context(value)
+        if(!before)return {published:false,verified:false}
+        if(kind==='start')decision=await store.lifecycle(kind,value)
+      }catch{return {published:false,verified:false}}
+      if(!decision.show||disabled)return {published:false,verified:false}
+      const tag=kind==='complete'?`gymio-workout-complete-${value.id_sessao}`:before.tag
+      const result=await publish(value,value,{...before,tag},true,false,kind)
+      return result
+    }),
     project:(value,alert=false)=>serialized(()=>project(value,alert)),
     action:(notification,action)=>serialized(async()=>{
+      if(supportedMaxActions()===0)return
       const value=notification.data?.projection
       if(disabled||!validControls(value)||value.controls_status!=='emitted'||closed.has(value.id_sessao)||closedGenerations.has(value.generation_id))return
       try{if(store.actionAllowed?!await store.actionAllowed(value):await store.generationClosed?.(value.generation_id))return}catch{return}
@@ -296,11 +352,11 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
     }),
     close:(id)=>serialized(async()=>{
       closed.add(id);try{await store.close(id)}catch{}
-      try{for(const card of await enumerate())if(card.tag===`gymio-workout-${id}`)card.close()}catch{}
+      try{for(const card of await enumerate())if(card.tag===`gymio-workout-${id}`||card.tag===`gymio-workout-complete-${id}`)card.close()}catch{}
     }),
     disable:(logout)=>{disabled=true;return serialized(async()=>{
       const ids=new Set(last?[last.id_sessao]:[])
-      try{for(const card of (await enumerate()).filter(isCard)){if(UUID.test(card.data?.sessionId??''))ids.add(card.data.sessionId);card.close()}}catch{}
+      try{for(const card of (await enumerate()).filter(isKnown)){if(UUID.test(card.data?.sessionId??''))ids.add(card.data.sessionId);card.close()}}catch{}
       for(const id of ids){closed.add(id);try{await store.close(id)}catch{}}
       try{await store.disable(logout)}catch{}
       last=null;await closeCards()
@@ -325,7 +381,9 @@ self.addEventListener('message',(event)=>{
   try{origin=new URL(event.source?.url).origin}catch{return}
   if(origin!==self.location.origin)return
   const message=event.data
-  if(message?.type==='gymio_workout_controls'&&validControls(message.payload))event.waitUntil(workoutProcessor.project(message.payload))
+  if(message?.type==='gymio_workout_start'&&validLifecycle(message.payload,'start'))event.waitUntil(workoutProcessor.lifecycle('start',message.payload))
+  else if(message?.type==='gymio_workout_complete'&&validLifecycle(message.payload,'complete'))event.waitUntil(workoutProcessor.lifecycle('complete',message.payload))
+  else if(message?.type==='gymio_workout_controls'&&validControls(message.payload))event.waitUntil(workoutProcessor.project(message.payload))
   else if(message?.type==='gymio_workout_projection'&&validWorkout(message.payload,true))event.waitUntil(workoutProcessor.project(message.payload))
   else if(message?.type==='gymio_workout_rest_finished'&&validWorkout(message.payload))event.waitUntil(workoutProcessor.project(message.payload,true))
   else if(message?.type==='gymio_workout_close'&&UUID.test(message.sessionId??''))event.waitUntil(workoutProcessor.close(message.sessionId))
@@ -339,7 +397,9 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close()
   const route=event.notification.data?.url
   const workoutRoute=typeof route==='string'&&/^\/treinar\/[1-9][0-9]*$/.test(route)&&decimal(route.slice(9))&&UUID.test(event.notification.data?.sessionId??'')
-  if (event.action || (route!=='/dashboard'&&!workoutRoute)) return
+  const completionRoute=event.notification.data?.kind==='complete'&&UUID.test(event.notification.data?.sessionId??'')&&
+    event.notification.tag===`gymio-workout-complete-${event.notification.data.sessionId}`&&validHistoryRoute(route)
+  if (event.action || (route!=='/dashboard'&&!workoutRoute&&!completionRoute)) return
   const destination=workoutRoute&&supportedMaxActions()===0?`${route}?from=push`:route
   event.waitUntil((async () => {
     const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })

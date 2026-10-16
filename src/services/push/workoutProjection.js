@@ -40,26 +40,55 @@ export function buildConfirmedRestSignal(before,after,items=[]) {
     body:trim(`${value.exercicio} · Série ${value.proxima_serie}${value.serie_total?'/'+value.serie_total:''}`,160),fase:'descanso',pausada:false,
     descanso_iniciado_em:before.descanso_iniciado_em,descanso_termina_em:before.descanso_termina_em}
 }
-export function createWorkoutNotificationAdapter(bridge,issueControls) {
-  let epoch=0
-  const safe=(operation)=>{try{Promise.resolve(operation()).catch(()=>{})}catch{/* notification failure never affects the workout */}}
+export function buildWorkoutLifecycle(session,kind,historyId=null) {
+  if(!['start','complete'].includes(kind)||session?.status!==(kind==='start'?'ativa':'finalizada')||!UUID.test(session.id_sessao??''))return null
+  const revision=decimal(session.revisao,true),workout=decimal(session.id_treino),started=timestamp(session.iniciada_em),observed=timestamp(session.agora_servidor)
+  if(!revision||!workout||!started||!observed||Date.parse(observed)<Date.parse(started))return null
+  return {version:1,type:kind==='start'?'workout_session_started':'workout_session_completed',id_sessao:session.id_sessao,
+    revisao:revision,id_treino:workout,iniciada_em:started,agora_servidor:observed,
+    ...(kind==='complete'?{id_historico:decimal(historyId)}:{})}
+}
+export function createWorkoutNotificationAdapter(bridge,issueControls,lookupHistory) {
+  let epoch=0,latest=null
+  const completing=new Set()
+  const safe=(operation)=>{try{return Promise.resolve(operation()).catch(()=>{})}catch{/* notification failure never affects the workout */}}
   return {
-    // Confirmed Session V2 -> update the one session card, never an event feed.
-    accept: (previous,confirmed,items)=>{
+    // Only the accepted start RPC/reconciliation explicitly sets started.
+    // Ordinary recovery/render can update the enhanced card, never announce start.
+    accept: (previous,confirmed,items,{started=false}={})=>{
       const version=++epoch
+      latest=confirmed
       try {
+      if(confirmed?.status==='finalizada'&&bridge.complete) {
+        const completion=buildWorkoutLifecycle(confirmed,'complete')
+        if(!completion||completing.has(confirmed.id_sessao))return
+        completing.add(confirmed.id_sessao)
+        const scope=bridge.capture?.()
+        return safe(async()=>{
+          let history
+          try{history=await lookupHistory?.(confirmed.id_sessao)}catch{/* bounded read failed: honest overview fallback */}
+          if(latest?.id_sessao!==confirmed.id_sessao||latest.status!=='finalizada')return
+          await bridge.complete(buildWorkoutLifecycle(confirmed,'complete',history?.id_historico),scope)
+        })
+      }
       if(previous?.id_sessao&&(!confirmed||confirmed.status!=='ativa'||confirmed.id_sessao!==previous.id_sessao))safe(()=>bridge.close(previous.id_sessao))
       const payload=buildWorkoutProjection(confirmed,items)
       if(payload) {
-        if(issueControls&&payload.fase==='descanso')safe(async()=>{
+        return safe(async()=>{
+        if(started) {
+          const start=buildWorkoutLifecycle(confirmed,'start')
+          if(start)try{await bridge.start?.(start)}catch{/* start presentation must not block enhanced updates */}
+        }
+        if(version!==epoch)return
+        if(issueControls&&payload.fase==='descanso') {
           let controls
           try{controls=await issueControls(payload)}catch{/* silent fallback */}
           if(version!==epoch)return
           // Keep the existing card until unchanged can inspect its Notification.data.
           if(controls?.version===3)await bridge.controls(controls)
           else await bridge.project(payload)
+        }else await bridge.project(payload)
         })
-        else safe(()=>bridge.project(payload))
       }
       } catch { /* best-effort projection */ }
     },

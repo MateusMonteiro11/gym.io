@@ -4,6 +4,8 @@ import { bounded, PUSH_OPT_OUT_KEY, PUSH_SCOPE, PUSH_WORKER_URL } from './pushUt
 // activation remain exclusively in the explicit Push Foundation flow.
 export function createWorkoutControlsIssuer({ browser, rpc }) {
   return (projection) => bounded(async (signal) => {
+    const maxActions=browser?.Notification?.maxActions
+    if(!Number.isInteger(maxActions)||maxActions<=0)return null
     if (!browser?.isSecureContext || browser.Notification?.permission !== 'granted' ||
       browser.localStorage?.getItem(PUSH_OPT_OUT_KEY) === '1') return null
     const registration = await browser.navigator?.serviceWorker?.getRegistration(PUSH_SCOPE)

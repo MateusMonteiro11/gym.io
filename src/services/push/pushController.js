@@ -1,8 +1,9 @@
-import { bounded, detectPushSupport, normalizeSubscription, permissionState, PUSH_OPT_OUT_KEY, PUSH_SCOPE, PUSH_WORKER_URL, vapidPublicKeyToBytes } from './pushUtils.js'
+import { bounded, detectPushSupport, normalizeSubscription, permissionState, PUSH_OPT_OUT_KEY, PUSH_SCOPE, PUSH_WORKER_URL, vapidPublicKeyToBytes, workoutNotificationMode } from './pushUtils.js'
 
 // Browser and API are small injectable ports; no JWT or privileged credential is retained.
 export function createPushController({ browser, api, publicKey, timeoutMs = 10000 }) {
   let epoch = 0
+  let registrationUnconfirmed = false
   const remote = (operation) => bounded(operation, timeoutMs)
   const optOut = (disabled) => {
     try { if (disabled) browser.localStorage?.setItem(PUSH_OPT_OUT_KEY, '1'); else browser.localStorage?.removeItem(PUSH_OPT_OUT_KEY) } catch { /* storage is optional */ }
@@ -21,6 +22,10 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
     const subscription = await registration?.pushManager.getSubscription()
     const subscriptionId = subscription && permission === 'granted' && !disabled()
       ? await remote((signal) => api.lookup(subscription.endpoint, signal)) : null
+    if (registrationUnconfirmed && subscription && !disabled()) return {
+      status: 'error', error: 'push_registration_unconfirmed', permission, subscriptionId,
+      workoutNotificationMode: null, warnings: ['push_registration_unconfirmed'],
+    }
     return { status: permissionState(permission, Boolean(subscriptionId), disabled() || Boolean(subscription)), permission, subscriptionId }
   }
   const enable = async () => {
@@ -61,14 +66,32 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
       if (activation !== epoch) throw new Error('activation_cancelled')
       if (!subscription) { subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidPublicKeyToBytes(publicKey) }); created = true }
       if (activation !== epoch) throw new Error('activation_cancelled')
-      const subscriptionId = await remote((signal) => api.register(normalizeSubscription(subscription), signal))
+      const normalized = normalizeSubscription(subscription)
+      const mode = workoutNotificationMode(browser)
+      let subscriptionId
+      try {
+        // Exactly one lifecycle mutation. A lost response never sends another
+        // mode or retries the registration. Lookup confirms only an own UUID,
+        // not the mode/keys of a possibly pre-existing binding.
+        subscriptionId = await remote((signal) => api.registerWithMode(normalized, mode, signal))
+      } catch (error) {
+        if (error?.registrationRejected) throw error
+        if (activation !== epoch) throw new Error('activation_cancelled')
+        registrationUnconfirmed = true
+        let observedId = null
+        try { observedId = await remote((signal) => api.lookup(subscription.endpoint, signal)) } catch { /* read-only reconciliation is optional */ }
+        if (activation !== epoch) throw new Error('activation_cancelled')
+        return { status: 'error', error: 'push_registration_unconfirmed', permission, subscriptionId: observedId,
+          workoutNotificationMode: null, warnings: ['push_registration_unconfirmed'] }
+      }
       const warnings = []
       if (oldId && oldId !== subscriptionId) {
         try { await remote((signal) => api.remove(oldId, signal)) } catch { warnings.push('rotated_subscription_cleanup_failed') }
       }
       if (activation !== epoch) { await remote((signal) => api.remove(subscriptionId, signal)); throw new Error('activation_cancelled') }
+      registrationUnconfirmed = false
       optOut(false)
-      return { status: 'subscribed', permission, subscriptionId, warnings }
+      return { status: 'subscribed', permission, subscriptionId, workoutNotificationMode: mode, warnings }
     } catch (error) {
       if (created) {
         try { if (!await bounded(() => subscription.unsubscribe(), timeoutMs)) throw new Error('unsubscribe_failed') }
@@ -82,6 +105,7 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
   }
   const disable = async () => {
     ++epoch
+    registrationUnconfirmed = false
     optOut(true)
     if (!detectPushSupport(browser)) return { status: 'unsubscribed', warnings: [] }
     const warnings = []

@@ -2,6 +2,17 @@ export const PUSH_WORKER_URL = '/push-sw.js'
 export const PUSH_SCOPE = '/'
 export const PUSH_OPT_OUT_KEY = 'gymio-push-disabled'
 
+// Same strict feature detection as the classic Service Worker. Presentation
+// capability is neither platform detection nor an authorization signal.
+export function supportedMaxActions(browser) {
+  const value = browser?.Notification?.maxActions
+  return Number.isInteger(value) && value > 0 ? value : 0
+}
+
+export function workoutNotificationMode(browser) {
+  return supportedMaxActions(browser) > 0 ? 'enhanced' : 'minimal'
+}
+
 export function detectPushSupport(browser) {
   return Boolean(browser?.isSecureContext && browser.navigator?.serviceWorker &&
     browser.Notification?.requestPermission && browser.PushManager)

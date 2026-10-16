@@ -37,16 +37,16 @@ for (const max of [undefined, null, 0, -1, 1.5, '2', NaN, Infinity, 1, 2, 3, 9])
     const w = worker(max === undefined ? undefined : { maxActions: max })
     await w.processor.project(payload)
     const limit = Number.isInteger(max) && max > 0 ? max : 0
+    if (!limit) { assert.equal(w.shown.length, 0); return }
     const options = w.shown[0].options
-    if (!limit) assert.equal(Object.hasOwn(options, 'actions'), false)
-    else assert.equal(options.actions.map(a => a.action).join(','), payload.controls.slice(0, limit).map(a => a.action).join(','))
+    assert.equal(options.actions.map(a => a.action).join(','), payload.controls.slice(0, limit).map(a => a.action).join(','))
     assert.equal(options.tag, `gymio-workout-${sessionId}`)
     assert.equal(options.silent, true)
   })
 }
-test('Notification with missing maxActions omits actions; paused and expired priorities respect positive limits', async () => {
+test('Notification with missing maxActions suppresses projections; paused and expired priorities respect positive limits', async () => {
   const missing = worker({}); await missing.processor.project(payload)
-  assert.equal(Object.hasOwn(missing.shown[0].options, 'actions'), false)
+  assert.equal(missing.shown.length, 0)
   for (const max of [1, 2, 3]) {
     const w = worker({ maxActions: max })
     await w.processor.project({ ...payload, pausada: true, title: 'Gym.io · Pausado', eligible_state: 'rest_paused',

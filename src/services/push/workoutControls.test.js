@@ -111,7 +111,7 @@ test('adapter retains current card for unchanged and suppresses late issuance',a
   resolve[1]({...payload,revisao:'4'});await new Promise((r)=>setImmediate(r));assert.equal(sent.length,1);assert.equal(sent[0].revisao,'4')
 })
 test('issuer reads existing dedicated subscription and never registers, subscribes or asks permission',async()=>{
-  const calls=[];const browser={isSecureContext:true,Notification:{permission:'granted'},localStorage:{getItem:()=>null},location:{origin:'http://localhost:5173'},
+  const calls=[];const browser={isSecureContext:true,Notification:{permission:'granted',maxActions:2},localStorage:{getItem:()=>null},location:{origin:'http://localhost:5173'},
     navigator:{serviceWorker:{getRegistration:async()=>({active:{scriptURL:'http://localhost:5173/push-sw.js'},pushManager:{getSubscription:async()=>({endpoint:'https://fcm.googleapis.com/fcm/send/local'})}})}}}
   const issuer=createWorkoutControlsIssuer({browser,rpc:async(name,args)=>{calls.push({name,args});return calls.length===1?id:{result:'unchanged',projection:unchanged()}}})
   assert.equal((await issuer(base)).controls_status,'unchanged');assert.equal(calls[1].args.p_expected_revision,'3')
@@ -127,7 +127,7 @@ test('action click waits for completion without opening app; endpoint comes only
   const calls=[],handlers={},registration={showNotification:async()=>{},getNotifications:async()=>[]}
   const self={registration,location:{origin:'http://localhost:5173'},addEventListener:(type,fn)=>handlers[type]=fn,
     clients:{openWindow:()=>{throw Error('must not open')},matchAll:()=>{throw Error('must not focus')}}}
-  const context=vm.createContext({self,URL,AbortController,setTimeout,clearTimeout,fetch:async(url,options)=>{
+  const context=vm.createContext({self,URL,Notification:{maxActions:2},AbortController,setTimeout,clearTimeout,fetch:async(url,options)=>{
     calls.push({url:String(url),options})
     return calls.length===1?{ok:true,json:async()=>({supabaseUrl:'http://127.0.0.1:55451'})}:{ok:true,json:async()=>({result:'stale'})}
   }})

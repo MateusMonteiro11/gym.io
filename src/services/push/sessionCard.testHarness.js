@@ -62,6 +62,20 @@ export function memoryMarkers() {
   const markers = new Map()
   const store = {
     current: async () => markers.get('projection'),
+    lifecycle: async (kind, value) => {
+      if (markers.get('enabled') === false || markers.get(`closed:${value.id_sessao}`) || markers.get(`${kind}:${value.id_sessao}`)) return { show: false }
+      const current = markers.get('projection')
+      if (current?.session === value.id_sessao && (BigInt(value.revisao) < BigInt(current.revision) ||
+        value.revisao === current.revision && Date.parse(value.agora_servidor) < current.observed)) return { show: false }
+      if (current && current.session !== value.id_sessao) {
+        if (`${new Date(value.iniciada_em).toISOString()}:${value.id_sessao}` <= `${new Date(current.started).toISOString()}:${current.session}`) return { show: false }
+        markers.set(`closed:${current.session}`, true)
+      }
+      markers.set('projection', { session: value.id_sessao, revision: value.revisao, observed: Date.parse(value.agora_servidor), started: value.iniciada_em, generation: null })
+      markers.set(`${kind}:${value.id_sessao}`, true)
+      if (kind === 'complete') markers.set(`closed:${value.id_sessao}`, true)
+      return { show: true }
+    },
     decide: async (value, alert) => {
       const current = markers.get('projection')
       if (markers.get('enabled') === false || markers.get(`closed:${value.id_sessao}`) || markers.get(`generation:${value.generation_id}`)) return { show: false }

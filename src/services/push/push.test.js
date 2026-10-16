@@ -26,7 +26,7 @@ function ports(permission = 'default') {
     Notification: { permission, requestPermission: () => { calls.push('permission'); browser.Notification.permission = 'granted'; return Promise.resolve('granted') } },
     navigator: { serviceWorker: { getRegistration: async () => registration, register: async () => { calls.push('worker'); return registration } } } }
   const api = { lookup: async () => { calls.push('lookup'); return activeSubscription ? 'own-id' : null },
-    register: async () => { calls.push('register'); return 'own-id' }, remove: async () => { calls.push('remove') }, sendTest: async () => ({ result: 'sent' }) }
+    registerWithMode: async () => { calls.push('register'); return 'own-id' }, remove: async () => { calls.push('remove') }, sendTest: async () => ({ result: 'sent' }) }
   return { browser, api, calls, subscription, registration, controller: createPushController({ browser, api, publicKey, timeoutMs: 20 }) }
 }
 
@@ -70,7 +70,7 @@ test('denied permission does not register worker or subscription', async () => {
 })
 test('failed backend registration rolls back only a newly created browser subscription', async () => {
   const p = ports('granted')
-  p.api.register = async () => { throw new Error('offline') }
+  p.api.registerWithMode = async () => { throw Object.assign(new Error('backend_rejected'), { registrationRejected: true }) }
   await assert.rejects(p.controller.enable())
   assert.ok(p.calls.includes('unsubscribe'))
 })
@@ -85,7 +85,7 @@ test('explicit activation reconciles a rotated key/endpoint and removes only the
   for (const removalFails of [false, true]) {
     const p = ports('granted'); await p.controller.enable()
     p.subscription.options.applicationServerKey = new Uint8Array(65)
-    p.api.register = async (value) => { assert.equal(value.endpoint, p.subscription.endpoint); return 'new-own-id' }
+    p.api.registerWithMode = async (value) => { assert.equal(value.endpoint, p.subscription.endpoint); return 'new-own-id' }
     p.api.remove = async (id) => { assert.equal(id, 'own-id'); if (removalFails) throw new Error('offline') }
     p.registration.pushManager.subscribe = async () => {
       p.subscription.endpoint += '-rotated'; p.subscription.options.applicationServerKey = vapidPublicKeyToBytes(publicKey)
@@ -149,21 +149,22 @@ test('inspection and explicit activation lookups time out, abort and never retry
   }
 })
 
-test('registration timeout aborts once and rolls back the freshly created native subscription', async () => {
+test('registration timeout aborts once and preserves native subscription for read-only reconciliation', async () => {
   const p = ports('granted')
   let calls = 0; let signal
-  p.api.register = (_value, incoming) => { calls++; signal = incoming; return new Promise(() => {}) }
-  await assert.rejects(p.controller.enable(), /push_timeout/)
+  p.api.registerWithMode = (_value, _mode, incoming) => { calls++; signal = incoming; return new Promise(() => {}) }
+  const result = await p.controller.enable()
+  assert.equal(result.error, 'push_registration_unconfirmed')
   assert.equal(calls, 1); assert.equal(signal.aborted, true)
-  assert.equal(p.calls.filter((call) => call === 'unsubscribe').length, 1)
-  assert.equal((await p.controller.inspect()).subscriptionId, null)
+  assert.equal(p.calls.filter((call) => call === 'unsubscribe').length, 0)
+  assert.equal((await p.controller.inspect()).status, 'error')
 })
 
 test('failed rollback is contained locally and cannot leave enable pending', async () => {
   const p = ports('granted')
-  p.api.register = async () => { throw new Error('offline') }
+  p.api.registerWithMode = async () => { throw Object.assign(new Error('backend_rejected'), { registrationRejected: true }) }
   p.subscription.unsubscribe = () => new Promise(() => {})
-  await assert.rejects(p.controller.enable(), /offline/)
+  await assert.rejects(p.controller.enable(), /backend_rejected/)
   assert.ok(p.calls.includes('unregister'))
   assert.equal((await p.controller.inspect()).status, 'unsubscribed')
 })
@@ -179,7 +180,7 @@ test('test request times out with AbortSignal and makes exactly one attempt', as
 test('rotated remote removal timeout reports partial cleanup without discarding the new subscription', async () => {
   const p = ports('granted'); await p.controller.enable()
   p.subscription.options.applicationServerKey = new Uint8Array(65)
-  p.api.register = async () => 'new-own-id'
+  p.api.registerWithMode = async () => 'new-own-id'
   let signal; let calls = 0
   p.api.remove = (id, incoming) => { assert.equal(id, 'own-id'); signal = incoming; calls++; return new Promise(() => {}) }
   const result = await p.controller.enable()

@@ -2,6 +2,7 @@ import { supabase } from '../../lib/supabase'
 import { createPushController } from './pushController.js'
 import { invokePushTest } from './invokePushTest.js'
 import { workoutNotificationBridge } from './workoutNotificationBridge.js'
+import { registerPushWithMode } from './registerPushWithMode.js'
 
 async function rpc(name, args, signal) {
   let request = supabase.rpc(name, args)
@@ -17,7 +18,7 @@ const controller = createPushController({
   publicKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
   api: {
     lookup: (endpoint, signal) => rpc('consultar_push_subscription', { p_endpoint: endpoint }, signal),
-    register: (value, signal) => rpc('registrar_push_subscription', { p_endpoint: value.endpoint, p_p256dh: value.p256dh, p_auth: value.auth }, signal),
+    registerWithMode: (value, mode, signal) => registerPushWithMode(supabase, value, mode, signal),
     remove: (id, signal) => rpc('remover_push_subscription', { p_subscription_id: id }, signal),
     sendTest: (id, signal) => invokePushTest((name, options) => supabase.functions.invoke(name, options), id, signal),
   },

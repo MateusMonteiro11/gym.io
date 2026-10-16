@@ -16,7 +16,7 @@ function worker(store) {
     for(const card of cards)if(!card.closed&&card.tag===options.tag)card.close()
     shown.push({title,options});cards.push({tag:options.tag,data:options.data,closed:false,close(){this.closed=true;closed.push(options.tag)}})
   },getNotifications:async(options={})=>cards.filter(card=>!card.closed&&(!options.tag||card.tag===options.tag))}
-  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(type,fn)=>handlers[type]=fn,clients:{matchAll:async()=>[],openWindow:async()=>{}}},URL,Notification:{prototype:{renotify:false,vibrate:[]}}})
+  const context=vm.createContext({self:{registration,location:{origin:'http://localhost:5173'},addEventListener:(type,fn)=>handlers[type]=fn,clients:{matchAll:async()=>[],openWindow:async()=>{}}},URL,Notification:{maxActions:3,prototype:{renotify:false,vibrate:[]}}})
   vm.runInContext(script,context)
   const processor=vm.runInContext('createWorkoutProcessor',context)({store,registration})
   return {processor,shown,closed,handlers,valid:vm.runInContext('validWorkout',context)}

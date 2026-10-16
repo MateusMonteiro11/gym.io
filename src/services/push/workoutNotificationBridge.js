@@ -6,9 +6,9 @@ export function createWorkoutNotificationBridge(browser) {
     const value=await browser.navigator.serviceWorker.getRegistration(PUSH_SCOPE)
     return value?.active?.scriptURL===new URL(PUSH_WORKER_URL,browser.location.origin).href?value:null
   }
-  const send=async(message,force=false)=>{
-    const version=epoch
+  const send=async(message,force=false,version=epoch)=>{
     try{
+      if(version!==epoch)return false
       if(!force&&(blocked||browser?.Notification?.permission!=='granted'||browser.localStorage?.getItem(PUSH_OPT_OUT_KEY)==='1'))return false
       return await bounded(async()=>{
         const own=await registration();if(!own||(!force&&(blocked||version!==epoch)))return false
@@ -17,6 +17,10 @@ export function createWorkoutNotificationBridge(browser) {
     }catch{return false}
   }
   return {
+    // A delayed History read cannot cross logout/disable/re-enable boundaries.
+    capture:()=>epoch,
+    start:(payload)=>send({type:'gymio_workout_start',payload}),
+    complete:(payload,scope)=>send({type:'gymio_workout_complete',payload},false,scope),
     controls:(payload)=>send({type:'gymio_workout_controls',payload}),
     project:(payload)=>send({type:'gymio_workout_projection',payload}),
     restFinished:(payload)=>send({type:'gymio_workout_rest_finished',payload}),

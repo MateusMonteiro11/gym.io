@@ -117,10 +117,11 @@ export async function runSessionCardBrowserChecks(source) {
   }, false, { response: { result } })
   for (const maxActions of [0, 1, 2, 3]) await check(`maxActions=${maxActions}`, async s => {
     const worker = s.restart()
+    await worker.store.current() // Initialize the test DB even when minimal mode never touches it.
     await worker.processor.project(controls())
+    if (maxActions === 0) { equal(s.reg.shown.length, 0, 'minimal mode suppresses intermediate projections'); return }
     const actions = s.reg.shown.at(-1).options.actions
-    if (maxActions === 0) assert(!actions, 'actions property omitted without proven support')
-    else equal(actions.map(control => control.action), ['rest_add_15', 'rest_skip', 'rest_pause'].slice(0, maxActions), 'inline priorities')
+    equal(actions.map(control => control.action), ['rest_add_15', 'rest_skip', 'rest_pause'].slice(0, maxActions), 'inline priorities')
   }, false, { maxActions })
   for (const terminal of ['finish', 'cancel', 'remove', 'logout', 'disable']) await check(`${terminal}: tombstone with zero cards`, async s => {
     const value = sessionSequence()[0].value, worker = s.restart()

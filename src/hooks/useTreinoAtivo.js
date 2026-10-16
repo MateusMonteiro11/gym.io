@@ -6,6 +6,7 @@ import { useWorkoutTimer } from './useWorkoutTimer'
 import { createWorkoutNotificationAdapter } from '../services/push/workoutProjection.js'
 import { workoutNotificationBridge } from '../services/push/workoutNotificationBridge.js'
 import { issueWorkoutControls } from '../services/push/workoutControlsService.js'
+import { buscarHistoricoPorSessao } from '../services/push/workoutHistoryService.js'
 import {
   classificarReconciliacaoMutacao,
   criarChaveDescansoExpirado,
@@ -92,7 +93,7 @@ export function useTreinoAtivo({
   const [aviso, setAviso] = useState(null)
 
   const sessaoRef = useRef(null)
-  const notificationAdapter = useMemo(() => createWorkoutNotificationAdapter(workoutNotificationBridge, issueWorkoutControls), [])
+  const notificationAdapter = useMemo(() => createWorkoutNotificationAdapter(workoutNotificationBridge, issueWorkoutControls, buscarHistoricoPorSessao), [])
   const notificationItemsRef = useRef(exercicios)
   notificationItemsRef.current = exercicios
   const mutacaoRef = useRef(false)
@@ -140,7 +141,7 @@ export function useTreinoAtivo({
     }
   }, [idUsuario, idsExerciciosMemoria])
 
-  const registrarSessao = useCallback((proximaSessao, novasSeries) => {
+  const registrarSessao = useCallback((proximaSessao, novasSeries, notificationContext) => {
     if (!deveAceitarSessaoRecebida(sessaoRef.current, proximaSessao)) {
       return false
     }
@@ -152,7 +153,7 @@ export function useTreinoAtivo({
       }
     }
 
-    notificationAdapter.accept(sessaoRef.current, proximaSessao, notificationItemsRef.current)
+    notificationAdapter.accept(sessaoRef.current, proximaSessao, notificationItemsRef.current, notificationContext)
     sessaoRef.current = proximaSessao
     setSessao(proximaSessao)
     if (novasSeries !== undefined) setSeriesConcluidas(novasSeries)
@@ -182,8 +183,8 @@ export function useTreinoAtivo({
     onFinalizarRef.current?.(sessaoFinalizada)
   }, [idUsuario])
 
-  const aplicarRespostaConfirmada = useCallback(async (resposta) => {
-    const aceita = registrarSessao(resposta)
+  const aplicarRespostaConfirmada = useCallback(async (resposta, notificationContext) => {
+    const aceita = registrarSessao(resposta, undefined, notificationContext)
     if (!aceita) return false
 
     try {
@@ -560,14 +561,14 @@ export function useTreinoAtivo({
 
     try {
       const resposta = await iniciarTreinoSessao(treino.id_treino, descanso)
-      await aplicarRespostaConfirmada(resposta)
+      await aplicarRespostaConfirmada(resposta, { started: true })
       return true
     } catch (error) {
       if (ehErroDeTransporte(error)) {
         try {
           const estado = await buscarEstadoSessaoAtiva()
           if (Number(estado.sessao?.id_treino) === Number(treino.id_treino)) {
-            registrarSessao(estado.sessao, estado.series)
+            registrarSessao(estado.sessao, estado.series, { started: true })
             setAviso('A resposta foi interrompida, mas a sessão iniciada foi confirmada no servidor.')
             return true
           }
