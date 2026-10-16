@@ -63,17 +63,17 @@ function exposedNotificationOption(name) {
 // One visual surface for every validated wire projection. No countdown/state inference.
 function sessionCardPresentation(value,needsRefresh=false) {
   const series=`${value.proxima_serie}${value.serie_total?`/${value.serie_total}`:''}`
-  let body
-  if(needsRefresh)body='Abra o treino para atualizar'
-  else if(value.pausada)body=`${value.fase==='descanso'?'Descanso':'Treino'} pausado · ${value.exercicio}\nSérie ${series}`
+  let title=value.exercicio,body
+  if(needsRefresh){title='Treino';body='Abra o treino para atualizar'}
+  else if(value.pausada){title='Treino pausado';body=`${value.exercicio} · Série ${series}`}
   else if(value.type==='workout_rest_finished'||value.eligible_state==='rest_finished'||
-    value.fase==='descanso'&&Date.parse(value.agora_servidor)>=Date.parse(value.descanso_termina_em))
-    body=`Descanso concluído\n${value.exercicio} · Série ${series}`
-  else if(value.fase==='descanso') {
+    value.fase==='descanso'&&Date.parse(value.agora_servidor)>=Date.parse(value.descanso_termina_em)) {
+    title='Descanso concluído';body=`${value.exercicio} · Série ${series}`
+  } else if(value.fase==='descanso') {
     const deadline=new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(value.descanso_termina_em))
-    body=`${value.exercicio} · Próxima série ${series}\nDescanso até ${deadline}`
-  } else body=`${value.exercicio} · Série ${series}`
-  return {title:'Gym.io · Treino',body:Array.from(body).slice(0,160).join('')}
+    body=`Descanso · próxima ${series} · até ${deadline}`
+  } else body=`Série ${series}`
+  return {title,body:Array.from(body).slice(0,160).join('')}
 }
 function projectionOrder(value) {
   return {session:value.id_sessao,revision:value.revisao,observed:value.agora_servidor,started:value.iniciada_em}
@@ -226,15 +226,15 @@ function createWorkoutProcessor({store,registration,sendAction=sendWorkoutAction
     const id=`${now()}-${++publicationSequence}-${Math.random().toString(36).slice(2)}`
     const publication={...projectionOrder(value),id}
     const actions=!needsRefresh&&display.version===3?display.controls.slice(0,supportedMaxActions()).map(control=>({action:control.action,title:ACTION_LABELS[control.action]})):[]
-    const visual=lifecycle==='start'?{title:'Gym.io · Treino iniciado',body:'Seu treino começou. Bom treino!'}:
-      lifecycle==='complete'?{title:'Treino concluído',body:'Veja seu progresso no Gym.io.'}:sessionCardPresentation(display,needsRefresh)
+    const visual=lifecycle==='start'?{title:'Treino iniciado'}:
+      lifecycle==='complete'?{title:'Treino concluído',body:'Veja seu progresso'}:sessionCardPresentation(display,needsRefresh)
     const url=lifecycle==='complete'?`/historico?period=all${value.id_historico?'&workout='+value.id_historico:''}`:`/treinar/${value.id_treino}`
     try {
       // unchanged has already copied authorized tokens from the current card.
       if(matching.length>1)coalescingFailed=true
       if(coalescingFailed)for(const card of matching)card.close()
       for(const card of cards.filter(card=>isCard(card)&&card.tag!==tag))card.close()
-      await registration.showNotification(visual.title,{body:visual.body,icon:'/push-icon-192.png',badge:'/push-icon-192.png',tag,
+      await registration.showNotification(visual.title,{...(visual.body?{body:visual.body}:{}),icon:'/push-icon-192.png',badge:'/push-icon-192.png',tag,
         data:{url,sessionId:value.id_sessao,publication,...(lifecycle?{kind:lifecycle}:{}),
           ...(!needsRefresh&&display.version===3?{projection:display}:{})},
         ...(actions.length?{actions}:{}),silent:!alert,renotify:Boolean(alert&&exposedNotificationOption('renotify')),

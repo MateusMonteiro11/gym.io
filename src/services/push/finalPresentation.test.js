@@ -33,7 +33,8 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   const w = worker(maxActions)
   await w.processor.lifecycle('start', start())
   const initial = w.reg.live()[0]
-  assert.equal(initial.title, 'Gym.io · Treino iniciado')
+  assert.equal(initial.title, 'Treino iniciado')
+  assert.equal(Object.hasOwn(w.reg.shown[0].options, 'body'), false)
   assert.equal(w.reg.shown.length, 1)
   assert.equal(w.reg.shown[0].options.silent, true)
   assert.equal(w.reg.shown[0].options.renotify, false)
@@ -61,6 +62,7 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   assert.equal(w.reg.live().length, 1)
   const terminal = w.reg.live()[0]
   assert.equal(terminal.title, 'Treino concluído')
+  assert.equal(w.reg.shown.at(-1).options.body, 'Veja seu progresso')
   assert.equal(terminal.tag, `gymio-workout-complete-${sessionId}`)
   assert.equal(w.reg.shown.at(-1).options.silent, false)
   assert.equal(terminal.data.url, '/historico?period=all&workout=7')
@@ -69,7 +71,7 @@ for (const maxActions of [0, 1, 2, 3]) test(`lifecycle policy maxActions=${maxAc
   await Promise.all([restarted.processor.lifecycle('start', start()), restarted.processor.lifecycle('complete', complete('7')),
     restarted.processor.project(sessionSequence()[19].value)])
   assert.equal(w.reg.live().length, 1); assert.equal(w.reg.live()[0], terminal)
-  assert.equal(w.reg.shown.filter(card => card.title === 'Gym.io · Treino iniciado').length, 1)
+  assert.equal(w.reg.shown.filter(card => card.title === 'Treino iniciado').length, 1)
   assert.equal(w.reg.shown.filter(card => card.title === 'Treino concluído').length, 1)
 })
 
