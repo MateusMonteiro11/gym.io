@@ -99,10 +99,8 @@ cd gym.io
 npm install
 
 # Inicie o servidor de desenvolvimento
-npm install
-npm install @supabase/supabase-js
-npm install framer-motion
 npm run dev
+```
 
 Acesse em: `http://localhost:5173`
 

@@ -43,3 +43,20 @@ supabase/.branches/
 supabase/functions/push-compat-spike/
 supabase/functions/push-integration/
 .env*.local
+
+# Local credentials and private certificates
+credentials.json
+credentials.*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local patches
+*.diff
+*.patch
+
+# Disposable historical outputs (consumed baselines remain versioned)
+/supabase/testing/actions-reexecution-inventory-after.json
+/supabase/testing/actions-third-cleanup-result.json
+/supabase/testing/actions-third-inventory-before.json
