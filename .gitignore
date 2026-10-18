@@ -57,8 +57,3 @@ credentials.*.json
 # Local patches
 *.diff
 *.patch
-
-# Disposable historical outputs (consumed baselines remain versioned)
-/supabase/testing/actions-reexecution-inventory-after.json
-/supabase/testing/actions-third-cleanup-result.json
-/supabase/testing/actions-third-inventory-before.json
