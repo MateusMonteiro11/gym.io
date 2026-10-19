@@ -31,10 +31,9 @@ export default function PushNotificationSettings() {
     <section className="space-y-4" aria-label="Notificações">
       <h3 className="text-lg font-semibold text-app-ink">Notificações neste navegador</h3>
       <p className="text-sm text-app-secondary">{unconfigured ? 'Notificações ainda não estão configuradas neste ambiente.' : statusMessage}</p>
-      <p className="text-sm text-app-secondary">Receba notificações de treino neste navegador. Ao sair da conta, tentamos desativá-las neste navegador.</p>
+      <p className="text-sm text-app-secondary">Receba lembretes dos seus treinos agendados. Ao sair da conta, tentamos desativá-los neste navegador.</p>
       <div className="space-y-2 text-sm text-app-secondary">
         <p>Para receber notificações no celular, adicione o Gym.io à Tela de Início e abra o aplicativo pelo ícone instalado.</p>
-        <p>No iPhone e iPad, as notificações Web são mais limitadas. Durante o treino, controles e alertas de descanso disponíveis em alguns aparelhos Android podem não estar disponíveis no iOS.</p>
       </div>
       <div className="flex flex-wrap gap-3">
         <Button onClick={() => act(push.enable)} disabled={push.busy || unconfigured || ['unsupported', 'denied', 'subscribed'].includes(push.status)}>Ativar notificações</Button>

@@ -7,7 +7,6 @@ import WorkoutHeader from '../components/WorkoutHeader'
 import CurrentExerciseCard from '../components/CurrentExerciseCard'
 import WorkoutProgress from '../components/WorkoutProgress'
 import WorkoutTimer from '../components/WorkoutTimer'
-import WorkoutQuickControls from '../components/WorkoutQuickControls.js'
 import WorkoutActions from '../components/WorkoutActions'
 import WorkoutInfo from '../components/WorkoutInfo'
 import PreWorkoutModal from '../components/PreWorkoutModal'
@@ -19,8 +18,6 @@ import { useAuth } from '../hooks/useAuth'
 import { buscarTreinoCompleto } from '../services/treinos/treinosService'
 
 import { useTreinoAtivo } from '../hooks/useTreinoAtivo'
-import { useQuickWorkoutControls } from '../hooks/useQuickWorkoutControls.js'
-import { isPushEntry } from '../services/push/quickWorkoutControls.js'
 import { ordemSecaoParaApresentacao } from '../hooks/treinoSessaoControllerUtils'
 import { logError } from '../utils/errorMessages'
 
@@ -90,15 +87,7 @@ export default function TreinoPlayer() {
 
   })
 
-  const fromPush = isPushEntry(location.search)
-  const quickControls = useQuickWorkoutControls({
-    fromPush, userId: usuario?.id, workoutId: id, scopeKey: location.key,
-    player: treinoAtivo,
-  })
-  const salvando = treinoAtivo.salvando || quickControls.busy
-  const feedbackControle = quickControls.feedback
-    ? [treinoAtivo.erro || treinoAtivo.aviso, quickControls.feedback].filter(Boolean).join(' ')
-    : treinoAtivo.erro
+  const salvando = treinoAtivo.salvando
 
   if (loading || !usuario?.id) {
     return <PageLoadingBoundary loading loadingMessage="Carregando treino..." />
@@ -181,9 +170,6 @@ export default function TreinoPlayer() {
         onAdicionarTempo={treinoAtivo.descansoTimer.adicionarTempo}
         onPularDescanso={treinoAtivo.pularDescanso}
         disabled={salvando}
-        restControls={fromPush ? (quickControls.state ? (
-          <WorkoutQuickControls state={quickControls.state} busy={salvando} onAction={quickControls.execute} />
-        ) : false) : undefined}
       />
 
       <WorkoutActions
@@ -221,14 +207,15 @@ export default function TreinoPlayer() {
         />
 
         <SessionFeedback
-          erro={feedbackControle}
+          erro={treinoAtivo.erro}
           aviso={treinoAtivo.aviso}
-          onClose={() => { treinoAtivo.limparFeedback(); quickControls.clearFeedback() }}
+          onClose={treinoAtivo.limparFeedback}
         />
 
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3 lg:items-start lg:gap-6">
 
-          {fromPush ? [sessionControls, exerciseContext] : [exerciseContext, sessionControls]}
+          {exerciseContext}
+          {sessionControls}
 
         </div>
 

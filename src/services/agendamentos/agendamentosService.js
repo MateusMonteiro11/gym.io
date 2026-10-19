@@ -27,28 +27,25 @@ function normalizarData(dateString) {
 /**
  * Cria um novo agendamento de treino
  * @param {Object} params
- * @param {string} params.idUsuario
  * @param {number} params.idTreino
  * @param {string} params.dataAgendada - "YYYY-MM-DD" Padrao americano
  * @returns {Promise<Object>}
  */
 
 export async function criarAgendamento({
-  idUsuario,
   idTreino,
   dataAgendada,
+  horarioLocal = null,
+  lembretes = [],
 }) {
   const { data, error } = await supabase
-    .from('agendamentos')
-    .insert([
-      {
-        id_usuario: idUsuario,
-        id_treino: idTreino,
-        data_agendada: dataAgendada,
-      },
-    ])
-    .select()
-    .single()
+    .rpc('agendar_treino_com_lembretes', {
+      p_id_treino: idTreino,
+      p_data_agendada: dataAgendada,
+      p_horario_local: horarioLocal || null,
+      p_lembretes: lembretes,
+    })
+    .retry(false)
 
   if (error) throw error
   return data || null

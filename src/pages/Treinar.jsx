@@ -14,6 +14,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
 import { useAgendamentos } from '../hooks/useAgendamentos'
 import { getLocalDateInputValue, parseDateTime } from '../utils/dateUtils'
+import { appointmentDateFromSearch } from '../utils/appointmentDate.js'
 import {
   clampActiveIndex,
   getWeekStartKey,
@@ -49,8 +50,8 @@ export default function Treinar() {
   } = useAgendamentos()
 
   const [today] = useState(() => getLocalDateInputValue())
-  const [selectedDate, setSelectedDate] = useState(today)
-  const [weekStart, setWeekStart] = useState(() => getWeekStartKey(today))
+  const [selectedDate, setSelectedDate] = useState(() => appointmentDateFromSearch(location.search, today))
+  const [weekStart, setWeekStart] = useState(() => getWeekStartKey(appointmentDateFromSearch(location.search, today)))
   const [activeIndex, setActiveIndex] = useState(0)
   const [treinos, setTreinos] = useState([])
   const [loadingTreinos, setLoadingTreinos] = useState(true)
@@ -69,6 +70,12 @@ export default function Treinar() {
     [appointmentsByDate]
   )
   const selectedAppointments = appointmentsByDate[selectedDate] || []
+
+  useEffect(() => {
+    const date = appointmentDateFromSearch(location.search, today)
+    setSelectedDate(date)
+    setWeekStart(getWeekStartKey(date))
+  }, [location.search, today])
 
   useEffect(() => {
     let active = true
@@ -109,7 +116,6 @@ export default function Treinar() {
   }
 
   async function handleVisualizarTreino(treino, catalogSelection) {
-    // Save the source entry as well, so the browser Back button restores the catalog.
     await navigate(`${location.pathname}${location.search}${location.hash}`, {
       replace: true,
       state: { ...location.state, catalogSelection },

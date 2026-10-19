@@ -120,3 +120,30 @@ Acesse em: `http://localhost:5173`
 ## 📄 Licença
 
 Projeto acadêmico desenvolvido para fins educacionais.
+
+## Notificações
+
+Ativadas explicitamente em Perfil → Notificações, lembram os treinos agendados.
+No modal, escolha um horário de São Paulo e, opcionalmente, lembretes no horário,
+um dia ou dois dias antes. As opções começam desmarcadas. O backend cria tudo
+em uma transação e informa as opções descartadas por já estarem no passado.
+Cada lembrete tem seu próprio evento. Os destinatários são congelados no
+vencimento; subscriptions criadas após esse horário não recebem retroativamente.
+O único job global executa a cada minuto e é criado inativo. Sua ativação exige
+um rollout separado. Reminders de dias anteriores não geram envios atrasados.
+
+Após salvar, uma confirmação local substitui o feedback visual de sucesso
+quando a notificação puder ser exibida. Sem notificações ativas, o agendamento
+funciona normalmente e mantém o feedback visual. Agendar nunca pede permissão
+ou ativa Push automaticamente.
+
+O Player usa somente Session V2. A única notificação local de treino é
+“Treino concluído · Veja seu progresso”, após confirmação do servidor, com
+acesso ao histórico correspondente. Cancelar ou executar um treino não produz
+notificações intermediárias. Som e apresentação dependem do navegador e do SO.
+
+`npm test` e `npm run build` validam o código. A matriz Supabase descartável é
+explícita: `node supabase/testing/appointment-matrix.mjs --run-isolated`.
+Ela recusa destinos remotos, usa transporte Push falso e remove a própria stack.
+O bootstrap legado é uma fixture reconstruída, fora de migrations; o histórico
+Auth não é reaplicado. Os sete SQLs históricos ficam preservados byte a byte.

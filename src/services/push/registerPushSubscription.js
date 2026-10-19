@@ -1,10 +1,9 @@
-export async function registerPushWithMode(client, value, mode, signal) {
+export async function registerPushSubscription(client, value, signal) {
   let request = client
-    .rpc('registrar_push_subscription_com_modo', {
+    .rpc('registrar_push_subscription', {
       p_endpoint: value.endpoint,
       p_p256dh: value.p256dh,
       p_auth: value.auth,
-      p_workout_notification_mode: mode,
     })
     .retry(false)
   if (signal) request = request.abortSignal(signal)

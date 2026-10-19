@@ -3,9 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDescansoTimer } from './useDescansoTimer'
 import { useServerNow } from './useServerNow'
 import { useWorkoutTimer } from './useWorkoutTimer'
-import { createWorkoutNotificationAdapter } from '../services/push/workoutProjection.js'
-import { workoutNotificationBridge } from '../services/push/workoutNotificationBridge.js'
-import { issueWorkoutControls } from '../services/push/workoutControlsService.js'
+import { createWorkoutCompletionNotifier } from '../services/push/workoutCompletionNotification.js'
+import { notificationBridge } from '../services/push/notificationBridge.js'
 import { buscarHistoricoPorSessao } from '../services/push/workoutHistoryService.js'
 import {
   classificarReconciliacaoMutacao,
@@ -93,9 +92,10 @@ export function useTreinoAtivo({
   const [aviso, setAviso] = useState(null)
 
   const sessaoRef = useRef(null)
-  const notificationAdapter = useMemo(() => createWorkoutNotificationAdapter(workoutNotificationBridge, issueWorkoutControls, buscarHistoricoPorSessao), [])
-  const notificationItemsRef = useRef(exercicios)
-  notificationItemsRef.current = exercicios
+  const completionNotifier = useMemo(
+    () => createWorkoutCompletionNotifier(notificationBridge, buscarHistoricoPorSessao),
+    [idUsuario]
+  )
   const mutacaoRef = useRef(false)
   const descansoAutomaticoRef = useRef(null)
   const finalizacoesProcessadasRef = useRef(new Set())
@@ -141,7 +141,7 @@ export function useTreinoAtivo({
     }
   }, [idUsuario, idsExerciciosMemoria])
 
-  const registrarSessao = useCallback((proximaSessao, novasSeries, notificationContext) => {
+  const registrarSessao = useCallback((proximaSessao, novasSeries) => {
     if (!deveAceitarSessaoRecebida(sessaoRef.current, proximaSessao)) {
       return false
     }
@@ -153,12 +153,12 @@ export function useTreinoAtivo({
       }
     }
 
-    notificationAdapter.accept(sessaoRef.current, proximaSessao, notificationItemsRef.current, notificationContext)
+    if (proximaSessao?.status === 'finalizada') completionNotifier.complete(proximaSessao)
     sessaoRef.current = proximaSessao
     setSessao(proximaSessao)
     if (novasSeries !== undefined) setSeriesConcluidas(novasSeries)
     return true
-  }, [notificationAdapter])
+  }, [completionNotifier])
 
   const limparFeedback = useCallback(() => {
     setErro(null)
@@ -183,8 +183,8 @@ export function useTreinoAtivo({
     onFinalizarRef.current?.(sessaoFinalizada)
   }, [idUsuario])
 
-  const aplicarRespostaConfirmada = useCallback(async (resposta, notificationContext) => {
-    const aceita = registrarSessao(resposta, undefined, notificationContext)
+  const aplicarRespostaConfirmada = useCallback(async (resposta) => {
+    const aceita = registrarSessao(resposta, undefined)
     if (!aceita) return false
 
     try {
@@ -316,7 +316,7 @@ export function useTreinoAtivo({
 
   const executarMutacao = useCallback(async (
     mutacao,
-    { aceitarAusenteAposErroRede = false, sinalizarDescansoVencido = false } = {}
+    { aceitarAusenteAposErroRede = false } = {}
   ) => {
     if (mutacaoRef.current) return false
 
@@ -329,8 +329,7 @@ export function useTreinoAtivo({
 
     try {
       const resposta = await mutacao(atual)
-      const aceita = await aplicarRespostaConfirmada(resposta)
-      if (aceita && sinalizarDescansoVencido) notificationAdapter.restFinished(atual, resposta, notificationItemsRef.current)
+      await aplicarRespostaConfirmada(resposta)
       return true
     } catch (error) {
       if (ehErroDeTransporte(error)) {
@@ -355,7 +354,6 @@ export function useTreinoAtivo({
     limparFeedback,
     reconciliarMutacaoAposErroRede,
     tratarErroMutacao,
-    notificationAdapter,
   ])
 
   useEffect(() => {
@@ -510,7 +508,7 @@ export function useTreinoAtivo({
       atual.id_sessao,
       atual.revisao,
       false
-    ), { sinalizarDescansoVencido: true })
+    ))
   }, [chaveDescansoExpirado, executarMutacao])
 
   const estado = useMemo(() => {
@@ -561,14 +559,14 @@ export function useTreinoAtivo({
 
     try {
       const resposta = await iniciarTreinoSessao(treino.id_treino, descanso)
-      await aplicarRespostaConfirmada(resposta, { started: true })
+      await aplicarRespostaConfirmada(resposta)
       return true
     } catch (error) {
       if (ehErroDeTransporte(error)) {
         try {
           const estado = await buscarEstadoSessaoAtiva()
           if (Number(estado.sessao?.id_treino) === Number(treino.id_treino)) {
-            registrarSessao(estado.sessao, estado.series, { started: true })
+            registrarSessao(estado.sessao, estado.series)
             setAviso('A resposta foi interrompida, mas a sessão iniciada foi confirmada no servidor.')
             return true
           }
@@ -636,7 +634,7 @@ export function useTreinoAtivo({
       atual.id_sessao,
       atual.revisao,
       timerDescansoBase.restante > 0
-    ), { sinalizarDescansoVencido: timerDescansoBase.restante <= 0 })
+    ))
   }, [executarMutacao, pausado, timerDescansoBase.restante])
 
   const pularDescanso = useCallback(() => {

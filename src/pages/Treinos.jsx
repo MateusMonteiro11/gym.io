@@ -23,10 +23,13 @@ import {
   logError,
 } from '../utils/errorMessages'
 import { validateScheduleDate } from '../utils/dateUtils'
+import { saoPauloDate } from '../utils/appointmentReminders'
 import { criarSecao } from '../services/treinos/secoesService'
 import { adicionarExercicio } from '../services/treinos/treinosExerciciosService'
 import { listarExercicios } from '../services/exercicios/exerciciosService'
 import { criarAgendamento } from '../services/agendamentos/agendamentosService'
+import { scheduleWorkout } from '../services/agendamentos/scheduleWorkout.js'
+import { notificationBridge } from '../services/push/notificationBridge.js'
 import { useAuth } from '../hooks/useAuth'
 import ActionLoading from '../components/ui/ActionLoading'
 
@@ -104,7 +107,7 @@ export default function Treinos() {
   async function handleConfirmarAgendamento(dados) {
     if (!usuario?.id || !treinoSelecionado?.id_treino) return
 
-    const dateValidation = validateScheduleDate(dados?.dataAgendada)
+    const dateValidation = validateScheduleDate(dados?.dataAgendada, saoPauloDate())
     if (!dateValidation.isValid) {
       alert({
         title: 'Revise a data',
@@ -115,18 +118,11 @@ export default function Treinos() {
     }
 
     try {
-      await criarAgendamento({
-        idUsuario: usuario.id,
-        idTreino: treinoSelecionado.id_treino,
-        dataAgendada: dados.dataAgendada,
-      })
+      await scheduleWorkout({ create: criarAgendamento, bridge: notificationBridge, notify,
+        input: { idTreino: treinoSelecionado.id_treino, dataAgendada: dados.dataAgendada,
+          horarioLocal: dados.horarioLocal, lembretes: dados.lembretes } })
       setModalAgendamentoOpen(false)
       setTreinoSelecionado(null)
-      notify({
-        title: 'Treino agendado',
-        message: `${treinoSelecionado.nome} foi adicionado à sua agenda.`,
-        type: 'success',
-      })
     } catch (error) {
       logError(error, '[Treinos] Failed to schedule workout')
       notify({
