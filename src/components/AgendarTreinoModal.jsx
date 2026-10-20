@@ -10,6 +10,7 @@ import { reminderOptions, saoPauloDate, validateReminderTime } from '../utils/ap
 import { usePushNotifications } from '../hooks/usePushNotifications'
 import ActionLoading from './ui/ActionLoading'
 
+
 export default function AgendarTreinoModal({ open, treino, onClose, onAgendar }) {
   const { alert } = useUi()
   const [dataAgendada, setDataAgendada] = useState('')
@@ -58,7 +59,7 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
       onClose={agendando ? undefined : onClose}
       ariaLabel="Agendar treino"
       size="md"
-      className="min-w-0 !max-h-[calc(100dvh-2rem)] overflow-x-hidden"
+      className="min-w-0 !max-h-[calc(100dvh-2rem)]"
     >
       <ModalHeader title="Agendar treino" subtitle="Escolha quando deseja realizar este treino" onClose={agendando ? undefined : onClose} />
       <div className="min-w-0 max-w-full space-y-5 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:space-y-6 sm:p-6">
@@ -94,20 +95,22 @@ export default function AgendarTreinoModal({ open, treino, onClose, onAgendar })
             errorId="data-agendamento-error"
             aria-invalid={Boolean(dataError)}
             containerClassName="w-full min-w-0 max-w-full"
-            className="ios-date-input mt-2 block min-w-0 max-w-full"
+            className="native-date-time-input mt-2 block w-full min-w-0 max-w-full box-border"
           />
         </div>
-        <fieldset disabled={agendando} className="min-w-0 space-y-3 border-t border-slate-200 app:border-app-line pt-5 dark:border-white/10">
+        <fieldset disabled={agendando} className="w-full min-w-0 max-w-full space-y-3 border-t border-slate-200 app:border-app-line pt-5">
           <legend className="float-left mb-3 w-full font-semibold text-slate-900 app:text-app-ink dark:text-slate-100">Lembretes</legend>
-          <div className="clear-both">
+          <div className="clear-both w-full min-w-0 max-w-full">
             <Label htmlFor="horario-agendamento">Horário <span className="font-normal text-slate-600 app:text-app-secondary dark:text-slate-400">{lembretes.length ? '(para os lembretes)' : '(opcional)'}</span></Label>
             <Input id="horario-agendamento" type="time" value={horarioLocal}
               onChange={event => { setHorarioLocal(event.target.value); setHorarioError('') }}
-              error={horarioError} errorId="horario-agendamento-error" aria-invalid={Boolean(horarioError)} aria-describedby="fuso-agendamento" className="mt-2" />
+              error={horarioError} errorId="horario-agendamento-error" aria-invalid={Boolean(horarioError)} aria-describedby="fuso-agendamento"
+              containerClassName="w-full min-w-0 max-w-full"
+              className="native-date-time-input mt-2 block w-full min-w-0 max-w-full box-border" />
             <p id="fuso-agendamento" className="mt-2 text-xs text-slate-600 app:text-app-secondary dark:text-slate-400">Horário de São Paulo</p>
           </div>
           <p className="text-sm text-slate-600 app:text-app-secondary dark:text-slate-400">Lembrar-me:</p>
-          <div className="flex flex-wrap gap-x-5 gap-y-1">
+          <div className="flex flex-col gap-1">
             {reminderOptions.map(option => (
               <label key={option.value} className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-slate-900 app:text-app-ink dark:text-slate-100">
                 <input type="checkbox" checked={lembretes.includes(option.value)}

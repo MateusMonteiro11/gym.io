@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
+  // Theme variants are explicit data-theme selectors in styles/index.css.
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',

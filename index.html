@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/theme-bootstrap.js"></script>
     <title>Gym.io</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,21 +22,6 @@
     <meta name="twitter:title" content="Gym.io" />
     <meta name="twitter:description" content="Gerencie treinos personalizados de forma moderna e intuitiva." />
     <meta name="twitter:image" content="/preview.png" />
-    <script>
-      (function () {
-        const STORAGE_KEY = 'gymio-theme'
-        const storedTheme = localStorage.getItem(STORAGE_KEY)
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        const theme = storedTheme === 'dark' || storedTheme === 'light'
-          ? storedTheme
-          : prefersDark
-            ? 'dark'
-            : 'light'
-
-        document.documentElement.classList.toggle('dark', theme === 'dark')
-        document.documentElement.style.colorScheme = theme
-      })()
-    </script>
   </head>
   <body>
     <div id="root"></div>

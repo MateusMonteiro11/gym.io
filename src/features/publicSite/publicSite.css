@@ -22,7 +22,7 @@
   background: var(--paper);
   font-family: var(--brand-font);
   transition: color .25s ease, background-color .25s ease;
-}.dark .landing {
+}html[data-theme="dark"] .landing {
   --ink: #f3f5f8;
   --muted: #98a1af;
   --paper: #07080b;
@@ -61,7 +61,7 @@
   box-shadow: 0 18px 50px rgba(12, 20, 34, .12);
   backdrop-filter: blur(18px) saturate(1.15);
 }
-.dark .landing-header.is-compact { background: rgba(13, 16, 22, .92); box-shadow: 0 20px 55px rgba(0, 0, 0, .42); }
+html[data-theme="dark"] .landing-header.is-compact { background: rgba(13, 16, 22, .92); box-shadow: 0 20px 55px rgba(0, 0, 0, .42); }
 .landing-header-progress { position: absolute; left: 18px; right: 18px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--blue); transform-origin: 0 50%; opacity: 0; transition: opacity .2s ease; }
 .is-compact .landing-header-progress { opacity: 1; }
 .landing-brand { display: inline-flex; align-items: center; gap: .65rem; width: fit-content; font-size: .9rem; font-weight: 600; letter-spacing: -.02em; }
@@ -134,9 +134,9 @@
 .legal-modal-document > header { margin-bottom: 2rem; }
 .legal-modal-document > header h2 { margin: 0; color: #0f172a; font-size: 1.65rem; letter-spacing: -.035em; }
 .legal-modal-document > header p { margin: .7rem 0 0; color: #64748b; font-size: .85rem; line-height: 1.7; }
-.dark .legal-document-content.is-compact section { border-color: #334155; background: #0f172a; }
-.dark .legal-document-content.is-compact h2, .dark .legal-modal-document > header h2 { color: #f8fafc; }
-.dark .legal-document-content.is-compact p, .dark .legal-document-content.is-compact li, .dark .legal-modal-document > header p { color: #cbd5e1; }
+html[data-theme="dark"] .legal-document-content.is-compact section { border-color: #334155; background: #0f172a; }
+html[data-theme="dark"] .legal-document-content.is-compact h2, html[data-theme="dark"] .legal-modal-document > header h2 { color: #f8fafc; }
+html[data-theme="dark"] .legal-document-content.is-compact p, html[data-theme="dark"] .legal-document-content.is-compact li, html[data-theme="dark"] .legal-modal-document > header p { color: #cbd5e1; }
 .legal-modal-document a:focus-visible { outline: 2px solid #1457f7; outline-offset: 4px; }
 
 @media (max-width: 1024px) {

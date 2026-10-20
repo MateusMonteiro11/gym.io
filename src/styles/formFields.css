@@ -8,7 +8,7 @@
   --field-error: #b42335;
 }
 
-:root.dark {
+:root[data-theme="dark"] {
   --field-border: #3f3f46;
   --field-border-hover: #60606b;
   --field-focus: #729aff;

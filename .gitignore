@@ -5,7 +5,12 @@ node_modules
 dist
 tests
 docs
-supabase
+supabase/*
+!supabase/migrations/
+supabase/migrations/*
+# Only incremental hotfixes are included; historical local artifacts stay ignored.
+!supabase/migrations/20261019223444_hotfix_revision_conflict_http_409.sql
+!supabase/migrations/20261019233213_hotfix_start_conflict_http_409.sql
 supabase.zip
 
 # environment variables
