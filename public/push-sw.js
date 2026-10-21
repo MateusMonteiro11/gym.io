@@ -20,6 +20,10 @@ function validCompletion(value) {
     value.type === 'workout_session_completed' && UUID.test(value.id_sessao ?? '') &&
     (value.id_historico === null || canonicalId(value.id_historico))
 }
+function validRestFinished(value) {
+  return exact(value, ['version', 'type', 'session_id', 'workout_id']) && value.version === 1 &&
+    value.type === 'rest_finished' && UUID.test(value.session_id ?? '') && canonicalId(value.workout_id)
+}
 function reminderPresentation(value) {
   return {
     title: value.reminder_type === 'no_horario' ? 'Hora de treinar' : 'Treino agendado',
@@ -33,6 +37,8 @@ function validConfirmation(value) {
 }
 function notificationRoute(notification) {
   const data = notification.data
+  if (data?.kind === 'rest' && UUID.test(data.sessionId ?? '') && canonicalId(data.workoutId) &&
+      notification.tag === `gymio-rest-${data.sessionId}` && data.url === `/treinar/${data.workoutId}`) return data.url
   if (data?.kind === 'schedule' && UUID.test(data.reminderId ?? '') && validDate(data.date) && notification.tag === `gymio-reminder-${data.reminderId}` &&
       data.url === `/treinar?date=${data.date}`) return `/treinar?date=${data.date}`
   if (data?.kind === 'schedule_confirmation' && canonicalId(data.appointmentId) && validDate(data.date) &&
@@ -90,6 +96,8 @@ function createNotificationStore(factory) {
       return scope
     }),
     enabled: () => transaction(async (_store, get) => await get('enabled') !== false),
+    restAllowed: sessionId => transaction(async (_store, get) =>
+      await get('enabled') !== false && !await get(`complete:${sessionId}`)),
     reserve: (id, scope, kind = 'complete') => transaction(async (store, get) => {
       if (!['complete', 'schedule'].includes(kind)) return false
       const [enabled, current, seen] = await Promise.all([get('enabled'), get('scope'), get(`${kind}:${id}`)])
@@ -113,8 +121,34 @@ function createNotificationProcessor({ store, registration }) {
   const show = (title, options) => registration.showNotification(title, {
     icon: '/push-icon-192.png', badge: '/push-icon-192.png', silent: false, ...options,
   })
+  const closeRest = async sessionId => {
+    try { for (const card of await registration.getNotifications({ tag: `gymio-rest-${sessionId}` })) {
+      if (card.tag === `gymio-rest-${sessionId}`) card.close()
+    } } catch { /* Presentation cleanup is best-effort. */ }
+  }
   return {
     scope: () => serialized(() => disabled ? null : store.scope()),
+    rest: value => serialized(async () => {
+      if (!validRestFinished(value) || disabled || !await store.restAllowed(value.session_id) || disabled) return false
+      const publicationId = crypto.randomUUID(), tag = `gymio-rest-${value.session_id}`
+      const prototype = typeof Notification === 'function' ? Notification.prototype : null
+      const attention = {
+        ...('renotify' in (prototype ?? {}) ? { renotify: true } : {}),
+        ...('vibrate' in (prototype ?? {}) ? { vibrate: [200] } : {}),
+      }
+      try {
+        await show('Descanso concluído', { tag, silent: false, ...attention,
+          data: { kind: 'rest', sessionId: value.session_id, workoutId: value.workout_id,
+            url: `/treinar/${value.workout_id}`, publicationId } })
+      } catch { return false }
+      try {
+        const cards = (await registration.getNotifications({ tag })).filter(card => card.tag === tag)
+        const latest = cards.find(card => card.data?.publicationId === publicationId)
+        if (latest) for (const card of cards) if (card !== latest) card.close()
+      } catch { /* Cannot verify coalescing when enumeration is unavailable. */ }
+      if (disabled || !await store.restAllowed(value.session_id)) { await closeRest(value.session_id); return false }
+      return true
+    }),
     reminder: value => serialized(async () => {
       if (!validReminder(value) || disabled || !await store.enabled()) return false
       const { title, body } = reminderPresentation(value)
@@ -132,11 +166,15 @@ function createNotificationProcessor({ store, registration }) {
       return true
     }),
     complete: (value, scope) => serialized(async () => {
-      if (!validCompletion(value) || disabled || !await store.reserve(value.id_sessao, scope) || disabled) return false
-      // Receipt commits before publication. Ambiguous failures are not retried.
+      if (!validCompletion(value) || disabled || !await store.enabled()) return false
+      const current = await store.scope()
+      if (!scope || scope !== current) return false
+      await closeRest(value.id_sessao)
+      if (!await store.reserve(value.id_sessao, scope) || disabled) return false
       await show('Treino concluído', { body: 'Veja seu progresso',
         tag: `gymio-workout-complete-${value.id_sessao}`, data: { kind: 'complete', sessionId: value.id_sessao,
           url: `/historico?period=all${value.id_historico ? `&workout=${value.id_historico}` : ''}` } })
+      await closeRest(value.id_sessao)
       return true
     }),
     diagnostic: value => serialized(async () => {
@@ -170,7 +208,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('push', event => {
   let payload
   try { payload = event.data?.json() } catch { return }
-  event.waitUntil(validReminder(payload) ? notificationProcessor.reminder(payload) : notificationProcessor.diagnostic(payload))
+  event.waitUntil(validRestFinished(payload) ? notificationProcessor.rest(payload)
+    : validReminder(payload) ? notificationProcessor.reminder(payload) : notificationProcessor.diagnostic(payload))
 })
 self.addEventListener('message', event => {
   try { if (new URL(event.source?.url).origin !== self.location.origin) return } catch { return }
