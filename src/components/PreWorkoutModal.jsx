@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useId } from 'react'
 import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import Input, { Label } from './ui/Input'
 import Button from './ui/Button'
 import ActionLoading from './ui/ActionLoading'
+
+function normalizarDescanso(valor) {
+  const numero = Number(valor)
+  return Number.isFinite(numero) ? Math.min(3600, Math.max(0, Math.trunc(numero))) : 0
+}
 
 export default function PreWorkoutModal({
   open,
@@ -13,10 +18,12 @@ export default function PreWorkoutModal({
   onStart,
   processando = false,
 }) {
-  const [descanso, setDescanso] = useState(descansoPadrao)
+  const [descansoTexto, setDescansoTexto] = useState(() => String(normalizarDescanso(descansoPadrao)))
+  const descansoInputId = useId()
+  const descanso = normalizarDescanso(descansoTexto)
 
   useEffect(() => {
-    if (open) setDescanso(descansoPadrao)
+    if (open) setDescansoTexto(String(normalizarDescanso(descansoPadrao)))
   }, [open, descansoPadrao])
 
   return (
@@ -32,10 +39,10 @@ export default function PreWorkoutModal({
             <button
               key={tempo}
               type="button"
-              onClick={() => setDescanso(tempo)}
+              onClick={() => setDescansoTexto(String(tempo))}
               disabled={processando}
               className={`cursor-pointer rounded-xl py-3 text-sm font-semibold transition-colors duration-200 ${
-                descanso === tempo
+                descansoTexto !== '' && descanso === tempo
                   ? 'bg-app-action text-white'
                   : 'bg-app-muted text-app-secondary hover:bg-app-muted'
               }`}
@@ -45,13 +52,17 @@ export default function PreWorkoutModal({
           ))}
         </div>
         <div>
-          <Label>Descanso personalizado (segundos)</Label>
+          <Label htmlFor={descansoInputId}>Descanso personalizado (segundos)</Label>
           <Input
+            id={descansoInputId}
             type="number"
             min="0"
             max="3600"
-            value={descanso}
-            onChange={(e) => setDescanso(Number(e.target.value))}
+            step="1"
+            inputMode="numeric"
+            value={descansoTexto}
+            onChange={(e) => setDescansoTexto(e.target.value)}
+            onBlur={() => setDescansoTexto(String(normalizarDescanso(descansoTexto)))}
             disabled={processando}
             className="mt-2"
           />

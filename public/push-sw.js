@@ -112,7 +112,7 @@ function createNotificationStore(factory) {
   }
 }
 function createNotificationProcessor({ store, registration }) {
-  let queue = Promise.resolve(), disabled = false
+  let queue = Promise.resolve(), disabled = false, restCleanupVerified = false
   const serialized = operation => {
     const result = queue.then(operation).catch(() => false)
     queue = result.then(() => undefined)
@@ -121,12 +121,23 @@ function createNotificationProcessor({ store, registration }) {
   const show = (title, options) => registration.showNotification(title, {
     icon: '/push-icon-192.png', badge: '/push-icon-192.png', silent: false, ...options,
   })
+  const restCards = async tag => {
+    // Some browsers expose tag filtering without returning every physical card.
+    try { return (await registration.getNotifications()).filter(card => card.tag === tag) } catch {}
+    try { return (await registration.getNotifications({ tag })).filter(card => card.tag === tag) } catch { return null }
+  }
+  const closeCards = cards => {
+    for (const card of cards) {
+      try { card.close() } catch { restCleanupVerified = false }
+    }
+  }
   const closeRest = async sessionId => {
-    try { for (const card of await registration.getNotifications({ tag: `gymio-rest-${sessionId}` })) {
-      if (card.tag === `gymio-rest-${sessionId}`) card.close()
-    } } catch { /* Presentation cleanup is best-effort. */ }
+    const cards = await restCards(`gymio-rest-${sessionId}`)
+    if (cards) closeCards(cards)
+    else restCleanupVerified = false
   }
   return {
+    get restCleanupVerified() { return restCleanupVerified },
     scope: () => serialized(() => disabled ? null : store.scope()),
     rest: value => serialized(async () => {
       if (!validRestFinished(value) || disabled || !await store.restAllowed(value.session_id) || disabled) return false
@@ -136,16 +147,21 @@ function createNotificationProcessor({ store, registration }) {
         ...('renotify' in (prototype ?? {}) ? { renotify: true } : {}),
         ...('vibrate' in (prototype ?? {}) ? { vibrate: [200] } : {}),
       }
+      restCleanupVerified = false
+      await closeRest(value.session_id)
+      if (disabled || !await store.restAllowed(value.session_id) || disabled) return false
       try {
         await show('Descanso concluído', { tag, silent: false, ...attention,
           data: { kind: 'rest', sessionId: value.session_id, workoutId: value.workout_id,
             url: `/treinar/${value.workout_id}`, publicationId } })
       } catch { return false }
-      try {
-        const cards = (await registration.getNotifications({ tag })).filter(card => card.tag === tag)
-        const latest = cards.find(card => card.data?.publicationId === publicationId)
-        if (latest) for (const card of cards) if (card !== latest) card.close()
-      } catch { /* Cannot verify coalescing when enumeration is unavailable. */ }
+      const cards = await restCards(tag)
+      const latest = cards?.find(card => card.data?.publicationId === publicationId)
+      if (latest) {
+        restCleanupVerified = true
+        closeCards(cards.filter(card => card !== latest))
+      }
+      // Without the publication marker, retain the new alarm rather than close blindly.
       if (disabled || !await store.restAllowed(value.session_id)) { await closeRest(value.session_id); return false }
       return true
     }),
