@@ -45,10 +45,10 @@
 .auth-page .auth-input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 .auth-page .auth-input[aria-invalid="true"] { border-color: #c43b3b; }
 /* Existing dark utility overrides use !important; keep auth on landing tokens. */
-.dark .auth-page .auth-input { background: var(--paper) !important; border-color: var(--field-border) !important; color: var(--ink) !important; }
-.dark .auth-page .auth-input:hover { border-color: var(--field-border-hover) !important; }
-.dark .auth-page .auth-input:focus { background: var(--surface-strong) !important; border-color: var(--blue) !important; }
-.dark .auth-page .auth-input[aria-invalid="true"] { border-color: #ef7777 !important; }
+html[data-theme="dark"] .auth-page .auth-input { background: var(--paper) !important; border-color: var(--field-border) !important; color: var(--ink) !important; }
+html[data-theme="dark"] .auth-page .auth-input:hover { border-color: var(--field-border-hover) !important; }
+html[data-theme="dark"] .auth-page .auth-input:focus { background: var(--surface-strong) !important; border-color: var(--blue) !important; }
+html[data-theme="dark"] .auth-page .auth-input[aria-invalid="true"] { border-color: #ef7777 !important; }
 .auth-page .auth-field [role="alert"] { font-size: .8rem; }
 .auth-page .auth-google, .auth-page .auth-submit {
   display: flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; gap: .7rem;

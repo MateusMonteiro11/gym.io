@@ -60,8 +60,6 @@ export const ribbonDataAnchors = [
   },
 ]
 
-// X positions follow real DOM elements. Stable page anchors are used where
-// expanding content must not move the visible path during remeasurement.
 export const ribbonWaypoints = [
   { id: 'hero-entry', chapter: 'hero', sectionY: -.28, viewportX: .82, z: -.2, twist: -.04, state: RIBBON_STATE.ACTIVE },
   {

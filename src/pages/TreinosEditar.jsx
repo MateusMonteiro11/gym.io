@@ -28,7 +28,6 @@ import {
 
 import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
-import { ui } from '../styles/theme'
 import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 import ActionLoading from '../components/ui/ActionLoading'
 

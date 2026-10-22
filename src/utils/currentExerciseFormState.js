@@ -14,7 +14,6 @@ function editarCampo(estado, campo, valor) {
     ...estado,
     [`${campo}Texto`]: texto,
     [campo]: valido ? numero : estado[confirmado],
-    // Os botões enviam números e confirmam imediatamente; digitação envia texto.
     [confirmado]: valido && typeof valor === 'number' ? numero : estado[confirmado],
     sujo: true,
   }

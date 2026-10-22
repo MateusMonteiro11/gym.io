@@ -3,11 +3,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDescansoTimer } from './useDescansoTimer'
 import { useServerNow } from './useServerNow'
 import { useWorkoutTimer } from './useWorkoutTimer'
+import { createWorkoutCompletionNotifier } from '../services/push/workoutCompletionNotification.js'
+import { notificationBridge } from '../services/push/notificationBridge.js'
+import { buscarHistoricoPorSessao } from '../services/push/workoutHistoryService.js'
 import {
   classificarReconciliacaoMutacao,
   criarChaveDescansoExpirado,
   criarChaveRecuperacaoSessao,
   deveAceitarSessaoRecebida,
+  ehConflitoDeRevisao,
   ehErroDeTransporte,
   estaCarregandoRecuperacao,
   reservarEncerramentoDescanso,
@@ -40,7 +44,6 @@ import {
   listarSeriesConcluidas,
 } from '../services/treino_ativo/treinoSessaoService'
 
-const ERRO_CONCORRENCIA = '40001'
 const ERRO_ESTADO_INVALIDO = '55000'
 
 function codigoDoErro(error) {
@@ -89,6 +92,10 @@ export function useTreinoAtivo({
   const [aviso, setAviso] = useState(null)
 
   const sessaoRef = useRef(null)
+  const completionNotifier = useMemo(
+    () => createWorkoutCompletionNotifier(notificationBridge, buscarHistoricoPorSessao),
+    [idUsuario]
+  )
   const mutacaoRef = useRef(false)
   const descansoAutomaticoRef = useRef(null)
   const finalizacoesProcessadasRef = useRef(new Set())
@@ -146,11 +153,12 @@ export function useTreinoAtivo({
       }
     }
 
+    if (proximaSessao?.status === 'finalizada') completionNotifier.complete(proximaSessao)
     sessaoRef.current = proximaSessao
     setSessao(proximaSessao)
     if (novasSeries !== undefined) setSeriesConcluidas(novasSeries)
     return true
-  }, [])
+  }, [completionNotifier])
 
   const limparFeedback = useCallback(() => {
     setErro(null)
@@ -176,7 +184,7 @@ export function useTreinoAtivo({
   }, [idUsuario])
 
   const aplicarRespostaConfirmada = useCallback(async (resposta) => {
-    const aceita = registrarSessao(resposta)
+    const aceita = registrarSessao(resposta, undefined)
     if (!aceita) return false
 
     try {
@@ -285,9 +293,15 @@ export function useTreinoAtivo({
     logError(error, '[useTreinoAtivo] Session mutation failed')
     const code = codigoDoErro(error)
 
-    if (code === ERRO_CONCORRENCIA) {
-      setAviso('A sessão foi alterada em outra aba. Os dados atuais foram recarregados.')
-      await recarregarSessaoAtual({ validarFinalizada: true })
+    if (ehConflitoDeRevisao(error)) {
+      const atualizada = await recarregarSessaoAtual({ validarFinalizada: true })
+      if (atualizada) {
+        setAviso('A sessão foi alterada em outra aba. Os dados atuais foram recarregados.')
+      } else if (!sessaoRef.current) {
+        setAviso('Esta sessão não está mais disponível.')
+      } else {
+        setErro('A sessão foi alterada, mas não foi possível recarregar os dados atuais. Recarregue antes de tentar novamente.')
+      }
       return
     }
 
@@ -567,7 +581,7 @@ export function useTreinoAtivo({
         }
       }
 
-      if ([ERRO_CONCORRENCIA, '23505'].includes(codigoDoErro(error))) {
+      if (ehConflitoDeRevisao(error) || codigoDoErro(error) === '23505') {
         try {
           const estado = await buscarEstadoSessaoAtiva()
           if (estado.sessao) {
@@ -576,11 +590,15 @@ export function useTreinoAtivo({
             } else {
               setSessaoConflitante(estado.sessao)
             }
+            setErro('Já existe uma sessão ativa. Continue ou cancele essa sessão antes de iniciar outra.')
+          } else {
+            setSessaoConflitante(null)
+            setErro('Houve um conflito ao iniciar, mas nenhuma sessão ativa foi encontrada. Tente iniciar novamente.')
           }
         } catch (reloadError) {
           logError(reloadError, '[useTreinoAtivo] Failed to load conflicting session')
+          setErro('Houve um conflito ao iniciar e não foi possível verificar a sessão atual. Recarregue antes de tentar novamente.')
         }
-        setErro('Já existe uma sessão ativa. Continue ou cancele essa sessão antes de iniciar outra.')
       } else {
         await tratarErroMutacao(error)
       }
@@ -711,13 +729,14 @@ export function useTreinoAtivo({
         }
       }
 
-      if (codigoDoErro(error) === ERRO_CONCORRENCIA) {
+      if (ehConflitoDeRevisao(error)) {
         try {
           const estado = await buscarEstadoSessaoAtiva()
           setSessaoConflitante(estado.sessao)
           setAviso('A outra sessão mudou. O estado atual foi recarregado.')
         } catch (reloadError) {
           logError(reloadError, '[useTreinoAtivo] Failed to refresh conflict')
+          setErro('A outra sessão foi alterada, mas não foi possível recarregar os dados atuais. Recarregue antes de tentar novamente.')
         }
       } else {
         setErro(mensagemDaSessao(error))

@@ -1,6 +1,4 @@
-/* The authenticated shell scopes its tokens to the document so global dialogs
-   and notifications share the same palette without changing public surfaces. */
-@custom-variant app (&:is(html:has(.app-shell), html:has(.app-shell) *));
+@custom-variant app (&:is(html.app-context, html.app-context *));
 
 @theme inline {
   --color-app-canvas: var(--app-canvas);
@@ -32,7 +30,10 @@
   --color-app-heat-4: var(--app-heat-4);
 }
 
-html:has(.app-shell) {
+html.app-context[data-theme="light"] {
+  --color-canvas: 245 245 247;
+  --color-surface: 255 255 255;
+  --color-surface-muted: 238 238 241;
   --app-canvas: #f5f5f7;
   --app-surface: #ffffff;
   --app-muted: #eeeef1;
@@ -60,12 +61,19 @@ html:has(.app-shell) {
   --app-heat-2: #8cafff;
   --app-heat-3: #1457f7;
   --app-heat-4: #103da8;
-  color: var(--app-ink);
-  background: var(--app-canvas);
-  scrollbar-color: var(--app-control) var(--app-canvas);
 }
 
-html.dark:has(.app-shell) {
+html.app-context[data-theme="dark"] {
+  --color-canvas: 16 16 18;
+  --color-surface: 24 24 27;
+  --color-surface-muted: 34 34 37;
+  --app-action: #1457f7;
+  --app-action-hover: #0f4ad4;
+  --app-neutral-action: #303034;
+  --app-success-action: #087c58;
+  --app-success-hover: #066144;
+  --app-danger-action: #c4263a;
+  --app-danger-hover: #a51e30;
   --app-canvas: #101012;
   --app-surface: #18181b;
   --app-muted: #222225;
@@ -88,27 +96,33 @@ html.dark:has(.app-shell) {
   --app-heat-4: #bbd0ff;
 }
 
+html.app-context {
+  color: var(--app-ink);
+  background: var(--app-canvas);
+  scrollbar-color: var(--app-control) var(--app-canvas);
+}
+
 @layer base {
-  html:has(.app-shell) body { background: var(--app-canvas); color: var(--app-ink); }
-  html:has(.app-shell) ::selection { background: var(--app-action); color: white; }
-  html:has(.app-shell) :focus-visible { outline: 2px solid var(--app-accent); outline-offset: 3px; }
-  html:has(.app-shell) :is(input, textarea, select) {
+  html.app-context body { background: var(--app-canvas); color: var(--app-ink); }
+  html.app-context ::selection { background: var(--app-action); color: white; }
+  html.app-context :focus-visible { outline: 2px solid var(--app-accent); outline-offset: 3px; }
+  html.app-context :is(input, textarea, select) {
     color: var(--app-ink);
     caret-color: var(--app-accent);
     accent-color: var(--app-accent);
   }
-  html:has(.app-shell) :is(input, textarea)::placeholder { color: var(--app-secondary); opacity: 1; }
+  html.app-context :is(input, textarea)::placeholder { color: var(--app-secondary); opacity: 1; }
 }
 
 @layer components {
-  html:has(.app-shell) .skeleton-shimmer {
+  html.app-context .skeleton-shimmer {
     --skeleton-base: var(--app-muted);
     --skeleton-highlight: color-mix(in srgb, var(--app-surface) 80%, transparent);
   }
-  html:has(.app-shell) .skeleton-shimmer-inverse {
+  html.app-context .skeleton-shimmer-inverse {
     --skeleton-base: rgb(255 255 255 / .2);
     --skeleton-highlight: rgb(255 255 255 / .72);
   }
-  html:has(.app-shell) .loading-ring { border-color: var(--app-line); border-top-color: var(--app-accent); box-shadow: none; }
+  html.app-context .loading-ring { border-color: var(--app-line); border-top-color: var(--app-accent); box-shadow: none; }
   .app-shell .week-day-selected { box-shadow: 0 3px 12px -6px rgb(20 87 247 / .45); }
 }

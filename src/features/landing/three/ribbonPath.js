@@ -179,8 +179,6 @@ export function createTransportedFrames(curve, segments, twistAt) {
       if (baseSide.dot(previousBaseSide) < 0) baseSide.multiplyScalar(-1)
     }
 
-    // Preserve the transported frame, but gently re-anchor it to the screen
-    // plane only when depth would visually narrow the approved ribbon width.
     if (Math.hypot(baseSide.x, baseSide.y) < .995) {
       screenSide.crossVectors(tangent, viewAxis)
       if (screenSide.lengthSq() >= EPSILON) {

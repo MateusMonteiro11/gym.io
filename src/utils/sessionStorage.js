@@ -1,7 +1,3 @@
-// Utility functions for managing session persistence preferences
-// This only stores the "remember me" preference, not sensitive data
-// The actual session tokens are managed securely by Supabase
-
 const REMEMBER_ME_KEY = 'gym_io_remember_me'
 const LAST_EMAIL_KEY = 'gym_io_last_email'
 const AUTH_STORAGE_EVENT = 'gym_io_auth_storage_changed'
@@ -13,8 +9,8 @@ function notifyAuthStorageChange() {
 }
 
 /**
- * Store the remember me preference
- * @param {boolean} rememberMe - Whether to remember the user
+ * Lembrar preferencias
+ * @param {boolean} rememberMe - Lembrar-me
  */
 export function setRememberMe(rememberMe) {
   if (rememberMe) {
@@ -27,16 +23,16 @@ export function setRememberMe(rememberMe) {
 }
 
 /**
- * Get the remember me preference
- * @returns {boolean} Whether the user should be remembered
+ * Get
+ * @returns {boolean}
  */
 export function getRememberMe() {
   return localStorage.getItem(REMEMBER_ME_KEY) === 'true'
 }
 
 /**
- * Get the storage target for auth persistence based on the remember me preference
- * @returns {Storage} The storage implementation to use
+ * Retorna o storage
+ * @returns {Storage}
  */
 export function getSessionStorageTarget() {
   try {
@@ -47,8 +43,8 @@ export function getSessionStorageTarget() {
 }
 
 /**
- * Store the last used email (for UX purposes only)
- * @param {string} email - The email address
+ * Guarda o email ao storage
+ * @param {string} email 
  */
 export function setLastEmail(email) {
   if (email) {
@@ -57,25 +53,19 @@ export function setLastEmail(email) {
 }
 
 /**
- * Get the last used email
- * @returns {string|null} The last email address or null
+ * Get do ultimo email usado
+ * @returns {string|null}
  */
 export function getLastEmail() {
   return localStorage.getItem(LAST_EMAIL_KEY)
 }
 
-/**
- * Clear all session preferences (called on logout)
- */
 export function clearSessionPreferences() {
   localStorage.removeItem(REMEMBER_ME_KEY)
   localStorage.removeItem(LAST_EMAIL_KEY)
   notifyAuthStorageChange()
 }
 
-/**
- * Subscribe to remember-me and auth storage changes across tabs.
- */
 export function subscribeToAuthStorageChanges(listener) {
   if (typeof window === 'undefined') {
     return () => {}

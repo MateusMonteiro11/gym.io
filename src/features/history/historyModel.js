@@ -1,11 +1,12 @@
 import { normalizeDatabaseUtcTimestamp, parseDateTime, getLocalDateInputValue } from '../../utils/dateUtils.js'
+import { HISTORY_LIMITS, HistoryVolumeLimitError } from './historyLimits.js'
 
 export const PERIODS = {
   '30d': { label: 'Mensal' },
   all: { label: 'Total' },
 }
 
-export const FEATURED_EXERCISES_LIMIT = 3
+export const FEATURED_EXERCISES_LIMIT = 5
 export const RECENT_HISTORY_LIMIT = 12
 
 export const TREND_METRICS = {
@@ -165,9 +166,19 @@ export function resolveExerciseCount(session, sets) {
   return { value: occurrences.size, reliable: !missingRows && !unknownCompletion, source: 'sets' }
 }
 
+export function groupSetsBySession(sets) {
+  const bySession = new Map()
+  for (const set of sets) {
+    if (!bySession.has(set.sessionId)) bySession.set(set.sessionId, [])
+    bySession.get(set.sessionId).push(set)
+  }
+  return bySession
+}
+
 export function getExerciseExecutionsForPeriod(sessions, sets) {
   if (!sessions.length) return { value: 0, reliable: true }
-  const values = sessions.map((session) => resolveExerciseCount(session, sets))
+  const bySession = groupSetsBySession(sets)
+  const values = sessions.map((session) => resolveExerciseCount(session, bySession.get(session.id) || []))
   if (values.some((item) => item.value == null)) return { value: null, reliable: false }
   return {
     value: values.reduce((sum, item) => sum + item.value, 0),
@@ -180,6 +191,14 @@ export function getAverageWorkoutDuration(sessions) {
   const values = sessions.map((item) => item.duration).filter((value) => value != null)
   return {
     value: values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null,
+    reliable: values.length === sessions.length,
+  }
+}
+
+export function getTotalWorkoutDuration(sessions) {
+  const values = sessions.map((item) => item.duration).filter((value) => value != null)
+  return {
+    value: values.length ? values.reduce((sum, value) => sum + value, 0) : sessions.length ? null : 0,
     reliable: values.length === sessions.length,
   }
 }
@@ -224,7 +243,7 @@ function weekLabel(start, end) {
 
 const TREND_FIELDS = {
   workouts: 'workouts',
-  duration: 'averageDuration',
+  duration: 'totalDuration',
   exercises: 'exerciseCount',
 }
 
@@ -238,11 +257,11 @@ export function isTrendBucketPopulated(bucket, metric) {
 }
 
 export function hasSufficientTrendData(buckets, metric) {
-  return buckets.filter((bucket) => isTrendBucketPopulated(bucket, metric)).length >= 2
+  return buckets.filter((bucket) => getTrendMetricValue(bucket, metric) != null).length >= 2
 }
 
 export function buildHistoryBuckets(sessions, sets, period, now = new Date()) {
-  const visible = periodSessions(sessions, period, now).sort((a, b) => a.date - b.date)
+  const visible = periodSessions(sessions, period, now).filter((session) => session.date <= now).sort((a, b) => a.date - b.date)
   if (!visible.length && normalizePeriod(period) === 'all') return []
   const bounds = periodBounds(period, now)
   const rangeStart = startOfDay(bounds.start || visible[0]?.date)
@@ -252,6 +271,7 @@ export function buildHistoryBuckets(sessions, sets, period, now = new Date()) {
   const buckets = []
 
   for (let cursor = configuration.start(rangeStart); cursor <= rangeEnd; cursor = configuration.next(cursor)) {
+    if (buckets.length >= HISTORY_LIMITS.trendBuckets) throw new HistoryVolumeLimitError(HISTORY_LIMITS.trendBuckets)
     const next = configuration.next(cursor)
     const naturalEnd = addDays(next, -1)
     const startDate = cursor < rangeStart ? rangeStart : cursor
@@ -260,6 +280,7 @@ export function buildHistoryBuckets(sessions, sets, period, now = new Date()) {
     const duration = bucketSessions.length
       ? getAverageWorkoutDuration(bucketSessions)
       : { value: null, reliable: true }
+    const totalDuration = getTotalWorkoutDuration(bucketSessions)
     const exercises = getExerciseExecutionsForPeriod(
       bucketSessions,
       rowsForSessions(bucketSessions, sets),
@@ -277,10 +298,12 @@ export function buildHistoryBuckets(sessions, sets, period, now = new Date()) {
       isPartial,
       workouts: bucketSessions.length,
       averageDuration: duration.value,
+      totalDuration: totalDuration.value,
       exerciseCount: exercises.value,
       reliability: {
         workouts: true,
         averageDuration: duration.reliable,
+        totalDuration: totalDuration.reliable,
         exerciseCount: exercises.reliable,
       },
     })
@@ -309,10 +332,6 @@ function categoryOccurrenceKey(row) {
   return `${row.sessionId}:${row.placementId ?? `legacy-${row.exerciseId}`}`
 }
 
-/**
- * Counts exercise appearances, never individual set rows. Percentages use only
- * resolved categories; unresolved appearances remain visible as partial data.
- */
 export function getCategoryDistribution(sessions, sets) {
   const validSessions = new Map(sessions.filter(isCompletedSession).map((session) => [session.id, session]))
   const occurrences = new Map()
@@ -357,7 +376,7 @@ export function getCategoryDistribution(sessions, sets) {
   }
 
   const total = [...categories.values()].reduce((sum, category) => sum + category.count, 0)
-  const maximum = Math.max(0, ...categories.values().map((category) => category.count))
+  const maximum = Array.from(categories.values()).reduce((value, category) => Math.max(value, category.count), 0)
   const items = [...categories.values()]
     .map((category) => ({
       ...category,
@@ -369,10 +388,6 @@ export function getCategoryDistribution(sessions, sets) {
   return { items, total, unresolved, reliable: unresolved === 0 }
 }
 
-/**
- * Summarizes exercise participation and recorded loads without counting set rows
- * as separate workout appearances.
- */
 export function getFeaturedExercises(sessions, sets) {
   const validSessions = new Map(sessions.filter(isCompletedSession).map((session) => [session.id, session]))
   const exercises = new Map()
@@ -440,7 +455,8 @@ export function getFeaturedExercises(sessions, sets) {
       .map((row) => `${row.exerciseId}:${row.placementId ?? 'legacy'}`))
     const missingRows = session.recordedSets != null && rows.length < session.recordedSets
     const missingOccurrences = session.exerciseCount != null && observedOccurrences.size < session.exerciseCount
-    if (missingRows || missingOccurrences) {
+    const missingEvidence = !rows.length && session.recordedSets !== 0 && session.exerciseCount !== 0
+    if (missingRows || missingOccurrences || missingEvidence) {
       occurrencePartial = true
       loadPartial = true
     }
@@ -454,7 +470,7 @@ export function getFeaturedExercises(sessions, sets) {
       sessionCount: exercise.sessionIds.size,
       lastPerformed: exercise.lastPerformed,
     }))
-    .sort((a, b) => b.sessionCount - a.sessionCount || b.lastPerformed - a.lastPerformed || a.name.localeCompare(b.name, 'pt-BR'))
+    .sort((a, b) => b.sessionCount - a.sessionCount || b.lastPerformed - a.lastPerformed || a.name.localeCompare(b.name, 'pt-BR') || stableId(a, b))
     .slice(0, FEATURED_EXERCISES_LIMIT)
 
   const highestLoads = [...exercises.values()]
@@ -466,7 +482,7 @@ export function getFeaturedExercises(sessions, sets) {
       weight: exercise.bestWeight,
       lastPerformed: exercise.bestWeightTimestamp,
     }))
-    .sort((a, b) => b.weight - a.weight || b.lastPerformed - a.lastPerformed || a.name.localeCompare(b.name, 'pt-BR'))
+    .sort((a, b) => b.weight - a.weight || b.lastPerformed - a.lastPerformed || a.name.localeCompare(b.name, 'pt-BR') || stableId(a, b))
     .slice(0, FEATURED_EXERCISES_LIMIT)
 
   return {

@@ -28,8 +28,9 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [now, setNow] = useState(() => initialNow || new Date())
+  const [now] = useState(() => initialNow || new Date())
   const [trendMetric, setTrendMetric] = useState('workouts')
+  const [exerciseRankingMode, setExerciseRankingMode] = useState('load')
   const period = normalizePeriod(searchParams.get('period'))
   const workoutId = searchParams.get('workout')
   const exerciseId = searchParams.get('exercise')
@@ -56,11 +57,12 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
   const detailGroups = useMemo(() => selected && detail.status === 'ready' ? groupExercises(detail.data, selected) : [], [detail.data, detail.status, selected])
   const exercise = detailGroups.find((group) => group.exerciseId === exerciseId) || null
   const stats = useMemo(() => buildOverview(sessions, sets, period, now), [sessions, sets, period, now])
-  const trend = useMemo(() => buildHistoryBuckets(sessions, sets, period, now), [sessions, sets, period, now])
+  const trend = useMemo(() => period === 'all' ? [] : buildHistoryBuckets(sessions, sets, period, now), [sessions, sets, period, now])
   const categoryDistribution = useMemo(() => getCategoryDistribution(visible, visibleSets), [visible, visibleSets])
   const featuredExercises = useMemo(() => getFeaturedExercises(visible, visibleSets), [visible, visibleSets])
   const loading = resources.sessions.status === 'loading' || resources.recentSessions.status === 'loading' || resources.sets.status === 'loading'
   const error = resources.sessions.status === 'error' || resources.recentSessions.status === 'error' || resources.sets.status === 'error'
+  const resourceError = [resources.sessions, resources.recentSessions, resources.sets].find((resource) => resource.error?.code === 'HISTORY_VOLUME_LIMIT')?.error
 
   useEffect(() => {
     if (searchParams.get('period') !== period) setSearchParams(canonicalHistoryParams(searchParams), { replace: true })
@@ -140,25 +142,18 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
     else replaceWithParent(parent)
   }
 
-  function refresh() {
-    resources.cache.clear()
-    setNow(initialNow ? new Date(initialNow) : new Date())
-    resources.retry()
-    if (selected) detail.retry()
-  }
-
-  if (error) return <div className="history-page mx-auto max-w-6xl pb-16"><HistoryError onRetry={resources.retry} /></div>
+  if (error) return <div className="history-page mx-auto max-w-6xl pb-16"><HistoryError error={resourceError} onRetry={resources.retry} onNarrow={period === 'all' ? () => changePeriod('30d') : undefined} /></div>
   if (loading) return <div className="history-page mx-auto max-w-6xl pb-16"><HistorySkeleton /></div>
   if (view !== 'overview' && !selected) return <div className="history-page mx-auto max-w-6xl pb-16"><HistoryNotFound kind="workout" onBack={() => replaceWithParent('overview')} /></div>
   if (view === 'exercise' && detail.status === 'loading') return <div className="history-page mx-auto max-w-4xl pb-16"><HistorySkeleton detail /></div>
-  if (view === 'exercise' && detail.status === 'error') return <div className="history-page mx-auto max-w-4xl pb-16"><HistoryError detail onRetry={detail.retry} /></div>
+  if (view === 'exercise' && detail.status === 'error') return <div className="history-page mx-auto max-w-4xl pb-16"><HistoryError detail error={detail.error} onRetry={detail.retry} /></div>
   if (view === 'exercise' && !exercise) return <div className="history-page mx-auto max-w-4xl pb-16"><HistoryNotFound kind="exercise" onBack={() => replaceWithParent('workout')} /></div>
 
   if (view === 'exercise') return <div className="history-page mx-auto max-w-4xl pb-16"><ExerciseProgression session={selected} exercise={exercise} sessions={visible} sets={visibleSets} period={period} onBack={() => goBack('workout')} onWorkoutSelect={(id, button) => openWorkout(id, button, 'exercise')} backRef={backRef} /></div>
   if (view === 'workout') return <div className="history-page mx-auto max-w-4xl pb-16"><WorkoutDetail session={selected} resource={detail} onBack={() => goBack(location.state?.historyParent === 'exercise' ? 'exercise' : 'overview')} backLabel={location.state?.historyParent === 'exercise' ? 'Voltar à evolução' : 'Voltar ao histórico'} onExercise={openExercise} backRef={backRef} /></div>
 
-  if (!allSessions.length) return <div className="history-page mx-auto max-w-6xl pb-16">
-    <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></ContentEntrance>
+  if (!allSessions.length && !recentSessions.length) return <div className="history-page mx-auto max-w-6xl pb-16">
+    <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} demonstration={demonstration} /></ContentEntrance>
     <ContentEntrance index={1}>
       <HistoryCard className="history-onboarding mt-6 flex flex-col items-center text-center">
         <Dumbbell size={26} className="mx-auto text-app-secondary" aria-hidden="true" />
@@ -172,12 +167,18 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
   </div>
 
   return <div className="history-page mx-auto max-w-6xl pb-16">
-    <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} onRefresh={refresh} demonstration={demonstration} /></ContentEntrance>
+    <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} demonstration={demonstration} /></ContentEntrance>
     <ContentEntrance index={1} className="history-feature-grid history-section">
-      <FeaturedExercises data={featuredExercises} />
+      <FeaturedExercises data={featuredExercises} mode={exerciseRankingMode} onModeChange={setExerciseRankingMode} />
       <MuscleDistribution distribution={categoryDistribution} />
     </ContentEntrance>
-    <ContentEntrance index={2} className="history-section"><TrainingRhythm data={trend} metric={trendMetric} onMetricChange={setTrendMetric} /></ContentEntrance>
+    <ContentEntrance index={2} className="history-section">
+      {period === 'all' ? <HistoryCard as="section" className="history-rhythm-notice" aria-labelledby="history-rhythm-notice-title">
+        <div><h2 id="history-rhythm-notice-title" className={ui.sectionTitle}>Ritmo de treino</h2>
+          <p className={ui.sectionSubtitle}>Disponível no Mensal para manter o gráfico legível e o carregamento leve. Os demais indicadores continuam no período Total.</p></div>
+        <button type="button" className="history-button" onClick={() => changePeriod('30d')}>Ver ritmo mensal<ArrowRight size={16} aria-hidden="true" /></button>
+      </HistoryCard> : <TrainingRhythm data={trend} metric={trendMetric} onMetricChange={setTrendMetric} />}
+    </ContentEntrance>
     <ContentEntrance index={3} className="history-section"><WorkoutHistory sessions={recentSessions} allSessions={allSessions} onSelect={openWorkout} initialScrollLeft={listPosition.current.horizontal} /></ContentEntrance>
   </div>
 }

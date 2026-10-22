@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
 import { PageMotionProvider } from '../components/ui/ContentEntrance'
@@ -8,6 +9,12 @@ import { resolveLoadingVariant } from '../components/ui/loadingVariants'
 export default function DashboardLayout({ children, loading, loadingMessage }) {
   const { pathname } = useLocation()
   const loadingVariant = resolveLoadingVariant(pathname)
+
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    root.classList.add('app-context')
+    return () => root.classList.remove('app-context')
+  }, [])
 
   return (
     <MotionConfig reducedMotion="user">

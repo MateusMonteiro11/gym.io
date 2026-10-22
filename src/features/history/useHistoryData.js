@@ -10,9 +10,9 @@ export function useHistoryResource(cache, key, loader) {
     setState({ cache, key, status: 'loading', data: [] })
     cache.load(key, loader).then(
       (data) => { if (active) setState({ cache, key, status: 'ready', data }) },
-      () => { if (active) setState({ cache, key, status: 'error', data: [] }) },
+      (error) => { if (active) setState({ cache, key, status: 'error', data: [], error }) },
     )
-    return () => { active = false }
+    return () => { active = false; cache.cancelPending(key) }
   }, [cache, key, loader, attempt])
   const current = state.cache === cache && state.key === key ? state : { status: 'loading', data: [] }
   return { ...current, retry: () => { cache.remove(key); setAttempt((value) => value + 1) } }
@@ -22,10 +22,10 @@ export function useHistoryData(repository, userId, period, now) {
   const cache = useMemo(() => createHistoryCache(), [userId, repository])
   useEffect(() => () => cache.clear(), [cache])
   const bounds = useMemo(() => periodBounds(period, now), [period, now])
-  const loadSessions = useMemo(() => (signal) => repository.sessions(userId, signal), [repository, userId])
+  const loadSessions = useMemo(() => (signal) => repository.sessions(userId, signal, bounds), [repository, userId, bounds])
   const loadRecentSessions = useMemo(() => (signal) => repository.recentSessions(userId, signal), [repository, userId])
   const loadSets = useMemo(() => (signal) => repository.sets(userId, { start: bounds.start, end: bounds.end }, signal), [repository, userId, bounds])
-  const sessions = useHistoryResource(cache, 'sessions', loadSessions)
+  const sessions = useHistoryResource(cache, `sessions:${period}:${+now}`, loadSessions)
   const recentSessions = useHistoryResource(cache, `recent:${RECENT_HISTORY_LIMIT}`, loadRecentSessions)
   const sets = useHistoryResource(cache, `period:${period}:${+now}`, loadSets)
   return { sessions, recentSessions, sets, cache, retry: () => { sessions.retry(); recentSessions.retry(); sets.retry() } }

@@ -52,6 +52,10 @@ export function ehErroDeTransporte(error) {
   return /failed to fetch|fetch failed|network|connection|timeout|load failed/i.test(mensagem)
 }
 
+export function ehConflitoDeRevisao(error) {
+  return ['PT409', '40001'].includes(String(error?.code ?? ''))
+}
+
 export function classificarReconciliacaoMutacao(
   sessaoAntes,
   sessaoDepois,

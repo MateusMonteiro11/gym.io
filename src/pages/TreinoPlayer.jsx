@@ -87,6 +87,8 @@ export default function TreinoPlayer() {
 
   })
 
+  const salvando = treinoAtivo.salvando
+
   if (loading || !usuario?.id) {
     return <PageLoadingBoundary loading loadingMessage="Carregando treino..." />
   }
@@ -123,6 +125,76 @@ export default function TreinoPlayer() {
     return <PageLoadingBoundary loading loadingMessage="Recuperando sessão..." />
   }
 
+  const exerciseContext = (
+    <div key="exercise-context" className="space-y-5 lg:col-span-2 lg:col-start-1 lg:row-start-1">
+      <WorkoutProgress
+        percentual={treinoAtivo.estado.percentual}
+        exerciciosFeitos={treinoAtivo.estado.exerciciosFeitos}
+        totalExercicios={treinoAtivo.estado.totalExercicios}
+        serieAtual={treinoAtivo.serieAtual}
+        totalSeries={treinoAtivo.exercicioAtual?.series ?? 0}
+      />
+
+      <CurrentExerciseCard
+        key={`${treinoAtivo.exercicioAtual?.id_treino_exercicio ?? 'sem-exercicio'}:${treinoAtivo.serieAtual}`}
+        exercicio={treinoAtivo.exercicioAtual}
+        serieAtual={treinoAtivo.serieAtual}
+        valoresIniciais={treinoAtivo.valoresIniciaisExercicio}
+        status={treinoAtivo.status}
+        tempoDescanso={treinoAtivo.tempoDescanso}
+        onConcluirSerie={treinoAtivo.concluirSerie}
+        processando={salvando}
+        pausado={treinoAtivo.pausado}
+      />
+    </div>
+  )
+  const sessionControls = (
+    <aside key="session-controls" className="space-y-4 lg:col-start-3 lg:row-start-1 lg:sticky lg:top-5">
+
+      <WorkoutTimer
+        formatted={
+          treinoAtivo.status === 'descansando'
+            ? treinoAtivo.descansoTimer.formatted
+            : treinoAtivo.workoutTimer.formatted
+        }
+        isRunning={treinoAtivo.workoutTimer.isRunning}
+        status={treinoAtivo.status}
+        pausado={treinoAtivo.pausado}
+        percentualDescanso={treinoAtivo.descansoTimer.percentual}
+        proximaSerie={
+          treinoAtivo.exercicioAtual
+            ? `${treinoAtivo.exercicioAtual.nome} · série ${treinoAtivo.serieAtual} de ${treinoAtivo.exercicioAtual.series}`
+            : null
+        }
+        onToggle={treinoAtivo.workoutTimer.toggle}
+        onAdicionarTempo={treinoAtivo.descansoTimer.adicionarTempo}
+        onPularDescanso={treinoAtivo.pularDescanso}
+        disabled={salvando}
+      />
+
+      <WorkoutActions
+        status={treinoAtivo.status}
+        finalizado={treinoAtivo.finalizado}
+        salvando={salvando}
+        pausado={treinoAtivo.pausado}
+
+        onIniciar={() => treinoAtivo.iniciarTreino(descansoPadrao)}
+
+        onAvancar={treinoAtivo.avancarExercicio}
+        onFinalizar={treinoAtivo.finalizarTreino}
+      />
+
+      <WorkoutInfo
+        nomeSecao={treinoAtivo.exercicioAtual?.secao}
+        descricaoSecao={treinoAtivo.exercicioAtual?.descricaoSecao}
+        ordemSecao={ordemSecaoParaApresentacao(treinoAtivo.exercicioAtual)}
+        exerciciosRestantes={treinoAtivo.estado.exerciciosRestantes}
+        seriesRestantes={treinoAtivo.estado.seriesRestantes}
+      />
+
+    </aside>
+  )
+
   return (
     <PageLoadingBoundary loading={loading} loadingMessage="Carregando...">
 
@@ -131,7 +203,7 @@ export default function TreinoPlayer() {
           nomeTreino={treino.nome}
           status={treinoAtivo.status}
           onSair={treinoAtivo.cancelarTreino}
-          salvando={treinoAtivo.salvando}
+          salvando={salvando}
         />
 
         <SessionFeedback
@@ -142,74 +214,8 @@ export default function TreinoPlayer() {
 
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3 lg:items-start lg:gap-6">
 
-          {/* CONTEXTO PRINCIPAL */}
-          <div className="space-y-5 lg:col-span-2">
-            <WorkoutProgress
-              percentual={treinoAtivo.estado.percentual}
-              exerciciosFeitos={treinoAtivo.estado.exerciciosFeitos}
-              totalExercicios={treinoAtivo.estado.totalExercicios}
-              serieAtual={treinoAtivo.serieAtual}
-              totalSeries={treinoAtivo.exercicioAtual?.series ?? 0}
-            />
-
-            <CurrentExerciseCard
-              key={`${treinoAtivo.exercicioAtual?.id_treino_exercicio ?? 'sem-exercicio'}:${treinoAtivo.serieAtual}`}
-              exercicio={treinoAtivo.exercicioAtual}
-              serieAtual={treinoAtivo.serieAtual}
-              valoresIniciais={treinoAtivo.valoresIniciaisExercicio}
-              status={treinoAtivo.status}
-              tempoDescanso={treinoAtivo.tempoDescanso}
-              onConcluirSerie={treinoAtivo.concluirSerie}
-              processando={treinoAtivo.salvando}
-              pausado={treinoAtivo.pausado}
-            />
-          </div>
-
-          {/* ESTADO E AÇÕES: no mobile, sempre antes das informações complementares */}
-          <aside className="space-y-4 lg:col-start-3 lg:sticky lg:top-5">
-
-            <WorkoutTimer
-              formatted={
-                treinoAtivo.status === 'descansando'
-                  ? treinoAtivo.descansoTimer.formatted
-                  : treinoAtivo.workoutTimer.formatted
-              }
-              isRunning={treinoAtivo.workoutTimer.isRunning}
-              status={treinoAtivo.status}
-              pausado={treinoAtivo.pausado}
-              percentualDescanso={treinoAtivo.descansoTimer.percentual}
-              proximaSerie={
-                treinoAtivo.exercicioAtual
-                  ? `${treinoAtivo.exercicioAtual.nome} · série ${treinoAtivo.serieAtual} de ${treinoAtivo.exercicioAtual.series}`
-                  : null
-              }
-              onToggle={treinoAtivo.workoutTimer.toggle}
-              onAdicionarTempo={treinoAtivo.descansoTimer.adicionarTempo}
-              onPularDescanso={treinoAtivo.pularDescanso}
-              disabled={treinoAtivo.salvando}
-            />
-
-            <WorkoutActions
-                status={treinoAtivo.status}
-                finalizado={treinoAtivo.finalizado}
-                salvando={treinoAtivo.salvando}
-                pausado={treinoAtivo.pausado}
-
-                onIniciar={() => treinoAtivo.iniciarTreino(descansoPadrao)}
-
-                onAvancar={treinoAtivo.avancarExercicio}
-                onFinalizar={treinoAtivo.finalizarTreino}
-            />
-
-            <WorkoutInfo
-              nomeSecao={treinoAtivo.exercicioAtual?.secao}
-              descricaoSecao={treinoAtivo.exercicioAtual?.descricaoSecao}
-              ordemSecao={ordemSecaoParaApresentacao(treinoAtivo.exercicioAtual)}
-              exerciciosRestantes={treinoAtivo.estado.exerciciosRestantes}
-              seriesRestantes={treinoAtivo.estado.seriesRestantes}
-            />
-
-          </aside>
+          {exerciseContext}
+          {sessionControls}
 
         </div>
 
@@ -226,7 +232,7 @@ export default function TreinoPlayer() {
             setModalInicialOpen(false)
             navigate('/treinar')
           }}
-          processando={treinoAtivo.salvando}
+          processando={salvando}
           onStart={async (descanso) => {
             const iniciou = await treinoAtivo.iniciarTreino(descanso)
             if (iniciou) setModalInicialOpen(false)
@@ -235,7 +241,7 @@ export default function TreinoPlayer() {
 
         <WorkoutSessionRecoveryModal
           sessao={treinoAtivo.sessaoConflitante}
-          processando={treinoAtivo.salvando}
+          processando={salvando}
           onContinuar={() => {
             navigate(`/treinar/${treinoAtivo.sessaoConflitante.id_treino}`, {
               replace: true,

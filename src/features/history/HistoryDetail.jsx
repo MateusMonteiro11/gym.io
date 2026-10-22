@@ -6,8 +6,15 @@ import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { ExerciseTrendChart } from './HistoryCharts.jsx'
 import { buildEvolution, durationLabel, evolutionInsight, exerciseSummary, groupExercises, numberLabel, sessionMetrics, shortDate, timeLabel } from './historyModel.js'
 import WorkoutExerciseTimeline, { WorkoutExerciseTimelineSkeleton } from './WorkoutExerciseTimeline.jsx'
+import { isHistoryVolumeLimit } from './historyLimits.js'
 
-export function HistoryError({ detail = false, onRetry }) {
+export function HistoryError({ detail = false, onRetry, error, onNarrow }) {
+  if (isHistoryVolumeLimit(error)) return <div className="history-state history-error" role="alert">
+    <TriangleAlert size={26} aria-hidden="true" />
+    <h2>{detail ? 'Este treino excede o limite de visualização' : 'Este período excede o limite de visualização'}</h2>
+    <p>Seus registros continuam salvos. Para manter a página leve, não exibimos totais ou gráficos com dados cortados.{onNarrow ? ' Consulte o período Mensal.' : ''}</p>
+    {onNarrow && <button type="button" className="history-button" onClick={onNarrow}>Ver período mensal<ArrowRight size={16} aria-hidden="true" /></button>}
+  </div>
   return <div className="history-state history-error" role="alert"><TriangleAlert size={26} aria-hidden="true" /><h2>{detail ? 'Não foi possível abrir este treino' : 'Não foi possível carregar o histórico'}</h2><p>Seus registros continuam salvos. Tente carregar novamente.</p><button type="button" className="history-button" onClick={onRetry}><RotateCcw size={16} aria-hidden="true" />Tentar novamente</button></div>
 }
 
@@ -35,12 +42,11 @@ export function HistorySkeleton({ detail = false, embedded = false }) {
       <Skeleton className="h-11 w-52 max-w-full self-end rounded-2xl" />
     </div>
     <div className="history-overview-grid">
-      {Array.from({ length: 4 }, (_, index) => <HistoryCard
-        key={index}
-        className={`history-metric ${['history-metric-workouts', 'history-metric-averageDuration', 'history-metric-week', 'history-metric-exercises'][index]}`}
-      >
-        <Skeleton className="h-3 w-24 max-w-full rounded-full" />
-        <div className="history-metric-base"><Skeleton className="h-6 w-44 max-w-full rounded-lg" /><Skeleton className="mt-3 h-12 w-24 max-w-full rounded-lg" /><Skeleton className="mt-3 h-3 w-36 max-w-full rounded-full" /></div>
+      {Array.from({ length: 4 }, (_, index) => <HistoryCard key={index} className="history-metric">
+        <div className="history-metric-heading"><Skeleton className="h-5 w-24 max-w-full rounded" /><Skeleton className="h-5 w-5 shrink-0 rounded" /></div>
+        <Skeleton className="mt-3 h-10 w-16 rounded" />
+        <Skeleton className="mb-3 mt-1.5 h-[18px] w-full rounded" />
+        <div className="history-metric-footer"><Skeleton className="h-[18px] w-24 max-w-full rounded" /></div>
       </HistoryCard>)}
     </div>
     <div className="history-feature-grid">
@@ -72,7 +78,7 @@ export function WorkoutDetail({ session, resource, onBack, backLabel = 'Voltar a
       <p>{session?.date ? `${session.date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })} · ${timeLabel(session.date)}` : 'Data não registrada'}</p>
       <h1 id="history-detail-title">{session?.name || 'Treino registrado'}</h1>
     </div>
-    {resource.status === 'loading' ? <HistorySkeleton detail embedded /> : resource.status === 'error' ? <HistoryError detail onRetry={resource.retry} /> : <>
+    {resource.status === 'loading' ? <HistorySkeleton detail embedded /> : resource.status === 'error' ? <HistoryError detail error={resource.error} onRetry={resource.retry} /> : <>
       <HistoryCard className={`history-detail-summary history-workout-summary ${!metrics.reliability.sets || !metrics.reliability.exercises ? 'has-notes' : ''}`}>
         <dl className="history-summary-metrics">
           <MetricItem className="history-summary-primary" label="Duração" value={durationLabel(session.duration)} />

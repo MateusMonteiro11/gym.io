@@ -4,14 +4,21 @@ node_modules
 # production
 dist
 tests
-supabase
 docs
+supabase/*
+!supabase/migrations/
+supabase/migrations/*
+# Only incremental hotfixes are included; historical local artifacts stay ignored.
+!supabase/migrations/20261019223444_hotfix_revision_conflict_http_409.sql
+!supabase/migrations/20261019233213_hotfix_start_conflict_http_409.sql
+supabase.zip
 
 # environment variables
 .env
 .env.local
 .env.development.local
 .env.production.local
+.env.push.local
 
 # logs
 npm-debug.log*
@@ -36,3 +43,23 @@ coverage
 # temporary files
 *.tmp
 *.temp
+
+# Disposable Push Foundation runtime and server-only local credentials
+supabase/.runtime/
+supabase/.temp/
+supabase/.branches/
+supabase/functions/push-compat-spike/
+supabase/functions/push-integration/
+.env*.local
+
+# Local credentials and private certificates
+credentials.json
+credentials.*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local patches
+*.diff
+*.patch

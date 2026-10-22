@@ -1,5 +1,7 @@
 import { supabase } from '../../lib/supabase'
 
+const revisaoEsperada = value => value == null ? null : Number(value)
+
 function normalizarSessao(data) {
   if (!data) return null
 
@@ -118,7 +120,7 @@ export function iniciarTreinoSessao(idTreino, descansoPadraoSegundos) {
 export function concluirTreinoSerie(idSessao, revisao, carga, repeticoes) {
   return executarRpc('concluir_treino_serie', {
     p_id_sessao: idSessao,
-    p_revisao_esperada: Number(revisao),
+    p_revisao_esperada: revisaoEsperada(revisao),
     p_carga_utilizada: carga == null ? null : Number(carga),
     p_repeticoes_feitas: repeticoes == null ? null : Number(repeticoes),
   })
@@ -127,7 +129,7 @@ export function concluirTreinoSerie(idSessao, revisao, carga, repeticoes) {
 export function definirPausaTreinoSessao(idSessao, revisao, pausar) {
   return executarRpc('definir_pausa_treino_sessao', {
     p_id_sessao: idSessao,
-    p_revisao_esperada: Number(revisao),
+    p_revisao_esperada: revisaoEsperada(revisao),
     p_pausar: Boolean(pausar),
   })
 }
@@ -135,7 +137,7 @@ export function definirPausaTreinoSessao(idSessao, revisao, pausar) {
 export function encerrarDescansoTreinoSessao(idSessao, revisao, forcar = false) {
   return executarRpc('encerrar_descanso_treino_sessao', {
     p_id_sessao: idSessao,
-    p_revisao_esperada: Number(revisao),
+    p_revisao_esperada: revisaoEsperada(revisao),
     p_forcar: Boolean(forcar),
   })
 }
@@ -143,7 +145,7 @@ export function encerrarDescansoTreinoSessao(idSessao, revisao, forcar = false) 
 export function ajustarDescansoTreinoSessao(idSessao, revisao, deltaSegundos) {
   return executarRpc('ajustar_descanso_treino_sessao', {
     p_id_sessao: idSessao,
-    p_revisao_esperada: Number(revisao),
+    p_revisao_esperada: revisaoEsperada(revisao),
     p_delta_segundos: Number(deltaSegundos),
   })
 }
@@ -151,20 +153,20 @@ export function ajustarDescansoTreinoSessao(idSessao, revisao, deltaSegundos) {
 export function avancarExercicioTreinoSessao(idSessao, revisao) {
   return executarRpc('avancar_exercicio_treino_sessao', {
     p_id_sessao: idSessao,
-    p_revisao_esperada: Number(revisao),
+    p_revisao_esperada: revisaoEsperada(revisao),
   })
 }
 
 export function finalizarTreinoSessao(idSessao, revisao) {
   return executarRpc('finalizar_treino_sessao', {
     p_id_sessao: idSessao,
-    p_revisao_esperada: Number(revisao),
+    p_revisao_esperada: revisaoEsperada(revisao),
   })
 }
 
 export function cancelarTreinoSessao(idSessao, revisao) {
   return executarRpc('cancelar_treino_sessao', {
     p_id_sessao: idSessao,
-    p_revisao_esperada: Number(revisao),
+    p_revisao_esperada: revisaoEsperada(revisao),
   })
 }

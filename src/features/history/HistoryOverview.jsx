@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { CalendarDays, Clock3, Dumbbell, Layers3, RefreshCw } from 'lucide-react'
+import { CalendarCheck2, ClipboardCheck, Dumbbell, Timer } from 'lucide-react'
 
 import HistoryCard from './HistoryCard.jsx'
 import HistoryMetricValue from './HistoryMetricValue.jsx'
@@ -22,8 +22,15 @@ function AnimatedValue({ identity, children }) {
   </AnimatePresence>
 }
 
-export default function HistoryOverview({ stats, period, onPeriodChange, onRefresh, demonstration }) {
+export default function HistoryOverview({ stats, period, onPeriodChange, demonstration }) {
   const periodOptions = Object.entries(PERIODS).map(([value, option]) => ({ value, label: option.label }))
+  const periodScope = period === 'all' ? 'Todo o histórico' : 'Últimos 30 dias'
+  const metrics = [
+    { key: 'workouts', icon: ClipboardCheck, label: 'Treinos', value: numberLabel(stats.workouts), context: 'Concluídos no período', scope: periodScope, reliable: stats.reliability.workouts },
+    { key: 'averageDuration', icon: Timer, label: 'Duração média', value: formatAverageWorkoutDuration(stats.workouts ? stats.averageDuration : null), context: stats.workouts ? 'Por sessão concluída' : 'Sem treinos no período', scope: periodScope, reliable: stats.reliability.averageDuration },
+    { key: 'week', icon: CalendarCheck2, label: 'Dias de treino', value: `${numberLabel(stats.weekActiveDays)} ${stats.weekActiveDays === 1 ? 'dia' : 'dias'}`, context: 'Desde domingo', scope: 'Semana atual', reliable: true },
+    { key: 'exercises', icon: Dumbbell, label: 'Exercícios', value: numberLabel(stats.exercises), context: 'Execuções registradas', scope: periodScope, reliable: stats.reliability.exercises },
+  ]
 
   return <>
     <div className="history-header">
@@ -38,14 +45,6 @@ export default function HistoryOverview({ stats, period, onPeriodChange, onRefre
             layoutId="history-period-indicator"
             className="history-period-selector"
           />
-          <button
-            type="button"
-            className={`${ui.iconBtn} h-11 w-11 shrink-0 rounded-xl`}
-            aria-label="Atualizar histórico"
-            onClick={onRefresh}
-          >
-            <RefreshCw size={17} aria-hidden="true" />
-          </button>
         </div>
         {demonstration ? <span className="text-right text-xs text-app-secondary">Dados de demonstração</span> : null}
       </div>
@@ -54,37 +53,21 @@ export default function HistoryOverview({ stats, period, onPeriodChange, onRefre
 
     <section aria-label="Visão geral do histórico">
       <div className="history-overview-grid">
-        <HistoryCard as="article" className={`history-metric history-metric-workouts ${numberLabel(stats.workouts).length > 7 ? 'history-value-long' : ''}`}>
-          <div className="history-metric-top"><span>No período</span><Dumbbell size={26} aria-hidden="true" /></div>
-          <div className="history-metric-base">
-            <dl><dt>Quantidade de treinos</dt><dd><AnimatedValue identity={`${period}-workouts-${stats.workouts}`}><HistoryMetricValue value={numberLabel(stats.workouts)} /></AnimatedValue></dd></dl>
-            <p className="history-metric-context">Sessões concluídas no período</p>
-            {!stats.reliability.workouts && <small className="history-metric-note">Dados parciais</small>}
+        {metrics.map(({ key, icon: Icon, label, value, context, scope, reliable }) => <HistoryCard as="article" key={key} className={`history-metric history-metric-${key} ${value.replace(/\D/g, '').length > 7 ? 'history-value-long' : ''}`}>
+          <dl>
+            <dt>
+              <span className="history-metric-heading"><span className="history-metric-label">{label}</span><span className="history-metric-icon" aria-hidden="true"><Icon size={18} strokeWidth={1.75} /></span></span>
+            </dt>
+            <dd>
+              <AnimatedValue identity={`${period}-${key}-${value}`}><HistoryMetricValue value={value} balanceDecimal={key === 'averageDuration'} /></AnimatedValue>
+            </dd>
+          </dl>
+          <p className="history-metric-context">{context}</p>
+          <div className="history-metric-footer">
+            <span className="history-metric-scope">{scope}</span>
+            {!reliable && <small className="history-metric-note">Dados parciais</small>}
           </div>
-        </HistoryCard>
-        <HistoryCard as="article" tone="accent" className="history-metric history-metric-averageDuration">
-          <div className="history-metric-top"><span>Por sessão</span><Clock3 size={26} aria-hidden="true" /></div>
-          <div className="history-metric-base">
-            <dl><dt>Duração média</dt><dd><AnimatedValue identity={`${period}-duration-${stats.averageDuration}`}>
-              <HistoryMetricValue value={formatAverageWorkoutDuration(stats.workouts ? stats.averageDuration : null)} />
-            </AnimatedValue></dd></dl>
-            {!stats.workouts && <p className="history-metric-context">Sem treinos no período</p>}
-            {!stats.reliability.averageDuration && <small className="history-metric-note">Dados parciais</small>}
-          </div>
-        </HistoryCard>
-        <HistoryCard as="article" className="history-metric history-metric-week">
-          <div className="history-metric-top"><span>Semana atual</span><CalendarDays size={26} aria-hidden="true" /></div>
-          <div className="history-metric-base">
-            <dl><dt>Dias nesta semana<span className="history-metric-context">Atividade na semana atual</span></dt><dd><AnimatedValue identity={`week-${stats.weekActiveDays}`}><HistoryMetricValue value={`${numberLabel(stats.weekActiveDays)} ${stats.weekActiveDays === 1 ? 'dia' : 'dias'}`} /></AnimatedValue></dd></dl>
-          </div>
-        </HistoryCard>
-        <HistoryCard as="article" className={`history-metric history-metric-exercises ${numberLabel(stats.exercises).length > 7 ? 'history-value-long' : ''}`}>
-          <div className="history-metric-top"><span>No período</span><Layers3 size={26} aria-hidden="true" /></div>
-          <div className="history-metric-base">
-            <dl><dt>Exercícios realizados<span className="history-metric-context">Execuções no período</span></dt><dd><AnimatedValue identity={`${period}-exercises-${stats.exercises}`}><HistoryMetricValue value={numberLabel(stats.exercises)} /></AnimatedValue></dd></dl>
-            {!stats.reliability.exercises && <small className="history-metric-note">Dados parciais</small>}
-          </div>
-        </HistoryCard>
+        </HistoryCard>)}
       </div>
       {stats.partial && <p className="history-partial-note">Alguns registros antigos estão incompletos. Métricas afetadas aparecem como parciais ou indisponíveis.</p>}
     </section>
