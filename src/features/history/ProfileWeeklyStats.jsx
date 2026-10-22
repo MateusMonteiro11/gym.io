@@ -25,7 +25,7 @@ export default function ProfileWeeklyStats({ userId, repository = historyReposit
     { label: 'Exercícios', value: numberLabel(stats.exercises), icon: ListChecks, reliable: stats.reliability.exercises, context: 'Execuções na semana' },
     { label: 'Séries', value: numberLabel(stats.series), icon: Layers3, reliable: stats.reliability.series, context: 'Séries concluídas' },
     { label: 'Sequência', value: `${stats.streak} ${stats.streak === 1 ? 'dia' : 'dias'}`, icon: Flame, reliable: true, context: 'Dias seguidos nesta semana' },
-    { label: 'Duração média', value: formatAverageWorkoutDuration(stats.workouts ? stats.averageDuration : null), icon: Clock3, reliable: stats.reliability.duration, context: 'Tempo médio por sessão' },
+    { label: 'Duração', value: formatAverageWorkoutDuration(stats.workouts ? stats.averageDuration : null), icon: Clock3, reliable: stats.reliability.duration, context: 'Tempo médio por sessão' },
   ]
   return <section className="space-y-4" aria-label="Estatísticas da semana">
     <div>

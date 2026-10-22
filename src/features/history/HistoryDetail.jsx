@@ -42,12 +42,11 @@ export function HistorySkeleton({ detail = false, embedded = false }) {
       <Skeleton className="h-11 w-52 max-w-full self-end rounded-2xl" />
     </div>
     <div className="history-overview-grid">
-      {Array.from({ length: 4 }, (_, index) => <HistoryCard
-        key={index}
-        className={`history-metric ${['history-metric-workouts', 'history-metric-averageDuration', 'history-metric-week', 'history-metric-exercises'][index]}`}
-      >
-        <Skeleton className="h-3 w-24 max-w-full rounded-full" />
-        <div className="history-metric-base"><Skeleton className="h-6 w-44 max-w-full rounded-lg" /><Skeleton className="mt-3 h-12 w-24 max-w-full rounded-lg" /><Skeleton className="mt-3 h-3 w-36 max-w-full rounded-full" /></div>
+      {Array.from({ length: 4 }, (_, index) => <HistoryCard key={index} className="history-metric">
+        <div className="history-metric-heading"><Skeleton className="h-5 w-24 max-w-full rounded" /><Skeleton className="h-5 w-5 shrink-0 rounded" /></div>
+        <Skeleton className="mt-3 h-10 w-16 rounded" />
+        <Skeleton className="mb-3 mt-1.5 h-[18px] w-full rounded" />
+        <div className="history-metric-footer"><Skeleton className="h-[18px] w-24 max-w-full rounded" /></div>
       </HistoryCard>)}
     </div>
     <div className="history-feature-grid">

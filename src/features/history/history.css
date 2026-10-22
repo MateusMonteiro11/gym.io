@@ -35,33 +35,27 @@
 .history-period-controls { display: flex; min-width: 0; flex-direction: column; gap: 8px; align-items: flex-end; }
 .history-period-actions { display: flex; max-width: 100%; gap: 8px; align-items: center; }
 .history-period-selector { min-width: 0; }
-.history-overview-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 24px; }
-.history-metric { position: relative; display: flex; flex-direction: column; }
-.history-metric-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; color: var(--history-muted); font-size: 12px; font-weight: 600; line-height: 1.5; }
-.history-metric-top svg { flex-shrink: 0; color: inherit; }
-.history-metric-base { min-width: 0; margin-top: auto; padding-top: 24px; }
+.history-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 12px; }
+.history-card.history-metric { display: flex; min-width: 0; flex-direction: column; padding: 16px; border: 1px solid var(--history-border); border-radius: 20px; }
 .history-metric dl { min-width: 0; margin: 0; }
-.history-metric dt { max-width: 24ch; color: inherit; font-size: 20px; font-weight: 600; line-height: 1.4; }
-.history-metric dd { min-width: 0; margin: 12px 0 0; font-size: 60px; font-weight: 600; line-height: 1; letter-spacing: -0.06em; }
+.history-metric dt { color: var(--history-text); font-size: 13px; font-weight: 600; line-height: 20px; }
+.history-metric-heading { display: flex; min-height: 24px; align-items: center; justify-content: space-between; gap: 8px; }
+.history-metric-icon { display: inline-flex; flex: 0 0 24px; width: 24px; height: 24px; align-items: center; justify-content: center; color: var(--history-muted); }
+.history-metric-exercises .history-metric-icon svg { transform: rotate(45deg); }
+.history-metric-label { min-width: 0; }
+.history-metric dd { min-width: 0; margin: 12px 0 0; font-size: 32px; font-weight: 600; line-height: 1.2; letter-spacing: -0.035em; }
 .history-metric dd > span { display: inline-block; max-width: 100%; }
-.history-metric-context { margin: 12px 0 0; color: var(--history-muted); font-size: 12px; line-height: 1.65; }
-.history-metric-note { display: block; margin-top: 6px; color: var(--history-muted); font-size: 12px; }
-.history-metric-workouts, .history-metric-averageDuration { min-height: 256px; }
-.history-metric-averageDuration .history-metric-top, .history-metric-averageDuration .history-metric-context, .history-metric-averageDuration .history-metric-note { color: rgb(255 255 255 / .9); }
+.history-metric-context { min-height: 18px; margin: 6px 0 12px; color: var(--history-muted); font-size: 12px; font-weight: 400; line-height: 18px; }
+.history-metric-footer { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 8px; margin-top: auto; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--history-border) 65%, transparent); }
+.history-metric-scope { color: var(--history-muted); font-size: 12px; font-weight: 400; line-height: 18px; }
+.history-metric-note { padding: 2px 6px; border-radius: 6px; color: var(--app-warning); background: var(--app-warning-muted); font-size: 11px; font-weight: 500; line-height: 18px; }
+.history-metric-averageDuration dd, .history-metric-averageDuration .history-metric-icon { color: var(--history-chart-blue); }
+.history-overview-grid .history-value-long dd { font-size: clamp(20px, 5cqw, 28px); letter-spacing: -0.025em; }
 .history-metric-value { display: inline-block; max-width: 100%; min-width: 0; }
 .history-metric-value-parts { white-space: normal; overflow-wrap: anywhere; }
 .history-value-number { font-size: inherit; }
 .history-value-decimal { position: relative; left: .025em; }
 .history-value-unit { font-size: 14px; font-weight: 500; line-height: 1.5; letter-spacing: 0; white-space: pre-wrap; }
-.history-metric-week, .history-metric-exercises { min-height: 176px; }
-.history-metric-week .history-metric-base, .history-metric-exercises .history-metric-base { padding-top: 16px; }
-.history-metric-week dl, .history-metric-exercises dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 16px; }
-.history-metric-week dd, .history-metric-exercises dd { margin: 0; font-size: 36px; text-align: right; letter-spacing: -0.05em; }
-.history-metric-week .history-value-unit { display: block; margin-top: 4px; white-space: normal; }
-.history-metric-week .history-metric-context { display: block; font-weight: 400; }
-.history-metric-exercises { background: var(--history-raised); }
-.history-metric-exercises dl { align-items: start; }
-.history-metric-exercises .history-metric-context { display: block; font-weight: 400; }
 .history-partial-note { margin: 16px 0 0; color: var(--history-muted); font-size: 12px; line-height: 1.65; }
 .history-feature-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 24px; }
 .history-section { margin-top: 40px; }
@@ -258,8 +252,6 @@ html[data-theme="dark"] .history-featured { --history-bar-start: color-mix(in sr
 .history-error { border-radius: 28px; background: var(--history-surface); }
 .history-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .history-value-long dd { font-size: clamp(24px, 4cqw, 48px); letter-spacing: -.025em; }
-.history-metric.history-value-long dl { display: block; }
-.history-metric.history-value-long dd { margin-top: 20px; text-align: left; }
 
 @container history-page (min-width: 480px) {
   .history-exercise-card-header { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; }
@@ -271,7 +263,6 @@ html[data-theme="dark"] .history-featured { --history-bar-start: color-mix(in sr
   .history-rhythm .history-chart-heading, .history-rhythm .history-values, .history-rhythm .history-chart-empty { margin-inline: 0; }
   .history-card-compact { padding: 24px; }
   .history-workout-card { padding: 0; }
-  .history-overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .history-primary-chart, .history-exercise-chart { height: 360px; }
   .history-chart-heading { flex-direction: row; justify-content: space-between; gap: 24px; }
   .history-chart-heading > div { min-width: 0; }
@@ -283,12 +274,17 @@ html[data-theme="dark"] .history-featured { --history-bar-start: color-mix(in sr
   .history-exercise-card { padding: 24px; }
   .history-exercise-timeline { --history-timeline-node: 36px; --history-marker-top: 20px; }
 }
+@container history-page (min-width: 800px) {
+  .history-overview-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .history-card.history-metric { padding: 20px; }
+  .history-metric dt { font-size: 14px; }
+  .history-metric dd { margin-top: 14px; font-size: 38px; }
+}
+@container history-page (max-width: 340px) {
+  .history-metric-heading { min-height: 40px; }
+}
 @container history-page (min-width: 960px) {
-  .history-overview-grid, .history-feature-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .history-metric-workouts { grid-column: span 7; }
-  .history-metric-averageDuration { grid-column: span 5; }
-  .history-metric-week { grid-column: span 4; }
-  .history-metric-exercises { grid-column: span 8; }
+  .history-feature-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
   .history-featured { grid-column: span 8; }
   .history-muscle { grid-column: span 4; }
 }
