@@ -1,26 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import { useHistorico } from '../hooks/useHistorico'
 import { useUi } from '../contexts/UiContext'
 import { atualizarUsuario, uploadFotoPerfil, obterUsuario } from '../services/usuarios/usuariosService'
 import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import Button from './ui/Button'
 import Input, { Label } from './ui/Input'
-import { formatDatePtBr, formatTimePtBr } from '../utils/dateUtils'
-import { ui } from '../styles/theme'
 import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 import { validateProfileImageFile } from '../utils/imageUtils'
-import { Skeleton, SkeletonList } from './ui/Skeleton'
+import { Skeleton } from './ui/Skeleton'
 import ActionLoading from './ui/ActionLoading'
 import PushNotificationSettings from './PushNotificationSettings'
+import ProfileWeeklyStats from '../features/history/ProfileWeeklyStats.jsx'
 
 export default function UserProfileModal({ open, onClose, onUpdate }) {
   const { usuario } = useAuth()
   const { alert, notify } = useUi()
-  const { historico, loading: loadingHistorico, estatisticas } = useHistorico(
-    open ? usuario?.id : null
-  )
 
   const [activeTab, setActiveTab] = useState('profile')
   const [nome, setNome] = useState('')
@@ -132,28 +127,20 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
 
   const tabs = [
     { id: 'profile', label: 'Perfil', icon: 'fa-user' },
-    { id: 'history', label: 'Histórico', icon: 'fa-history' },
     { id: 'stats', label: 'Estatísticas', icon: 'fa-chart-bar' },
     { id: 'notifications', label: 'Notificações', icon: 'fa-bell' },
   ]
-
-  const formatDuracao = (segundos) => {
-    const minutos = Math.floor(segundos / 60)
-    const segs = segundos % 60
-    if (minutos > 0) {
-      return `${minutos}m ${segs}s`
-    }
-    return `${segs}s`
-  }
 
   return (
     <Modal open={open} onClose={onClose} size="lg">
       <ModalHeader title="Meu Perfil" onClose={onClose} />
 
-      <div className="flex border-b border-app-line">
+      <div className="flex border-b border-app-line" role="group" aria-label="Seções do perfil">
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            type="button"
+            aria-pressed={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex flex-col items-center justify-center gap-1.5 sm:flex-row sm:gap-2 flex-1 min-w-0 px-2 sm:px-4 py-4 text-xs sm:text-sm font-medium transition-colors duration-200 border-b-2 ${
               activeTab === tab.id
@@ -266,100 +253,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
           </div>
         ))}
 
-        {/* Historico */}
-        {activeTab === 'history' && (
-          <div className="space-y-4">
-            {loadingHistorico ? (
-              <div role="status" aria-label="Carregando histórico...">
-                <SkeletonList items={3} compact />
-              </div>
-            ) : historico?.length > 0 ? (
-              <div className="space-y-3">
-                {historico.slice(0, 10).map((treino) => (
-                  <div key={treino.id_historico} className={ui.card}>
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-app-ink truncate">
-                            {treino.treinos?.nome || 'Treino'}
-                          </h4>
-                          <p className="text-sm text-app-secondary mt-1">
-                            <i className="fa-solid fa-calendar mr-2" />
-                            {formatDatePtBr(treino.data_execucao)} às {formatTimePtBr(treino.data_execucao)}
-                          </p>
-                          <p className="text-sm text-app-secondary mt-1">
-                            <i className="fa-solid fa-clock mr-2" />
-                            {formatDuracao(treino.duracao_segundos || 0)}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-2 text-sm">
-                          <span className="inline-flex items-center gap-1 bg-app-selection text-app-accent px-2.5 py-1 rounded-lg">
-                            <i className="fa-solid fa-dumbbell" />
-                            {treino.total_series || 0} séries
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className={ui.emptyIcon}>
-                  <i className="fa-solid fa-history" />
-                </div>
-                <p className="text-app-secondary text-sm">Nenhum treino registrado ainda</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Estatisticas */}
-        {activeTab === 'stats' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className={ui.card}>
-                <div className="p-6">
-                  <p className="text-sm text-app-secondary mb-2">
-                    <i className="fa-solid fa-dumbbell mr-2" />
-                    Total de Treinos
-                  </p>
-                  <p className="text-3xl font-bold text-app-accent">{estatisticas.totalTreinos}</p>
-                </div>
-              </div>
-
-              <div className={ui.card}>
-                <div className="p-6">
-                  <p className="text-sm text-app-secondary mb-2">
-                    <i className="fa-solid fa-fire mr-2" />
-                    Total de Séries
-                  </p>
-                  <p className="text-3xl font-bold text-app-accent">{estatisticas.totalExercicios}</p>
-                </div>
-              </div>
-
-              <div className={ui.card}>
-                <div className="p-6">
-                  <p className="text-sm text-app-secondary mb-2">
-                    <i className="fa-solid fa-hourglass-end mr-2" />
-                    Duração Média
-                  </p>
-                  <p className="text-2xl font-bold text-app-accent">{estatisticas.duracaoMedia}</p>
-                </div>
-              </div>
-
-              <div className={ui.card}>
-                <div className="p-6">
-                  <p className="text-sm text-app-secondary mb-2">
-                    <i className="fa-solid fa-calendar-week mr-2" />
-                    Dias Esta Semana
-                  </p>
-                  <p className="text-3xl font-bold text-app-accent">{estatisticas.diasSemanais}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {open && activeTab === 'stats' && <ProfileWeeklyStats userId={usuario?.id} />}
       </div>
     </Modal>
   )

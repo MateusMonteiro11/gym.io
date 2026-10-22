@@ -221,11 +221,6 @@ export default function Treinar() {
                   {formatAgendaTitle(selectedDate, today)}
                 </h2>
               </div>
-              {selectedAppointments.length > 0 ? (
-                <p className="text-xs font-medium text-app-secondary">
-                  {selectedAppointments.length} {selectedAppointments.length === 1 ? 'treino' : 'treinos'}
-                </p>
-              ) : null}
             </div>
 
             <ScheduledWorkoutDeck

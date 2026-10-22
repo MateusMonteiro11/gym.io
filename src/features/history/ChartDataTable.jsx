@@ -1,7 +1,16 @@
-import { useId } from 'react'
+import { useEffect, useId, useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { HISTORY_LIMITS } from './historyLimits.js'
 
 export default function ChartDataTable({ label, columns, rows, emptyMessage, notes = [] }) {
   const notesId = `chart-data-notes-${useId().replace(/[^a-z0-9_-]/gi, '')}`
+  const [page, setPage] = useState(0)
+  const identity = JSON.stringify([label, rows.length, rows[0]?.id, rows.at(-1)?.id])
+  useEffect(() => setPage(0), [identity])
+  const pages = Math.max(1, Math.ceil(rows.length / HISTORY_LIMITS.tablePageSize))
+  const currentPage = Math.min(page, pages - 1)
+  const start = currentPage * HISTORY_LIMITS.tablePageSize
+  const visibleRows = rows.slice(start, start + HISTORY_LIMITS.tablePageSize)
   const identityColumn = columns[0]
   const primaryColumn = columns.find((column, index) => index > 0 && column.primary) || columns[1]
   const secondaryColumns = columns.filter((column) => column !== identityColumn && column !== primaryColumn)
@@ -21,7 +30,7 @@ export default function ChartDataTable({ label, columns, rows, emptyMessage, not
             className={column.numeric ? 'is-numeric' : undefined}
           >{column.label}</th>)}</tr></thead>
           <tbody>
-            {rows.map((row) => <tr key={row.id}>
+            {visibleRows.map((row) => <tr key={row.id}>
               {columns.map((column, index) => {
                 const cell = row.cells[column.key]
                 const Cell = index === 0 ? 'th' : 'td'
@@ -40,7 +49,7 @@ export default function ChartDataTable({ label, columns, rows, emptyMessage, not
       </div>
       <div className="history-data-mobile" role="region" aria-label={label} aria-describedby={notes.length ? notesId : undefined}>
         <ol className="history-data-records" role="list">
-          {rows.map((row) => <li key={row.id}>
+          {visibleRows.map((row) => <li key={row.id}>
             <dl className="history-data-record">
               <div className="history-data-record-identity">
                 <dt>{identityColumn.label}</dt><dd>{cellContent(row.cells[identityColumn.key])}</dd>
@@ -57,6 +66,13 @@ export default function ChartDataTable({ label, columns, rows, emptyMessage, not
         {!rows.length && emptyMessage && <p className="history-data-empty">{emptyMessage}</p>}
       </div>
     </div>
+    {pages > 1 && <nav className="history-data-pagination" aria-label={`${label}: páginas`}>
+      <span role="status">{start + 1}–{Math.min(start + HISTORY_LIMITS.tablePageSize, rows.length)} de {rows.length}</span>
+      <div>
+        <button type="button" className="history-button" aria-label="Página anterior" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}><ChevronLeft size={18} aria-hidden="true" /></button>
+        <button type="button" className="history-button" aria-label="Próxima página" disabled={currentPage === pages - 1} onClick={() => setPage(currentPage + 1)}><ChevronRight size={18} aria-hidden="true" /></button>
+      </div>
+    </nav>}
     {notes.length > 0 && <ul id={notesId} className="history-data-notes" role="list">
       {notes.map((note) => <li key={note.id}>{note.text}</li>)}
     </ul>}

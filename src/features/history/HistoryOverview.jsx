@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { CalendarDays, Clock3, Dumbbell, Layers3, RefreshCw } from 'lucide-react'
+import { CalendarDays, Clock3, Dumbbell, Layers3 } from 'lucide-react'
 
 import HistoryCard from './HistoryCard.jsx'
 import HistoryMetricValue from './HistoryMetricValue.jsx'
@@ -22,7 +22,7 @@ function AnimatedValue({ identity, children }) {
   </AnimatePresence>
 }
 
-export default function HistoryOverview({ stats, period, onPeriodChange, onRefresh, demonstration }) {
+export default function HistoryOverview({ stats, period, onPeriodChange, demonstration }) {
   const periodOptions = Object.entries(PERIODS).map(([value, option]) => ({ value, label: option.label }))
 
   return <>
@@ -38,14 +38,6 @@ export default function HistoryOverview({ stats, period, onPeriodChange, onRefre
             layoutId="history-period-indicator"
             className="history-period-selector"
           />
-          <button
-            type="button"
-            className={`${ui.iconBtn} h-11 w-11 shrink-0 rounded-xl`}
-            aria-label="Atualizar histórico"
-            onClick={onRefresh}
-          >
-            <RefreshCw size={17} aria-hidden="true" />
-          </button>
         </div>
         {demonstration ? <span className="text-right text-xs text-app-secondary">Dados de demonstração</span> : null}
       </div>
@@ -66,9 +58,9 @@ export default function HistoryOverview({ stats, period, onPeriodChange, onRefre
           <div className="history-metric-top"><span>Por sessão</span><Clock3 size={26} aria-hidden="true" /></div>
           <div className="history-metric-base">
             <dl><dt>Duração média</dt><dd><AnimatedValue identity={`${period}-duration-${stats.averageDuration}`}>
-              <HistoryMetricValue value={formatAverageWorkoutDuration(stats.workouts ? stats.averageDuration : null)} />
+              <HistoryMetricValue value={formatAverageWorkoutDuration(stats.workouts ? stats.averageDuration : null)} balanceDecimal />
             </AnimatedValue></dd></dl>
-            {!stats.workouts && <p className="history-metric-context">Sem treinos no período</p>}
+            <p className="history-metric-context">{stats.workouts ? 'Tempo médio por sessão' : 'Sem treinos no período'}</p>
             {!stats.reliability.averageDuration && <small className="history-metric-note">Dados parciais</small>}
           </div>
         </HistoryCard>

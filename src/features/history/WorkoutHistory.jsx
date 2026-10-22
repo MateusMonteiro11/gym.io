@@ -98,7 +98,7 @@ export default function WorkoutHistory({ sessions, allSessions, onSelect, initia
           </h3>
           <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-app-secondary">
             {hasHistory
-              ? 'Atualize o histórico para tentar carregar suas sessões novamente.'
+              ? 'Recarregue a página para tentar carregar suas sessões novamente.'
               : 'Finalize seu primeiro treino para começar a acompanhar sua evolução.'}
           </p>
           {!hasHistory ? (

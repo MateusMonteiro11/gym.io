@@ -8,7 +8,7 @@ import { TREND_METRICS } from './historyModel.js'
 
 const DESCRIPTIONS = {
   workouts: 'Treinos concluídos em cada intervalo.',
-  duration: 'Duração média dos treinos em cada intervalo.',
+  duration: 'Tempo total de treino em cada intervalo, em minutos.',
   exercises: 'Exercícios realizados em cada intervalo.',
 }
 
