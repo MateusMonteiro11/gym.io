@@ -122,7 +122,6 @@ function createNotificationProcessor({ store, registration }) {
     icon: '/push-icon-192.png', badge: '/push-icon-192.png', silent: false, ...options,
   })
   const restCards = async tag => {
-    // Some browsers expose tag filtering without returning every physical card.
     try { return (await registration.getNotifications()).filter(card => card.tag === tag) } catch {}
     try { return (await registration.getNotifications({ tag })).filter(card => card.tag === tag) } catch { return null }
   }
@@ -161,7 +160,6 @@ function createNotificationProcessor({ store, registration }) {
         restCleanupVerified = true
         closeCards(cards.filter(card => card !== latest))
       }
-      // Without the publication marker, retain the new alarm rather than close blindly.
       if (disabled || !await store.restAllowed(value.session_id)) { await closeRest(value.session_id); return false }
       return true
     }),
@@ -218,7 +216,7 @@ self.addEventListener('activate', event => {
       for (const card of await self.registration.getNotifications()) {
         if (card.tag?.startsWith('gymio-workout-') && !card.tag.startsWith('gymio-workout-complete-')) card.close()
       }
-    } catch { /* Old presentation cleanup */ }
+    } catch { /* Old presentation */ }
   })())
 })
 self.addEventListener('push', event => {

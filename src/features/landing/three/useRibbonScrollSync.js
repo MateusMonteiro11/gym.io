@@ -228,10 +228,6 @@ export default function useRibbonScrollSync({ rootRef, sceneRef, skipFragmentRec
     const nextFrame = () => new Promise((resolve) => window.requestAnimationFrame(resolve))
 
     const measureLayout = () => {
-      // Framer Motion may leave off-screen Reveal wrappers in their initial
-      // translated/scaled state. Measure the authored layout box, not that
-      // transient presentation transform, so direct fragment loads and normal
-      // top-down navigation generate the exact same centerline.
       root.classList.add('is-ribbon-measuring')
       const viewportWidth = document.documentElement.clientWidth || window.innerWidth
       const measuredSceneHeight = scene.offsetHeight || scene.getBoundingClientRect().height

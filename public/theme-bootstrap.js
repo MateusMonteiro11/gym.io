@@ -13,9 +13,9 @@
     storage = browser.localStorage
     const stored = storage.getItem(key)
     preference = valid(stored) ? stored : null
-  } catch { /* Private/embedded browsers may deny storage. */ }
+  } catch { /* Private browser */ }
   try { media = browser.matchMedia('(prefers-color-scheme: dark)') }
-  catch { /* A browser without matchMedia defaults to light. */ }
+  catch { /* Navegador sem cossciencia de tema por padrão vem no tema claro. */ }
 
   function apply() {
     const theme = preference || (media?.matches ? 'dark' : 'light')
@@ -30,7 +30,7 @@
     if (!valid(theme)) return
     preference = theme
     try { storage?.setItem(key, theme) }
-    catch { /* Keep the explicit preference even if persistence fails. */ }
+    catch { /* Manter preferencia */ }
     apply()
   }
 

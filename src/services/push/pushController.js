@@ -9,7 +9,6 @@ import {
   vapidPublicKeyToBytes,
 } from './pushUtils.js'
 
-// Browser/API ports keep credentials and SDK error objects outside UI state.
 export function createPushController({ browser, api, publicKey, timeoutMs = 10000 }) {
   let epoch = 0
   let registrationUnconfirmed = false
@@ -19,7 +18,6 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
       if (disabled) browser.localStorage?.setItem(PUSH_OPT_OUT_KEY, '1')
       else browser.localStorage?.removeItem(PUSH_OPT_OUT_KEY)
     } catch {
-      /* storage is optional */
     }
   }
   const disabled = () => {
@@ -74,7 +72,6 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
 
     const activation = ++epoch
     vapidPublicKeyToBytes(publicKey)
-    // Permission must be requested in the original click, before any await.
     const permissionPromise =
       browser.Notification.permission === 'default'
         ? browser.Notification.requestPermission()
@@ -136,7 +133,6 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
       const normalized = normalizeSubscription(subscription)
       let subscriptionId
       try {
-        // One atomic write; ambiguous responses permit only read-only reconciliation.
         subscriptionId = await remote((signal) => api.register(normalized, signal))
       } catch (error) {
         if (error?.registrationRejected) throw error
@@ -146,7 +142,6 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
         try {
           observedId = await remote((signal) => api.lookup(subscription.endpoint, signal))
         } catch {
-          /* read-only reconciliation is optional */
         }
         if (activation !== epoch) throw new Error('activation_cancelled')
         return {
@@ -187,7 +182,6 @@ export function createPushController({ browser, api, publicKey, timeoutMs = 1000
           try {
             await bounded(() => registration.unregister(), timeoutMs)
           } catch {
-            /* best-effort */
           }
         }
       }

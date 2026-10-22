@@ -24,8 +24,6 @@ export function getRibbonProfile(viewportWidth) {
   return PROFILES.desktop
 }
 
-// The ribbon occupies real document space. Sticky choreography is encoded by
-// measured waypoints instead of a second, compressed camera coordinate.
 export function mapPageToScene(pageY) {
   return pageY
 }

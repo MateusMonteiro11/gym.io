@@ -3,7 +3,6 @@
 @import "./formFields.css";
 @config "../../tailwind.config.js";
 
-/* Explicit document state, never an independent OS media query. */
 @custom-variant dark (&:where(html[data-theme="dark"], html[data-theme="dark"] *));
 @custom-variant public-dark (&:where(html[data-theme="dark"]:not(.app-context), html[data-theme="dark"]:not(.app-context) *));
 

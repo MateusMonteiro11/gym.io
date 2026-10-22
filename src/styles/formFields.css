@@ -1,5 +1,3 @@
-/* One quiet boundary for text fields throughout public and authenticated pages.
-   Keyboard focus remains separate from the resting border. */
 :root {
   --field-radius: 8px;
   --field-border: #d4d5dc;
@@ -15,8 +13,6 @@
   --field-error: #ff9aa7;
 }
 
-/* Exclude non-text controls, including the hidden profile upload. Unlayered
-   rules intentionally replace the assorted radius, ring and shadow utilities. */
 :root :is(input, textarea, select):where(:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='hidden'], [type='button'], [type='submit'], [type='reset'], [type='image'])) {
   border-width: 1px;
   border-style: solid;

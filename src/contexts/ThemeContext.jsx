@@ -4,7 +4,6 @@ const ThemeContext = createContext(null)
 const serverSnapshot = () => 'light'
 
 export function ThemeProvider({ children }) {
-  // Initialized by the blocking head script, before CSS and React paint.
   const controller = window.gymioTheme
   const theme = useSyncExternalStore(controller.subscribe, controller.getSnapshot, serverSnapshot)
   const value = useMemo(() => ({

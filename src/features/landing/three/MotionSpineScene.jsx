@@ -194,8 +194,6 @@ function SpatialRibbon({ dark, layout, geometry, timeline, reduced, sync }) {
       geometry.setDrawRange(0, revealState.drawCount)
     }
 
-    // One visual clock: DOM compensation, page-space projection and uniforms
-    // all consume the same exact native-scroll snapshot in this frame.
     if (sync.sceneRef.current) {
       sync.sceneRef.current.style.transform = `translate3d(0, ${scrollY}px, 0)`
     }

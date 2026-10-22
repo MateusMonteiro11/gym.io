@@ -1,5 +1,3 @@
-/* The authenticated shell scopes its tokens to the document so global dialogs
-   and notifications share the same palette without changing public surfaces. */
 @custom-variant app (&:is(html.app-context, html.app-context *));
 
 @theme inline {

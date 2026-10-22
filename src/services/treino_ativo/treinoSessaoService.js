@@ -1,6 +1,5 @@
 import { supabase } from '../../lib/supabase'
 
-// Preserve missing revisions so SQL rejects them with 22023 instead of receiving 0.
 const revisaoEsperada = value => value == null ? null : Number(value)
 
 function normalizarSessao(data) {

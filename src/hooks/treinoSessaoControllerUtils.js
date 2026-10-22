@@ -53,7 +53,6 @@ export function ehErroDeTransporte(error) {
 }
 
 export function ehConflitoDeRevisao(error) {
-  // Keep the legacy code recognizable while environments adopt the HTTP hotfix.
   return ['PT409', '40001'].includes(String(error?.code ?? ''))
 }
 

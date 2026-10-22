@@ -119,9 +119,6 @@
 .flow-product-column { min-width: 0; }
 .flow-product-column > div { width: min(100%, 620px); margin-left: auto; }
 
-/* Measurement happens synchronously between paints. Removing presentation-only
-   transforms here makes the DOM proxy deterministic for hash reloads without
-   changing the rendered motion or document structure. */
 .landing.is-ribbon-measuring .hero-copy,
 .landing.is-ribbon-measuring .hero-data,
 .landing.is-ribbon-measuring .flow-product-column > div,
