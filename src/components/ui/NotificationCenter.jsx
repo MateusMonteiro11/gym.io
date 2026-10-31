@@ -1,12 +1,14 @@
+import { forwardRef } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
 const MOTION_EASE = [0.22, 1, 0.36, 1]
 
-function NotificationItem({ notification, onDismiss, reduceMotion }) {
+const NotificationItem = forwardRef(function NotificationItem({ notification, onDismiss, reduceMotion }, ref) {
   const isUrgent = notification.type === 'error'
 
   return (
     <motion.li
+      ref={ref}
       layout="position"
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -43,7 +45,7 @@ function NotificationItem({ notification, onDismiss, reduceMotion }) {
       </div>
     </motion.li>
   )
-}
+})
 
 export default function NotificationCenter({ notifications, onDismiss }) {
   const reduceMotion = useReducedMotion()
