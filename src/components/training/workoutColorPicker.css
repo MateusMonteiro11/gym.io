@@ -51,6 +51,14 @@
 .workout-hue-track .workout-color-thumb { left: 50%; }
 .workout-color-thumb[data-focus-visible] { outline: 2px solid var(--app-accent); outline-offset: 2px; }
 
+@media (max-width: 767px) {
+  .workout-color-popover {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+  }
+}
+
 @media (max-height: 600px) {
   .workout-color-area,
   .workout-hue-slider { height: 130px; }
