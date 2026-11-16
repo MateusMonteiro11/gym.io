@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase'
+import { isWorkoutColor, normalizeWorkoutColor } from '../../utils/workoutColors.js'
 
 /* Lista treinos de usuarios */
 
@@ -66,9 +67,14 @@ export async function criarTreino({
   nome,
   descricao,
   publico,
-  id_usuario
+  id_usuario,
+  cor_destaque
 
 }) {
+
+  if (cor_destaque !== undefined && !isWorkoutColor(cor_destaque)) {
+    throw new Error('Escolha uma cor válida para o seu treino.')
+  }
 
   const { data, error } = await supabase
     .from('treinos')
@@ -76,7 +82,8 @@ export async function criarTreino({
       nome,
       descricao,
       publico,
-      id_usuario
+      id_usuario,
+      ...(cor_destaque === undefined ? {} : { cor_destaque: normalizeWorkoutColor(cor_destaque) })
     })
     .select()
     .single()
@@ -91,12 +98,23 @@ export async function criarTreino({
 
 /* Editar treino */
 
-export async function editarTreino(idTreino, dados) {
+export async function editarTreino(idTreino, dados, idUsuario) {
 
-  const { data, error } = await supabase
+  const changingColor = Object.hasOwn(dados, 'cor_destaque')
+  if (changingColor && (!idUsuario || !isWorkoutColor(dados.cor_destaque))) {
+    throw new Error('Escolha uma cor válida para o seu treino.')
+  }
+
+  const update = changingColor ? { ...dados, cor_destaque: normalizeWorkoutColor(dados.cor_destaque) } : dados
+
+  let query = supabase
     .from('treinos')
-    .update(dados)
+    .update(update)
     .eq('id_treino', idTreino)
+
+  if (changingColor) query = query.eq('id_usuario', idUsuario).eq('tipo', 'usuario').eq('tipo_treino', 'usuario')
+
+  const { data, error } = await query
     .select()
     .single()
 

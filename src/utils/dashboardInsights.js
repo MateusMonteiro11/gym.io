@@ -1,7 +1,6 @@
 import { parseDateTime } from './dateUtils.js'
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000
-const HEATMAP_RANGES = new Set(['current-year', 'rolling-year'])
 
 export function startOfWeek(value) {
   const date = toValidDate(value)
@@ -116,37 +115,31 @@ export function getDashboardInsights(history = [], referenceDate = new Date()) {
 export function buildExerciseHeatmap(
   history = [],
   referenceDate = new Date(),
-  { range = 'current-year' } = {}
+  { year } = {}
 ) {
   const reference = toValidDate(referenceDate) || new Date()
-  const selectedRange = HEATMAP_RANGES.has(range) ? range : 'current-year'
+  const selectedYear = Number.isInteger(year) && year >= 100 && year <= reference.getFullYear()
+    ? year : reference.getFullYear()
+  const { start: rangeStart, end: rangeEnd } = annualHistoryBounds(selectedYear)
   const grouped = groupExercisesByDate(history)
   const todayEnd = endOfDay(reference)
   const todayKey = toLocalDateKey(reference)
-  const currentWeekStart = startOfWeek(reference)
-  const rangeStart = selectedRange === 'rolling-year'
-    ? addDays(currentWeekStart, -52 * 7)
-    : new Date(reference.getFullYear(), 0, 1)
-  const firstWeekStart = selectedRange === 'rolling-year'
-    ? rangeStart
-    : startOfWeek(rangeStart)
-  const weekCount = selectedRange === 'rolling-year'
-    ? 53
-    : calendarWeekDistance(firstWeekStart, currentWeekStart) + 1
+  const firstWeekStart = startOfWeek(rangeStart)
+  const lastWeekStart = startOfWeek(addDays(rangeEnd, -1))
+  const weekCount = calendarWeekDistance(firstWeekStart, lastWeekStart) + 1
 
   const weeks = Array.from({ length: weekCount }, (_, weekIndex) => {
     const weekStart = addDays(firstWeekStart, weekIndex * 7)
     const days = Array.from({ length: 7 }, (_, dayIndex) => {
       const date = addDays(weekStart, dayIndex)
       const key = toLocalDateKey(date)
-      const isBeforeRange = date < startOfDay(rangeStart)
       const isFuture = date > todayEnd
-      const isOutsideRange = isBeforeRange || isFuture
+      const isOutsideRange = date < rangeStart || date >= rangeEnd
 
       return {
         date,
         key,
-        count: isOutsideRange ? 0 : grouped[key] || 0,
+        count: isOutsideRange || isFuture ? 0 : grouped[key] || 0,
         isToday: key === todayKey,
         isFuture,
         isOutsideRange,
@@ -170,14 +163,33 @@ export function buildExerciseHeatmap(
   const totalExercises = days.reduce((total, day) => total + day.count, 0)
 
   return {
-    range: selectedRange,
+    year: selectedYear,
     weeks,
     days,
     monthLabels,
     startDate: rangeStart,
-    endDate: reference,
+    endDate: addDays(rangeEnd, -1),
     totalExercises,
   }
+}
+
+export function annualHistoryBounds(year) {
+  if (!Number.isInteger(year) || year < 100 || year > 9998) throw new RangeError('Ano inválido')
+  return { start: new Date(year, 0, 1), end: new Date(year + 1, 0, 1) }
+}
+
+export function availableHistoryYears(firstActivity, referenceDate = new Date()) {
+  const reference = toValidDate(referenceDate) || new Date()
+  const currentYear = reference.getFullYear()
+  const firstYear = Math.min(toValidDate(firstActivity)?.getFullYear() || currentYear, currentYear)
+  return Array.from({ length: currentYear - firstYear + 1 }, (_, index) => currentYear - index)
+}
+
+export function initialHeatmapDay(heatmap, referenceDate = new Date()) {
+  const today = toLocalDateKey(referenceDate)
+  if (heatmap.year === referenceDate.getFullYear()) return today
+  return heatmap.days.findLast((day) => !day.isOutsideRange && !day.isFuture && day.count > 0)?.key
+    || toLocalDateKey(heatmap.startDate)
 }
 
 function calendarWeekDistance(start, end) {

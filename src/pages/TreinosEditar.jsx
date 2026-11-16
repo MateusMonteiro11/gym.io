@@ -30,6 +30,9 @@ import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
 import { getUserFriendlyErrorMessage, logError } from '../utils/errorMessages'
 import ActionLoading from '../components/ui/ActionLoading'
+import WorkoutColorPalette from '../components/training/WorkoutColorPalette.jsx'
+import WorkoutLibraryCard from '../components/training/WorkoutLibraryCard.jsx'
+import { DEFAULT_WORKOUT_COLOR, getWorkoutColor, isSystemWorkout, serializeWorkoutColor } from '../utils/workoutColors.js'
 
 const MAX_WORKOUT_NAME_LENGTH = 120
 const MAX_WORKOUT_DESCRIPTION_LENGTH = 500
@@ -228,6 +231,8 @@ export default function TreinosEditar() {
   const [loading, setLoading] = useState(true)
 
   const [saving, setSaving] = useState(false)
+  const [workoutColor, setWorkoutColor] = useState(DEFAULT_WORKOUT_COLOR)
+  const [savedWorkout, setSavedWorkout] = useState(null)
 
   const [workoutName, setWorkoutName] =
     useState('')
@@ -251,10 +256,14 @@ export default function TreinosEditar() {
   const [newSectionDescription, setNewSectionDescription] =
     useState('')
 
-  const carregarTreino = useCallback(async (isActive = () => true) => {
+  const carregarTreino = useCallback(async (isActive = () => true, { preserveDraft = false } = {}) => {
     setLoading(true)
-    setWorkoutName('')
-    setWorkoutDescription('')
+    if (!preserveDraft) {
+      setWorkoutName('')
+      setWorkoutDescription('')
+      setWorkoutColor(DEFAULT_WORKOUT_COLOR)
+      setSavedWorkout(null)
+    }
     setSections([])
     setExercicios([])
 
@@ -263,7 +272,7 @@ export default function TreinosEditar() {
         const treino = await buscarTreinoCompleto(id)
         if (!isActive()) return
 
-        if (treino.tipo?.toLowerCase() === 'sistema') {
+        if (isSystemWorkout(treino)) {
           alert({
             title: 'Treino do sistema',
             message: 'Treinos do sistema são fixos e não podem ser editados.',
@@ -273,8 +282,12 @@ export default function TreinosEditar() {
           return
         }
 
-        setWorkoutName(normalizeTextInput(treino.nome, MAX_WORKOUT_NAME_LENGTH))
-        setWorkoutDescription(normalizeTextInput(treino.descricao || '', MAX_WORKOUT_DESCRIPTION_LENGTH))
+        if (!preserveDraft) {
+          setWorkoutName(normalizeTextInput(treino.nome, MAX_WORKOUT_NAME_LENGTH))
+          setWorkoutDescription(normalizeTextInput(treino.descricao || '', MAX_WORKOUT_DESCRIPTION_LENGTH))
+          setWorkoutColor(getWorkoutColor(treino.cor_destaque).value)
+        }
+        setSavedWorkout(treino)
         setSections(treino.secoes_treino || [])
       }
 
@@ -326,10 +339,14 @@ export default function TreinosEditar() {
 
       if (id) {
 
-        await editarTreino(id, {
-          nome: normalizedWorkoutName,
-          descricao: normalizedWorkoutDescription,
-        })
+        const changes = {}
+        if (normalizedWorkoutName !== normalizeTextInput(savedWorkout?.nome, MAX_WORKOUT_NAME_LENGTH)) changes.nome = normalizedWorkoutName
+        if (normalizedWorkoutDescription !== normalizeTextInput(savedWorkout?.descricao, MAX_WORKOUT_DESCRIPTION_LENGTH)) changes.descricao = normalizedWorkoutDescription
+        if (serializeWorkoutColor(workoutColor) !== getWorkoutColor(savedWorkout?.cor_destaque).value) changes.cor_destaque = serializeWorkoutColor(workoutColor)
+        if (Object.keys(changes).length) {
+          const updated = await editarTreino(id, changes, usuario?.id)
+          setSavedWorkout(updated)
+        }
 
         notify({ title: 'Treino atualizado', message: 'As alterações foram salvas.', type: 'success' })
 
@@ -341,6 +358,8 @@ export default function TreinosEditar() {
             nome: normalizedWorkoutName,
 
             descricao: normalizedWorkoutDescription,
+
+            cor_destaque: serializeWorkoutColor(workoutColor),
 
             publico: false,
 
@@ -406,7 +425,7 @@ export default function TreinosEditar() {
       setShowSectionModal(false)
       setEditingSection(null)
 
-      await carregarTreino()
+      await carregarTreino(undefined, { preserveDraft: true })
 
     } catch (error) {
 
@@ -446,7 +465,7 @@ export default function TreinosEditar() {
         ordem: 1
       })
 
-      await carregarTreino()
+      await carregarTreino(undefined, { preserveDraft: true })
 
     } catch (error) {
 
@@ -490,7 +509,7 @@ export default function TreinosEditar() {
 
     try {
       await removerExercicio(idTreinoExercicio)
-      await carregarTreino()
+      await carregarTreino(undefined, { preserveDraft: true })
     } catch (error) {
       logError(error, '[TreinosEditar] Failed to remove exercise')
       notify({ title: 'Não foi possível remover', message: getUserFriendlyErrorMessage(error, 'Não foi possível remover o exercício.'), type: 'error' })
@@ -530,7 +549,7 @@ export default function TreinosEditar() {
 
     try {
       await deletarSecao(idSecao)
-      await carregarTreino()
+      await carregarTreino(undefined, { preserveDraft: true })
     } catch (error) {
       logError(error, '[TreinosEditar] Failed to delete section')
       notify({ title: 'Não foi possível excluir', message: getUserFriendlyErrorMessage(error, 'Não foi possível excluir a seção.'), type: 'error' })
@@ -644,6 +663,8 @@ export default function TreinosEditar() {
               className="mt-3 w-full rounded-3xl border border-app-line bg-app-muted px-5 py-4 text-sm outline-none focus:border-app-accent focus:ring-2 focus:ring-app-accent resize-none"
             />
 
+            <WorkoutColorPalette value={workoutColor} onChange={setWorkoutColor} disabled={saving} />
+
             <button
               onClick={handleSalvarTreino}
               disabled={saving}
@@ -664,9 +685,9 @@ export default function TreinosEditar() {
               Resumo
             </p>
 
-            <p className="mt-4 text-3xl font-semibold">
-              {sections.length} seções
-            </p>
+            <div className="mt-4">
+              <WorkoutLibraryCard preview workout={{ nome: workoutName, descricao: workoutDescription, tipo: 'usuario', cor_destaque: serializeWorkoutColor(workoutColor), secoes_treino: sections }} />
+            </div>
 
             <button
               type="button"

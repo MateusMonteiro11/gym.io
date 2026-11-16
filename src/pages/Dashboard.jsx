@@ -75,7 +75,7 @@ export default function Dashboard() {
         </ContentEntrance>
 
         <ContentEntrance as="section" index={3} aria-label="Consistência anual">
-          <WorkoutConsistencyHeatmap history={historico} />
+          <WorkoutConsistencyHeatmap key={usuario?.id} userId={usuario?.id} />
         </ContentEntrance>
       </main>
     </PageLoadingBoundary>

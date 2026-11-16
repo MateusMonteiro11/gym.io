@@ -129,7 +129,7 @@ function DashboardQuickMetricSkeleton() {
 }
 
 function DashboardHeatmapSkeleton() {
-  const heatmap = buildExerciseHeatmap([], new Date(), { range: 'current-year' })
+  const heatmap = buildExerciseHeatmap([])
   const cellSize = 12
   const cellGap = 4
   const chartWidth = heatmap.weeks.length * (cellSize + cellGap) - cellGap
@@ -144,9 +144,8 @@ function DashboardHeatmapSkeleton() {
           <Skeleton className="mt-2 h-3.5 w-3/4 max-w-lg rounded-full sm:hidden" />
         </div>
         <div className="min-w-0 w-full space-y-3 xl:flex xl:w-[31rem] xl:flex-col xl:items-end">
-          <div className="flex w-fit max-w-full gap-1 rounded-xl border border-slate-200 app:border-app-line bg-slate-50 app:bg-app-muted p-1 dark:border-white/[0.08] dark:bg-white/[0.04]">
+          <div className="flex w-full justify-end">
             <Skeleton className="h-11 w-20 rounded-lg" />
-            <Skeleton className="h-11 w-28 rounded-lg" />
           </div>
           <div className="grid w-full gap-3 sm:grid-cols-2">
             {Array.from({ length: 2 }, (_, index) => (

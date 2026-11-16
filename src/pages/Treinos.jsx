@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import AgendarTreinoModal from '../components/AgendarTreinoModal'
 import PageLoadingBoundary from '../components/ui/PageLoadingBoundary'
@@ -32,6 +32,9 @@ import { scheduleWorkout } from '../services/agendamentos/scheduleWorkout.js'
 import { notificationBridge } from '../services/push/notificationBridge.js'
 import { useAuth } from '../hooks/useAuth'
 import ActionLoading from '../components/ui/ActionLoading'
+import WorkoutColorPalette from '../components/training/WorkoutColorPalette.jsx'
+import WorkoutLibraryCard from '../components/training/WorkoutLibraryCard.jsx'
+import { DEFAULT_WORKOUT_COLOR, serializeWorkoutColor } from '../utils/workoutColors.js'
 
 const MAX_WORKOUT_NAME_LENGTH = 120
 const MAX_WORKOUT_DESCRIPTION_LENGTH = 500
@@ -43,15 +46,6 @@ function normalizeTextInput(value, maxLength) {
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, maxLength)
-}
-
-function countExercises(workout) {
-  return (
-    workout?.secoes_treino?.reduce(
-      (acc, secao) => acc + (secao?.treinos_exercicios?.length || 0),
-      0
-    ) ?? 0
-  )
 }
 
 export default function Treinos() {
@@ -312,118 +306,12 @@ function ExerciseSearchSelector({ exercises, searchState, onSearchChange, onSele
   )
 }
 
-function WorkoutLibraryCard({
-  workout,
-  showActions = false,
-  isSystem = false,
-  viewPath,
-  editPath,
-  onAgendar,
-  onDelete,
-}) {
-  const navigate = useNavigate()
-  const exerciseCount = countExercises(workout)
-  const sectionCount = workout?.secoes_treino?.length ?? 0
-  const typeLabel = isSystem ? 'Sistema' : 'Personalizado'
-
-  return (
-    <article className="workout-library-card group relative isolate flex min-h-[24.5rem] pt-2">
-      <span
-        aria-hidden="true"
-        className={`workout-library-card__layer pointer-events-none absolute inset-x-3 bottom-0 top-0 rounded-[1.75rem] ${
-          isSystem
-            ? 'bg-app-action/15'
-            : 'bg-app-muted'
-        }`}
-      />
-
-      <div className="workout-library-card__surface relative z-10 flex min-h-96 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-app-line/80 bg-app-surface">
-        <div className="workout-library-card__header flex shrink-0 gap-2 px-4 py-4">
-          <span
-            className={`inline-flex min-h-7 items-center rounded-full border px-2 text-[0.625rem] font-semibold uppercase tracking-[0.08em] ${
-              isSystem
-                ? 'border-app-accent/20 bg-app-action/10 text-app-accent'
-                : 'border-app-line bg-app-muted text-app-ink'
-            }`}
-          >
-            {typeLabel}
-          </span>
-
-          {showActions && editPath && !isSystem ? (
-            <div
-              className="flex items-center gap-1"
-              role="group"
-              aria-label={`Ações de ${workout.nome}`}
-            >
-              <button
-                type="button"
-                onClick={() => navigate(editPath)}
-                title="Editar treino"
-                aria-label={`Editar ${workout.nome}`}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-app-line text-app-secondary hover:border-app-accent/30 hover:bg-app-action/10 hover:text-app-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 ring-offset-app-canvas"
-              >
-                <i className="fa-solid fa-pen text-xs" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={() => onDelete?.(workout)}
-                title="Excluir treino"
-                aria-label={`Excluir ${workout.nome}`}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-app-danger text-app-danger hover:bg-app-danger-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-danger focus-visible:ring-offset-2 ring-offset-app-canvas"
-              >
-                <i className="fa-solid fa-trash-can text-xs" aria-hidden="true" />
-              </button>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="flex flex-1 flex-col px-5 pb-5 pt-4 sm:pb-6">
-          <span className="workout-library-card__accent mb-5 h-1 w-10 rounded-full bg-app-action" aria-hidden="true" />
-
-          <h3 className="line-clamp-2 text-[1.65rem] font-semibold leading-[1.05] tracking-[-0.035em] text-app-ink sm:text-[1.8rem]">
-            {workout.nome}
-          </h3>
-          <p className="mt-4 line-clamp-2 min-h-12 text-sm leading-6 text-app-secondary">
-            {workout.descricao || 'Sem descrição'}
-          </p>
-
-          <p className="mt-6 text-[0.6875rem] font-medium text-app-secondary">
-            {sectionCount} {sectionCount === 1 ? 'seção' : 'seções'}
-            <span className="mx-2 text-app-secondary" aria-hidden="true">/</span>
-            {exerciseCount} {exerciseCount === 1 ? 'exercício' : 'exercícios'}
-          </p>
-
-          <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-8">
-            <Link
-              to={viewPath}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-1 text-sm font-semibold text-app-ink hover:text-app-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 ring-offset-app-canvas"
-            >
-              Visualizar
-              <i className="workout-library-card__arrow fa-solid fa-arrow-right text-xs text-app-accent" aria-hidden="true" />
-            </Link>
-
-            {onAgendar ? (
-              <button
-                type="button"
-                onClick={() => onAgendar(workout)}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-app-action px-3 py-2 text-sm font-semibold text-white hover:bg-app-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 ring-offset-app-canvas"
-              >
-                <i className="fa-solid fa-calendar-plus text-xs" aria-hidden="true" />
-                Agendar
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </article>
-  )
-}
-
 function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
   const { alert, notify, confirm } = useUi()
   const [saving, setSaving] = useState(false)
   const [workoutName, setWorkoutName] = useState('Novo treino')
   const [workoutDescription, setWorkoutDescription] = useState('')
+  const [workoutColor, setWorkoutColor] = useState(DEFAULT_WORKOUT_COLOR)
   const [sections, setSections] = useState([])
   const [exercicios, setExercicios] = useState([])
   const [showSectionModal, setShowSectionModal] = useState(false)
@@ -586,6 +474,7 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
       const treino = await criarTreino({
         nome: normalizedWorkoutName,
         descricao: normalizedWorkoutDescription,
+        cor_destaque: serializeWorkoutColor(workoutColor),
         publico: false,
         id_usuario: usuario.id,
       })
@@ -666,6 +555,7 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
                 placeholder="Objetivo ou foco do treino..."
                 className={`${ui.input} mt-2 resize-none`}
               />
+              <WorkoutColorPalette value={workoutColor} onChange={setWorkoutColor} disabled={saving} />
               <Button className="mt-6 w-full" onClick={handleSalvarTreino} disabled={saving}>
                 {saving ? (
                   <ActionLoading label="Salvando..." inverse />
@@ -678,8 +568,9 @@ function ModalCriarTreino({ open, onClose, onCreated, usuario }) {
             </div>
             <div className="rounded-2xl border border-app-line bg-app-muted p-6">
               <p className="text-xs font-semibold uppercase tracking-wider text-app-secondary">Resumo</p>
-              <p className="mt-3 text-3xl font-bold text-app-ink">{sections.length}</p>
-              <p className="text-sm text-app-secondary">seções adicionadas</p>
+              <div className="mt-4">
+                <WorkoutLibraryCard preview workout={{ nome: workoutName, descricao: workoutDescription, tipo: 'usuario', cor_destaque: serializeWorkoutColor(workoutColor), secoes_treino: sections }} />
+              </div>
               <Button
                 variant="secondary"
                 className="mt-6 w-full"

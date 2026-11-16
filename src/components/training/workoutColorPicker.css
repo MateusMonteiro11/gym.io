@@ -1,0 +1,57 @@
+.workout-color-popover {
+  z-index: 70;
+  width: min(21rem, calc(100vw - 24px));
+  max-height: min(35rem, calc(100dvh - 24px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--app-line);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--app-surface);
+  color: var(--app-ink);
+  color-scheme: inherit;
+  box-shadow: 0 12px 32px rgb(0 0 0 / .24);
+}
+
+.workout-color-area {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 180px;
+  border-radius: 10px;
+  touch-action: none;
+  forced-color-adjust: none;
+}
+
+.workout-hue-slider {
+  width: 28px;
+  height: 180px;
+  padding-inline: 6px;
+  touch-action: none;
+}
+
+.workout-hue-track {
+  position: relative;
+  width: 16px;
+  height: 100%;
+  border-radius: 8px;
+  forced-color-adjust: none;
+}
+
+.workout-color-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgb(0 0 0 / .45);
+  transform: translate(-50%, -50%);
+  forced-color-adjust: none;
+}
+
+.workout-hue-track .workout-color-thumb { left: 50%; }
+.workout-color-thumb[data-focus-visible] { outline: 2px solid var(--app-accent); outline-offset: 2px; }
+
+@media (max-height: 600px) {
+  .workout-color-area,
+  .workout-hue-slider { height: 130px; }
+}

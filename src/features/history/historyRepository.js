@@ -1,5 +1,7 @@
-import { normalizeSession, normalizeSet, RECENT_HISTORY_LIMIT } from './historyModel.js'
+import { normalizeSession, normalizeSet, recordedDate, RECENT_HISTORY_LIMIT } from './historyModel.js'
 import { HISTORY_LIMITS, HistoryVolumeLimitError } from './historyLimits.js'
+import { annualHistoryBounds } from '../../utils/dashboardInsights.js'
+import { normalizeDatabaseUtcTimestamp } from '../../utils/dateUtils.js'
 
 const SESSION_SUMMARY_COLUMNS = 'id_historico,id_sessao,data_execucao,duracao_segundos,total_series,total_exercicios,treinos(nome)'
 
@@ -23,6 +25,28 @@ export async function readAllPages(queryPage, pageSize = 500, { maxRows = HISTOR
 export function createHistoryRepository(client) {
   const columns = 'id_historico_exercicio,id_historico,id_exercicio,id_treino_exercicio,serie,carga_utilizada,repeticoes_feitas,concluido,criado_em,exercicios(nome,id_categoria,categorias_musculares(id_categoria,nome)),historico_treinos!inner(id_usuario,data_execucao)'
   return {
+    async firstActivityDate(userId, signal) {
+      if (!userId) return null
+      const { data, error } = await client.from('historico_treinos')
+        .select('data_execucao').eq('id_usuario', userId).gt('total_exercicios', 0)
+        .lte('data_execucao', new Date().toISOString())
+        .order('data_execucao', { ascending: true, nullsFirst: false })
+        .limit(1).maybeSingle().abortSignal(signal)
+      if (error) throw error
+      return recordedDate(data?.data_execucao)
+    },
+    async annualActivity(userId, year, signal) {
+      if (!userId) return []
+      const { start, end } = annualHistoryBounds(year)
+      const now = new Date().toISOString()
+      const rows = await readAllPages((from, to) => client.from('historico_treinos')
+        .select('id_historico,data_execucao,total_exercicios')
+        .eq('id_usuario', userId).gte('data_execucao', start.toISOString()).lt('data_execucao', end.toISOString())
+        .lte('data_execucao', now)
+        .order('data_execucao', { ascending: true }).order('id_historico', { ascending: true })
+        .range(from, to).abortSignal(signal), 500, { maxRows: HISTORY_LIMITS.sessions, signal })
+      return rows.map((row) => ({ ...row, data_execucao: normalizeDatabaseUtcTimestamp(row.data_execucao) }))
+    },
     async sessions(userId, signal, { start, end } = {}) {
       if (!userId) return []
       const rows = await readAllPages((from, to) => {

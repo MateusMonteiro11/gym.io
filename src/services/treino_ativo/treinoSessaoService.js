@@ -157,11 +157,13 @@ export function avancarExercicioTreinoSessao(idSessao, revisao) {
   })
 }
 
-export function finalizarTreinoSessao(idSessao, revisao) {
-  return executarRpc('finalizar_treino_sessao', {
+export async function finalizarTreinoSessao(idSessao, revisao) {
+  const sessao = await executarRpc('finalizar_treino_sessao', {
     p_id_sessao: idSessao,
     p_revisao_esperada: revisaoEsperada(revisao),
   })
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('gymio:history-updated'))
+  return sessao
 }
 
 export function cancelarTreinoSessao(idSessao, revisao) {

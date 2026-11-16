@@ -1,4 +1,5 @@
 import { getWorkoutCounts } from '../../utils/trainingDiscovery'
+import { isSystemWorkout, workoutColorStyle } from '../../utils/workoutColors.js'
 
 export default function WorkoutCard({
   workout,
@@ -10,9 +11,11 @@ export default function WorkoutCard({
   className = '',
 }) {
   const { exerciseCount, sectionCount } = getWorkoutCounts(workout)
+  const isSystem = isSystemWorkout(workout)
 
   return (
     <article
+      style={workoutColorStyle(workout)}
       className={`relative flex flex-col overflow-hidden rounded-[1.75rem] border border-app-line/80  ${
         compact
           ? 'h-full min-w-0 bg-app-surface'
@@ -20,14 +23,14 @@ export default function WorkoutCard({
       } ${prominent ? 'min-h-[21.5rem] sm:min-h-[23rem]' : compact ? '' : 'min-h-[17rem]'} ${className}`}
     >
       <div className="flex min-h-14 items-center justify-between gap-4 border-b border-app-line px-5 py-3 sm:px-6">
-        <p className="min-w-0 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-app-accent">
+        <p className={`min-w-0 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] ${isSystem ? 'text-app-accent' : 'workout-color-label rounded-full border px-2 py-1'}`}>
           {eyebrow}
         </p>
         {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
       </div>
 
       <div className={`flex flex-1 flex-col px-5 py-6 sm:px-7 ${prominent ? 'sm:py-8' : ''}`}>
-        <span className="mb-5 h-1 w-10 rounded-full bg-app-action" aria-hidden="true" />
+        <span className={`mb-5 h-1 w-10 rounded-full ${isSystem ? 'bg-app-action' : 'workout-color-bar'}`} aria-hidden="true" />
         <h3
           className={`font-semibold tracking-[-0.035em] text-app-ink  ${
             compact

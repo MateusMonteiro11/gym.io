@@ -102,6 +102,32 @@ html.app-context {
   scrollbar-color: var(--app-control) var(--app-canvas);
 }
 
+.workout-color-label,
+.workout-color-bar,
+.workout-color-layer {
+  --workout-color: var(--workout-color-light, var(--app-accent));
+  --workout-color-text: var(--workout-color-text-light, var(--workout-color));
+}
+
+html[data-theme="dark"] :is(.workout-color-label, .workout-color-bar, .workout-color-layer) {
+  --workout-color: var(--workout-color-dark, var(--app-accent));
+  --workout-color-text: var(--workout-color-text-dark, var(--workout-color));
+}
+
+.workout-color-label {
+  color: var(--workout-color-text);
+  border-color: color-mix(in srgb, var(--workout-color) 25%, transparent);
+  background-color: color-mix(in srgb, var(--workout-color) 9%, var(--app-surface));
+}
+
+.workout-color-bar {
+  background-color: var(--workout-color);
+}
+
+.workout-color-layer {
+  background-color: color-mix(in srgb, var(--workout-color) 15%, transparent);
+}
+
 @layer base {
   html.app-context body { background: var(--app-canvas); color: var(--app-ink); }
   html.app-context ::selection { background: var(--app-action); color: white; }
