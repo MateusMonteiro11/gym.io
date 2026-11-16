@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useUi } from '../contexts/UiContext'
 import { atualizarUsuario, uploadFotoPerfil, obterUsuario } from '../services/usuarios/usuariosService'
@@ -12,6 +12,7 @@ import { Skeleton } from './ui/Skeleton'
 import ActionLoading from './ui/ActionLoading'
 import PushNotificationSettings from './PushNotificationSettings'
 import ProfileWeeklyStats from '../features/history/ProfileWeeklyStats.jsx'
+import ProfileAvatar from './ProfileAvatar'
 
 export default function UserProfileModal({ open, onClose, onUpdate }) {
   const { usuario } = useAuth()
@@ -24,12 +25,15 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
   const [fotoFile, setFotoFile] = useState(null)
   const [salvando, setSalvando] = useState(false)
   const [carregandoUsuario, setCarregandoUsuario] = useState(false)
+  const [viewingPhoto, setViewingPhoto] = useState(null)
+  const photoButtonRef = useRef(null)
 
   useEffect(() => {
     let active = true
 
     if (!open || !usuario?.id) {
       setCarregandoUsuario(false)
+      setViewingPhoto(null)
       return undefined
     }
 
@@ -131,6 +135,22 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
     { id: 'notifications', label: 'Notificações', icon: 'fa-bell' },
   ]
 
+  if (open && viewingPhoto) {
+    const returnToProfile = () => {
+      setViewingPhoto(null)
+      requestAnimationFrame(() => photoButtonRef.current?.focus())
+    }
+    return (
+      <Modal open={open} onClose={returnToProfile} size="lg">
+        <ModalHeader title="Foto de perfil" onClose={returnToProfile} />
+        <div className="p-6">
+          <img src={viewingPhoto} alt={`Foto de perfil de ${nome || 'usuário'}`} referrerPolicy="no-referrer" className="mx-auto max-h-[65vh] max-w-full rounded-xl object-contain" onError={returnToProfile} />
+          <Button autoFocus variant="secondary" onClick={returnToProfile} className="mt-6 w-full">Voltar ao perfil</Button>
+        </div>
+      </Modal>
+    )
+  }
+
   return (
     <Modal open={open} onClose={onClose} size="lg">
       <ModalHeader title="Meu Perfil" onClose={onClose} />
@@ -174,21 +194,7 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
           <div className="space-y-6">
             <div className="flex flex-col items-center">
               <div className="mb-4">
-                <div className="h-24 w-24 rounded-full bg-app-selection flex items-center justify-center text-4xl text-app-accent overflow-hidden">
-                  {fotoPreview ? (
-                    <img
-                      src={fotoPreview}
-                      alt="Foto"
-                      className="h-full w-full object-cover"
-                      onError={(event) => {
-                        event.currentTarget.style.display = 'none'
-                        event.currentTarget.parentElement?.classList?.add('bg-app-muted')
-                      }}
-                    />
-                  ) : (
-                    usuario?.email?.charAt(0).toUpperCase() || 'U'
-                  )}
-                </div>
+                <ProfileAvatar photo={fotoPreview} user={usuario} name={nome} onView={setViewingPhoto} buttonRef={photoButtonRef} className="h-24 w-24 text-4xl" />
               </div>
               <label className="cursor-pointer">
                 <input

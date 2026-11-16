@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { obterUsuario } from '../services/usuarios/usuariosService'
 import { logout } from '../services/auth/authService'
 import { useUi } from '../contexts/UiContext'
-import { isSafeRenderableImageUrl } from '../utils/imageUtils'
+import ProfileAvatar from './ProfileAvatar'
 import Modal from './ui/Modal'
 import ModalHeader from './ui/ModalHeader'
 import UserProfileModal from './UserProfileModal'
@@ -223,18 +223,16 @@ export default function Sidebar() {
 
         <div className="mt-8 border-t border-app-line pt-5">
           <button
+            type="button"
+            aria-label="Abrir meu perfil"
             onClick={() => setProfileModalOpen(true)}
             className="mb-4 w-full flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-app-muted p-2 -ml-2"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-app-selection text-sm font-semibold text-app-accent flex-shrink-0 overflow-hidden">
-              {isUserLoading ? (
+            {isUserLoading ? (
+              <div className="h-10 w-10 shrink-0">
                 <Skeleton className="h-full w-full rounded-full" />
-              ) : userData?.foto_perfil && isSafeRenderableImageUrl(userData.foto_perfil) ? (
-                <img src={userData.foto_perfil} alt="Foto" className="h-full w-full object-cover" />
-              ) : (
-                (userData?.nome?.[0] || usuario?.email?.[0] || 'U').toUpperCase()
-              )}
-            </div>
+              </div>
+            ) : <ProfileAvatar photo={userData?.foto_perfil} user={usuario} name={userData?.nome} className="h-10 w-10 text-sm" />}
             <div className="min-w-0 flex-1 text-left">
               <p className="truncate text-sm font-semibold text-app-ink">
                 {isUserLoading ? (
