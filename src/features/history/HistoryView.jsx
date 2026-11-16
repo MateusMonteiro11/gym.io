@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import ContentEntrance from '../../components/ui/ContentEntrance.jsx'
-import { ArrowRight, Dumbbell } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 import HistoryCard from './HistoryCard.jsx'
 import { ui } from '../../styles/theme.js'
@@ -156,8 +156,7 @@ export default function HistoryView({ userId, repository, initialNow, demonstrat
     <ContentEntrance><HistoryOverview stats={stats} period={period} onPeriodChange={changePeriod} demonstration={demonstration} /></ContentEntrance>
     <ContentEntrance index={1}>
       <HistoryCard className="history-onboarding mt-6 flex flex-col items-center text-center">
-        <Dumbbell size={26} className="mx-auto text-app-secondary" aria-hidden="true" />
-        <div className="mt-5 flex w-full flex-col items-center gap-3 text-center">
+        <div className="flex w-full flex-col items-center gap-3 text-center">
           <h2 className="text-xl font-semibold text-app-ink">Ainda não há treinos no seu histórico.</h2>
           <p className="w-full max-w-lg text-center text-sm leading-relaxed text-app-secondary">Finalize seu primeiro treino para começar a acompanhar sua evolução.</p>
         </div>

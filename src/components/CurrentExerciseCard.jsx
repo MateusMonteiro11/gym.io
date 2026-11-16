@@ -251,11 +251,11 @@ export default function CurrentExerciseCard({
             }
           `}
         >
-          {!processando && <i className="fa-solid fa-check" />}
+          {!processando && !pausado && <i className="fa-solid fa-check" />}
           {processando
             ? <ActionLoading label="Salvando série…" inverse />
             : pausado
-              ? 'Retome o cronômetro para continuar'
+              ? 'Retome para continuar'
               : serieAtual < exercicio.series
             ? `Concluir série ${serieAtual}`
             : 'Concluir exercício'

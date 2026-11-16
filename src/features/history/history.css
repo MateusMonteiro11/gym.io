@@ -73,6 +73,7 @@
 .history-primary-chart { height: 280px; }
 .history-exercise-chart { height: 280px; margin-top: 32px; }
 .history-muscle { display: flex; flex-direction: column; }
+.history-category-button { display: grid; grid-template-columns: 24px minmax(0, 1fr) 56px; align-items: center; gap: 12px; min-height: 56px; }
 .history-tooltip { min-width: 0; width: max-content; max-width: min(250px, 100cqw); padding: 12px 14px; border-radius: 12px; background: var(--history-surface); color: var(--history-text); box-shadow: 0 4px 20px rgb(0 0 0 / .12); overflow-wrap: anywhere; }
 .history-tooltip > span, .history-tooltip > small { display: block; color: var(--history-muted); font-size: 12px; line-height: 1.5; }
 .history-tooltip strong { display: block; margin: 5px 0; font-size: 20px; font-weight: 600; }

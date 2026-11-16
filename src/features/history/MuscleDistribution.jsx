@@ -27,19 +27,19 @@ export function CategoryBreakdown({ items, selectedId, onSelect }) {
           onClick={() => onSelect(item.id)}
           onMouseEnter={() => onSelect(item.id)}
           onFocus={() => onSelect(item.id)}
-          className="w-full rounded-xl px-2 py-2 text-left text-app-secondary transition-colors duration-200 hover:bg-app-muted hover:text-app-ink focus-visible:bg-app-muted"
+          className="history-category-button w-full rounded-xl px-3 py-3 text-left text-app-secondary transition-colors duration-200 hover:bg-app-muted hover:text-app-ink focus-visible:bg-app-muted"
         >
-          <span className="flex min-h-8 items-center gap-3">
-            <span className="w-6 shrink-0 text-xs font-semibold tabular-nums text-app-accent">{index + 1}</span>
-            <span className={`min-w-0 flex-1 break-words text-sm font-semibold ${selectedId === item.id ? 'text-app-accent' : ''}`}>{item.name}</span>
-            <span className="shrink-0 text-xs font-semibold tabular-nums">{percentageLabel(item.percentage)}</span>
+          <span className="text-center text-xs font-semibold tabular-nums text-app-accent">{index + 1}</span>
+          <span className="flex min-w-0 flex-col gap-2">
+            <span className={`break-words text-sm font-semibold ${selectedId === item.id ? 'text-app-accent' : ''}`}>{item.name}</span>
+            <span className="block h-1 overflow-hidden rounded-full bg-app-muted" aria-hidden="true">
+              <i
+                className="block h-full rounded-full bg-app-action"
+                style={{ width: `${Math.max(5, item.percentage)}%`, opacity: 0.28 + item.intensity * 0.72 }}
+              />
+            </span>
           </span>
-          <span className="ml-9 block h-1 overflow-hidden rounded-full bg-app-muted" aria-hidden="true">
-            <i
-              className="block h-full rounded-full bg-app-action"
-              style={{ width: `${Math.max(5, item.percentage)}%`, opacity: 0.28 + item.intensity * 0.72 }}
-            />
-          </span>
+          <span className="text-center text-xs font-semibold tabular-nums">{percentageLabel(item.percentage)}</span>
         </button>
       </li>)}
     </ol>
