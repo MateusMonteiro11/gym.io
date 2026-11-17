@@ -129,6 +129,7 @@ export default function ScheduledWorkoutDeck({
             workout={activeWorkout}
             prominent
             eyebrow={`Agendado para ${selectedDateLabel}`}
+            eyebrowVariant="text"
             actions={(
               <>
                 {appointments.length > 1 ? (

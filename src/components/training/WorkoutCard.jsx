@@ -4,6 +4,7 @@ import { isSystemWorkout, workoutColorStyle } from '../../utils/workoutColors.js
 export default function WorkoutCard({
   workout,
   eyebrow,
+  eyebrowVariant = 'badge',
   actions,
   footer,
   prominent = false,
@@ -12,6 +13,11 @@ export default function WorkoutCard({
 }) {
   const { exerciseCount, sectionCount } = getWorkoutCounts(workout)
   const isSystem = isSystemWorkout(workout)
+  const eyebrowClassName = isSystem
+    ? 'text-app-accent'
+    : eyebrowVariant === 'text'
+      ? 'text-[color:var(--workout-color-text-light)] dark:text-[color:var(--workout-color-text-dark)]'
+      : 'workout-color-label rounded-full border px-2 py-1'
 
   return (
     <article
@@ -23,7 +29,7 @@ export default function WorkoutCard({
       } ${prominent ? 'min-h-[21.5rem] sm:min-h-[23rem]' : compact ? '' : 'min-h-[17rem]'} ${className}`}
     >
       <div className="flex min-h-14 items-center justify-between gap-4 border-b border-app-line px-5 py-3 sm:px-6">
-        <p className={`min-w-0 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] ${isSystem ? 'text-app-accent' : 'workout-color-label rounded-full border px-2 py-1'}`}>
+        <p className={`min-w-0 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] ${eyebrowClassName}`}>
           {eyebrow}
         </p>
         {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
