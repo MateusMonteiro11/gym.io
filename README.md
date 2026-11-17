@@ -1,41 +1,19 @@
-# Gym.io
+![Gym.io](public/assests/gym-io.png)
 
-Organize suas fichas, registre cada série e acompanhe suas cargas.
+## Sobre
 
-**[Acessar o aplicativo ↗](https://usegymio.vercel.app)**
+O **Gym.io** é um aplicativo web para organizar fichas de treino, registrar séries e acompanhar a evolução das cargas. Pode ser usado no celular e no computador.
 
-<table>
-  <tr>
-    <td width="36%" align="left" valign="top">
-      <img src="public/assests/treino-em-andamento.gif" alt="Gym.io no celular: exercício, série atual e contagem de descanso." width="280">
-    </td>
-    <td valign="top">
-      <h3>Durante o treino</h3>
-      <p>Carga, repetições e descanso na mesma tela.</p>
-      <ul>
-        <li>Registre cada série.</li>
-        <li>Ajuste ou pule o descanso.</li>
-        <li>Pause e retome a sessão.</li>
-      </ul>
-      <h3>Na sua rotina</h3>
-      <p>Escolha uma ficha pronta ou monte a sua. Agende os treinos e consulte seus registros depois.</p>
-      <p>Disponível no celular e no computador, com temas claro e escuro.</p>
-    </td>
-  </tr>
-</table>
+[Acessar o Gym.io](https://usegymio.vercel.app)
 
-## Treinos
+## Como funciona
 
-Exercícios organizados por seção, com séries e repetições definidas na ficha.
+Você pode começar com um treino do sistema ou criar uma ficha própria, organizando os exercícios em seções e definindo séries e repetições. Os treinos podem ser iniciados na hora ou agendados, com lembretes opcionais.
 
-<img src="public/assests/treinos.png" alt="Ficha de treino de bíceps e tríceps, organizada por seções." width="960">
+Durante a sessão, o player apresenta o exercício atual e permite registrar a carga e as repetições de cada série. O descanso tem uma contagem regressiva que pode ser ajustada ou pulada, e a sessão pode ser pausada e retomada.
 
-## Histórico
+As sessões concluídas ficam no histórico, com os exercícios realizados, as cargas registradas e a distribuição por grupo muscular. Os gráficos permitem consultar a evolução de cada exercício, enquanto o painel reúne a atividade recente e a consistência dos treinos ao longo do ano.
 
-Sessões concluídas, cargas registradas e distribuição dos exercícios por grupo muscular.
+## Autoria
 
-<img src="public/assests/historico.png" alt="Histórico com indicadores, gráfico dos exercícios mais realizados e distribuição muscular." width="960">
-
----
-
-Desenvolvido por [Mateus Monteiro](https://github.com/MateusMonteiro11) · Hospedado na Vercel.
+Projeto desenvolvido por [Mateus Monteiro](https://github.com/MateusMonteiro11).
