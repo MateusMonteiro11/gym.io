@@ -11,7 +11,7 @@
 <p align="center">Sua ficha, o treino de hoje e o que você já fez.</p>
 
 <p align="center">
-  <a href="https://gym-io-omega.vercel.app">Abrir aplicativo</a> ·
+  <a href="https://usegymio.vercel.app">Abrir aplicativo</a> ·
   <a href="#na-prática">Na prática</a> ·
   <a href="#recursos">Recursos</a> ·
   <a href="#como-rodar">Como rodar</a> ·
@@ -20,17 +20,25 @@
 
 O Gym.io é um aplicativo web para organizar fichas de treino, registrar carga e repetições durante a sessão e consultar o histórico depois. Você pode começar com um treino do sistema ou montar o seu, separar os exercícios em seções e reservar um dia na agenda.
 
+A versão publicada está hospedada na **Vercel**, em [usegymio.vercel.app](https://usegymio.vercel.app).
+
 A interface funciona no celular e no desktop, com temas claro e escuro. As imagens abaixo são capturas do aplicativo; os números pertencem às sessões registradas na conta usada na demonstração.
 
 ## Na prática
 
 ```mermaid
+---
+config:
+  flowchart:
+    diagramPadding: 12
+    nodeSpacing: 24
+    rankSpacing: 28
+    padding: 14
+---
 flowchart LR
-    A[Escolher ou montar a ficha] --> B[Começar agora ou agendar]
-    B --> C[Registrar as séries]
-    C --> D[Concluir o treino]
-    D --> E[Consultar histórico e cargas]
-    E --> A
+    A["Ficha<br/>escolha ou crie"] --> B["Treino<br/>agende ou inicie"]
+    B --> C["Séries<br/>registre e conclua"]
+    C --> D["Histórico<br/>consulte as cargas"]
 ```
 
 ### 1. Prepare a ficha
@@ -38,7 +46,7 @@ flowchart LR
 Em **Treinos**, escolha uma ficha do sistema para consultar ou crie um treino com nome, descrição e cor de identificação. Nos seus treinos, adicione seções, busque os exercícios pelo nome e defina séries e repetições. A tela de visualização reúne a estrutura inteira antes de começar.
 
 <p align="center">
-  <img src="public/assests/treinos.png" alt="Ficha do Treino A — Bíceps e Tríceps, com resumo de 12 exercícios em duas seções e a lista de exercícios de bíceps." width="100%">
+  <img src="public/assests/treinos.png" alt="Ficha do Treino A — Bíceps e Tríceps, com resumo de 12 exercícios em duas seções e a lista de exercícios de bíceps." width="900">
 </p>
 
 **Exemplo da captura:** o Treino A separa bíceps e tríceps em duas seções. A Rosca com Barra W aparece com três séries de dez repetições. Ao executar o treino, você registra o que fez em cada série.
@@ -56,9 +64,13 @@ O agendamento pode ser concluído sem notificações. Para recebê-las, ative o 
 Antes de iniciar, ajuste o descanso padrão. O player mostra o exercício atual, a série, a carga, as repetições e a orientação de execução, com GIF demonstrativo quando disponível no catálogo.
 
 <p align="center">
-  <img src="public/assests/treino-em-andamento.gif" alt="Gravação do player no celular, mostrando a série de Rosca com Barra W e a contagem regressiva de descanso, com opções para adicionar 15 segundos, pausar e pular o intervalo." width="320">
+  <a href="public/assests/treino-em-andamento.gif">
+    <img src="public/assests/treino-em-andamento.gif" alt="Gravação do player no celular, mostrando a série de Rosca com Barra W e a contagem regressiva de descanso, com opções para adicionar 15 segundos, pausar e pular o intervalo." width="400">
+  </a>
   <br>
   <sub>O player durante o intervalo entre duas séries.</sub>
+  <br>
+  <a href="public/assests/treino-em-andamento.gif">Ver gravação em tamanho original</a>
 </p>
 
 | Durante a sessão | O que acontece |
@@ -78,7 +90,7 @@ O andamento depende de conexão com o Supabase. A recuperação considera os reg
 O **Histórico** oferece os períodos **Mensal**, que considera os últimos 30 dias, e **Total**. Os indicadores resumem os treinos concluídos, a duração média e os exercícios registrados. O cartão **Dias de treino** sempre se refere à semana atual, desde domingo.
 
 <p align="center">
-  <img src="public/assests/historico.png" alt="Histórico com cartões de treinos, duração média, dias de treino e exercícios; abaixo, gráfico dos exercícios mais realizados e distribuição muscular com tabelas de dados." width="100%">
+  <img src="public/assests/historico.png" alt="Histórico com cartões de treinos, duração média, dias de treino e exercícios; abaixo, gráfico dos exercícios mais realizados e distribuição muscular com tabelas de dados." width="900">
 </p>
 
 | Visualização | Como ler |
@@ -93,7 +105,7 @@ O **Histórico** oferece os períodos **Mensal**, que considera os últimos 30 d
 Os gráficos também oferecem tabelas para consultar os valores. Quando registros antigos estão incompletos, as métricas afetadas aparecem como parciais ou indisponíveis.
 
 <p align="center">
-  <img src="public/assests/evolucao.png" alt="Evolução da Elevação Lateral na Polia: última e melhor carga de 7 kg, variação de 0% e gráfico estável entre 20 de outubro e 16 de novembro." width="760">
+  <img src="public/assests/evolucao.png" alt="Evolução da Elevação Lateral na Polia: última e melhor carga de 7 kg, variação de 0% e gráfico estável entre 20 de outubro e 16 de novembro." width="620">
   <br>
   <sub>Na captura, a carga permaneceu em 7 kg. O gráfico mostra a manutenção desse valor entre as sessões.</sub>
 </p>
@@ -105,7 +117,7 @@ O **Painel** reúne o próximo treino agendado, a atividade da semana, comparaç
 Em **Meu Perfil**, você pode alterar nome, foto e status, consultar as estatísticas da semana e gerenciar as notificações daquele navegador. A aba de estatísticas apresenta exercícios, séries, sequência de dias e duração média por sessão.
 
 <p align="center">
-  <img src="public/assests/perfil.png" alt="Modal Meu Perfil com foto, nome e status editáveis, botão para salvar e abas de estatísticas e notificações." width="760">
+  <img src="public/assests/perfil.png" alt="Modal Meu Perfil com foto, nome e status editáveis, botão para salvar e abas de estatísticas e notificações." width="640">
 </p>
 
 ## Recursos
@@ -143,16 +155,7 @@ npm ci
 
 ### 2. Configure o ambiente
 
-Crie um arquivo `.env.local` na raiz:
-
-```dotenv
-VITE_SUPABASE_URL=https://SEU_PROJETO.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_SUA_CHAVE
-
-# Opcionais
-VITE_SUPABASE_REDIRECT_URL=http://localhost:5173/redefinir-senha
-VITE_VAPID_PUBLIC_KEY=
-```
+Configure as variáveis de ambiente com os dados do backend correspondente. No desenvolvimento local, elas podem ficar em `.env.local`; na Vercel, ficam nas configurações do projeto.
 
 | Variável | Uso |
 | --- | --- |
@@ -182,22 +185,27 @@ Abra [localhost:5173](http://localhost:5173). Se a porta estiver ocupada, o Vite
 | `npm run preview` | Serve o build localmente para conferência. |
 | `npm test` | Executa `node --test`. Esta cópia não inclui arquivos de teste. |
 
-Para publicar, use `npm run build` e sirva `dist/` com as mesmas variáveis configuradas no ambiente de build. As rotas precisam retornar `index.html` ao serem abertas diretamente; o [vercel.json](vercel.json) já define essa reescrita para a Vercel. O envio de lembretes exige que o serviço correspondente esteja implantado e ativo no backend.
+A hospedagem atual usa a **Vercel**. Para gerar a versão de produção, execute `npm run build`; a saída fica em `dist/`. Configure as variáveis de ambiente antes do build. As rotas precisam retornar `index.html` ao serem abertas diretamente; o [vercel.json](vercel.json) já define essa reescrita. O envio de lembretes exige que o serviço correspondente esteja implantado e ativo no backend.
 
 ## Por dentro do projeto
 
 O frontend é uma SPA em React. As páginas usam hooks para controlar os fluxos e serviços para acessar o Supabase. O estado confirmado de uma sessão de treino fica no servidor, enquanto os gráficos são preparados a partir dos registros do histórico.
 
 ```mermaid
-flowchart TD
-    UI[React · páginas e componentes] --> H[Hooks · autenticação, agenda e treino]
-    H --> S[Serviços · cliente Supabase]
-    S --> A[Auth · e-mail e Google]
-    S --> DB[Postgres · fichas, sessões e histórico]
-    S --> RPC[Funções SQL · operações de sessão e agenda]
-    DB --> M[Modelo do histórico]
-    M --> G[Recharts · gráficos e tabelas]
-    SW[Service Worker · notificações] <--> P[Serviço Web Push do backend]
+---
+config:
+  flowchart:
+    diagramPadding: 12
+    nodeSpacing: 28
+    rankSpacing: 32
+    padding: 14
+---
+flowchart TB
+    APP["React<br/>páginas · hooks · serviços"] --> AUTH["Supabase Auth<br/>e-mail · Google"]
+    APP <--> DB["Postgres + funções SQL<br/>fichas · sessões · agenda"]
+    APP --> PUSH["Web Push<br/>inscrição do navegador"]
+    DB --> HIST["Histórico<br/>métricas · Recharts"]
+    PUSH --> SW["Service Worker<br/>notificações do backend"]
 ```
 
 ### Tecnologias
