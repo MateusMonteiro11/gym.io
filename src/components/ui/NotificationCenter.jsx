@@ -53,7 +53,7 @@ export default function NotificationCenter({ notifications, onDismiss }) {
   return (
     <section
       aria-label="Notificações"
-      className="pointer-events-none fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] sm:left-auto sm:right-5 sm:w-[26rem]"
+      className="notification-center pointer-events-none fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] sm:left-auto sm:right-5 sm:w-[26rem]"
     >
       <motion.ol layout className="flex flex-col gap-2.5">
         <AnimatePresence initial={false} mode="popLayout">

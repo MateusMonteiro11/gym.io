@@ -12,13 +12,9 @@ import UserProfileModal from './UserProfileModal'
 import ThemeToggle from './ui/ThemeToggle'
 import { Skeleton } from './ui/Skeleton'
 import ActionLoading from './ui/ActionLoading'
-
-const navItems = [
-  { to: '/dashboard', icon: 'fa-solid fa-grip', label: 'Painel' },
-  { to: '/treinos', icon: 'fa-solid fa-dumbbell', label: 'Treinos' },
-  { to: '/treinar', icon: 'fa-solid fa-play', label: 'Treinar' },
-  { to: '/historico', icon: 'fa-solid fa-clock-rotate-left', label: 'Histórico' },
-]
+import MobileHeader from './navigation/MobileHeader'
+import MobileBottomNav from './navigation/MobileBottomNav'
+import { navigationItems, isNavigationItemActive } from './navigation/navigationItems'
 
 export default function Sidebar() {
   const { pathname } = useLocation()
@@ -31,7 +27,6 @@ export default function Sidebar() {
   const [userData, setUserData] = useState(null)
   const [loadedUserId, setLoadedUserId] = useState(null)
   const [loadingUserData, setLoadingUserData] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const isOnTrainingPage = pathname.startsWith('/treinar/')
   const hasActiveTraining = isOnTrainingPage
@@ -120,7 +115,6 @@ export default function Sidebar() {
       })
     } else {
       navigate(to)
-      setSidebarOpen(false)
     }
   }
 
@@ -145,50 +139,23 @@ export default function Sidebar() {
       })
     } else {
       navigate('/dashboard')
-      setSidebarOpen(false)
     }
   }
 
   return (
     <>
-      {/* Mobile Header com Hamburger Button */}
-      <div className="flex md:hidden w-full items-center justify-between border-b border-app-line/80 bg-app-surface p-5">
-        <button
-          onClick={handleLogoClick}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
-          title="Voltar ao dashboard"
-        >
-          <img
-            src={logoImg}
-            className="h-11 w-11 rounded-xl shadow-sm ring-1 ring-app-line"
-            alt="Logo Gym.io"
-          />
-          <h1 className="text-lg font-semibold tracking-tight text-app-ink">Gym.io</h1>
-        </button>
-        <div className="flex items-center gap-2">
-          <ThemeToggle compact className="h-10 px-3" />
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-app-line text-app-secondary transition-colors hover:bg-app-muted hover:text-app-ink"
-            aria-label="Toggle sidebar"
-          >
-            <i className={`fa-solid fa-${sidebarOpen ? 'times' : 'bars'} text-xl`} />
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Backdrop Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-app-overlay md:hidden"
-          onClick={() => setSidebarOpen(false)}
+      <MobileHeader onHome={handleLogoClick} />
+      {!isOnTrainingPage && (
+        <MobileBottomNav
+          user={usuario}
+          profile={loadedUserId === usuario?.id ? userData : null}
+          loadingProfile={isUserLoading}
+          profileOpen={profileModalOpen}
+          onProfile={() => setProfileModalOpen(true)}
         />
       )}
 
-      {/* Sidebar */}
-      <aside className={`fixed md:static inset-y-0 left-0 z-40 flex w-72 flex-col justify-between border-b border-app-line/80 bg-app-surface p-5 md:border-b-0 md:border-r md:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-      } md:w-72 md:border-b-0 md:border-r md:p-6 md:relative`}>
+      <aside className="relative hidden w-72 shrink-0 flex-col justify-between border-r border-app-line bg-app-surface p-6 md:flex">
         <div>
           {/* Logo*/}
           <div className="mb-8 flex items-center gap-3 hidden md:flex">
@@ -200,13 +167,15 @@ export default function Sidebar() {
             <h1 className="text-lg font-semibold tracking-tight text-app-ink">Gym.io</h1>
           </div>
 
-          <nav className="space-y-1">
-            {navItems.map(({ to, icon, label }) => {
-              const isActive = pathname === to
+          <nav className="space-y-1" aria-label="Navegação principal">
+            {navigationItems.map(({ to, icon, label }) => {
+              const isActive = isNavigationItemActive(pathname, to)
               return (
                 <button
                   key={to}
+                  type="button"
                   onClick={() => handleNavigation(to)}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
                     isActive
                       ? 'bg-app-selection text-app-accent'
@@ -266,6 +235,10 @@ export default function Sidebar() {
         open={profileModalOpen}
         onClose={handleModalClose}
         onUpdate={handleProfileUpdate}
+        onLogout={() => {
+          setProfileModalOpen(false)
+          handleLogoutClick()
+        }}
       />
 
       <Modal

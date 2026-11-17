@@ -14,7 +14,7 @@ import PushNotificationSettings from './PushNotificationSettings'
 import ProfileWeeklyStats from '../features/history/ProfileWeeklyStats.jsx'
 import ProfileAvatar from './ProfileAvatar'
 
-export default function UserProfileModal({ open, onClose, onUpdate }) {
+export default function UserProfileModal({ open, onClose, onUpdate, onLogout }) {
   const { usuario } = useAuth()
   const { alert, notify } = useUi()
 
@@ -261,6 +261,19 @@ export default function UserProfileModal({ open, onClose, onUpdate }) {
 
         {open && activeTab === 'stats' && <ProfileWeeklyStats userId={usuario?.id} />}
       </div>
+      {onLogout && (
+        <div className="px-6 pb-6 md:hidden">
+          <button
+            type="button"
+            onClick={onLogout}
+            disabled={salvando}
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-app-secondary transition-colors hover:text-app-danger disabled:opacity-50"
+          >
+            <i className="fa-solid fa-right-from-bracket" aria-hidden="true" />
+            Sair da conta
+          </button>
+        </div>
+      )}
     </Modal>
   )
 }
