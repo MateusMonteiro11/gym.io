@@ -1,29 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
 import logoImg from '../../assets/images/logo_blue.png'
 import ThemeToggle from '../ui/ThemeToggle'
 import { getHeaderScrollState } from './headerScroll'
+import { useNavigationScrollVisibility } from './NavigationScrollContext'
 
 export default function MobileHeader({ onHome }) {
-  const { pathname } = useLocation()
-  const { scrollY } = useScroll()
-  const [hidden, setHidden] = useState(false)
-  const scrollState = useRef({ position: 0, direction: 0, distance: 0, hidden: false })
-
-  useEffect(() => {
-    scrollState.current = { position: window.scrollY, direction: 0, distance: 0, hidden: false }
-    setHidden(false)
-  }, [pathname])
-
-  useMotionValueEvent(scrollY, 'change', (position) => {
-    scrollState.current = getHeaderScrollState(
-      scrollState.current,
-      position,
-      document.documentElement.scrollHeight - window.innerHeight,
-    )
-    setHidden(scrollState.current.hidden)
-  })
+  const { hidden } = useNavigationScrollVisibility(getHeaderScrollState, { pauseDuringInteraction: false })
 
   return (
     <header className={`mobile-app-header md:hidden ${hidden ? 'is-hidden' : ''}`} inert={hidden ? '' : undefined}>

@@ -2,12 +2,22 @@ import { NavLink } from 'react-router-dom'
 import { Dumbbell, History, House, Play } from 'lucide-react'
 import ProfileAvatar from '../ProfileAvatar'
 import { navigationItems } from './navigationItems'
+import { getBottomNavigationScrollState } from './bottomNavigationScroll'
+import { useNavigationScrollVisibility } from './NavigationScrollContext'
 
 const icons = { '/dashboard': House, '/treinos': Dumbbell, '/treinar': Play, '/historico': History }
 
 export default function MobileBottomNav({ user, profile, loadingProfile, profileOpen, onProfile }) {
+  const { hidden, animate } = useNavigationScrollVisibility(getBottomNavigationScrollState)
+
   return (
-    <nav className="mobile-bottom-nav md:hidden" aria-label="Navegação principal">
+    <nav
+      className={`mobile-bottom-nav md:hidden ${hidden ? 'is-hidden' : ''}`}
+      aria-label="Navegação principal"
+      aria-hidden={hidden || undefined}
+      inert={hidden ? '' : undefined}
+      data-scroll-reset={!animate || undefined}
+    >
       {navigationItems.map(({ to, mobileLabel }) => {
         const Icon = icons[to]
         return (

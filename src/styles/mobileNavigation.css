@@ -57,7 +57,15 @@
     border-radius: 999px;
     background: var(--app-surface);
     transform: translateX(-50%);
+    transition: transform 240ms ease-out;
   }
+
+  .mobile-bottom-nav.is-hidden {
+    transform: translate(-50%, calc(100% + 1rem + env(safe-area-inset-bottom, 0px)));
+    pointer-events: none;
+  }
+
+  .mobile-bottom-nav[data-scroll-reset="true"] { transition: none; }
 
   .mobile-bottom-nav__item {
     display: flex;
@@ -121,5 +129,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mobile-app-header, .mobile-bottom-nav__item { transition: none; }
+  .mobile-app-header, .mobile-bottom-nav, .mobile-bottom-nav__item { transition: none; }
 }
